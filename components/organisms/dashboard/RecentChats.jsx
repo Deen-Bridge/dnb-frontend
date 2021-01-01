@@ -6,9 +6,9 @@ import {
 import { cn } from "@/lib/utils";
 import { roboto_500 } from "@/lib/config/font.config"; 
 const chats = [
-    { name: "Zayd", message: "Asalamualaykum brother", unread: true },
-    { name: "Gateway to Jannah", message: "The Prophet Rasullah said ...", unread: false },
-    { name: "Tahir", message: "Asalamualaykum brother", unread: false },
+    { name: "Zayd", message: "Asalamualaykum brother", unread: true,  image: "/images/img-9.jpeg" },
+    { name: "Gateway to Jannah", message: "The Prophet Rasullah said ...", unread: false, image: "/images/img-10.jpg" },
+    { name: "Tahir", message: "Asalamualaykum brother", unread: true, image: "/images/img-11.jpg" },
 ];
 
 const RecentChats = () => (
@@ -18,8 +18,8 @@ const RecentChats = () => (
             {chats.map((chat, i) => (
                 <li key={i} className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8 rounded-lg">
-                            <AvatarImage src="/images/img1.jpeg" alt="Instructor" />
+                        <Avatar className="h-10 w-10 rounded-lg">
+                            <AvatarImage src={chat.image} alt="Instructor" />
                             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
@@ -27,7 +27,7 @@ const RecentChats = () => (
                             <span className="text-muted-foreground"> {chat.message}</span>
                         </div>
                     </div>
-                    {chat.unread && <span className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white">2</span>}
+                    {chat.unread && <span className="w-5 h-5 rounded-full bg-accent flex items-center justify-center text-white text-xs">{2 || 4}</span>}
                 </li>
             ))}
         </ul>
