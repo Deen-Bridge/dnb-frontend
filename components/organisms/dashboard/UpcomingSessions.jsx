@@ -5,9 +5,9 @@ import {
 } from "@/components/ui/avatar";
 import Button from "@/components/atoms/form/Button";
 const sessions = [
-    { name: "Jamiu", date: "Jul 21", time: "3:00 PM" },
-    { name: "Fatima", date: "Jul 22", time: "11:00 AM" },
-    { name: "Yusuf", date: "Jul 25", time: "1:00 PM" },
+    { name: "Yaoumul Jumuah Rituals.", date: "Jul 21", time: "3:00 PM" },
+    { name: "Selected Sunnah of the Prophet", date: "Jul 22", time: "11:00 AM" },
+    { name: "Balanced Diet for the Soul", date: "Jul 25", time: "1:00 PM" },
 ];
 
 const UpcomingSessions = () => (
@@ -17,13 +17,13 @@ const UpcomingSessions = () => (
             {sessions.map((s, i) => (
                 <li key={i} className="flex justify-between">
                     <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8 rounded-lg">
+                        <Avatar className="h-10 w-10 rounded-lg">
                             <AvatarImage src="/images/img1.jpeg" alt="Instructor" />
                             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                         </Avatar>
-                        <span>{s.name}</span>
+                        <span className="font-stretch-125% font-medium text-md">{s.name}</span>
                     </div>
-                    <div className="flex flex-col items-end text-muted-foreground text-sm ">
+                    <div className="flex flex-col items-end text-muted-foreground text-xs ">
                         <span>{s.date} </span>
                         <span>{s.time}</span>
                     </div>
@@ -31,7 +31,7 @@ const UpcomingSessions = () => (
                 </li>
             ))}
         </ul>
-        <Button wide round className="mt-4 bg-accent text-white w-full py-2 rounded-full">Join Now</Button>
+        <Button wide round className="mt-4 bg-accent text-white  py-2  text-sm font-stretch-125%">View Upcomings</Button>
     </div>
 );
 

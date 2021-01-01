@@ -84,37 +84,37 @@ export function NavUser({
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem onClick={upgrade}>
-                                    <Sparkles />
+                                <DropdownMenuItem onClick={upgrade} className="focus:text-white">
+                                    <Sparkles className="text-black" />
                                     Upgrade to Pro
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
                                 <Link href={`/account/profile/${currentUser?._id}`}>
-                                    <DropdownMenuItem>
-                                        <BadgeCheck />
+                                    <DropdownMenuItem className="focus:text-white">
+                                        <BadgeCheck className="text-black" />
                                         Account
                                     </DropdownMenuItem>
                                 </Link>
-                                <DropdownMenuItem>
-                                    <CreditCard />
+                                <DropdownMenuItem className="focus:text-white">
+                                    <CreditCard className="text-black" />
                                     Billing
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Bell />
+                                <DropdownMenuItem className="focus:text-white">
+                                    <Bell className="text-black" />
                                     Notifications
                                 </DropdownMenuItem>
                                 <Link href="/account/settings">
-                                    <DropdownMenuItem>
-                                        <SettingsIcon />
+                                    <DropdownMenuItem className="focus:text-white">
+                                        <SettingsIcon className="text-black" />
                                         Settings
                                     </DropdownMenuItem>
                                 </Link>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={logout}>
-                                <LogOut />
+                            <DropdownMenuItem onClick={logout} className="focus:text-white">
+                                <LogOut className="text-black" />
                                 Log out
                             </DropdownMenuItem>
                         </DropdownMenuContent>

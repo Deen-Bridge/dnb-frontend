@@ -130,11 +130,11 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label>Gender</Label>
+                    <Label className="text-md">Gender</Label>
                     <RadioGroup
                         value={localData.gender}
                         onValueChange={handleGenderChange}
-                        className="flex gap-4"
+                        className="flex gap-4 h-10 w-10"
                     >
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="male" id="male" />
@@ -148,7 +148,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label>Islamic Interests</Label>
+                    <Label className="text-md">Islamic Interests</Label>
                     <div className="grid gap-2">
                         {islamicInterestsList.map((item) => (
                             <div key={item} className="flex items-center gap-2">
@@ -156,6 +156,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                                     id={item}
                                     checked={localData.interests.includes(item)}
                                     onCheckedChange={() => handleCheckboxChange(item)}
+                                    className="h-5 w-5"
                                 />
                                 <Label htmlFor={item}>{item}</Label>
                             </div>
@@ -165,7 +166,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
 
                 {/* Country Dropdown */}
                 <div className="grid gap-2">
-                    <Label>Country</Label>
+                    <Label className="text-md">Country</Label>
                     <Select
                         value={localData.country}
                         onValueChange={val => setLocalData(prev => ({ ...prev, country: val }))}
@@ -183,7 +184,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                 </div>
                 {/* Language Dropdown */}
                 <div className="grid gap-2">
-                    <Label>Language</Label>
+                    <Label className="text-md">Language</Label>
                     <Select
                         value={localData.language}
                         onValueChange={val => setLocalData(prev => ({ ...prev, language: val }))}
@@ -200,7 +201,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                     </Select>
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="bio">Bio</Label>
+                    <Label htmlFor="bio" className="text-md">Bio</Label>
                      <Textarea
                                     name="bio"
                                      id="bio"
@@ -215,10 +216,10 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
 
                 {error && <div className="text-red-500 text-sm">{error}</div>}
                 <div className="flex justify-between mt-4 gap-4">
-                    <Button wide round  onClick={handleBack} disabled={loading} className="bg-accent hover:bg-highlight transition-colors">
-                    <ArrowBigLeft className="mr-2"/>    Back
+                    <Button wide round  onClick={handleBack} disabled={loading} className="bg-accent hover:bg-highlight transition-colors text-sm">
+                    <ArrowBigLeft className="mr-2" size={20}/>    Back
                     </Button>
-                    <Button wide  loading={loading} round onClick={handleSubmit} disabled={loading} className="bg-accent hover:bg-highlight transition-colors">
+                    <Button wide  loading={loading} round onClick={handleSubmit} disabled={loading} className="bg-accent hover:bg-highlight transition-colors text-sm">
                        Complete Setup
                     </Button>
                 </div> 

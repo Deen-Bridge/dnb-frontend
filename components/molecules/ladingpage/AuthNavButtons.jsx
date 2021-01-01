@@ -9,17 +9,17 @@ export default function AuthNavButtons() {
         </Button>
     ) : (
         <>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-5 ">
                 <Button
                     wide
                     round
                     to="/login"
-                        className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"
+                    className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all "
                 >
                     Login
                 </Button>
                 <Button to="/signup" wide round
-                        className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"    >
+                    className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"    >
                     Sign up
                 </Button>
             </div>
