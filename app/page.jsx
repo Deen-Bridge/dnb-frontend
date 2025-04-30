@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+import Button from "@/components/atoms/form/Button";
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -24,7 +24,9 @@ export default function Home() {
             Save and see your changes instantly.
           </li>
         </ol>
-
+        <Button wide rond className="h-12 mt-12">
+          Verify ID
+        </Button>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
