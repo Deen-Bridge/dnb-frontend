@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation";
-import Load from "@/components/atoms/form/Loader"
+import Error from "@/components/atoms/form/Error"
 import usePasswordMatch from "@/hooks/passwordChecker"
 export function SignupForm({ className, ...props }) {
     const router = useRouter()
@@ -33,12 +33,15 @@ export function SignupForm({ className, ...props }) {
         e.preventDefault();
         // Check if passwords match
         if (!checkPasswords(formData.password, formData.confirmPassword)) {
+            setError("Passwords do not match");
             return;
         }
         setLoading(true);
 
         try {
-            router.push("/")
+            setTimeout(() => {
+                router.push("/")
+            }, 2000)
         } finally {
             setLoading(false)
         }
@@ -106,7 +109,6 @@ export function SignupForm({ className, ...props }) {
                     />
                 </div>
 
-                {/* Role can be a select dropdown if needed */}
                 {/* <div className="grid gap-2">
           <Label htmlFor="role">Role</Label>
           <select
@@ -121,10 +123,10 @@ export function SignupForm({ className, ...props }) {
           </select>
         </div> */}
 
-                {error && <p className="text-sm text-red-600">{error}</p>}
+                {error && <Error errMsg={error}/>}
 
-                <Button wide round type="submit" disabled={loading}>
-                    {loading ? <Load /> : "Sign Up"}
+                <Button wide loading={loading} loaderColor="white" loaderSize={24} round type="submit" disabled={loading}>
+                    Sign Up
                 </Button>
             </div>
 
