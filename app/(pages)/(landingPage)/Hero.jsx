@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
@@ -5,7 +6,7 @@ import Button from "@/components/atoms/form/Button";
 
 const Hero = () => {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-[#0d2615] text-white">
+        <div className="flex flex-col items-center justify-center min-h-screen  text-center bg-[#0d2615] text-white">
             <h1
                 className={cn(
                     poppins_600,
@@ -20,9 +21,9 @@ const Hero = () => {
             </p>
 
             <Button
-                wide
                 round
-                className="bg-green-700 hover:bg-green-800 transition-all duration-300 text-base sm:text-lg px-6 py-3 shadow-md"
+                outlined
+                className="bg-green-500 hover:bg-green-600 text-white"
             >
                 Sign Up
             </Button>
