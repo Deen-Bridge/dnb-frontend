@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import axios from "axios"
 import Button from "@/components/atoms/form/Button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,9 +40,19 @@ export function SignupForm({ className, ...props }) {
         setLoading(true);
 
         try {
-            setTimeout(() => {
-                router.push("/")
-            }, 2000)
+            await axios.post("/api/auth/signup", {
+                fullName: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+            })
+            toast.success("Account created successfully")
+            toast("Redirecting to login page...", {
+                duration: 2000,
+                onDismiss: () => {
+                    router.push("/login")
+                },
+            })
         } finally {
             setLoading(false)
         }
@@ -123,7 +134,7 @@ export function SignupForm({ className, ...props }) {
           </select>
         </div> */}
 
-                {error && <Error errMsg={error}/>}
+                {error && <Error errMsg={error} />}
 
                 <Button wide loading={loading} loaderColor="white" loaderSize={24} round type="submit" disabled={loading}>
                     Sign Up
