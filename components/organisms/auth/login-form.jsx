@@ -1,5 +1,6 @@
 'use client'
 
+import axios from "axios"
 import Button from '@/components/atoms/form/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,10 +21,10 @@ export function LoginForm({ className, ...props }) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // Simulate a login request
-      setTimeout(() => {
-        router.push("/")
-      }, 2000)
+      res = await axios.post("/api/auth/login", {
+        formData
+      });
+      console.log("Login successful", res.data);
     } catch (error) {
       console.error("Login failed", error);
     } finally {
