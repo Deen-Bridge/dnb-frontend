@@ -21,7 +21,7 @@ export default function SignupPage() {
       </div>
       <div className="relative hidden bg-muted lg:block">
         <Image
-          src="/images/auth.jpg"
+          src="/images/mosque.png"
           alt="Image"
           width={250}
           height={250}

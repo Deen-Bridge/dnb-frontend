@@ -1,6 +1,7 @@
 'use client'
+
 import axios from "axios"
-import { Button } from '@/components/ui/button';
+import Button from '@/components/atoms/form/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -35,7 +36,7 @@ export function LoginForm({ className, ...props }) {
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Welcome back</h1>
         <p className="text-sm text-muted-foreground">
-          Enter your email and password to sign in.
+          Enter your email and password to login.
         </p>
       </div>
       <div className='grid gap-4'>
@@ -63,10 +64,11 @@ export function LoginForm({ className, ...props }) {
             onChange={handleChange}
             required
           />
-          <Button wide loading={isLoading} loaderColor="white" loaderSize={24} round type="submit" disabled={isLoading}>
-            Sign Up
-          </Button>
         </div>
+          <Button className="bg-accent" wide loading={isLoading} loaderColor="white" loaderSize={24}  type="submit" disabled={isLoading}>
+            Login
+          </Button>
+       
 
         <div className="text-center text-sm">
           Don't have an account??{" "}

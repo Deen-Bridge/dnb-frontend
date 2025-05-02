@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import axios from "axios"
 import Button from "@/components/atoms/form/Button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,7 +14,7 @@ import usePasswordMatch from "@/hooks/passwordChecker"
 export function SignupForm({ className, ...props }) {
     const router = useRouter()
     const [formData, setFormData] = useState({
-        fullName: "",
+        name: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -39,9 +40,19 @@ export function SignupForm({ className, ...props }) {
         setLoading(true);
 
         try {
-            setTimeout(() => {
-                router.push("/")
-            }, 2000)
+            await axios.post("/api/auth/signup", {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+            })
+            toast.success("Account created successfully")
+            toast("Redirecting to login page...", {
+                duration: 2000,
+                onDismiss: () => {
+                    router.push("/login")
+                },
+            })
         } finally {
             setLoading(false)
         }
@@ -59,12 +70,12 @@ export function SignupForm({ className, ...props }) {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="name">Full Name</Label>
                     <Input
-                        id="fullName"
-                        name="fullName"
+                        id="name"
+                        name="name"
                         placeholder="e.g. Abdul Hazeem"
-                        value={formData.fullName}
+                        value={formData.name}
                         onChange={handleChange}
                         required
                     />
@@ -123,9 +134,9 @@ export function SignupForm({ className, ...props }) {
           </select>
         </div> */}
 
-                {error && <Error errMsg={error}/>}
+                {error && <Error errMsg={error} />}
 
-                <Button wide loading={loading} loaderColor="white" loaderSize={24} round type="submit" disabled={loading}>
+                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24}  type="submit" disabled={loading}>
                     Sign Up
                 </Button>
             </div>

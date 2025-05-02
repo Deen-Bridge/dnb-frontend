@@ -124,9 +124,9 @@
 }
 
 @theme{
-  --color-primary: #092601;
-  --color-secondary: #265902;
+  --color-basic: #092601;
+  --color-secondary:  #16A34A;
   --color-accent: #265902;
-  --color-highlight: #98BF0A;
-  --color-light: #F4F3F8;
+  --color-highlight: #22C55E
+;
 }
