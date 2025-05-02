@@ -14,7 +14,7 @@ import usePasswordMatch from "@/hooks/passwordChecker"
 export function SignupForm({ className, ...props }) {
     const router = useRouter()
     const [formData, setFormData] = useState({
-        fullName: "",
+        name: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -41,7 +41,7 @@ export function SignupForm({ className, ...props }) {
 
         try {
             await axios.post("/api/auth/signup", {
-                fullName: formData.fullName,
+                name: formData.name,
                 email: formData.email,
                 password: formData.password,
                 role: formData.role,
@@ -70,12 +70,12 @@ export function SignupForm({ className, ...props }) {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="name">Full Name</Label>
                     <Input
-                        id="fullName"
-                        name="fullName"
+                        id="name"
+                        name="name"
                         placeholder="e.g. Abdul Hazeem"
-                        value={formData.fullName}
+                        value={formData.name}
                         onChange={handleChange}
                         required
                     />
