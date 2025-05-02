@@ -6,7 +6,7 @@ import Button from "@/components/atoms/form/Button";
 
 const Hero = () => {
     return (
-        <div className="flex flex-col items-center space-y-10 justify-center min-h-screen text-center bg-[#0d2615] text-white">
+        <div className="flex flex-col items-center space-y-10 justify-center min-h-screen text-center bg-basic text-white">
             <h
                 className={cn(
                     poppins_600,

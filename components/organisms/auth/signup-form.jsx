@@ -136,7 +136,7 @@ export function SignupForm({ className, ...props }) {
 
                 {error && <Error errMsg={error} />}
 
-                <Button wide loading={loading} loaderColor="white" loaderSize={24} round type="submit" disabled={loading}>
+                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24}  type="submit" disabled={loading}>
                     Sign Up
                 </Button>
             </div>
