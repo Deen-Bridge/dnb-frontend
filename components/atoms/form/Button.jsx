@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FaSpinner } from 'react-icons/fa';
+import { Loader2Icon } from 'lucide-react';
 import Ripples from 'react-ripples';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -131,7 +131,7 @@ const Button = ({
                     )}
                 >
                     {loading ? (
-                        <FaSpinner
+                        <Loader2Icon
                             className="animate-spin"
                             color={loaderColor}
                             size={loaderSize}
