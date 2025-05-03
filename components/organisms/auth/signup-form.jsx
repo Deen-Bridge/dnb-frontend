@@ -14,6 +14,7 @@ import usePasswordMatch from "@/hooks/passwordChecker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export function SignupForm({ className, ...props }) {
+
     const router = useRouter()
     const [formData, setFormData] = useState({
         name: "",
@@ -42,20 +43,19 @@ export function SignupForm({ className, ...props }) {
         setLoading(true);
 
         try {
-            await axios.post("/api/auth/signup", {
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
-                role: formData.role,
-            })
+            await axios.post("/api/auth/signup", formData)
             toast.success("Account created successfully")
             toast("Redirecting to login page...", {
                 duration: 2000,
                 onDismiss: () => {
-                    router.push("/login")
+                    router.push("/dashboard");
                 },
             })
-        } finally {
+        } catch
+        (err) {
+            toast.error(err.response?.data?.message || "Signup failed")
+        }
+        finally {
             setLoading(false)
         }
 
