@@ -11,7 +11,13 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation";
 import Error from "@/components/atoms/form/Error"
 import usePasswordMatch from "@/hooks/passwordChecker"
+
+
+
+
+
 export function SignupForm({ className, ...props }) {
+
     const router = useRouter()
     const [formData, setFormData] = useState({
         name: "",
@@ -40,20 +46,19 @@ export function SignupForm({ className, ...props }) {
         setLoading(true);
 
         try {
-            await axios.post("/api/auth/signup", {
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
-                role: formData.role,
-            })
+            await axios.post("/api/auth/signup", formData)
             toast.success("Account created successfully")
             toast("Redirecting to login page...", {
                 duration: 2000,
                 onDismiss: () => {
-                    router.push("/login")
+                    router.push("/dashboard");
                 },
             })
-        } finally {
+        } catch
+        (err) {
+            toast.error(err.response?.data?.message || "Signup failed")
+        }
+        finally {
             setLoading(false)
         }
 
@@ -136,7 +141,7 @@ export function SignupForm({ className, ...props }) {
 
                 {error && <Error errMsg={error} />}
 
-                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24}  type="submit" disabled={loading}>
+                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24} type="submit" disabled={loading}>
                     Sign Up
                 </Button>
             </div>
