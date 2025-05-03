@@ -1,4 +1,5 @@
 import LoginForm from '@/components/organisms/auth/login-form'
+import ForgetPassword from '@/components/organisms/auth/forget-password'
 import { GalleryVerticalEnd } from 'lucide-react'
 import React from 'react'
 import Image from "next/image"

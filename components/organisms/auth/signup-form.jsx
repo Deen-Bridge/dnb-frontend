@@ -21,7 +21,7 @@ export function SignupForm({ className, ...props }) {
         email: "",
         password: "",
         confirmPassword: "",
-        role: "student",
+        role: "",
     })
 
     const [loading, setLoading] = useState(false)
@@ -76,7 +76,7 @@ export function SignupForm({ className, ...props }) {
                     <Input
                         id="name"
                         name="name"
-                        placeholder="e.g. Abdul Hazeem"
+                        placeholder="e.g. Salem Alharthi"
                         value={formData.name}
                         onChange={handleChange}
                         required
@@ -124,14 +124,18 @@ export function SignupForm({ className, ...props }) {
 
                 <div className="grid gap-2">
                     <Label htmlFor="role">Role</Label>
-                    <Select>
+                    <Select
+                        value={formData.role}
+                        onValueChange={(value) =>
+                            setFormData((prev) => ({ ...prev, role: value }))
+                        }>
                         <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Theme" />
+                            <SelectValue placeholder="Role" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="light">Light</SelectItem>
-                            <SelectItem value="dark">Dark</SelectItem>
-                            <SelectItem value="system">System</SelectItem>
+                            <SelectItem value="light">Student</SelectItem>
+                            <SelectItem value="dark">Tutor</SelectItem>
+                            <SelectItem value="system">Admin</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

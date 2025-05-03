@@ -4,13 +4,14 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <nav className="px-4  overflow-x-hidden sticky top-0 z-10 bg-white text-black">
+    <nav className="px-4  overflow-x-hidden sticky top-0 z-10 bg-basic text-highlight">
       <div className="lg:flex hidden justify-between items-center flex-grow h-20">
         <Image
-          src="/images/dnb.png"
-          width={200}
+          src="/images/dnb-nobg.png"
+          width={150}
           height={26}
           alt="Picture of the author"
+          className="m-6"
         />
 
 
