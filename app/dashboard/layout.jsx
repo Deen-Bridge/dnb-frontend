@@ -1,5 +1,5 @@
 import NextTopLoader from "nextjs-toploader";
-import Navbar from "@/components/molecules/dashboard/Navbar";
+// import Navbar from "@/components/molecules/dashboard/Navbar";
 export default function Layout({ children }) {
     return (
         <>
@@ -16,7 +16,7 @@ export default function Layout({ children }) {
             />
 
             <section>
-                <Navbar/>
+                {/* <Navbar/> */}
                 {children}
             </section>
         </>
