@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FaSpinner } from 'react-icons/fa';
+import { Loader2Icon } from 'lucide-react';
 import Ripples from 'react-ripples';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ const Button = ({
 }) => {
     const commonClasses = cn(
         wide && 'flex-grow w-full',
-        outlined && 'border border-primary',
+        outlined && 'border border-basic',
         round ? 'rounded-full' : 'rounded-lg',
         'inline-block py-2 px-4 font-medium flex items-center justify-center cursor-pointer flex-shrink-0 font-nunito font-normal',
         flat ? 'text-primary bg-white' : 'bg-primary text-white',
@@ -113,7 +113,7 @@ const Button = ({
             {...props}
             disabled={commonProps.disabled}
             id={commonProps.id}
-            className={cn(wide && 'w-full flex-grow h-auto focus:outline-none')}
+            className={cn(wide && 'w-full flex-grow h-auto focus:outline-none border-none')}
         >
             <Ripples
                 id={commonProps.id}
@@ -131,7 +131,7 @@ const Button = ({
                     )}
                 >
                     {loading ? (
-                        <FaSpinner
+                        <Loader2Icon
                             className="animate-spin"
                             color={loaderColor}
                             size={loaderSize}
