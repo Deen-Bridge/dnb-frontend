@@ -11,6 +11,8 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation";
 import Error from "@/components/atoms/form/Error"
 import usePasswordMatch from "@/hooks/passwordChecker"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
 export function SignupForm({ className, ...props }) {
     const router = useRouter()
     const [formData, setFormData] = useState({
@@ -120,23 +122,23 @@ export function SignupForm({ className, ...props }) {
                     />
                 </div>
 
-                {/* <div className="grid gap-2">
-          <Label htmlFor="role">Role</Label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded"
-          >
-            <option value="student">Student</option>
-            <option value="tutor">Tutor</option>
-          </select>
-        </div> */}
+                <div className="grid gap-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Select>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Theme" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="light">Light</SelectItem>
+                            <SelectItem value="dark">Dark</SelectItem>
+                            <SelectItem value="system">System</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
                 {error && <Error errMsg={error} />}
 
-                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24}  type="submit" disabled={loading}>
+                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24} type="submit" disabled={loading}>
                     Sign Up
                 </Button>
             </div>
