@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import Error from "@/components/atoms/form/Error"
 import usePasswordMatch from "@/hooks/passwordChecker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
+import { signup } from "@/hooks/useAuth"
 export function SignupForm({ className, ...props }) {
 
     const router = useRouter()
@@ -35,31 +35,25 @@ export function SignupForm({ className, ...props }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         // Check if passwords match
         if (!checkPasswords(formData.password, formData.confirmPassword)) {
             setError("Passwords do not match");
             return;
         }
+
         setLoading(true);
 
         try {
-            await axios.post("/api/auth/signup", formData)
-            toast.success("Account created successfully")
-            toast("Redirecting to login page...", {
-                duration: 2000,
-                onDismiss: () => {
-                    router.push("/dashboard");
-                },
-            })
-        } catch
-        (err) {
-            toast.error(err.response?.data?.message || "Signup failed")
+            await signup(formData.name, formData.email, formData.password, formData.role);
+            router.push("/login"); // Redirect to login after successful signup
+        } catch (err) {
+            console.error("Error during signup:", err.message);
+            // Error toast is already handled in the `signup` function
+        } finally {
+            setLoading(false);
         }
-        finally {
-            setLoading(false)
-        }
-
-    }
+    };
 
     return (
         <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
@@ -133,9 +127,9 @@ export function SignupForm({ className, ...props }) {
                             <SelectValue placeholder="Role" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="light">Student</SelectItem>
-                            <SelectItem value="dark">Tutor</SelectItem>
-                            <SelectItem value="system">Admin</SelectItem>
+                            <SelectItem value="student">Student</SelectItem>
+                            <SelectItem value="tutor">Tutor</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

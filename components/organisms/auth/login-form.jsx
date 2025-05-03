@@ -1,44 +1,42 @@
 'use client';
 
-import axios from "axios";
+import { login } from "@/hooks/useAuth";
 import Button from '@/components/atoms/form/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({ className, ...props }) {
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "", 
+    email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value })); // Update formData dynamically
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsLoading(true); // Start loading
+
     try {
-      // Send formData directly
-      const res = await axios.post(
-        "/api/auth/login",
-        formData
-      );
-      console.log("Login successful", res.data.message);
-      router.push("/dashboard");
+      await login(formData.email, formData.password);
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 2000);
     } catch (error) {
-      console.error("Login failed", error.response?.data?.message || error.message);
-      toast.error(error.response?.data?.message || "Login failed");
+      console.log("Error during login:", error.message);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -66,12 +64,12 @@ export function LoginForm({ className, ...props }) {
 
         <div className="grid gap-2">
           <div className="flex  items-center">
-          <Label htmlFor="password">Password</Label>
-          <a
-            href="#"
-            className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-          >
-            Forgot your password?
+            <Label htmlFor="password">Password</Label>
+            <a
+              href="#"
+              className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+            >
+              Forgot your password?
             </a>
           </div>
           <Input
@@ -82,8 +80,8 @@ export function LoginForm({ className, ...props }) {
             value={formData.password}
             onChange={handleChange}
             required
-            />
-          
+          />
+
         </div>
 
         <Button
