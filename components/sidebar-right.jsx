@@ -1,8 +1,7 @@
 import * as React from "react"
-import { Plus } from "lucide-react"
-
-import { DatePicker } from "@/components/molecules/dashboard/date-picker"
-import { NavUser } from "@/components/molecules/dashboard/nav-user"
+import { LogOut } from "lucide-react"
+import { DatePicker } from "@/components/date-picker"
+import { NavUser } from "@/components/nav-user"
 import {
     Sidebar,
     SidebarContent,
@@ -20,7 +19,7 @@ const data = {
     user: {
         name: "shadcn",
         email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
+        avatar: "/images/auth.jpg",
     },
     calendars: [
         {
@@ -59,8 +58,8 @@ export function SidebarRight({
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton>
-                            <Plus />
-                            <span>New Calendar</span>
+                            <LogOut />
+                            <span>Log Out</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

@@ -1,5 +1,5 @@
-import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left"
-import { SidebarRight } from "@/components/organisms/dashboard/sidebar-right"
+import { SidebarLeft } from "@/components/sidebar-left"
+import { SidebarRight } from "@/components/sidebar-right"
 import {
   Breadcrumb,
   BreadcrumbItem,
