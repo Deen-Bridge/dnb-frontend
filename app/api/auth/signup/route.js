@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function POST(req) {
     const { name, email, password, role } = await req.json();
-    
+    console.log("Received data:", { name, email, password, role });
     try {
         const response = await axios.post(
         "https://dnb-backend-api.onrender.com/api/auth/register",
