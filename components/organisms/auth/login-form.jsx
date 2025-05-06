@@ -85,7 +85,7 @@ export function LoginForm({ className, ...props }) {
         </div>
 
         <Button
-          className="bg-accent"
+          className="bg-accent hover:bg-highlight animate-in-out duration-300"
           wide
           loading={isLoading}
           loaderColor="white"

@@ -32,7 +32,7 @@ const Hero = () => {
                     round
                     to="/signup"
                     outlined
-                    className="bg-highlight hover:bg-green-600 text-white px-10 py-3"
+                    className="bg-accent hover:bg-highlight text-white px-10 py-3"
                 >
                     Sign Up
                 </Button>
