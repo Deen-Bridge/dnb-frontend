@@ -1,10 +1,10 @@
 "use client";
 import Button from "../../atoms/form/Button";
+import { useAuth } from "@/hooks/useAuth";
 export default function AuthNavButtons() {
-    const userLoggedIn = true;
-
-    return userLoggedIn ? (
-        <Button to="/dashboard/" wide round  className="bg-accent hover:bg-highlight text-white px-10 py-3">
+    const { isAuthenticated, user } = useAuth();
+    return isAuthenticated ? (
+        <Button to="/dashboard/" wide round className="bg-accent hover:bg-highlight text-white px-10 py-3">
             Dashboard
         </Button>
     ) : (
@@ -14,11 +14,11 @@ export default function AuthNavButtons() {
                     wide
                     round
                     to="/login"
-                    className="bg-accent hover:bg-highlight text-white px-10 py-3"    
+                    className="bg-accent hover:bg-highlight text-white px-10 py-3"
                 >
                     Login
                 </Button>
-                <Button to="/signup" wide  round
+                <Button to="/signup" wide round
                     className="bg-accent hover:bg-highlight text-white px-10 py-3"    >
                     Sign up
                 </Button>

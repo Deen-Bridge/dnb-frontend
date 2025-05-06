@@ -1,3 +1,4 @@
+"use client";
 import { SidebarLeft } from "@/components/sidebar-left"
 import { SidebarRight } from "@/components/sidebar-right"
 import {
@@ -26,16 +27,20 @@ export default function Page() {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="line-clamp-1">
-                    Project Management & Task Tracking
+                    Courses , live classes , Sections
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="mx-auto h-24 w-full max-w-3xl rounded-xl bg-muted/50" />
-          <div className="mx-auto h-[100vh] w-full max-w-3xl rounded-xl bg-muted/50" />
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+          </div>
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-highlight md:min-h-min" />
         </div>
       </SidebarInset>
       <SidebarRight />
