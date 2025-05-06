@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
 
-const useAuth = () => {
+export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); // Add loading state
   const router = useRouter();
 
   useEffect(() => {
@@ -20,7 +21,11 @@ const useAuth = () => {
     if (token && userInfo) {
       setUser(userInfo);
       setIsAuthenticated(true);
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
+    setLoading(false); // Set loading to false after checking
   }, []);
 
   const logout = () => {
@@ -32,7 +37,7 @@ const useAuth = () => {
     router.push("/login");
   };
 
-  return { user, isAuthenticated, logout };
+  return { user, isAuthenticated, loading, logout };
 };
 
 // Export login function separately
@@ -46,13 +51,12 @@ export const login = async (email, password) => {
     Cookies.set("userInfo", JSON.stringify(user), { expires: 3 });
 
     toast.success("Login successful");
-    return user; // Return user info if needed
+    return user;
   } catch (error) {
     if (error.response) {
-      // Backend returned an error response
       const errorMessage = error.response.data?.message || "Login failed";
       console.error("Login failed:", errorMessage);
-      toast.error(errorMessage); // Show the error message from the backend
+      toast.error(errorMessage);
     } else {
       // Network or other unexpected errors
       console.error("Login failed:", error.message);

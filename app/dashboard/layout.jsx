@@ -1,5 +1,6 @@
 import NextTopLoader from "nextjs-toploader";
-import Header from "@/components/organisms/dashboard/Navbar";
+import ProtectedRoute from "@/hooks/protected-route";
+
 export default function Layout({ children }) {
     return (
         <>
@@ -14,11 +15,11 @@ export default function Layout({ children }) {
                 speed={100}
                 shadow="0 0 10px #34AD5D,0 0 5px #34AD5D"
             />
-
-            <section>
-                <Header />
-                {children}
-            </section>
+            <ProtectedRoute>
+                <section>
+                    {children}
+                </section>
+            </ProtectedRoute>
         </>
     );
 }
