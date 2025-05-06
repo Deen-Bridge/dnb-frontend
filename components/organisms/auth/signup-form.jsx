@@ -2,12 +2,10 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import axios from "axios"
 import Button from "@/components/atoms/form/Button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { toast } from "sonner"
 import { useRouter } from "next/navigation";
 import Error from "@/components/atoms/form/Error"
 import usePasswordMatch from "@/hooks/passwordChecker"
@@ -134,9 +132,11 @@ export function SignupForm({ className, ...props }) {
                     </Select>
                 </div>
 
-                {error && <Error errMsg={error} />}
+                {error && setTimeout(() => {
+                    <Error errMsg={error} />
+                },2000)}
 
-                <Button className="bg-accent" wide loading={loading} loaderColor="white" loaderSize={24} type="submit" disabled={loading}>
+                <Button className="bg-accent hover:bg-highlight animate-in-out duration-300" wide loading={loading} loaderColor="white" loaderSize={24} type="submit" disabled={loading}>
                     Sign Up
                 </Button>
             </div>
