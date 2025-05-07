@@ -11,8 +11,8 @@ import Error from "@/components/atoms/form/Error"
 import usePasswordMatch from "@/hooks/passwordChecker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { signup } from "@/hooks/useAuth"
-export function SignupForm({ className, ...props }) {
 
+export function SignupForm({ className, ...props }) {
     const router = useRouter()
     const [formData, setFormData] = useState({
         name: "",

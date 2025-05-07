@@ -1,7 +1,8 @@
 "use client";
 import * as React from "react";
-import { LogOut } from "lucide-react";
-import { NavUser } from "@/components/nav-user";
+import { LucideLogOut } from "lucide-react";
+import { NavUser } from "@/components/molecules/dashboard/nav-user";
+
 import {
     Sidebar,
     SidebarContent,
@@ -12,9 +13,14 @@ import {
     SidebarMenuItem,
     SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/useAuth"; // Corrected import
+import { NavSecondary } from "../../molecules/dashboard/nav-secondary";
+import { useAuth } from "@/hooks/useAuth";
+
+import { data } from "@/lib/data";
+import { links } from "@/lib/data";
+
 export function SidebarRight({ ...props }) {
-    const { user, logout } = useAuth(); // Destructure logout function
+    const { logout, user } = useAuth();
 
     return (
         <Sidebar
@@ -23,22 +29,13 @@ export function SidebarRight({ ...props }) {
             {...props}
         >
             <SidebarHeader className="h-16 border-b border-sidebar-border">
-                <NavUser user={user} /> {/* Ensure NavUser handles null/undefined user */}
+                <NavUser user={user} />
             </SidebarHeader>
             <SidebarContent>
-                {/* Add any additional content here */}
                 <SidebarSeparator className="mx-0" />
             </SidebarContent>
             <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton onClick={logout}> 
-
-                            <LogOut />
-                            <span>Log Out</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                <NavSecondary links={links} className="mt-auto" />
             </SidebarFooter>
         </Sidebar>
     );
