@@ -1,6 +1,6 @@
 "use client";
-import { SidebarLeft } from "@/components/sidebar-left"
-import { SidebarRight } from "@/components/sidebar-right"
+import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left"
+import { SidebarRight } from "@/components/organisms/dashboard/sidebar-right"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,8 +39,21 @@ export default function Page() {
             <div className="aspect-video rounded-xl bg-highlight" />
             <div className="aspect-video rounded-xl bg-highlight" />
             <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-highlight" />
+            <div className="aspect-video rounded-xl bg-accent" />
+            <div className="aspect-video rounded-xl bg-accent" />
+            <div className="aspect-video rounded-xl bg-accent" />
+            <div className="aspect-video rounded-xl bg-accent" />
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-highlight md:min-h-min" />
+          <div className="min-h-[200vh] flex-1 rounded-xl bg-highlight md:min-h-min" />
         </div>
       </SidebarInset>
       <SidebarRight />
