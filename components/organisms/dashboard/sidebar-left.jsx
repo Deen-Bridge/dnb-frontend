@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { NavMain } from "@/components/molecules/dashboard/nav-main"
-import { NavSecondary } from "@/components/molecules/dashboard/nav-secondary"
+import Navrouter from "@/components/molecules/dashboard/nav-routers"
 import {
     Sidebar,
     SidebarContent,
@@ -23,6 +23,7 @@ export function SidebarLeft({
                 <NavMain items={data.navMain} />
             </SidebarHeader>
             <SidebarContent>
+                <Navrouter/>
             </SidebarContent>
             <SidebarRail />
         </Sidebar>
