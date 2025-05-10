@@ -45,7 +45,7 @@ export const login = async (email, password) => {
   try {
     const res = await axios.post("/api/auth/login", { email, password });
     const { token, user } = res.data;
-
+    console.log(token);
     // Save token and user info in cookies
     Cookies.set("authToken", token, { expires: 3 }); // Expires in 3 days
     Cookies.set("userInfo", JSON.stringify(user), { expires: 3 });
