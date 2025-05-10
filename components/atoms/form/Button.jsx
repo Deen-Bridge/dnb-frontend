@@ -29,7 +29,7 @@ const Button = ({
 }) => {
     const commonClasses = cn(
         wide && 'flex-grow w-full',
-        outlined && 'border border-basic',
+        outlined && 'border border-aceent hover:bg-accent',
         round ? 'rounded-full' : 'rounded-lg',
         'inline-block py-2 px-4 font-medium flex items-center justify-center cursor-pointer flex-shrink-0 font-nunito font-normal',
         flat ? 'text-primary bg-white' : 'bg-primary text-white',
