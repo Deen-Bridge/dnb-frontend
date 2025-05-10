@@ -24,4 +24,4 @@ function Separator({
   );
 }
 
-export { Separator }
+export { Separator };
