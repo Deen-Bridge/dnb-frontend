@@ -1,6 +1,13 @@
 import Image from "next/image";
 import AuthNavButtons from "./AuthNavButtons";
 import Link from "next/link";
+
+const links = [
+  { name: "Service", to: "#services" },
+  { name: "Contact", to: "#contact" },
+  { name: "Blog", to: "/blog" },
+  { name: "Mission", to: "#mission" }
+]
 const Header = () => {
   return (
     <nav className="px-4  overflow-x-hidden sticky top-0 z-10 bg-transparent text-secondary">
@@ -15,12 +22,11 @@ const Header = () => {
 
 
         <div className="flex items-center">
-          <Link href="#" className="px-4">
-            Service
-          </Link>
-          <Link href="#" className="px-4">
-            FAQ
-          </Link>
+          {links.map((link) => (
+            <Link href={link.to} className="px-4 hover:text-white animate-in-out transition-all delay-200">
+              {link.name}
+            </Link>
+          ))}
         </div>
         <div>
           <AuthNavButtons />

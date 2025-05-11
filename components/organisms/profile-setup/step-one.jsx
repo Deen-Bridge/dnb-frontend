@@ -1,110 +1,88 @@
 "use client"
 
 import { useState } from "react"
-import { cn } from "@/lib/utils"
-import Button from "@/components/atoms/form/Button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
-function StepOne({ className, ...props }) {
-    const router = useRouter()
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        role: "",
-    })
-
-    const [loading, setLoading] = useState(false)
-
+const StepOne = ({ onNext, data, setData, className }) => {
+    const [avatarUrl, setAvatarUrl] = useState(data.profilePicture || "")
 
     const handleChange = (e) => {
-        setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+        setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleAvatarChange = (e) => {
+        const url = e.target.value
+        setAvatarUrl(url)
+        setData((prev) => ({ ...prev, profilePicture: url }))
+    }
 
-        setLoading(true);
-
-        try {
-
-        } catch (err) {
-            console.error("Error during signup:", err.message);
-            // Error toast is already handled in the `signup` function
-        } finally {
-            setLoading(false);
-        }
-    };
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        onNext() // go to step two
+    }
 
     return (
-        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
-            <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Setup your profile</h1>
+        <form
+            onSubmit={handleSubmit}
+            className={cn("space-y-6 max-w-md mx-auto", className)}
+        >
+            <div className="text-center">
+                <h1 className="text-2xl font-bold">Profile Setup</h1>
                 <p className="text-sm text-muted-foreground">
-                    Your pathway to sucess awaits .............
+                    Let’s start with your basic information
                 </p>
             </div>
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="fullName">Full Name</Label>
                     <Input
-                        id="name"
-                        name="name"
-                        placeholder="e.g. Salem Alharthi"
-                        value={formData.name}
+                        id="fullName"
+                        name="fullName"
+                        value={data.fullName || ""}
                         onChange={handleChange}
+                        placeholder="e.g. Aisha Yusuf"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="username">Username</Label>
                     <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={formData.email}
+                        id="username"
+                        name="username"
+                        value={data.username || ""}
                         onChange={handleChange}
+                        placeholder="e.g. deen_bridge_123"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="profilePicture">Profile Picture URL</Label>
                     <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="********"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
+                        id="profilePicture"
+                        name="profilePicture"
+                        value={avatarUrl}
+                        onChange={handleAvatarChange}
+                        placeholder="https://example.com/avatar.png"
                     />
+                    <Avatar className="w-16 h-16 mt-2">
+                        <AvatarImage src={avatarUrl} alt="@profile" />
+                        <AvatarFallback>DB</AvatarFallback>
+                    </Avatar>
                 </div>
-
-                <div className="grid gap-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                    <Input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        placeholder="********"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <Button className="bg-accent hover:bg-highlight animate-in-out duration-300" wide loading={loading} loaderColor="white" loaderSize={24} type="submit" disabled={loading}>
-                   Continue
-                </Button>
             </div>
+
+            <Button type="submit" className="w-full">
+                Continue
+            </Button>
         </form>
     )
 }
 
-export default StepOne;
+export default StepOne
