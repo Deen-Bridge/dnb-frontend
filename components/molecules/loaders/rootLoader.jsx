@@ -17,17 +17,13 @@ const Loader = () => {
     </div>
   );
 }
-
 const StyledWrapper = styled.div`
-  /* The loader container */
   .loader {
     width: 200px;
     height: 200px;
     perspective: 200px;
   }
 
-
-  /* The dot */
   .dot {
     position: absolute;
     top: 50%;
@@ -37,7 +33,7 @@ const StyledWrapper = styled.div`
     margin-top: -60px;
     margin-left: -60px;
     border-radius: 100px;
-    border: 40px outset #1e3f57;
+    border: 40px outset #092601;
     transform-origin: 50% 50%;
     transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
     background-color: transparent;
@@ -50,11 +46,10 @@ const StyledWrapper = styled.div`
     margin-top: -70px;
     margin-left: -70px;
     border-width: 30px;
-    border-color: #447891;
+    border-color: #009900;
     animation-name: dot2;
     animation-delay: 75ms;
     box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.1);
-    transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
   }
 
   .dot:nth-child(3) {
@@ -63,68 +58,45 @@ const StyledWrapper = styled.div`
     margin-top: -80px;
     margin-left: -80px;
     border-width: 20px;
-    border-color: #6bb2cd;
+    border-color: #265902;
     animation-name: dot3;
     animation-delay: 150ms;
     box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.1);
-    transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
   }
 
   @keyframes dot1 {
-    0% {
-      border-color: #1e3f57;
-      transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
+    0%, 100% {
+      border-color: #092601;
     }
-
     50% {
-      border-color: #1e574f;
+      border-color: #008200;
       transform: rotateX(20deg) rotateY(20deg) rotateZ(50deg) translateZ(0px);
-    }
-
-    100% {
-      border-color: #1e3f57;
-      transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
     }
   }
 
   @keyframes dot2 {
-    0% {
-      border-color: #447891;
+    0%, 100% {
+      border-color: #009900;
       box-shadow: inset 0 0 15px 0 rgba(255, 255, 255, 0.2);
-      transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
     }
-
     50% {
-      border-color: #449180;
+      border-color: #008200;
       box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.8);
       transform: rotateX(20deg) rotateY(20deg) rotateZ(50deg) translateZ(0px);
-    }
-
-    100% {
-      border-color: #447891;
-      box-shadow: inset 0 0 15px 0 rgba(255, 255, 255, 0.2);
-      transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
     }
   }
 
   @keyframes dot3 {
-    0% {
-      border-color: #6bb2cd;
-      box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.1);
-      transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
+    0%, 100% {
+      border-color: #265902;
     }
-
     50% {
-      border-color: #6bcdb2;
+      border-color: #008200;
       box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.8);
       transform: rotateX(20deg) rotateY(20deg) rotateZ(50deg) translateZ(0px);
     }
+  }
+`;
 
-    100% {
-      border-color: #6bb2cd;
-      box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.1);
-      transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
-    }
-  }`;
 
 export default Loader;

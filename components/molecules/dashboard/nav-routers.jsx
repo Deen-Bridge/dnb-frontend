@@ -1,5 +1,14 @@
-import React from 'react'
+import React from 'react';
 import Button from '@/components/atoms/form/Button';
+import { LucideIcon } from "lucide-react";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
 
 const links = [{
   name: "Classes",
@@ -16,12 +25,26 @@ const links = [{
 const Navrouter = () => {
   return (
     <>
-      {links.map((link, index) => (
-        <Button outlined wide round   key={index} to={link.link}
-          className="px-10">{link.name}</Button>
-      ))}
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {links.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <Button>
+                  <a href={item.link}>
+                    {/* <item.icon /> */}
+                    <span>{item.title}</span>
+                  </a>
+                </Button>
+                {item.badge && <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>}
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
     </>
   );
 };
 
 export default Navrouter;
+
