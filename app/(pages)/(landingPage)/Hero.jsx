@@ -10,7 +10,7 @@ const Hero = () => {
         <main className=" relative h-screen flex flex-col bg-basic text-white">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0" />
             <Navbar />
-            <div className="flex flex-1 flex-col items-center justify-center space-y-10 text-center">
+            <div className="relative z-10 flex flex-1 flex-col items-center justify-center space-y-10 text-center">
                 <h1
                     className={cn(
                         poppins_600,
@@ -32,8 +32,8 @@ const Hero = () => {
                 <Button
                     wide
                     round
-                    to="/signup"
-                    className="bg-accent hover:bg-highlight text-white px-10 py-3"
+                    to="/dashboard"
+                    className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"
                 >
                   Lets Dive
                 </Button>
