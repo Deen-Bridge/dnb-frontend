@@ -1,5 +1,11 @@
 import Image from "next/image";
 import Button from "@/components/atoms/form/Button";
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge";
 
 const CourseCard = ({ course }) => (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -18,19 +24,32 @@ const CourseCard = ({ course }) => (
             <div>
                 <h4 className="text-lg font-semibold">{course.title}</h4>
 
-                {/* Category & Price */}
-                <div className="flex gap-2 text-xs mt-2">
-                    <span className="bg-primary/10 text-primary px-2 py-1 rounded">
-                        {course.category}
-                    </span>
-                    <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded">
-                        ${course.price}
-                    </span>
+
+                {/* Instructor */}
+                <div className="flex items-center gap-2 mt-2">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage src="/images/img1.jpeg" alt={course.instructor} />
+                        <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm">
+                        <span className="truncate">{course.instructor}</span>
+                        {/* <span className="truncate text-xs">{user?.email}</span> */}
+                    </div>
+
+                    {/* Category & Price */}
+                    <div className="flex items-center gap-2">
+                        <span className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                            {course.price ? `$${course.price}` : "Free"}
+                        </span>
+                        <span>
+                            <Badge className="bg-primary  text-white/90 text-xs font-semibold">
+                                {course.category || "General"}
+                            </Badge>
+
+                        </span>
+                    </div>
                 </div>
 
-                <p className="text-sm mt-2 text-muted-foreground">
-                    Instructor: {course.instructor}
-                </p>
             </div>
 
             {/* Full-width Button */}
