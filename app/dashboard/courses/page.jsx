@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import CourseCard from "@/components/molecules/dashboard/courseCard";
+import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState([]);
