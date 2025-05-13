@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
-import { Cancel } from "@radix-ui/react-alert-dialog";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Inter_500 } from "@/lib/config/font.config";
 const Modal = ({ isOpen, onClose, children, title }) => {
@@ -29,7 +29,7 @@ const Modal = ({ isOpen, onClose, children, title }) => {
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800 bg-gray4 rounded-full"
           >
-            <Cancel />
+            <X/>
           </button>
         </div>
         <div className="border-b border-gray4"></div>
