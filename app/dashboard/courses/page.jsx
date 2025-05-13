@@ -20,7 +20,7 @@ const [loading, setLoading] = useState(true);
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                 {loading ? <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="flex flex-col gap-4">
                         {[...Array(6)].map((_, idx) => (
                             <CourseCardSkeleton key={idx} />
                         ))}
