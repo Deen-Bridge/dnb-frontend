@@ -85,7 +85,7 @@ export default async function Page({ params }) {
                                 <AvatarImage src={book.authorImage} />
                                 <AvatarFallback>AU</AvatarFallback>
                             </Avatar>
-                            <div className="text-white "> 
+                            <div className="text-white ">
                                 <p className="font-bold ">{book.author}</p>
                                 <p className="text-sm ">Author & Coach</p>
                             </div>
@@ -133,7 +133,7 @@ async function getBookById(id) {
         id,
         title: "The Power of Focus",
         summary:
-            "This book guides you on how to train your mind to be focused and efficient in a world full of distractions. ",
+            "This book guides you on how to train your mind to be focused and efficient in a world full of distractions. It offers practical strategies and techniques to enhance your concentration, manage your time effectively, and cultivate a mindset that embraces productivity.",
         category: "Productivity",
         price: 0,
         image: "/images/book1.jpg",
