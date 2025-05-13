@@ -1,5 +1,5 @@
 "use client";
-
+import axiosInstance from "@/lib/config/axios.config";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -43,12 +43,15 @@ export const useAuth = () => {
 // Export login function separately
 export const login = async (email, password) => {
   try {
-    const res = await axios.post("/api/auth/login", { email, password });
+    const res = await axiosInstance.post("/api/auth/login", {
+      email,
+      password,
+    });
     const { token, user } = res.data;
     console.log(token);
     // Save token and user info in cookies
-    Cookies.set("authToken", token, { expires: 3 }); // Expires in 3 days
-    Cookies.set("userInfo", JSON.stringify(user), { expires: 3 });
+    Cookies.set("authToken", token, { expires: 1 }); // Expires in 3 days
+    Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
 
     toast.success("Login successful");
     return user;
@@ -74,9 +77,15 @@ export const signup = async (name, email, password, role) => {
       role,
     });
 
+    const { token, user } = res.data;
+
+    // Save token and user info in cookies
+    Cookies.set("authToken", token, { expires: 1 }); // Expires in 1 day
+    Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
+
     // Show success toast
-    toast.success("Signup successful! Redirecting to login...");
-    return res.data; // Return response data if needed
+    toast.success("Signup successful! Redirecting to dashboard...");
+    return user; // Return user data if needed
   } catch (error) {
     if (error.response) {
       // Handle backend error response

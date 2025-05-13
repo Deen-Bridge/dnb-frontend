@@ -11,7 +11,6 @@ const Button = ({
     children,
     loaderSize = 25,
     className,
-    flat,
     to,
     download,
     type,
@@ -29,10 +28,9 @@ const Button = ({
 }) => {
     const commonClasses = cn(
         wide && 'flex-grow w-full',
-        outlined && 'border border-aceent hover:bg-accent',
+        outlined && 'border border-accent bg-white hover:bg-accent text-black hover:text-white animate-in-out transition-all delay-100',
         round ? 'rounded-full' : 'rounded-lg',
         'inline-block py-2 px-4 font-medium flex items-center justify-center cursor-pointer flex-shrink-0 font-nunito font-normal',
-        flat ? 'text-primary bg-white' : 'bg-primary text-white',
         poppins_500.className,
         className
     );
@@ -113,7 +111,7 @@ const Button = ({
             {...props}
             disabled={commonProps.disabled}
             id={commonProps.id}
-            className={cn(wide && 'w-full flex-grow h-auto focus:outline-none border-none')}
+            className={cn(wide && 'w-full flex-grow h-auto focus:outline-none border-none text-white')}
         >
             <Ripples
                 id={commonProps.id}
