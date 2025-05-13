@@ -54,7 +54,7 @@ const LibraryBookCard = ({ book }) => {
             {/* Button */}
             <div className="px-4 py-3">
                 <Button
-                    to={`/library/books/${book.id}`}
+                    to={`/dashboard/library/${book.id}`}
                     wide
                     round
                     className="w-full bg-accent text-white"

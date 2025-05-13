@@ -176,6 +176,7 @@
 }
 
 @theme {
+  --color-basic: #092601;
   --color-secondary: #009900;
   --color-accent: #265902;
   --color-highlight: #008200;
