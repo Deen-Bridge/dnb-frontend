@@ -22,8 +22,8 @@ const Header = () => {
 
 
         <div className="flex items-center">
-          {links.map((link) => (
-            <Link href={link.to} className="px-4 hover:text-white animate-in-out transition-all delay-200">
+          {links.map((link, key) => (
+            <Link href={link.to} key={link.to} className="px-4 hover:text-white animate-in-out transition-all delay-200">
               {link.name}
             </Link>
           ))}

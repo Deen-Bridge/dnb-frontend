@@ -1,42 +1,63 @@
 import React from 'react';
 import Button from '@/components/atoms/form/Button';
-import { LucideIcon } from "lucide-react";
+import {
+  AudioWaveform,
+  LayoutDashboard,
+  Inbox,
+  MessageCircleQuestion,
+  Book,
+} from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const links = [{
-  name: "Classes",
-  link: "/dashboard/classes"
-}, {
-  name: "LIbrary",
-  link: "/dashboard/library"
-},
-{
-  name: "Fiqh",
-  link: "/dashboard/fiqh"
-}]
+const links = [
+  {
+    name: "Dashboard",
+    link: "/dashboard",
+    icon: LayoutDashboard
+  }, {
+    name: "Courses",
+    link: "/dashboard/courses",
+    icon: AudioWaveform
+  }, {
+    name: "LIbrary",
+    link: "/dashboard/library",
+    icon: Book
+  },
+  {
+    name: "Fiqh",
+    link: "/dashboard/fiqh",
+    icon: AudioWaveform
+  }, {
+    name: "Messages",
+    link: "/dashboard/messages",
+    icon: Inbox,
+  }, {
+    name: "Spaces",
+    link: "/dashboard/spaces",
+    icon: AudioWaveform
+  }, , {
+    name: "Support",
+    link: "/dashboard/support",
+    icon: MessageCircleQuestion
+  }]
 
 const Navrouter = () => {
   return (
     <>
       <SidebarGroup>
         <SidebarGroupContent>
-          <SidebarMenu>
-            {links.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <Button>
-                  <a href={item.link}>
-                    {/* <item.icon /> */}
-                    <span>{item.title}</span>
-                  </a>
+          <SidebarMenu className="space-y-3 pt-10">
+            {links.map((item, key) => (
+              <SidebarMenuItem key={item.name}>
+                <Button wide outlined round to={item.link} className="flex justify-start items-center pl-16">
+                  <item.icon size={15} className='' />
+                  <span className='pl-4'>{item.name}</span>
                 </Button>
-                {item.badge && <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>}
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -47,4 +68,6 @@ const Navrouter = () => {
 };
 
 export default Navrouter;
+
+
 

@@ -2,7 +2,6 @@
 import NextTopLoader from "nextjs-toploader";
 import ProtectedRoute from "@/hooks/protected-route";
 import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left"
-import { SidebarRight } from "@/components/organisms/dashboard/sidebar-right"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -51,7 +50,6 @@ export default function Layout({ children }) {
                         </header>
                      {children}
                     </SidebarInset>
-                    <SidebarRight />
                 </SidebarProvider>
             </ProtectedRoute>
         </>
