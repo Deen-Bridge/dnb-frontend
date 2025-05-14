@@ -24,15 +24,16 @@ const GreetingCard = () => {
 
             {/* Text and Button Group */}
             <div className="flex flex-1 flex-col gap-3 md:gap-4">
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold leading-snug">
-                    Assalamu ʿalaikum   <span className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text">{user?.name}</span>
+                <h2 className="text-xl md:text-2xl lg:text-4xl font-bold leading-snug">
+                    Assalamu ʿalaikum   <span className="text-3xl bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold">{user?.name}</span>
                 </h2>
+                <span className="text-xl font-light">Statting your day with the Quran feels your day with enjoyment and peace</span>
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                     {/* Progress */}
                     <div className="w-full max-w-lg flex justify-center items-center text-nowrap gap-4">
                         <div className="flex items-center gap-2 text-sm md:text-base font-bold text-white/90 mb-1">
-                            <Sparkles className="h-7 w-7 text-white animate-pulse" />
+                            <Sparkles className="h-6 w-6 text-white" />
                             <span>70% profile completed</span>
                         </div>
                         {/* Progress bar container */}
