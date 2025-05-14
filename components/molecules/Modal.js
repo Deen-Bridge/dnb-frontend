@@ -27,9 +27,9 @@ const Modal = ({ isOpen, onClose, children, title }) => {
           <h2 className={cn("text-lg font-bold text-truncate", Inter_500.className)}> {title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 bg-gray4 rounded-full"
+            className="bg-accent hover:bg-highlight p-2 text-gray-500 hover:text-gray-800 bg-gray4 rounded-full transition"
           >
-            <X/>
+            <X size={30}/>
           </button>
         </div>
         <div className="border-b border-gray4"></div>

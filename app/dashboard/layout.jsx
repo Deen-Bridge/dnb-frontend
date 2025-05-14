@@ -1,4 +1,4 @@
-"use cient";
+"use client";
 import NextTopLoader from "nextjs-toploader";
 import ProtectedRoute from "@/hooks/protected-route";
 import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left"
@@ -14,8 +14,12 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation";
+import NavHeader from "@/components/molecules/dashboard/nav-header";
+
 
 export default function Layout({ children }) {
+    const path = usePathname().split("");
     return (
         <>
             <NextTopLoader
@@ -33,22 +37,9 @@ export default function Layout({ children }) {
                 <SidebarProvider>
                     <SidebarLeft />
                     <SidebarInset>
-                        <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background z-10">
-                            <div className="flex flex-1 items-center gap-2 px-3">
-                                <SidebarTrigger />
-                                <Separator orientation="vertical" className="mr-2 h-4" />
-                                <Breadcrumb>
-                                    <BreadcrumbList>
-                                        <BreadcrumbItem>
-                                            <BreadcrumbPage className="line-clamp-1">
-                                                Courses , live classes , Sections
-                                            </BreadcrumbPage>
-                                        </BreadcrumbItem>
-                                    </BreadcrumbList>
-                                </Breadcrumb>
-                            </div>
-                        </header>
-                     {children}
+                        <NavHeader/>
+                        <Separator orientation="horizontal" className="mr-2 h-4" />
+                        {children}
                     </SidebarInset>
                 </SidebarProvider>
             </ProtectedRoute>
