@@ -91,7 +91,7 @@ export function NavUser({
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <Link href="/dashboard/account">
+                                <Link href="/account/profile">
                                     <DropdownMenuItem>
                                         <BadgeCheck />
                                         Account
@@ -105,7 +105,7 @@ export function NavUser({
                                     <Bell />
                                     Notifications
                                 </DropdownMenuItem>
-                                <Link href="/dashboard/settings">
+                                <Link href="/account/settings">
                                     <DropdownMenuItem>
                                         <SettingsIcon />
                                         Settings
@@ -126,10 +126,10 @@ export function NavUser({
                 onClose={() => setModalOpen(false)}
                 title="Upgrade to Pro"
             >
-                <Card className="w-full max-w-md shadow-xl border border-primary/20">
-                    <CardHeader className="flex items-center gap-2 text-center">
+                <Card className="w-full max-w-md shadow-xl">
+                    <CardHeader className="flex justify-center items-center gap-2 text-center pt-3">
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary shadow-md">
-                            <Sparkles className="h-8 w-8 bg-accent" />
+                            <Sparkles className="h-8 w-8" />
                         </div>
                         <CardTitle className="text-lg font-semibold mt-2">Unlock Pro Features</CardTitle>
                     </CardHeader>
