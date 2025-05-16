@@ -38,7 +38,6 @@ export default function Layout({ children }) {
                     <SidebarLeft />
                     <SidebarInset>
                         <NavHeader/>
-                        <Separator orientation="horizontal" className="mr-2 h-4" />
                         {children}
                     </SidebarInset>
                 </SidebarProvider>

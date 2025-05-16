@@ -3,7 +3,8 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
-
+import { cn } from "@/lib/utils";
+import { roboto_500 } from "@/lib/config/font.config"; 
 const chats = [
     { name: "Zayd", message: "Asalamualaykum brother", unread: true },
     { name: "Gateway to Jannah", message: "The Prophet Rasullah said ...", unread: false },
@@ -12,7 +13,7 @@ const chats = [
 
 const RecentChats = () => (
     <div className="bg-white rounded-xl shadow-sm p-4">
-        <h3 className="text-lg font-semibold mb-3">Recent Conversations</h3>
+        <h3 className={cn("text-lg font-semibold mb-3",roboto_500)}>Recent Conversations</h3>
         <ul className="space-y-2 text-sm">
             {chats.map((chat, i) => (
                 <li key={i} className="flex justify-between items-center">
