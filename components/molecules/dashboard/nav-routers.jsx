@@ -8,6 +8,8 @@ import {
   Inbox,
   MessageCircleQuestion,
   Book,
+  Play,
+  LaptopMinimal
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -16,7 +18,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-
+import { useSidebar } from '@/components/ui/sidebar';
 const links = [
   {
     name: "Dashboard",
@@ -26,12 +28,17 @@ const links = [
   {
     name: "Courses",
     link: "/dashboard/courses",
-    icon: AudioWaveform,
+    icon: LaptopMinimal,
   },
   {
     name: "Library",
     link: "/dashboard/library",
     icon: Book,
+  },
+  {
+    name: "Reels",
+    link: "/dashboard/reels",
+    icon: Play,
   },
   {
     name: "Fiqh",
@@ -57,6 +64,13 @@ const links = [
 
 const Navrouter = () => {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar(); // ⬅️ use the context
+
+  const handleNavClick = () => {
+    if (isMobile) {
+      setOpenMobile(false); // ⬅️ close sidebar if mobile
+    }
+  };
 
   return (
     <SidebarGroup>
@@ -75,6 +89,7 @@ const Navrouter = () => {
                   outlined
                   round
                   to={item.link}
+                  onClick={handleNavClick} // ⬅️ close sidebar on click
                   className={`flex justify-start items-center pl-16 ${isActive ? "bg-accent text-white" : ""
                     }`}
                 >
@@ -84,7 +99,6 @@ const Navrouter = () => {
               </SidebarMenuItem>
             );
           })}
-
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

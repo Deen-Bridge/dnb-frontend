@@ -1,4 +1,6 @@
 import CourseCard from "@/components/organisms/dashboard/CourseCard";
+import { cn } from "@/lib/utils";
+import { roboto_500 } from "@/lib/config/font.config";
 const courses = [
     { title: "Qur’an Recitation Basics", price: 29, instructor: "Ibrahim", category: "Qur'an", image: "https://cdn.pixabay.com/photo/2016/10/22/15/19/book-1760998_1280.jpg" },
     { title: "Principles of Islamic Belief", price: "Free", instructor: "Maryam", category: "Aqeedah", image: "https://cdn.pixabay.com/photo/2016/10/22/15/19/book-1760998_1280.jpg" },
@@ -13,7 +15,7 @@ const courses = [
 
 const RecommendedCourses = () => (
     <div>
-        <h3 className="text-xl font-semibold mb-4">Recommended for You</h3>
+        <h3 className={cn("text-xl font-semibold mb-4", roboto_500.className)}>Recommended for You</h3>
         <div className="grid sm:grid-cols-2 gap-4">
             {courses.map((course, i) => (
                 <CourseCard key={i} course={course} />
