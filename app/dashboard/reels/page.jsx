@@ -15,7 +15,7 @@ const reelsData = [
     id: 1,
     username: "Jamiu Yusuf",
     profilePic: "/images/img-4.jpg",
-    video: "/videos/sample.mp4",
+    video: "/videos/dnb-sample.mp4",
     caption:
       "Lorem ipsum dolor sit amet consectetur. Mauris posuere fusce vitae egestas. See more",
     hashtags: "#Adire #Anniversary #dote #dote #dote",
@@ -57,7 +57,7 @@ export default function ReelsPage() {
               </div>
 
               {/* Action buttons - inside video on mobile */}
-              <div className="absolute right-3 bottom-28 flex-col items-center gap-4 text-white block md:hidden flex">
+              <div className="absolute right-3 bottom-28 flex-col items-center gap-4 text-white  md:hidden flex">
                 <Action icon={<Heart className="h-6 w-6" />} label={reel.likes} />
                 <Action icon={<MessageCircle className="h-6 w-6" />} label={reel.comments} />
                 <Action icon={<Share2 className="h-6 w-6" />} />
