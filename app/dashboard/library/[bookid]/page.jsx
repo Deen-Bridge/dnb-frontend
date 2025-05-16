@@ -6,7 +6,8 @@ import Button from "@/components/atoms/form/Button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { DownloadCloud, Eye, Star, UserRound, BarChart3 } from "lucide-react";
-
+import { cn } from "@/lib/utils";
+import { poppins_600 } from "@/lib/config/font.config";
 export default async function Page({ params }) {
     const { bookid } = params;
     const book = await getBookById(bookid);

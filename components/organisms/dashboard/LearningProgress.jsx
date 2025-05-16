@@ -17,7 +17,8 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-
+import { cn } from "@/lib/utils";
+import { roboto_500 } from "@/lib/config/font.config";
 const chartData = [
     { month: "January", desktop: 186, mobile: 80 },
     { month: "February", desktop: 305, mobile: 200 },
@@ -42,7 +43,7 @@ export default function LearningProgress() {
     return (
         <Card>
             <CardHeader className="pt-4">
-                <CardTitle>Study Progress</CardTitle>
+                <CardTitle className={cn(roboto_500.className)}>Study Progress</CardTitle>
                 <CardDescription> Surahs completed (January – June)</CardDescription>
             </CardHeader>
             <CardContent>
