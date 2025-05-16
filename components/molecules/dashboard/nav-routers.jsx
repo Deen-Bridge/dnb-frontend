@@ -6,7 +6,6 @@ import {
   AudioWaveform,
   LayoutDashboard,
   Inbox,
-  MessageCircleQuestion,
   Book,
   Play,
   LaptopMinimal
@@ -54,12 +53,7 @@ const links = [
     name: "Spaces",
     link: "/dashboard/spaces",
     icon: AudioWaveform,
-  },
-  {
-    name: "Support",
-    link: "/dashboard/support",
-    icon: MessageCircleQuestion,
-  },
+  }
 ];
 
 const Navrouter = () => {
