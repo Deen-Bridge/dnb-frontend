@@ -8,7 +8,8 @@ import {
     AvatarImage,
 } from "@/components/ui/avatar";
 import useAuth from "@/hooks/useAuth";
-
+import { cn } from "@/lib/utils";
+import { poppins_700 } from "@/lib/config/font.config";
 const GreetingCard = () => {
     const { user } = useAuth();
 
@@ -24,10 +25,10 @@ const GreetingCard = () => {
 
             {/* Text and Button Group */}
             <div className="flex flex-1 flex-col gap-3 md:gap-4">
-                <h2 className="text-xl md:text-2xl lg:text-4xl font-bold leading-snug">
+                <h2 className={cn("text-xl md:text-2xl lg:text-4xl font-bold leading-snug",poppins_700.className)}>
                     Assalamu ʿalaikum   <span className="text-3xl bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold">{user?.name}</span>
                 </h2>
-                <span className="text-xl font-light">Statting your day with the Quran feels your day with enjoyment and peace</span>
+                <span className="text-sm sm:text-base md:text-lg font-light text-slate-200">Statting your day with the Quran feels your day with enjoyment and peace</span>
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                     {/* Progress */}

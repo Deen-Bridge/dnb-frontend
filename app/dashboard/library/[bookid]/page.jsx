@@ -52,6 +52,7 @@ export default async function Page({ params }) {
                             outlined
                             round
                             to={book.downloadUrl}
+                            download
                             target="_blank"
                         >
                             <DownloadCloud className="w-4 h-4 mr-2" /> Download

@@ -23,7 +23,6 @@ const Button = ({
     loaderColor,
     id,
     childrenClassName,
-    span,
     ...props
 }) => {
     const commonClasses = cn(
@@ -89,22 +88,6 @@ const Button = ({
             );
         }
     }
-
-    if (span) {
-        return (
-            <span
-                {...props}
-                {...commonProps}
-                onClick={() => {
-                    if (disabled) return;
-                    if (onClick) onClick();
-                }}
-            >
-                {children}
-            </span>
-        );
-    }
-
     return (
         <button
             type={type}
