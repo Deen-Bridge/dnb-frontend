@@ -1,4 +1,6 @@
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
+import { cn } from "@/lib/utils";
+import { poppins_700 } from "@/lib/config/font.config";
 const books = [
     {
         id: 1,
@@ -237,10 +239,10 @@ const LibraryPage = () => {
     return (
         <div className="py-12 px-4 md:px-12 bg-muted min-h-screen">
             <div className="mb-8">
-                <span className="text-5xl font-bold text-center text-accent mb-5 flex justify-start">
+                <span className={cn("text-5xl font-bold text-center text-accent mb-5 flex justify-start",poppins_700)}>
                     Treasures of Ilm
                 </span>
-                <span className="text-highlight text-xl ">Explore Our Islamic Book Library</span>
+                <span className={cn("text-highlight text-xl ",poppins_700)}>Explore Our Islamic Book Library</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {books.map((book) => (
