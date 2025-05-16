@@ -25,7 +25,7 @@ export default function CoursesPage() {
     }, []);
 
     return (
-        <div className="mt-5">
+        <div className="mt-5 bg-muted">
             {/* <h2 className="font-semibold text-3xl text-accent p-5">
                 Courses created to suit your soul
             </h2> */}
