@@ -34,7 +34,7 @@ export const useAuth = () => {
     setUser(null);
     setIsAuthenticated(false);
     toast.success("Logged out successfully");
-    router.push("/login");
+    router.push("/");
   };
 
   return { user, isAuthenticated, loading, logout };
@@ -52,7 +52,7 @@ export const login = async (email, password) => {
     // Save token and user info in cookies
     Cookies.set("authToken", token, { expires: 1 }); // Expires in 3 days
     Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
-
+    console.log(user,token);
     toast.success("Login successful");
     return user;
   } catch (error) {
