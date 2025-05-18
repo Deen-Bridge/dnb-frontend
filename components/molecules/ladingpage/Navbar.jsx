@@ -1,40 +1,92 @@
 import Image from "next/image";
 import AuthNavButtons from "./AuthNavButtons";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { AlignJustify } from 'lucide-react';
 const links = [
   { name: "Service", to: "#services" },
   { name: "Contact", to: "#contact" },
   { name: "Blog", to: "/blog" },
-  { name: "Mission", to: "#mission" }
-]
+  { name: "Mission", to: "#mission" },
+];
+
 const Header = () => {
   return (
-    <nav className="px-4  overflow-x-hidden sticky top-0 z-10 bg-transparent text-secondary">
-      <div className="lg:flex hidden justify-between items-center flex-grow h-20">
+    <>
+      {/* Desktop Nav */}
+      <nav className="px-4 sticky top-0 z-10 bg-transparent text-secondary hidden lg:flex justify-between items-center h-20">
         <Image
           src="/images/dnb-nobg.png"
           width={150}
           height={26}
-          alt="Picture of the author"
+          alt="Logo"
           className="m-6"
         />
-
-
-        <div className="flex items-center">
+        <div className="flex items-center space-x-6">
           {links.map((link) => (
-            <Link href={link.to} className="px-4 hover:text-white animate-in-out transition-all delay-200">
+            <Link
+              key={link.to}
+              href={link.to}
+              className="hover:text-white transition-all duration-200"
+            >
               {link.name}
             </Link>
           ))}
         </div>
-        <div>
-          <AuthNavButtons />
-        </div>
-      </div>
+        <AuthNavButtons />
+      </nav>
 
-    </nav>
+      {/* Mobile Nav */}
+      <nav className="lg:hidden flex items-center justify-between px-2  sticky top-0 z-10 bg-transparent text-secondary">
+        <Image
+          src="/images/dnb-nobg.png"
+          width={80}
+          height={26}
+          alt="Logo"
+        />
+        <MobileNav />
+      </nav>
+    </>
   );
 };
 
 export default Header;
+
+function MobileNav() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button size="icon" className="focus:outline-none bg-transparent hover:bg-transparent">
+          <AlignJustify size={80} />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-3/4">
+        <SheetHeader className="mb-4 text-left text-xl font-semibold">
+          Menu
+        </SheetHeader>
+        <nav className="flex flex-col space-y-4">
+          {links.map((link) => (
+            <SheetClose asChild key={link.to}>
+              <Link
+                href={link.to}
+                className="text-base hover:text-primary transition-colors"
+              >
+                {link.name}
+              </Link>
+            </SheetClose>
+          ))}
+        </nav>
+        <div className="mt-6">
+          <AuthNavButtons />
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}

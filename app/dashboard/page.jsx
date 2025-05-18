@@ -1,26 +1,25 @@
-"use client";
-export default function Page() {
+// pages/dashboard.jsx
+import GreetingCard from "@/components/organisms/dashboard/GreetingCard";
+import StatsOverview from "@/components/organisms/dashboard/StatsOverview";
+import RecommendedCourses from "@/components/organisms/dashboard/RecommendedCourses";
+import UpcomingSessions from "@/components/organisms/dashboard/UpcomingSessions";
+import RecentChats from "@/components/organisms/dashboard/RecentChats";
+import LearningProgress from "@/components/organisms/dashboard/LearningProgress";
+export default function Dashboard() {
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-highlight" />
-        <div className="aspect-video rounded-xl bg-accent" />
-        <div className="aspect-video rounded-xl bg-accent" />
-        <div className="aspect-video rounded-xl bg-accent" />
-        <div className="aspect-video rounded-xl bg-accent" />
+    <div className="p-6 space-y-6">
+      <GreetingCard />
+      <StatsOverview />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <RecommendedCourses />
+        </div>
+        <div className="space-y-6">
+          <UpcomingSessions />
+          <RecentChats />
+          <LearningProgress />
+        </div>
       </div>
-      <div className="min-h-[200vh] flex-1 rounded-xl bg-highlight md:min-h-min" />
     </div>
-  )
+  );
 }
