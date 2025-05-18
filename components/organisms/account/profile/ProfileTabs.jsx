@@ -16,7 +16,7 @@ const ProfileTabs = ({ selectedTab, onChange }) => {
     return (
         <div className="w-full mt-6 overflow-auto overscroll-x-auto">
             <Tabs defaultValue={selectedTab} onValueChange={onChange}>
-                <TabsList className="w-full flex flex-wrap justify-start gap-2 bg-secondary p-2 rounded-xl shadow">
+                <TabsList className="w-full flex flex-wrap justify-start gap-2 bg-secondary rounded-xl shadow">
                     {tabs.map((tab) => (
                         <TabsTrigger
                             key={tab.value}

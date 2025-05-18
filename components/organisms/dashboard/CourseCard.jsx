@@ -13,7 +13,7 @@ const CourseCard = ({ course }) => (
         <div className="relative h-40 w-full">
             <Image
                 src={course.image || "/images/placeholder.jpg"}
-                alt={course.title}
+                alt={course.title || "image"}
                 fill
                 className="object-cover"
             />
@@ -28,7 +28,7 @@ const CourseCard = ({ course }) => (
                 {/* Instructor */}
                 <div className="flex items-center gap-2 mt-2">
                     <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src="/images/img1.jpeg" alt={course.instructor} />
+                        <AvatarImage src="/images/img1.jpeg" alt={course.instructor || "Image"} />
                         <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm">
