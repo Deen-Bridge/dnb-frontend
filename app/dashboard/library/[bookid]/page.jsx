@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { DownloadCloud, Eye, Star, UserRound, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
+import { getBookById } from '@/lib/actions/library/get-book';
+
 export default async function Page({ params }) {
     const { bookid } = params;
     const book = await getBookById(bookid);
@@ -36,7 +38,7 @@ export default async function Page({ params }) {
                                 {book.price ? `$${book.price}` : "Free"}
                             </Badge>
                         </div>
-                        <p className="text-md /80 leading-relaxed">{book.summary}</p>
+                        <p className="text-md /80 leading-relaxed">{book.description}</p>
                     </div>
 
                     {/* Action Buttons */}
@@ -52,7 +54,7 @@ export default async function Page({ params }) {
                         <Button
                             outlined
                             round
-                            to={book.downloadUrl}
+                            to={book.fileUrl}
                             download
                             target="_blank"
                         >
@@ -88,8 +90,7 @@ export default async function Page({ params }) {
                                 <AvatarFallback>AU</AvatarFallback>
                             </Avatar>
                             <div className="text-white ">
-                                <p className="font-bold ">{book.author}</p>
-                                <p className="text-sm ">Author & Coach</p>
+                                <p className="font-bold ">{book.author?.name}</p>                                <p className="text-sm ">Author & Coach</p>
                             </div>
                         </div>
                         <p className="text-sm text-white ">{book.authorBio}</p>
@@ -127,24 +128,4 @@ function StatRow({ icon, label, value }) {
             <span className="font-bold">{value}</span>
         </div>
     );
-}
-
-// Mock Data
-async function getBookById(id) {
-    return {
-        id,
-        title: "The Power of Focus",
-        summary:
-            "This book guides you on how to train your mind to be focused and efficient in a world full of distractions. It offers practical strategies and techniques to enhance your concentration, manage your time effectively, and cultivate a mindset that embraces productivity.",
-        category: "Productivity",
-        price: 0,
-        image: "/images/book1.jpg",
-        downloadUrl: "/downloads/focus.pdf",
-        author: "Ali Jamal",
-        authorBio: "Ali Jamal is a productivity coach and writer with over 10 years of experience.",
-        authorImage: "/images/img1.jpeg",
-        monthlyReads: 427,
-        downloads: 1200,
-        rating: 4.6,
-    };
 }

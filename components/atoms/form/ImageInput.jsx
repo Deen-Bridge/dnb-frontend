@@ -1,11 +1,9 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 
-const FileInput = ({ id, onChange, file }) => {
-    const inputRef = useRef(null);
-
-    const triggerFileInput = () => {
-        inputRef.current?.click();
+const ImageInput = ({ id, onChange, image }) => {
+    const triggerImageInput = () => {
+        document.getElementById(id)?.click();
     };
 
     return (
@@ -14,17 +12,13 @@ const FileInput = ({ id, onChange, file }) => {
                 type="file"
                 id={id}
                 name={id}
-                ref={inputRef}
-                className="absolute left-0 top-0 w-0 h-0 opacity-0"
-                accept="*/*"
+                className="hidden"
+                accept="image/*"
                 onChange={onChange}
             />
             <button
                 type="button"
-                onClick={(e) => {
-                    e.preventDefault();
-                    setTimeout(triggerFileInput, 0);
-                }}
+                onClick={triggerImageInput}
                 className="w-full rounded-[66px] outline-1 outline-accent border-accent border p-2 bg-[#FCFCFC] flex items-center justify-between cursor-pointer"
             >
                 <div className="flex gap-2 items-center">
@@ -61,7 +55,7 @@ const FileInput = ({ id, onChange, file }) => {
                         </svg>
                     </i>
                     <span className="font-medium text-sm text-accent">
-                        {file?.name || "File upload"}
+                        {image ? image.name : "Image upload"}
                     </span>
                 </div>
                 <div className="bg-accent/10 py-[6px] px-3 rounded-[83px]  flex gap-2 items-center">
@@ -73,7 +67,7 @@ const FileInput = ({ id, onChange, file }) => {
                             viewBox="0 0 16 16"
                             fill="none"
                         >
-                            <svg clipPath="url(#clip0_5797_12454)">
+                            <svg clip-path="url(#clip0_5797_12454)">
                                 <path
                                     fillRule="evenodd"
                                     clipRule="evenodd"
@@ -97,7 +91,7 @@ const FileInput = ({ id, onChange, file }) => {
     );
 };
 
-export default FileInput;
+export default ImageInput;
 
 
 

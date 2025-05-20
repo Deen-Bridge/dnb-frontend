@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge";
 
-const CourseCard = ({ course }) => (
+const RecommendedCourseCard = ({ course }) => (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
         {/* Course Image */}
         <div className="relative h-40 w-full">
@@ -60,5 +60,5 @@ const CourseCard = ({ course }) => (
     </div>
 );
 
-export default CourseCard;
+export default RecommendedCourseCard;
 

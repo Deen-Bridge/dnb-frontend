@@ -23,10 +23,10 @@ const Modal = ({ isOpen, onClose, children, title }) => {
   const modalContent = (
     <div className="fixed inset-0 bg-[rgb(0,0,0,0.25)] flex items-center p-6 justify-center z-50 w-full ">
       <div className="bg-white rounded-lg tablet:w-[434px] xxs:w-full shadow-lg">
-        <div className="flex justify-between items-center mb-2 px-8 py-2">
+        <div className="flex justify-between items-center mb-2 px-8 py-2 bg-accent ">
           <h2
             className={cn(
-              "text-xl font-bold text-truncate",
+              "text-xl font-bold text-truncate text-white ",
               poppins_700.className
             )}
           >
