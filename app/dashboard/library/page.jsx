@@ -1,256 +1,69 @@
+"use client";
+import React, { useState, useEffect } from "react";
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
 import { cn } from "@/lib/utils";
 import { poppins_700 } from "@/lib/config/font.config";
-const books = [
-    {
-        id: 1,
-        title: "Riyadh as-Salihin",
-        author: "Imam Nawawi",
-        category: "Hadith",
-        price: 0,
-        readCount: 120,
-        rating: 5.0,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 2,
-        title: "The Fundamentals of Tawheed",
-        author: "Dr. Bilal Philips",
-        category: "Aqidah",
-        price: 5,
-        readCount: 45,
-        rating: 4.5,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 3,
-        title: "In the Footsteps of the Prophet",
-        author: "Tariq Ramadan",
-        category: "Seerah",
-        price: 5,
-        readCount: 60,
-        rating: 2.5,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 4,
-        title: "Fortress of the Muslim",
-        author: "Sa'id bin Wahf al-Qahtani",
-        category: "Dua",
-        price: 0,
-        readCount: 220,
-        rating: 5.0,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 5,
-        title: "Don't Be Sad",
-        author: "Dr. Aaidh al-Qarni",
-        category: "Self-help",
-        price: 10,
-        readCount: 180,
-        rating: 4.7,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 6,
-        title: "La Tahzan (Don't Be Sad)",
-        author: "Dr. Aaidh al-Qarni",
-        category: "Motivation",
-        price: 8,
-        readCount: 90,
-        rating: 4.2,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 7,
-        title: "Stories of the Prophets",
-        author: "Ibn Kathir",
-        category: "History",
-        price: 0,
-        readCount: 150,
-        rating: 5.0,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 8,
-        title: "Fiqh-us-Sunnah",
-        author: "Sayyid Sabiq",
-        category: "Fiqh",
-        price: 15,
-        readCount: 75,
-        rating: 4.6,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 9,
-        title: "The Sealed Nectar",
-        author: "Safiyyur-Rahman al-Mubarakpuri",
-        category: "Seerah",
-        price: 12,
-        readCount: 210,
-        rating: 4.9,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 10,
-        title: "Tafsir Ibn Kathir",
-        author: "Ibn Kathir",
-        category: "Tafsir",
-        price: 0,
-        readCount: 300,
-        rating: 5.0,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 11,
-        title: "The Book of Manners",
-        author: "Fu'ad Ibn 'Abd Al-'Azeez Ash-Shulhoob",
-        category: "Akhlaq",
-        price: 5,
-        readCount: 100,
-        rating: 4.4,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 12,
-        title: "The Life of Muhammad",
-        author: "Muhammad Husayn Haykal",
-        category: "Biography",
-        price: 10,
-        readCount: 95,
-        rating: 4.3,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 13,
-        title: "Explanation of the Three Fundamental Principles",
-        author: "Shaykh Muhammad ibn Saalih al-Uthaymeen",
-        category: "Aqidah",
-        price: 6,
-        readCount: 55,
-        rating: 4.6,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 14,
-        title: "The Creed of Imam Tahawi",
-        author: "Imam Abu Ja'far al-Tahawi",
-        category: "Aqidah",
-        price: 7,
-        readCount: 40,
-        rating: 4.1,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 15,
-        title: "Purification of the Heart",
-        author: "Hamza Yusuf",
-        category: "Tazkiyah",
-        price: 9,
-        readCount: 65,
-        rating: 4.7,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 16,
-        title: "The Path to Guidance",
-        author: "Ibn Qudamah al-Maqdisi",
-        category: "Spirituality",
-        price: 5,
-        readCount: 88,
-        rating: 4.4,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 17,
-        title: "Kitab al-Tawheed",
-        author: "Muhammad ibn Abdul Wahhab",
-        category: "Aqidah",
-        price: 0,
-        readCount: 140,
-        rating: 4.9,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 18,
-        title: "The Ideal Muslimah",
-        author: "Dr. Muhammad Ali Al-Hashimi",
-        category: "Women",
-        price: 10,
-        readCount: 110,
-        rating: 4.8,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 19,
-        title: "The Ideal Muslim",
-        author: "Dr. Muhammad Ali Al-Hashimi",
-        category: "Men",
-        price: 10,
-        readCount: 70,
-        rating: 4.6,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 20,
-        title: "Al-Adab Al-Mufrad",
-        author: "Imam Bukhari",
-        category: "Hadith",
-        price: 0,
-        readCount: 130,
-        rating: 5.0,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 21,
-        title: "Signs Before the Day of Judgment",
-        author: "Ibn Kathir",
-        category: "End Times",
-        price: 5,
-        readCount: 125,
-        rating: 4.3,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 22,
-        title: "A Brief Illustrated Guide to Understanding Islam",
-        author: "I.A. Ibrahim",
-        category: "Introductory",
-        price: 0,
-        readCount: 200,
-        rating: 4.5,
-        image: "/images/img-2.jpeg",
-    },
-    {
-        id: 23,
-        title: "Enjoy Your Life",
-        author: "Dr. Muhammad al-Arifi",
-        category: "Self-help",
-        price: 6,
-        readCount: 85,
-        rating: 4.7,
-        image: "/images/img-2.jpeg",
-    }
-];
-
+import Button from "@/components/atoms/form/Button";
+import Modal from "@/components/molecules/Modal";
+import BookCreateForm from "@/components/organisms/create/book-create-form";
+import { fetchBooks } from '@/lib/actions/library/fetch-books';
 
 const LibraryPage = () => {
-    return (
-        <div className="py-12 px-4 md:px-12 bg-muted min-h-screen">
-            <div className="mb-8">
-                <span className={cn("text-5xl font-bold text-center text-accent mb-5 flex justify-start",poppins_700)}>
-                    Treasures of Ilm
-                </span>
-                <span className={cn("text-highlight text-xl ",poppins_700)}>Explore Our Islamic Book Library</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {books.map((book) => (
-                    <LibraryBookCard key={book.id} book={book} />
-                ))}
-            </div>
-        </div>
+    const [modalOpen, setModalOpen] = useState(false);
+    const [books, setBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const getBooks = async () => {
+            setLoading(true);
+            try {
+                const data = await fetchBooks();
+                setBooks(data);
+            } catch (err) {
+                setBooks([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        getBooks();
+    }, []);
+
+    const handleClick = () => {
+        setModalOpen(!modalOpen);
+    };
+
+    return (
+        <>
+            <div className="py-12 px-4 md:px-12 bg-muted min-h-screen">
+                <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <span className={cn("text-highlight text-xl ", poppins_700)}>Explore Our Islamic Book Library</span>
+                    </div>
+                    <div>
+                        <Button outlined round wide className="text-sm" onClick={handleClick}>Create Book</Button>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {loading ? (
+                        <div className="col-span-full text-center text-accent">Loading books...</div>
+                    ) : books.length === 0 ? (
+                        <div className="col-span-full text-center text-accent">No books found.</div>
+                    ) : (
+                        books.map((book) => (
+                            <LibraryBookCard key={book._id} book={book} />
+                        ))
+                    )}
+                </div>
+            </div>
+            <Modal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="Create Book"
+                className="max-w-md w-full"
+            >
+                <BookCreateForm/>
+            </Modal>
+        </>
     );
 };
 

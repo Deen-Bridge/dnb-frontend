@@ -26,9 +26,9 @@ export default function CoursesPage() {
 
     return (
         <div className="mt-5 bg-muted">
-            {/* <h2 className="font-semibold text-3xl text-accent p-5">
+            <h2 className="font-semibold text-3xl text-accent p-5">
                 Courses created to suit your soul
-            </h2> */}
+            </h2>
 
             <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
