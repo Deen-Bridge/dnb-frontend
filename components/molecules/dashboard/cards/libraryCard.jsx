@@ -4,6 +4,21 @@ import { Star } from "lucide-react"; // optional: use a custom star icon or emoj
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const LibraryBookCard = ({ book }) => {
+    // Debug: log the props and book structure
+    console.log('LibraryBookCard props:', { book });
+    if (book) {
+        console.log('book (stringified):', JSON.stringify(book));
+        console.log('book keys:', Object.keys(book));
+        console.log('book.author:', book.author, 'type:', typeof book.author);
+        if (book.author) {
+            console.log('book.author keys:', Object.keys(book.author));
+        } else {
+            console.log('book.author is undefined or null');
+        }
+    } else {
+        console.log('book is undefined or null');
+    }
+
     return (
         <div className="bg-white rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
 
@@ -28,12 +43,15 @@ const LibraryBookCard = ({ book }) => {
             {/* Author, Reads, Rating */}
             <div className="px-4 py-4 flex flex-col gap-3 text-sm text-muted-foreground">
                 {/* Author */}
+                {console.log('DEBUG book:', book)}
+                {console.log('DEBUG book.author:', book.author)}
                 <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src={book.authorImage || "/images/img1.jpeg"} />
-                        <AvatarFallback>{book.author?.charAt(0) || "A"}</AvatarFallback>
+                        {console.log('DEBUG book.author.avatar:', book.author?.avatar)}
+                        <AvatarImage src={book.author?.avatar || "/images/img1.jpeg"} />
+                        <AvatarFallback>{book.author?.name?.charAt(0) || "A"}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-black">{book.author || "Unknown Author"}</span>
+                    <span className="font-medium text-black">{book.author?.name || "Unknown Author"}</span>
                 </div>
 
                 {/* Reads & Rating */}
@@ -54,7 +72,7 @@ const LibraryBookCard = ({ book }) => {
             {/* Button */}
             <div className="px-4 py-3">
                 <Button
-                    to={`/dashboard/library/${book.id}`}
+                    to={`/dashboard/library/${book._id}`}
                     wide
                     round
                     className="w-full bg-accent text-white"
