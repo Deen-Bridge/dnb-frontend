@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ImageInput from '@/components/atoms/form/ImageInput';
 import { createBook } from '@/lib/actions/library/create-book';
+import { toast } from 'sonner';
 const BookCreateForm = () => {
     const router = useRouter();
     const [form, setForm] = useState({
@@ -32,7 +33,11 @@ const BookCreateForm = () => {
         try {
             const data = await createBook({ form, thumbnail, file });
             if (data.success) {
-                router.push(`/dashboard/library/${data.book._id}`);
+                toast.success('Book created successfully');
+                // Redirect to the book detail page
+                setTimeout(() => {
+                    router.push(`/dashboard/library/${data.book._id}`);
+                }, 2000);
             } else {
                 alert(data.message || 'Book creation failed');
             }

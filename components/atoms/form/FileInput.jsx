@@ -25,7 +25,7 @@ const FileInput = ({ id, onChange, file }) => {
                     e.preventDefault();
                     setTimeout(triggerFileInput, 0);
                 }}
-                className="w-full rounded-[66px] outline-1 outline-accent border-accent border p-2 bg-[#FCFCFC] flex items-center justify-between cursor-pointer"
+                className="w-full rounded-[66px] outline-1 outline-accent border-accent border p-1 bg-[#FCFCFC] flex items-center justify-between cursor-pointer"
             >
                 <div className="flex gap-2 items-center">
                     <i className="bg-accent/10 w-10 h-10 p-2 flex items-center justify-center rounded-[27px] border-wmt-line-gray border">
