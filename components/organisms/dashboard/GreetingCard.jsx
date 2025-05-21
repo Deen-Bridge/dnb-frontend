@@ -13,6 +13,12 @@ import { poppins_600, poppins_700 } from "@/lib/config/font.config";
 const GreetingCard = () => {
     const { user } = useAuth();
 
+    // Extract the user's last name (last word)
+    const getLastName = (name) => {
+        if (!name) return '';
+        const parts = name.trim().split(' ');
+        return parts.length > 1 ? parts[parts.length - 1] : parts[0];
+    };
     return (
         <div className="bg-accent text-white rounded-2xl px-4 py-5 md:px-6 md:py-6 lg:p-8 flex items-center justify-between gap-4 md:gap-8 w-full shadow-md">
             {/* Avatar */}
@@ -25,9 +31,9 @@ const GreetingCard = () => {
 
             {/* Text and Button Group */}
             <div className="flex flex-1 flex-col gap-3 md:gap-4">
-                <h2 className={cn("text-xl md:text-2xl lg:text-4xl font-bold leading-snug",poppins_700.className)}>
-                    Assalamu ʿalaikum 
-                    <span className={cn("bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold pl-2",poppins_600.className)}>{user?.name}</span>
+                <h2 className={cn("text-xl md:text-2xl lg:text-4xl font-bold leading-snug", poppins_700.className)}>
+                    Assalamu ʿalaikum
+                    <span className={cn("bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold pl-2", poppins_600.className)}>{getLastName(user?.name)}</span>
                 </h2>
                 <span className="text-sm sm:text-base md:text-lg font-light text-slate-200">Statting your day with the Quran feels your day with enjoyment and peace</span>
 
