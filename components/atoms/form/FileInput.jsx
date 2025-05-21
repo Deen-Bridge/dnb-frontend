@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 
-const FileInput = ({ id, onChange, file }) => {
+const FileUpload = ({ id, onChange, file }) => {
     const inputRef = useRef(null);
 
     const triggerFileInput = () => {
@@ -97,7 +97,7 @@ const FileInput = ({ id, onChange, file }) => {
     );
 };
 
-export default FileInput;
+export default FileUpload;
 
 
 

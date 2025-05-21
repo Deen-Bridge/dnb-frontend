@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const ImageInput = ({ id, onChange, image }) => {
+const ImageUpload = ({ id, onChange, image }) => {
     const triggerImageInput = () => {
         document.getElementById(id)?.click();
     };
@@ -91,7 +91,7 @@ const ImageInput = ({ id, onChange, image }) => {
     );
 };
 
-export default ImageInput;
+export default ImageUpload;
 
 
 
