@@ -32,15 +32,19 @@ const LibraryPage = () => {
         setModalOpen(!modalOpen);
     };
 
+    const handleBookCreated = () => {
+        setModalOpen(false);
+    };
+
     return (
         <>
             <div className="py-12 px-4 md:px-12 bg-muted min-h-screen">
-                <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div className="mb-8 flex flex-row justify-between items-center gap-4">
                     <div>
                         <span className={cn("text-highlight text-xl ", poppins_700)}>Explore Our Islamic Book Library</span>
                     </div>
                     <div>
-                        <Button outlined round wide className="text-sm" onClick={handleClick}>Create Book</Button>
+                        <Button outlined round wide className="text-sm text-nowrap" onClick={handleClick}>Create Book</Button>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -61,7 +65,7 @@ const LibraryPage = () => {
                 title="Create Book"
                 className="max-w-md w-full"
             >
-                <BookCreateForm/>
+                <BookCreateForm onBookCreated={handleBookCreated} />
             </Modal>
         </>
     );

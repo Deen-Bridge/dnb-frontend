@@ -1,16 +1,16 @@
 'use client';
 import React, { useState } from 'react';
-import axios from 'axios';
-import FileInput from '@/components/atoms/form/FileInput';
+import FileUpload from '@/components/atoms/form/FileInput';
 import { Textarea } from '@/components/ui/textarea';
 import Button from '@/components/atoms/form/Button';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import ImageInput from '@/components/atoms/form/ImageInput';
+import ImageUpload from '@/components/atoms/form/ImageInput';
 import { createBook } from '@/lib/actions/library/create-book';
 import { toast } from 'sonner';
-const BookCreateForm = () => {
+
+const BookCreateForm = ({ onBookCreated }) => {
     const router = useRouter();
     const [form, setForm] = useState({
         title: '',
@@ -34,6 +34,7 @@ const BookCreateForm = () => {
             const data = await createBook({ form, thumbnail, file });
             if (data.success) {
                 toast.success('Book created successfully');
+                if (onBookCreated) onBookCreated();
                 // Redirect to the book detail page
                 setTimeout(() => {
                     router.push(`/dashboard/library/${data.book._id}`);
@@ -70,6 +71,7 @@ const BookCreateForm = () => {
                 value={form.description}
                 onChange={handleChange}
                 required
+                className="w-full h-24 resize-none overflow-y-auto"
             />
             <Label htmlFor="title">Book Category</Label>
             <Input
@@ -91,17 +93,17 @@ const BookCreateForm = () => {
 
             <div className="my-4">
                 <Label id="thumbail" className="block mb-1 text-sm font-medium">Upload Book Thumbnail Image</Label>
-                <ImageInput id="thumbnail" image={thumbnail} onChange={(e) => setThumbnail(e.target.files[0])} />
+                <ImageUpload id="thumbnail" image={thumbnail} onChange={(e) => setThumbnail(e.target.files[0])} />
             </div>
 
             <div>
                 <Label id="file" className="block mb-1 text-sm font-medium">Upload Book File</Label>
-                <FileInput id="file" file={file} onChange={(e) => setFile(e.target.files[0])} />
+                <FileUpload id="file" file={file} onChange={(e) => setFile(e.target.files[0])} />
             </div>
 
 
-            <Button round wide type="submit" disabled={loading} className="w-full bg-accent hover:bg-highlight transition">
-                {loading ? 'Creating...' : 'Create Book'}
+            <Button round wide loading={loading} type="submit" disabled={loading} className="w-full bg-accent hover:bg-highlight transition">
+                Create Book
             </Button>
         </form>
     );
