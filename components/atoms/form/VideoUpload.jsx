@@ -1,9 +1,11 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 
-const ImageUpload = ({ id, onChange, image }) => {
-    const triggerImageInput = () => {
-        document.getElementById(id)?.click();
+const VideoUpload = ({ id, onChange, video }) => {
+    const inputRef = useRef(null);
+
+    const triggerVideoUpload = () => {
+        inputRef.current?.click();
     };
 
     return (
@@ -12,13 +14,17 @@ const ImageUpload = ({ id, onChange, image }) => {
                 type="file"
                 id={id}
                 name={id}
-                className="hidden"
-                accept="image/*"
+                ref={inputRef}
+                className="absolute left-0 top-0 w-0 h-0 opacity-0"
+                accept="*/*"
                 onChange={onChange}
             />
             <button
                 type="button"
-                onClick={triggerImageInput}
+                onClick={(e) => {
+                    e.preventDefault();
+                    setTimeout(triggerVideoUpload, 0);
+                }}
                 className="w-full rounded-[66px] outline-1 outline-accent border-accent border p-1 bg-[#FCFCFC] flex items-center justify-between cursor-pointer"
             >
                 <div className="flex gap-2 items-center">
@@ -55,7 +61,7 @@ const ImageUpload = ({ id, onChange, image }) => {
                         </svg>
                     </i>
                     <span className="font-medium text-sm text-accent">
-                        {image ? image.name : "Image upload"}
+                        {video?.name || "video upload"}
                     </span>
                 </div>
                 <div className="bg-accent/10 py-[6px] px-3 rounded-[83px]  flex gap-2 items-center">
@@ -67,7 +73,7 @@ const ImageUpload = ({ id, onChange, image }) => {
                             viewBox="0 0 16 16"
                             fill="none"
                         >
-                            <svg clip-path="url(#clip0_5797_12454)">
+                            <svg clipPath="url(#clip0_5797_12454)">
                                 <path
                                     fillRule="evenodd"
                                     clipRule="evenodd"
@@ -91,7 +97,7 @@ const ImageUpload = ({ id, onChange, image }) => {
     );
 };
 
-export default ImageUpload;
+export default VideoUpload;
 
 
 
