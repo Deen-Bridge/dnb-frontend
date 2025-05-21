@@ -3,17 +3,31 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
+import Button from "@/components/atoms/form/Button";
+import Modal from "@/components/molecules/Modal";
+import CreateCourseForm from "@/components/organisms/create/course-create-form";
+
+
+
+
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [modalOpen, setModalOpen] = useState(false);
+
+
 
     useEffect(() => {
         const fetchCourses = async () => {
             try {
                 setLoading(true);
                 const res = await axios.get("/api/courses");
-                setCourses(res.data);
+               if (res.data && Array.isArray(res.data.courses)) {
+                    setCourses(res.data.courses);
+                } else {
+                    setCourses([]);
+                }
             } catch (error) {
                 console.error("Error fetching courses:", error);
             } finally {
@@ -25,22 +39,35 @@ export default function CoursesPage() {
     }, []);
 
     return (
-        <div className="mt-5 bg-muted">
-            <h2 className="font-semibold text-3xl text-accent p-5">
-                Courses created to suit your soul
-            </h2>
+        <>
 
-            <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
-                    {loading ? (
-                        [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
-                    ) : (
-                        courses.map((course, index) => (
-                            <CourseCard key={course.id || index} course={course} />
-                        ))
-                    )}
+            <div className="bg-muted">
+                <div className="flex justify-between items-center p-5">
+                    <h2 className="font-semibold text-3xl text-accent ">
+                        Courses created to suit your soul
+                    </h2>
+                    <Button round outlined onClick={() => (setModalOpen(!modalOpen))}>Create Course</Button></div>
+
+
+                <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
+                        {loading ? (
+                            [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
+                        ) : (
+                            courses.map((course, index) => (
+                                <CourseCard key={course.id || index} course={course} />
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+            <Modal title="Create Course"
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                className="max-w-md w-full"
+            >
+                <CreateCourseForm/>
+            </Modal>
+        </>
     );
 }
