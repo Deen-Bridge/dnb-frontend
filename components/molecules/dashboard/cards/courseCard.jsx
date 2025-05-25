@@ -29,7 +29,7 @@ const CourseCard = ({ course }) => {
 
                 {/* Category  */}
                 <div className="absolute top-3 left-3 right-3 z-20 ">
-                    <Badge className="bg-white/90 text-highlight text-xs font-semibold shadow">
+                  <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
                         {course.category || "General"}
                     </Badge>
 

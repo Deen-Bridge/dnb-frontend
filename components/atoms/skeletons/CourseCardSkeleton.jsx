@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CourseCardSkeleton() {
     return (
-        <div className="flex flex-col gap-4 p-4 rounded-2xl shadow-md bg-gradient-to-br from-green-50 via-white to-highlight animate-pulse w-full h-full min-h-[260px] max-w-md mx-auto">
+        <div className="flex flex-col gap-4 p-4 rounded-2xl shadow-md bg-gradient-to-br from-green-50 via-white to-green-100 animate-pulse w-full h-full min-h-[260px] max-w-md mx-auto">
             {/* Image skeleton with shimmer */}
             <div className="relative w-full aspect-video rounded-xl overflow-hidden">
                 <Skeleton className="absolute inset-0 w-full h-full bg-gradient-to-r from-secondary via-highlight to-secondary animate-gradient-x" />
