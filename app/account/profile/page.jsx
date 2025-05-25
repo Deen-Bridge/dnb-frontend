@@ -15,7 +15,7 @@ const page = () => {
     <>
 
       <div className="min-h-screen bg-muted p-4">
-        <ProfileHeader />
+        <ProfileHeader avatar={user?.avatar} />
         <ProfileUserInfo user={user} />
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
         <ProfileContent selectedTab={selectedTab} />

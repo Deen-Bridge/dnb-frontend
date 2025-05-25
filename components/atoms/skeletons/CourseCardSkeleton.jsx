@@ -17,8 +17,8 @@ export default function CourseCardSkeleton() {
                 <Skeleton className="h-6 w-12 rounded-full bg-highlight" />
             </div>
             {/* Button skeleton */}
-            <div className="flex justify-end mt-auto">
-                <Skeleton className="h-8 w-24 rounded-lg bg-secondary" />
+            <div className="flex justify-end mt-auto w-full">
+                <Skeleton className="h-8 rounded-lg bg-secondary w-full" />
             </div>
         </div>
     );
