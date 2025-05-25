@@ -29,27 +29,34 @@ const Placeholder = ({ title }) => (
 );
 
 const CoursesTab = () => {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const [courses, setCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-        const getCourses = async () => {
-            setIsLoading(true);
-            try {
-                if (user && user.id) {
-                    const data = await fetchUserCourses(user.id);
-                    setCourses(data);
-                } else {
-                    setCourses([]);
-                }
-            } catch (err) {
+useEffect(() => {
+    if (loading) return;
+    console.log("User in CoursesTab:", user);
+
+    const getCourses = async () => {
+        setIsLoading(true);
+        try {
+            if (user && user._id) {
+                const data = await fetchUserCourses(user._id);
+                console.log("Fetched courses:", data); // ✅ ADD THIS
+                setCourses(data);
+            } else {
                 setCourses([]);
-            } finally {
-                setIsLoading(false);
+                console.warn("User not found or not logged in");
             }
-        };
-        getCourses();
-    }, [user]);
+        } catch (err) {
+            setCourses([]);
+            console.log("Error fetching courses:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    getCourses();
+}, [user, loading]);
+
     return (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 pt-5">
             {isLoading ? (

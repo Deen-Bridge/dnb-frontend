@@ -94,7 +94,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
             </div>
 
             <Button wide round type="submit" className="bg-accent hover:bg-highlight">
-               Complete
+              Next
             </Button>
         </form>
     )
