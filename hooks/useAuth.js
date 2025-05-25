@@ -1,11 +1,10 @@
 "use client";
-import axiosInstance from "@/lib/config/axios.config";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
-
+import config from "@/lib/config/req.header.config";
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,6 +18,8 @@ export const useAuth = () => {
       : null;
 
     if (token && userInfo) {
+      // Normalize user object to always have _id
+      if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
       setUser(userInfo);
       setIsAuthenticated(true);
     } else {
@@ -37,22 +38,43 @@ export const useAuth = () => {
     router.push("/");
   };
 
-  return { user, isAuthenticated, loading, logout };
+  // Add a function to refresh user data from backend after profile update
+  const refreshUser = async (userId) => {
+    try {
+      const res = await axios.get(`https://dnb-backend-api.onrender.com/api/users/${userId}`,config);
+      if (res.data && (res.data.user || res.data)) {
+        let freshUser = res.data.user || res.data;
+        // Normalize user object to always have _id
+        if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;
+        console.log("User data refreshed:", freshUser);
+        // Update user state and cookies
+        setUser(freshUser);
+        Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1 });
+        setIsAuthenticated(true);
+        return freshUser;
+      }
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      toast.error("Failed to refresh user info");
+    }
+  };
+
+  return { user, isAuthenticated, loading, logout, refreshUser };
 };
 
 // Export login function separately
 export const login = async (email, password) => {
   try {
-    const res = await axiosInstance.post("/api/auth/login", {
+    const res = await axios.post("/api/auth/login", {
       email,
       password,
     });
     const { token, user } = res.data;
-    console.log(token);
+    // Normalize user object to always have _id
+    if (user.id && !user._id) user._id = user.id;
     // Save token and user info in cookies
-    Cookies.set("authToken", token, { expires: 1 }); // Expires in 3 days
+    Cookies.set("authToken", token, { expires: 1 }); 
     Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
-    console.log(user,token);
     toast.success("Login successful");
     return user;
   } catch (error) {
@@ -78,12 +100,11 @@ export const signup = async (name, email, password, role) => {
     });
 
     const { token, user } = res.data;
-
+    // Normalize user object to always have _id
+    if (user.id && !user._id) user._id = user.id;
     // Save token and user info in cookies
     Cookies.set("authToken", token, { expires: 1 }); // Expires in 1 day
     Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
-
-    // Show success toast
     toast.success("Signup successful! Redirecting to dashboard...");
     return user; // Return user data if needed
   } catch (error) {

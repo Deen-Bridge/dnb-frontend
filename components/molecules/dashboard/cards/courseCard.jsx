@@ -50,12 +50,12 @@ const CourseCard = ({ course }) => {
             <CardContent>
                 <div className="flex justify-between items-center gap-3">
                     <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8 rounded-lg">
-                            <AvatarImage src="/images/img1.jpeg" alt="Instructor" />
+                        <Avatar className="h-10 w-10 rounded-lg">
+                            <AvatarImage src={course.instructor?.avatar || course.createdBy?.avatar || "/images/placeholder.jpg"} alt="Instructor" />
                             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                         </Avatar>
                         <div className="text-sm">
-                            <p className="font-medium">{course.instructor || "Ali Jamal"}</p>
+                            <p className="font-medium">{course.instructor?.name || course.createdBy?.name || "Ali Jamal"}</p>
                             <p className="text-muted-foreground text-xs">Instructor</p>
                         </div>
                     </div>

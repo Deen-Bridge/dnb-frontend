@@ -1,18 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Input } from "@/components/ui/input"
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import Button from "@/components/atoms/form/Button"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import axios from "axios"
+import { useRouter } from "next/navigation"
 import { updateUser } from "@/lib/actions/updateUser"
 import { toast } from "sonner"
 import useAuth from "@/hooks/useAuth"
-
+import { ArrowBigLeft } from "lucide-react"
 const islamicInterestsList = [
     "Qur'an Recitation",
     "Hadith Studies",
@@ -30,7 +30,8 @@ const languageList = [
 ];
 
 export default function StepTwo({ data, setData, onNext, onPrev, className }) {
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
+    const router = useRouter();
     const [localData, setLocalData] = useState({
         gender: "",
         interests: [],
@@ -94,10 +95,13 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                     formData.append(key, value);
                 }
             });
-            const response = await updateUser(user.id, formData);
+            const response = await updateUser(user._id, formData);
             if (response && response.success) {
                 setData(mergedData);
+                // Refresh user data after update
+                await refreshUser(user._id);
                 toast.success("Profile updated successfully!");
+                router.push("/dashboard");
             } else if (response && response.message) {
                 throw new Error(response.message);
             } else {
@@ -196,26 +200,28 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                     </Select>
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="bio">Short Bio</Label>
-                    <Input
-                        id="bio"
-                        name="bio"
-                        value={localData.bio}
-                        onChange={handleInputChange}
-                        placeholder="Tell us a bit about yourself..."
-                        maxLength={500}
-                    />
+                    <Label htmlFor="bio">Bio</Label>
+                     <Textarea
+                                    name="bio"
+                                     id="bio"
+                                  value={localData.bio}
+                                  onChange={handleInputChange}
+                                    placeholder="Tell us a bit about yourself..."
+                                    required
+                                    className="w-full h-24 resize-none overflow-y-auto"
+                                    maxLength={500}
+                                />
                 </div>
 
                 {error && <div className="text-red-500 text-sm">{error}</div>}
-                <div className="flex justify-between mt-4">
-                    <Button variant="outline" onClick={handleBack} disabled={loading}>
-                        Back
+                <div className="flex justify-between mt-4 gap-4">
+                    <Button wide round  onClick={handleBack} disabled={loading} className="bg-accent hover:bg-highlight transition-colors">
+                    <ArrowBigLeft className="mr-2"/>    Back
                     </Button>
-                    <Button onClick={handleSubmit} disabled={loading}>
-                        {loading ? "Saving..." : "Next"}
+                    <Button wide  loading={loading} round onClick={handleSubmit} disabled={loading} className="bg-accent hover:bg-highlight transition-colors">
+                       Complete Setup
                     </Button>
-                </div>
+                </div> 
             </div>
         </div>
     )

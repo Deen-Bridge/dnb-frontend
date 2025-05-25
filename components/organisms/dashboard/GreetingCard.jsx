@@ -22,8 +22,8 @@ const GreetingCard = () => {
     return (
         <div className="bg-accent text-white rounded-2xl px-4 py-5 md:px-6 md:py-6 lg:p-8 flex items-center justify-between gap-4 md:gap-8 w-full shadow-md">
             {/* Avatar */}
-            <Avatar className="hidden sm:block md:h-20 md:w-20 lg:h-24 lg:w-24 rounded-lg shrink-0">
-                <AvatarImage src={user?.image || "/images/man.jpg"} alt="user" className="object-cover" />
+            <Avatar className="hidden sm:block  lg:h-36 lg:w-36 rounded-lg shrink-0">
+                <AvatarImage src={user?.avatar || "/images/man.jpg"} alt="user" className="object-cover" />
                 <AvatarFallback className="rounded-lg uppercase">
                     {user?.name?.charAt(0) || "U"}
                 </AvatarFallback>
@@ -58,7 +58,7 @@ const GreetingCard = () => {
                     <Button
                         round
                         className="bg-highlight text-xs md:text-sm font-medium hover:bg-highlight/90 w-full sm:w-auto font-stretch-125%" 
-                        to="/profile"
+                        to="/profile-setup"
                     >
                         Complete Profile
                     </Button>
