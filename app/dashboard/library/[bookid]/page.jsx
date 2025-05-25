@@ -13,6 +13,7 @@ import { getBookById } from '@/lib/actions/library/get-book';
 export default async function Page({ params }) {
     const { bookid } = params;
     const book = await getBookById(bookid);
+    console.log("Book Details:", book);
     if (!book) return notFound();
 
     return (
@@ -86,11 +87,12 @@ export default async function Page({ params }) {
                     <div className=" bg-accent p-6 rounded-3xl  backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition">
                         <div className="flex items-center gap-4 mb-4">
                             <Avatar className="h-14 w-14 border border-white/10 shadow-lg">
-                                <AvatarImage src={book.authorImage} />
+                                <AvatarImage src={book.author?.avatar} />
                                 <AvatarFallback>AU</AvatarFallback>
                             </Avatar>
                             <div className="text-white ">
-                                <p className="font-bold ">{book.author?.name}</p>                                <p className="text-sm ">Author & Coach</p>
+                                <p className="font-bold ">{book.author?.name}</p>
+                                <p className="text-sm ">{book.author.bio || "no Bio for now"}</p>
                             </div>
                         </div>
                         <p className="text-sm text-white ">{book.authorBio}</p>

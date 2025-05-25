@@ -95,11 +95,11 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                     formData.append(key, value);
                 }
             });
-            const response = await updateUser(user.id, formData);
+            const response = await updateUser(user._id, formData);
             if (response && response.success) {
                 setData(mergedData);
                 // Refresh user data after update
-                await refreshUser(user.id);
+                await refreshUser(user._id);
                 toast.success("Profile updated successfully!");
                 router.push("/dashboard");
             } else if (response && response.message) {
