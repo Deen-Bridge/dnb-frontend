@@ -3,22 +3,24 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Button from "@/components/atoms/form/Button"
 import { cn } from "@/lib/utils"
+import ImageUpload from "@/components/atoms/form/ImageInput"
 
 const StepOne = ({ onNext, data, setData, className }) => {
-    const [avatarUrl, setAvatarUrl] = useState(data.profilePicture || "")
+    const [avatar, setAvatar] = useState(null)
+    const [error, setError] = useState("")
 
     const handleChange = (e) => {
         setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
+    // When avatar is selected, store it in shared form data
     const handleAvatarChange = (e) => {
-        const url = e.target.value
-        setAvatarUrl(url)
-        setData((prev) => ({ ...prev, profilePicture: url }))
-    }
+        const file = e.target.files[0];
+        setAvatar(file);
+        setData((prev) => ({ ...prev, avatar: file }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -39,47 +41,60 @@ const StepOne = ({ onNext, data, setData, className }) => {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="age">Age</Label>
                     <Input
-                        id="fullName"
-                        name="fullName"
-                        value={data.fullName || ""}
+                        id="age"
+                        name="age"
+                        type="number"
+                        min={5}
+                        max={120}
+                        value={data.age || ""}
                         onChange={handleChange}
-                        placeholder="e.g. Aisha Yusuf"
+                        placeholder="e.g. 25"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="country">Country</Label>
                     <Input
-                        id="username"
-                        name="username"
-                        value={data.username || ""}
+                        id="country"
+                        name="country"
+                        value={data.country || ""}
                         onChange={handleChange}
-                        placeholder="e.g. deen_bridge_123"
+                        placeholder="e.g. Nigeria"
                         required
                     />
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="profilePicture">Profile Picture URL</Label>
+                    <Label htmlFor="language">Language</Label>
                     <Input
+                        id="language"
+                        name="language"
+                        value={data.language || ""}
+                        onChange={handleChange}
+                        placeholder="e.g. English"
+                        required
+                    />
+                </div>
+
+                <div className="grid gap-2">
+                    <Label htmlFor="profilePicture">Profile Picture</Label>
+                    <ImageUpload
                         id="profilePicture"
-                        name="profilePicture"
-                        value={avatarUrl}
                         onChange={handleAvatarChange}
-                        placeholder="https://example.com/avatar.png"
+                        image={avatar}
                     />
-                    <Avatar className="w-16 h-16 mt-2">
-                        <AvatarImage src={avatarUrl} alt="@profile" />
-                        <AvatarFallback>DB</AvatarFallback>
-                    </Avatar>
+                    {error && <div className="text-xs text-red-500">{error}</div>}
+                    {avatar && (
+                        <img src={URL.createObjectURL(avatar)} alt="Avatar preview" className="w-16 h-16 rounded-full mt-2" />
+                    )}
                 </div>
             </div>
 
-            <Button type="submit" className="w-full">
-                Continue
+            <Button wide round type="submit" className="bg-accent hover:bg-highlight">
+               Complete
             </Button>
         </form>
     )

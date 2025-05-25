@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import axios from "axios"
+import { updateUser } from "@/lib/actions/updateUser"
+import { toast } from "sonner"
+import useAuth from "@/hooks/useAuth"
 
 const islamicInterestsList = [
     "Qur'an Recitation",
@@ -17,18 +22,32 @@ const islamicInterestsList = [
     "Islamic History",
 ]
 
+const countryList = [
+    "Nigeria", "United States", "United Kingdom", "Canada", "Egypt", "Turkey", "Pakistan", "Indonesia", "Malaysia", "Saudi Arabia", "South Africa", "India", "Bangladesh", "Morocco", "Algeria", "France", "Germany", "UAE", "Jordan", "Other"
+];
+const languageList = [
+    "English", "Arabic", "French", "Hausa", "Yoruba", "Igbo", "Swahili", "Urdu", "Malay", "Turkish", "Bengali", "Farsi", "Somali", "Other"
+];
+
 export default function StepTwo({ data, setData, onNext, onPrev, className }) {
+    const { user } = useAuth();
     const [localData, setLocalData] = useState({
-        username: "",
         gender: "",
         interests: [],
+        country: "",
+        language: "",
+        bio: "",
     })
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
 
     useEffect(() => {
         setLocalData({
-            username: data.username || "",
             gender: data.gender || "",
             interests: data.interests || [],
+            country: data.country || "",
+            language: data.language || "",
+            bio: data.bio || "",
         })
     }, [data])
 
@@ -58,9 +77,37 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
         })
     }
 
-    const handleNext = () => {
-        setData({ ...data, ...localData })
-        onNext()
+    const handleSubmit = async () => {
+        setLoading(true)
+        setError("")
+        try {
+            // Merge all data (step one + step two)
+            const mergedData = { ...data, ...localData };
+            // Use FormData for file upload
+            const formData = new FormData();
+            Object.entries(mergedData).forEach(([key, value]) => {
+                if (key === "avatar" && value instanceof File) {
+                    formData.append("avatar", value);
+                } else if (Array.isArray(value)) {
+                    value.forEach((v) => formData.append(key, v));
+                } else if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                }
+            });
+            const response = await updateUser(user.id, formData);
+            if (response && response.success) {
+                setData(mergedData);
+                toast.success("Profile updated successfully!");
+            } else if (response && response.message) {
+                throw new Error(response.message);
+            } else {
+                throw new Error("Failed to update profile (no response from server)");
+            }
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleBack = () => {
@@ -78,18 +125,6 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
             </div>
 
             <div className="grid gap-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                        id="username"
-                        name="username"
-                        placeholder="e.g. deenbro123"
-                        value={localData.username}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-
                 <div className="grid gap-2">
                     <Label>Gender</Label>
                     <RadioGroup
@@ -124,11 +159,62 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                     </div>
                 </div>
 
+                {/* Country Dropdown */}
+                <div className="grid gap-2">
+                    <Label>Country</Label>
+                    <Select
+                        value={localData.country}
+                        onValueChange={val => setLocalData(prev => ({ ...prev, country: val }))}
+                        required
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {countryList.map((c) => (
+                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                {/* Language Dropdown */}
+                <div className="grid gap-2">
+                    <Label>Language</Label>
+                    <Select
+                        value={localData.language}
+                        onValueChange={val => setLocalData(prev => ({ ...prev, language: val }))}
+                        required
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {languageList.map((l) => (
+                                <SelectItem key={l} value={l}>{l}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="bio">Short Bio</Label>
+                    <Input
+                        id="bio"
+                        name="bio"
+                        value={localData.bio}
+                        onChange={handleInputChange}
+                        placeholder="Tell us a bit about yourself..."
+                        maxLength={500}
+                    />
+                </div>
+
+                {error && <div className="text-red-500 text-sm">{error}</div>}
                 <div className="flex justify-between mt-4">
-                    <Button variant="outline" onClick={handleBack}>
+                    <Button variant="outline" onClick={handleBack} disabled={loading}>
                         Back
                     </Button>
-                    <Button onClick={handleNext}>Next</Button>
+                    <Button onClick={handleSubmit} disabled={loading}>
+                        {loading ? "Saving..." : "Next"}
+                    </Button>
                 </div>
             </div>
         </div>

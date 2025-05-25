@@ -16,8 +16,8 @@ const ProfileUserInfo = ({ user }) => {
                     
                 </div>
                 <div>
-                    <p className="text-sm text-gray-400">{user?.name}</p>
-                    <p className="mt-2 text-sm w-full">{user?.bio}</p>
+                    <p className="text-sm">{user?.name}</p>
+                    <p className="mt-2 text-sm w-full">{user?.bio || "No bio"}</p>
                 </div>
             </div>
         </div>
