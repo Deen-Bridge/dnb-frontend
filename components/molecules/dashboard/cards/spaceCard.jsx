@@ -62,7 +62,6 @@ const SpaceCard = ({ space }) => {
 
       {/* New Layout: Host, Title, Description, Meta, Button */}
       <div className="flex flex-col gap-3 px-6 py-4 flex-1">
-   
 
         {/* Title & Description */}
         <div className="mb-2">
@@ -109,7 +108,7 @@ const SpaceCard = ({ space }) => {
           to={`/dashboard/spaces/${id}`}
         >
           <VideoIcon className="h-5 w-5 mr-2" />
-          Join Space
+          View Space
         </Button>
       </div>
     </Card>
