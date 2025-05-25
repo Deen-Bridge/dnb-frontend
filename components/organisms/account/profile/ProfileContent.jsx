@@ -4,6 +4,7 @@ import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
 import { fetchUserCourses } from '@/lib/actions/courses/fetch-user-id-courses';
+import { fetchUserBooks } from '@/lib/actions/library/fetch-user-id-books';
 import { useAuth } from "@/hooks/useAuth";
 import { books } from "@/lib/data";
 const ProfileContent = ({ selectedTab }) => {
@@ -75,12 +76,36 @@ useEffect(() => {
     );
 };
 const BooksTab = () => {
-    
+    const { user, loading } = useAuth();
+    const [userBooks, setUserBooks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        if (loading) return;
+        const getBooks = async () => {
+            setIsLoading(true);
+            try {
+                if (user && user._id) {
+                    const data = await fetchUserBooks(user._id);
+                    setUserBooks(data);
+                } else {
+                    setUserBooks([]);
+                }
+            } catch (err) {
+                setUserBooks([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        getBooks();
+    }, [user, loading]);
     return (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 pt-5">
-            {books && books.length > 0 ? (
-                books.map((book) => (
-                    <LibraryBookCard key={book.id} book={book} />
+            {isLoading ? (
+                // Show skeletons while loading
+                [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
+            ) : userBooks && userBooks.length > 0 ? (
+                userBooks.map((book) => (
+                    <LibraryBookCard key={book.id || book._id} book={book} />
                 ))
             ) : (
                 <Placeholder title="books" />

@@ -18,6 +18,8 @@ export const useAuth = () => {
       : null;
 
     if (token && userInfo) {
+      // Normalize user object to always have _id
+      if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
       setUser(userInfo);
       setIsAuthenticated(true);
     } else {
@@ -41,7 +43,9 @@ export const useAuth = () => {
     try {
       const res = await axios.get(`https://dnb-backend-api.onrender.com/api/users/${userId}`,config);
       if (res.data && (res.data.user || res.data)) {
-        const freshUser = res.data.user || res.data;
+        let freshUser = res.data.user || res.data;
+        // Normalize user object to always have _id
+        if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;
         console.log("User data refreshed:", freshUser);
         // Update user state and cookies
         setUser(freshUser);
@@ -66,11 +70,11 @@ export const login = async (email, password) => {
       password,
     });
     const { token, user } = res.data;
-    console.log(token);
+    // Normalize user object to always have _id
+    if (user.id && !user._id) user._id = user.id;
     // Save token and user info in cookies
     Cookies.set("authToken", token, { expires: 1 }); 
     Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
-    console.log(user,token);
     toast.success("Login successful");
     return user;
   } catch (error) {
@@ -96,12 +100,11 @@ export const signup = async (name, email, password, role) => {
     });
 
     const { token, user } = res.data;
-
+    // Normalize user object to always have _id
+    if (user.id && !user._id) user._id = user.id;
     // Save token and user info in cookies
     Cookies.set("authToken", token, { expires: 1 }); // Expires in 1 day
     Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
-
-    // Show success toast
     toast.success("Signup successful! Redirecting to dashboard...");
     return user; // Return user data if needed
   } catch (error) {
