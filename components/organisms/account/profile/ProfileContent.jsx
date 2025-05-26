@@ -84,14 +84,17 @@ const BooksTab = () => {
         const getBooks = async () => {
             setIsLoading(true);
             try {
-                if (user && user.id) {
-                    const data = await fetchUserBooks(user.id);
+                if (user && user._id) {
+                    console.log("Fetching books for user:", user._id);
+                    const data = await fetchUserBooks(user._id);
+                    console.log("Fetched books:", data);
                     setUserBooks(data);
                 } else {
                     setUserBooks([]);
                 }
             } catch (err) {
                 setUserBooks([]);
+                console.log("Error fetching books:", err);
             } finally {
                 setIsLoading(false);
             }
