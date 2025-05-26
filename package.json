@@ -57,6 +57,7 @@
     "react-resizable-panels": "^2.1.9",
     "react-ripples": "^2.2.1",
     "react-select-country-list": "^2.2.3",
+    "react-star-ratings": "^2.3.0",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
     "styled-components": "^6.1.17",
