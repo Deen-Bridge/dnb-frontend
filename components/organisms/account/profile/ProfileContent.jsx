@@ -84,8 +84,8 @@ const BooksTab = () => {
         const getBooks = async () => {
             setIsLoading(true);
             try {
-                if (user && user._id) {
-                    const data = await fetchUserBooks(user._id);
+                if (user && user.id) {
+                    const data = await fetchUserBooks(user.id);
                     setUserBooks(data);
                 } else {
                     setUserBooks([]);
