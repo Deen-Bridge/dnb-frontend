@@ -13,6 +13,22 @@ import { poppins_600, poppins_700 } from "@/lib/config/font.config";
 const GreetingCard = () => {
     const { user } = useAuth();
 
+    // Profile completion logic
+    const profileFields = [
+        { key: "name", label: "Name" },
+        { key: "email", label: "Email" },
+        { key: "country", label: "Country" },
+        { key: "avatar", label: "Avatar" },
+        { key: "age", label: "Age" },
+        { key: "bio", label: "Bio" },
+        { key: "gender", label: "Gender" },
+        { key: "language", label: "Language" },
+        { key: "interests", label: "Interests" },
+        // Add more fields as needed
+    ];
+    const completedFields = profileFields.filter(f => user && user[f.key]);
+    const progress = Math.round((completedFields.length / profileFields.length) * 100);
+
     // Extract the user's last name (last word)
     const getLastName = (name) => {
         if (!name) return '';
@@ -36,24 +52,24 @@ const GreetingCard = () => {
                     <span className={cn("bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold pl-2", poppins_600.className)}>{getLastName(user?.name)}</span>
                 </h2>
                 <span className="text-sm  hidden sm:block sm:text-base md:text-lg font-stretch-125% ">Starting your day with the Quran feels your day with enjoyment and peace</span>
+   {progress !== 100 && (
 
+ 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                     {/* Progress */}
                     <div className="w-full max-w-lg flex justify-center items-center text-nowrap gap-4">
                         <div className="flex items-center gap-1 text-sm md:text-base mb-1 font-stretch-125%">
                             <Sparkles className="h-5 w-5 text-white" />
-                            <span>70% profile completed</span>
+                            <span>{progress}% profile completed</span>
                         </div>
                         {/* Progress bar container */}
                         <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
                             <div
                                 className="bg-white/70 h-full rounded-full transition-all duration-500"
-                                style={{ width: "70%" }}
+                                style={{ width: `${progress}%` }}
                             />
                         </div>
                     </div>
-
-
                     {/* Button */}
                     <Button
                         round
@@ -63,6 +79,7 @@ const GreetingCard = () => {
                         Complete Profile
                     </Button>
                 </div>
+                  )}
             </div>
         </div>
     );
