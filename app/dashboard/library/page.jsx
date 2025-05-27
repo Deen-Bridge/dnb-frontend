@@ -7,6 +7,7 @@ import Button from "@/components/atoms/form/Button";
 import Modal from "@/components/molecules/Modal";
 import BookCreateForm from "@/components/organisms/create/book-create-form";
 import { fetchBooks } from '@/lib/actions/library/fetch-books';
+import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
 
 const LibraryPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -49,7 +50,7 @@ const LibraryPage = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {loading ? (
-                        <div className="col-span-full text-center text-accent">Loading books...</div>
+                     [...Array(6)].map((_, idx) =>    <LibraryBookSkeleton />)
                     ) : books.length === 0 ? (
                         <div className="col-span-full text-center text-accent">No books found.</div>
                     ) : (
