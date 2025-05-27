@@ -3,6 +3,9 @@ import Button from "@/components/atoms/form/Button";
 import { Star } from "lucide-react"; // optional: use a custom star icon or emoji
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
+import { getAverageRating } from "@/hooks/getAverageRating";
+
+
 const LibraryBookCard = ({ book }) => {
     console.log("LibraryBookCard user id ", book.author?._id);
     return (
@@ -29,26 +32,29 @@ const LibraryBookCard = ({ book }) => {
             {/* Author, Reads, Rating */}
             <div className="px-4 py-4 flex flex-col gap-3 text-sm text-muted-foreground">
                 {/* Author */}
-                <div className="flex items-center gap-2">
-                    <Link href={`/account/profile/${book.author?._id}`} className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
+                <Link href={`/account/profile/${book.author?._id}`} className="flex items-center gap-2">
+
+                    <Avatar className="h-10 w-10 rounded-lg">
                         <AvatarImage src={book.author?.avatar || "/images/img1.jpeg"} />
                         <AvatarFallback>{book.author?.name?.charAt(0) || "A"}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-black">{book.author?.name || "Unknown Author"}</span>
-                   </Link>
-                   </div>
-
+                    <div className="flex flex-col  pt-2">
+                        <span className="font-medium text-black">{book.author?.name || "Unknown Author"}</span>
+                        <span className="text-sm">{book.author?.role || "Unknown Author"}</span>
+                    </div>
+                </Link>
                 {/* Reads & Rating */}
                 <div className="flex justify-between items-center text-xs">
                     <span>{book.readCount || 0} readers</span>
+                    <span>
+                    </span>
                     <div className="flex items-center gap-0.5 text-yellow-500">
                         {[...Array(5)].map((_, i) => (
                             <Star
                                 key={i}
                                 size={14}
-                                fill={i < Math.round(book.rating || 0) ? "#facc15" : "none"}
-                                stroke="#facc15"
+                                fill={i < Math.round(getAverageRating(book?.reviews) || 0) ? "#FFD700" : "none"}
+                                stroke="#FFD700"
                             />
                         ))}
                     </div>
