@@ -9,12 +9,12 @@ import { useAuth } from "@/hooks/useAuth";
 
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
-const ProfileContent = ({ selectedTab }) => {
+const ProfileContent = ({ selectedTab, profileId }) => {
     switch (selectedTab) {
         case "courses":
             return <CoursesTab />;
         case "books":
-            return <BooksTab />;
+            return <BooksTab profileId={profileId} />;
         case "followers":
             return <FollowersTab />;
         default:
@@ -95,25 +95,20 @@ const CoursesTab = () => {
     );
 };
 
-const BooksTab = () => {
-    const { user, loading } = useAuth();
+const BooksTab = ({ profileId }) => {
+    const { loading } = useAuth(); // you don't need user here
     const [userBooks, setUserBooks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (loading) return;
+        if (loading || !profileId) return; // Wait for loading to finish
         const getBooks = async () => {
             setIsLoading(true);
             setError(null);
             try {
-                if (user && user._id) {
-                    const data = await fetchUserBooks(user._id);
-                    setUserBooks(data);
-                } else {
-                    setUserBooks([]);
-                    setError("User not found or not logged in");
-                }
+                const data = await fetchUserBooks(profileId);
+                setUserBooks(data);
             } catch (err) {
                 setUserBooks([]);
                 setError("Failed to fetch books. Please check your connection.");
@@ -122,7 +117,7 @@ const BooksTab = () => {
             }
         };
         getBooks();
-    }, [user, loading]);
+    }, [profileId, loading]);
 
     if (error) {
         return (
@@ -131,9 +126,8 @@ const BooksTab = () => {
                 reset={() => {
                     setError(null);
                     setIsLoading(true);
-                    // re-trigger fetch
-                    if (user && user._id) {
-                        fetchUserBooks(user._id)
+                    if (profileId) {
+                        fetchUserBooks(profileId)
                             .then(data => setUserBooks(data))
                             .catch(() => setError("Failed to fetch books. Please check your connection."))
                             .finally(() => setIsLoading(false));
