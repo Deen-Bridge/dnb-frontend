@@ -8,7 +8,7 @@ import {getUserById} from "@/lib/actions/users/getUserById"
 import NotFoundComp from "@/components/molecules/errors/NotFound";
 
 const page = ({ params }) => {
-  const { profileid } = params;
+  const { profileid } =  React.use(params);
   const [selectedTab, setSelectedTab] = useState("courses");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const page = ({ params }) => {
         <ProfileHeader avatar={user?.avatar} />
         <ProfileUserInfo user={user} />
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
-        <ProfileContent selectedTab={selectedTab} />
+        <ProfileContent selectedTab={selectedTab} profileId={profileid} />
       </div>
     </>
   );
