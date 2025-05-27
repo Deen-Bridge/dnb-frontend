@@ -25,12 +25,12 @@ const SpaceCard = ({ space }) => {
     thumbnail,
     category,
     status,
-    startTime,
+    eventDate,
     duration,
     host,
   } = space;
 
-  const formattedTime = format(new Date(startTime), "PPpp");
+  const formattedTime = format(new Date(eventDate), "PPpp");
 
   return (
     <Card className="relative flex flex-col overflow-hidden rounded-3xl bg-gradient-to-br from-green-50 via-white to-green-100/80 backdrop-blur-xl shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all group border-0">
@@ -52,9 +52,9 @@ const SpaceCard = ({ space }) => {
               {category}
             </Badge>
           )}
-          {status === "live" && (
-            <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-accent text-white text-xs rounded-full font-semibold shadow-md animate-pulse border-0">
-              🟢 Live
+          {status  && (
+            <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-accent text-white text-xs rounded-full font-semibold shadow-md  border-0">
+              🟢 {status.toUpperCase()}
             </div>
           )}
         </div>
@@ -85,9 +85,9 @@ const SpaceCard = ({ space }) => {
         </div>
              {/* Host */}
         <div className="flex items-center gap-3 mb-2">
-          <Avatar className="h-10 w-10 rounded-xl">
+          <Avatar className="h-10 w-10">
             <AvatarImage
-              src={host?.image || "/images/avatar-placeholder.png"}
+              src={host?.avatar || "/images/avatar-placeholder.png"}
               alt={host?.name}
             />
             <AvatarFallback className="rounded-xl">

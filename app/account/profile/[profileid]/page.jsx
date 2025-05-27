@@ -5,6 +5,7 @@ import ProfileUserInfo from "@/components/organisms/account/profile/ProfileUserI
 import ProfileTabs from "@/components/organisms/account/profile/ProfileTabs";
 import ProfileContent from "@/components/organisms/account/profile/ProfileContent";
 import {getUserById} from "@/lib/actions/users/getUserById"
+import NotFoundComp from "@/components/molecules/errors/NotFound";
 
 const page = ({ params }) => {
   const { profileid } = params;
@@ -26,7 +27,7 @@ const page = ({ params }) => {
     return <div className="min-h-screen flex items-center justify-center text-lg">Loading user...</div>;
   }
   if (!user) {
-    return <div className="min-h-screen flex items-center justify-center text-lg text-red-500">User not found.</div>;
+       return <NotFoundComp errMsg="User profile not found or has been removed." />
   }
 
   return (
