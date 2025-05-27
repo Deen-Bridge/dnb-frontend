@@ -94,7 +94,7 @@ const Button = ({
             {...props}
             disabled={commonProps.disabled}
             id={commonProps.id}
-            className={cn(wide && 'w-full flex-grow h-auto   text-white')}
+            className={cn(wide && 'w-full flex-grow h-auto focus:outline-none text-white')}
         >
             <Ripples
                 id={commonProps.id}

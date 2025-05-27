@@ -9,10 +9,17 @@ import { DownloadCloud, Eye, Star, UserRound, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
 import { getSpaceById } from "@/lib/actions/spaces/doGetSpacesById";
+import { Clock } from "lucide-react";
 
 export default async function Page({ params }) {
     const { spacesid } = params;
-    const space = await getSpaceById(spacesid);
+    let space = null;
+    try {
+        space = await getSpaceById(spacesid);
+    } catch (err) {
+        console.error("Error fetching space:", err);
+        return notFound();
+    }
     if (!space) return notFound();
 
     return (
@@ -37,6 +44,9 @@ export default async function Page({ params }) {
                             <Badge variant="accent" className="bg-white/10 text-highlight">
                                 {space.price ? `$${space.price}` : "Free"}
                             </Badge>
+                             <Badge variant="accent" className="bg-white/10 text-highlight">
+                                {space.status.toUpperCase()}
+                            </Badge>
                         </div>
                         <p className="text-md /80 leading-relaxed">{space.description}</p>
                     </div>
@@ -56,14 +66,21 @@ export default async function Page({ params }) {
                             round
                             to="#" // TODO: Add waitlist logic or link
                         >
-                            <DownloadCloud className="w-4 h-4 mr-2" /> Join Waitlist
+                         <Clock className="w-5 h-5 mr-2" /> Join Waitlist
                         </Button>
                     </div>
 
-                    {/* Host Card */}
+                 
+
+                </div>
+
+                {/* Sidebar */}
+                <aside className="md:col-span-4 space-y-8 sticky top-20 self-start">
+        
+                 {/* Host Card */}
                     <div className="flex items-center gap-4 mt-10 bg-accent/10 p-4 rounded-2xl shadow">
                         <Avatar className="h-14 w-14 border border-white/10 shadow-lg">
-                            <AvatarImage src={space.host?.image || "/images/avatar-placeholder.png"} />
+                            <AvatarImage src={space.host?.avatar || "/images/avatar-placeholder.png"} />
                             <AvatarFallback>{space.host?.name?.slice(0,2).toUpperCase() || "HN"}</AvatarFallback>
                         </Avatar>
                         <div className="text-accent ">
@@ -72,57 +89,23 @@ export default async function Page({ params }) {
                         </div>
                     </div>
 
-                    {/* Review Section */}
-                    <div className="pt-10 space-y-5 border-t border-white/10">
-                        <h2 className="text-3xl font-semibold">Leave a Review</h2>
-                        <div className="flex gap-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className="text-yellow-400 w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                            ))}
-                        </div>
-                        <Textarea
-                            placeholder="What did you think about the space?"
-                            className="bg-white/10  min-h-[120px] border-accent focus:outline-none"
-                        />
-                        <Button wide round className="bg-accent hover:bg-highlight  font-semibold mt-2 transition ">
-                            Submit Review
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Sidebar */}
-                <aside className="md:col-span-4 space-y-8 sticky top-20 self-start">
-                    {/* Author Card */}
-                    <div className=" bg-accent p-6 rounded-3xl  backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition">
-                        <div className="flex items-center gap-4 mb-4">
-                            <Avatar className="h-14 w-14 border border-white/10 shadow-lg">
-                                <AvatarImage src={space.authorImage} />
-                                <AvatarFallback>AU</AvatarFallback>
-                            </Avatar>
-                            <div className="text-white ">
-                                <p className="font-bold ">{space.author?.name}</p>                                <p className="text-sm ">Author & Coach</p>
-                            </div>
-                        </div>
-                        <p className="text-sm text-white ">{space.authorBio}</p>
-                    </div>
-
                     {/* space Stats */}
-                    <div className="bg-accent p-6 rounded-3xl text-white  backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition space-y-4">
+                    <div className="bg-accent/10 p-6 rounded-3xl  border border-white/10 shadow  space-y-4">
                         <h3 className="text-xl font-semibold flex items-center gap-2 ">
-                            <BarChart3 className="w-5 h-5 text-indigo-300" />
-                            space Stats
+                            <BarChart3 className="w-5 h-5" />
+                            Space Stats
                         </h3>
 
-                        <StatRow icon={<Eye className="w-4 h-4 text-cyan-400" />} label="Monthly Reads" value={space.monthlyReads} />
+                        <StatRow icon={<Eye className="w-4 h-4" />} label="Monthly Reads" value={space.monthlyReads} />
                         <StatRow
-                            icon={<DownloadCloud className="w-4 h-4 text-green-400" />}
+                            icon={<DownloadCloud className="w-4 h-4 " />}
                             label="Downloads"
                             value={space.downloads}
                         />
                         <StatRow
                             icon={<Star className="w-4 h-4 text-yellow-400" />}
                             label="Rating"
-                            value={`${space.rating} / 5`}
+                            value={`${space.rating || 0} / 5`}
                         />
                     </div>
                 </aside>
@@ -133,7 +116,7 @@ export default async function Page({ params }) {
 
 function StatRow({ icon, label, value }) {
     return (
-        <div className="flex justify-between items-center text-sm font-medium">
+        <div className="flex justify-between items-center text-sm font-medium text-accent">
             <div className="flex items-center gap-2">{icon} {label}</div>
             <span className="font-bold">{value}</span>
         </div>

@@ -19,7 +19,6 @@ export default function BookDetailPage({ book }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState("");
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -90,6 +89,8 @@ export default function BookDetailPage({ book }) {
 
                     
                     {/* Review Section */}
+                    {user?._id !== book.author._id && (
+                       
                     <div className="pt-10 space-y-5 border-t border-white/10">
                     {!submitted && (
                         <>
@@ -124,6 +125,7 @@ export default function BookDetailPage({ book }) {
                         </>
                     )}
                     </div>
+                         )}
                 </div>
                 {/* Sidebar for desktop/tablet */}
                 <div className="md:col-span-4 hidden md:block space-y-8 sticky top-20 self-start">
