@@ -37,7 +37,7 @@ import Button from "@/components/atoms/form/Button"
 export function NavUser({
     user }) {
     const { isMobile } = useSidebar();
-    const { logout } = useAuth();
+    const { user: currentUser, logout } = useAuth();
     const [modalOpen, setModalOpen] = useState(false);
     const upgrade = () => {
         setModalOpen(true);
@@ -91,7 +91,7 @@ export function NavUser({
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <Link href="/account/profile">
+                                <Link href={`/account/profile/${currentUser?._id}`}>
                                     <DropdownMenuItem>
                                         <BadgeCheck />
                                         Account
