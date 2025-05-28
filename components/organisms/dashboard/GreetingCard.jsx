@@ -2,6 +2,7 @@
 import React from "react";
 import { Sparkles } from "lucide-react";
 import Button from "@/components/atoms/form/Button";
+import { QuoteIcon } from "lucide-react";
 import {
     Avatar,
     AvatarFallback,
@@ -51,35 +52,33 @@ const GreetingCard = () => {
                     Assalamu ʿalaikum
                     <span className={cn("bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold pl-2", poppins_600.className)}>{getLastName(user?.name)}</span>
                 </h2>
-                <span className="text-sm  hidden sm:block sm:text-base md:text-lg font-stretch-125% ">Starting your day with the Quran feels your day with enjoyment and peace</span>
-   {progress !== 100 && (
-
- 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-                    {/* Progress */}
-                    <div className="w-full max-w-lg flex justify-center items-center text-nowrap gap-4">
-                        <div className="flex items-center gap-1 text-sm md:text-base mb-1 font-stretch-125%">
-                            <Sparkles className="h-5 w-5 text-white" />
-                            <span>{progress}% profile completed</span>
+                {progress === 100 && (<span className="text-sm flex sm:text-base md:text-lg font-stretch-125% "> Starting your day with the Quran feels your day with enjoyment and peace <QuoteIcon size={13} className="top-5" /></span>)}
+                {progress !== 100 && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                        {/* Progress */}
+                        <div className="w-full max-w-lg flex justify-center items-center text-nowrap gap-4">
+                            <div className="flex items-center gap-1 text-sm md:text-base mb-1 font-stretch-125%">
+                                <Sparkles className="h-5 w-5 text-white" />
+                                <span>{progress}% profile completed</span>
+                            </div>
+                            {/* Progress bar container */}
+                            <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+                                <div
+                                    className="bg-white/70 h-full rounded-full transition-all duration-500"
+                                    style={{ width: `${progress}%` }}
+                                />
+                            </div>
                         </div>
-                        {/* Progress bar container */}
-                        <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
-                            <div
-                                className="bg-white/70 h-full rounded-full transition-all duration-500"
-                                style={{ width: `${progress}%` }}
-                            />
-                        </div>
+                        {/* Button */}
+                        <Button
+                            round
+                            className="bg-highlight text-xs md:text-sm font-medium hover:bg-highlight/90 w-full sm:w-auto font-stretch-125%"
+                            to="/profile-setup"
+                        >
+                            Complete Profile
+                        </Button>
                     </div>
-                    {/* Button */}
-                    <Button
-                        round
-                        className="bg-highlight text-xs md:text-sm font-medium hover:bg-highlight/90 w-full sm:w-auto font-stretch-125%" 
-                        to="/profile-setup"
-                    >
-                        Complete Profile
-                    </Button>
-                </div>
-                  )}
+                )}
             </div>
         </div>
     );
