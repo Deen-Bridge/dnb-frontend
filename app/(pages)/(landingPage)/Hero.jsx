@@ -25,8 +25,8 @@ const Hero = () => {
 
                 <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 max-w-xl text-green-200">
                     Your journey to{" "}
-                    <span className="text-white font-semibold">excellence</span>{" "}
-                    starts here.
+                    <span className="text-white font-semibold">excellence</span>
+                  {" "}  starts here.
                 </p>
 
                 <Button
@@ -38,7 +38,7 @@ const Hero = () => {
                   Lets Dive
                 </Button>
             </div>
-        </main>
+    </main>
     );
 };
 

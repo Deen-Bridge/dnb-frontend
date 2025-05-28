@@ -44,7 +44,7 @@ const Header = () => {
       </nav>
 
       {/* Mobile Nav */}
-      <nav className="lg:hidden flex items-center justify-between px-2  sticky top-0 z-10 bg-transparent text-secondary">
+      <nav className="lg:hidden flex items-center justify-between   sticky top-0 z-10 bg-transparent text-secondary">
         <Image
           src="/images/dnb-nobg.png"
           width={80}
@@ -67,23 +67,23 @@ function MobileNav() {
           <AlignJustify size={80} />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-3/4">
+      <SheetContent side="right" className="w-3/4 bg-muted">
         <SheetHeader className="mb-4 text-left text-xl font-semibold">
           Menu
         </SheetHeader>
-        <nav className="flex flex-col space-y-4">
+        <nav className="flex flex-col space-y-4 px-4 ">
           {links.map((link) => (
             <SheetClose asChild key={link.to}>
               <Link
                 href={link.to}
-                className="text-base hover:text-primary transition-colors"
+                className="text-md font-stretch-90% font-light hover:font-medium hover:text-primary transition-all"
               >
                 {link.name}
               </Link>
             </SheetClose>
           ))}
         </nav>
-        <div className="mt-6">
+        <div className="mt-6 px-4 text-sm">
           <AuthNavButtons />
         </div>
       </SheetContent>
