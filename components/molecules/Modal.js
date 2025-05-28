@@ -40,7 +40,6 @@ const Modal = ({ isOpen, onClose, children, title }) => {
             <X size={25} />
           </button>
         </div>
-        <div className="border-b border-gray4"></div>
         <div className="p-4 sm:p-6 flex-1 overflow-y-auto">{children}</div>
       </div>
     </div>
