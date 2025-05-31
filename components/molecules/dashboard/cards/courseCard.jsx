@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
+import Link from "next/link";
 import Image from "next/image";
 import {
     Avatar,
@@ -19,7 +20,7 @@ const CourseCard = ({ course }) => {
             {/* Image */}
             <div className="relative h-60 w-full">
                 <Image
-                    src={course.image || "/images/placeholder.jpg"}
+                    src={course.thumbnail || "/images/placeholder.jpg"}
                     alt={course.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -49,16 +50,16 @@ const CourseCard = ({ course }) => {
             {/* Instructor */}
             <CardContent>
                 <div className="flex justify-between items-center gap-3">
-                    <div className="flex items-center gap-2">
+                    <Link href={`/account/profile/${course.createdBy._id}`} className="flex items-center gap-2">
                         <Avatar className="h-10 w-10 rounded-lg">
-                            <AvatarImage src={course.instructor?.avatar || course.createdBy?.avatar || "/images/placeholder.jpg"} alt="Instructor" />
+                            <AvatarImage src={ course.createdBy?.avatar || "/images/placeholder.jpg"} alt="Instructor" />
                             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                         </Avatar>
                         <div className="text-sm">
-                            <p className="font-medium">{course.instructor?.name || course.createdBy?.name || "Ali Jamal"}</p>
+                            <p className="font-medium">{course.createdBy?.name || "Ali Jamal"}</p>
                             <p className="text-muted-foreground text-xs">Instructor</p>
                         </div>
-                    </div>
+                    </Link>
                     <div>
                         <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
                             {course.price ? `$${course.price}` : "Free"}
@@ -72,8 +73,8 @@ const CourseCard = ({ course }) => {
                 <Button
                     wide
                     round
-                    className="w-full bg-highlight text-white hover:bg-accent text-sm font-semibold"
-                    to={`/dashboard/courses/${course.id}`}
+                    className="w-full bg-accent text-white hover:bg-accent/90 text-sm font-semibold"
+                    to={`/dashboard/courses/${course._id}`}
                 >
                     View Course
                 </Button>

@@ -32,9 +32,9 @@ const Placeholder = ({ title }) => (
 );
 
 
-const CoursesTab = () => {
-    const { user, loading } = useAuth();
-    const [courses, setCourses] = useState([]);
+const CoursesTab = ({profileId}) => {
+    const {loading } = useAuth();
+    const [userCourses, setUserCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -44,15 +44,15 @@ const CoursesTab = () => {
             setIsLoading(true);
             setError(null);
             try {
-                if (user && user._id) {
-                    const data = await fetchUserCourses(user._id);
-                    setCourses(data);
+                if (profileId && profileId._id) {
+                    const data = await fetchUserCourses(profileId._id);
+                    setUserCourses(data);
                 } else {
-                    setCourses([]);
+                    userCourses([]);
                     setError("User not found or not logged in");
                 }
             } catch (err) {
-                setCourses([]);
+                setUserCourses([]);
                 setError("Failed to fetch courses. Please check your connection.");
             } finally {
                 setIsLoading(false);
