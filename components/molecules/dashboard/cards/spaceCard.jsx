@@ -19,7 +19,7 @@ import { format } from "date-fns";
 
 const SpaceCard = ({ space }) => {
   const {
-    id,
+    _id,
     title,
     description,
     thumbnail,
@@ -105,7 +105,7 @@ const SpaceCard = ({ space }) => {
           wide
           round
           className="w-full bg-gradient-to-r from-highlight to-accent text-white hover:brightness-110 hover:scale-[1.01] text-base font-bold shadow-lg transition-all py-3 mt-auto"
-          to={`/dashboard/spaces/${id}`}
+          to={`/dashboard/spaces/${_id}`}
         >
           <VideoIcon className="h-5 w-5 mr-2" />
           View Space
