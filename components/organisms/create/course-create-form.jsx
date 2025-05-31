@@ -9,8 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ImageUpload from '@/components/atoms/form/ImageInput';
 import { toast } from 'sonner';
-
-
+import { createCourse } from '@/lib/actions/courses/create-course';
 const CreateCourseForm = () => {
     const router = useRouter();
     const [form, setForm] = useState({
@@ -28,10 +27,28 @@ const CreateCourseForm = () => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-    };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
+    const data = await createCourse({ form, thumbnail, video });
+
+    if (data && data.success) {
+      toast.success("Course created successfully!");
+    
+      router.push(`/dashboard/courses/${data.course._id}`);
+    } else {
+      toast.error(data?.message || "Failed to create course.");
+    }
+  } catch (error) {
+    toast.error(error?.message || "An error occurred while creating the course.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     return (
         <form
@@ -81,7 +98,7 @@ const CreateCourseForm = () => {
 
             <div>
                 <Label id="file" className="block mb-1 text-sm font-medium">Upload Course video</Label>
-                <VideoUpload id="file" video={video} onChange={(e) => setFile(e.target.files[0])} />
+                <VideoUpload id="file" video={video} onChange={(e) => setVideo(e.target.files[0])} />
             </div>
 
 

@@ -16,7 +16,7 @@ const VideoUpload = ({ id, onChange, video }) => {
                 name={id}
                 ref={inputRef}
                 className="absolute left-0 top-0 w-0 h-0 opacity-0"
-                accept="*/*"
+                accept="video/*"
                 onChange={onChange}
             />
             <button
