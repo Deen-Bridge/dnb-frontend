@@ -15,7 +15,7 @@ export function CustomSidebar({ book, navMain, ...props }) {
     "--sidebar-width-mobile": "20rem",
   }}>
     <Sidebar {...props}>
-      <SidebarContent className="bg-transparent fixed w-auto mx-4">
+      <SidebarContent className="bg-transparent  w-full mx-6">
      <BookStatsInfo book={book} />
       </SidebarContent>
     </Sidebar>

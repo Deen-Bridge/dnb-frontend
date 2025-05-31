@@ -14,7 +14,7 @@ import {
   defaultLayoutIcons,
 } from '@vidstack/react/player/layouts/default';
 
-const VidPlayerBox = () => {
+const VidPlayerBox = ({ data }) => {
   const textTracks = [
     {
       kind: 'subtitles',
@@ -28,13 +28,13 @@ const VidPlayerBox = () => {
   return (
     <div className="w-full h-full">
       <MediaPlayer
-      src='https://files.vidstack.io/sprite-fight/720p.mp4'
-  viewType='video'
-  streamType='on-demand'
-  logLevel='warn'
-  playsInline
-  title='Sprite Fight'
-  poster='https://files.vidstack.io/sprite-fight/poster.webp'
+        src={data?.video}
+        viewType='video'
+        streamType='on-demand'
+        logLevel='warn'
+        playsInline
+        title={data?.title}
+        poster={data?.thumbnail}
       >
         <MediaProvider>
           <Poster className="vds-poster" />

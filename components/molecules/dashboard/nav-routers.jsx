@@ -35,25 +35,22 @@ const links = [
     icon: Book,
   },
   {
+    name: "Spaces",
+    link: "/dashboard/spaces",
+    icon: AudioWaveform,
+  },
+  {
     name: "Reels",
     link: "/dashboard/reels",
     icon: Play,
   },
-  {
-    name: "Fiqh",
-    link: "/dashboard/fiqh",
-    icon: AudioWaveform,
-  },
+
   {
     name: "Messages",
     link: "/dashboard/messages",
     icon: Inbox,
   },
-  {
-    name: "Spaces",
-    link: "/dashboard/spaces",
-    icon: AudioWaveform,
-  }
+
 ];
 
 const Navrouter = () => {
