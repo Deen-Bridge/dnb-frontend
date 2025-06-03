@@ -43,10 +43,10 @@ export default function CoursesPage() {
 
             <div className="bg-muted">
                 <div className="flex justify-between items-center p-5">
-                    <h2 className="font-semibold text-3xl text-accent ">
+                    <h2 className="font-semibold text-lg sm:text-3xl text-accent ">
                         Courses created to suit your soul
                     </h2>
-                    <Button round outlined onClick={() => (setModalOpen(!modalOpen))}>Create Course</Button></div>
+                    <Button round outlined className="text-xs sm:text-normal" onClick={() => (setModalOpen(!modalOpen))}>Create Course</Button></div>
 
 
                 <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">

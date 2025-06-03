@@ -12,13 +12,13 @@ export default function CourseCardSkeleton() {
             {/* Subtitle skeleton */}
             <Skeleton className="h-4 w-1/2 rounded bg-highlight" />
             {/* Chips/Tags skeleton */}
-            <div className="flex gap-2 mt-2">
+            <div className="flex justify-between gap-2 mt-2">
                 <Skeleton className="h-6 w-16 rounded-full bg-highlight" />
                 <Skeleton className="h-6 w-12 rounded-full bg-highlight" />
             </div>
             {/* Button skeleton */}
             <div className="flex justify-end mt-auto w-full">
-                <Skeleton className="h-8 rounded-lg bg-secondary w-full" />
+                <Skeleton className="h-8 rounded-full bg-secondary w-full" />
             </div>
         </div>
     );
