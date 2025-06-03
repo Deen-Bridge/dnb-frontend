@@ -9,10 +9,14 @@ export default async function Page({ params }) {
   const { courseId } = params;
   const course = await getCourseById(courseId);
 
-  if (!course) return notFound();
+  if (!course){
+    setTimeout(()=>{
+      return notFound();
+    },4000)
+  } 
 
   return (
-    <div className="max-w-full px-4 py-4">
+    <div className="max-w-full px-2 sm:px-4 py-4">
       <h2 className="text-3xl font-extrabold mb-6">Watch Course</h2>
 
       {/* Video Player Full Width */}
@@ -21,7 +25,7 @@ export default async function Page({ params }) {
       </div>
 
       {/* Info Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-2 sm:px-10">
         {/* Left Column: Course details */}
         <div className="lg:col-span-2 space-y-4">
           <h3 className="text-4xl font-semibold">{course.title}</h3>
@@ -31,17 +35,21 @@ export default async function Page({ params }) {
               <AvatarImage src={course.createdBy?.avatar || "/images/img1.jpeg"} />
               <AvatarFallback>{course.createdBy?.name?.charAt(0) || "A"}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col  pt-2">
-              <span className="font-medium text-black">{course.createdBy?.name || "Unknown creator"}</span>
-              <span className="text-sm">{course.createdBy?.role || "Unknown creator"}</span>
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex  justify-between   pt-2">
+                <span className="font-medium text-black">{course.createdBy?.name || "Unknown creator"}</span>
+                <span className="text-sm text-muted">{course.createdBy?.role || "Unknown creator"}</span>
+              </div>
+
+              <div className="border-t pt-4 text-gray-600 text-sm space-y-2">
+                <p><strong>Duration:</strong> {course.duration || "N/A"}</p>
+                <p><strong>Level:</strong> {course.level || "Beginner"}</p>
+                {/* Add more course info here */}
+              </div>
             </div>
           </Link>
 
-          <div className="border-t pt-4 text-gray-600 text-sm space-y-2">
-            <p><strong>Duration:</strong> {course.duration || "N/A"}</p>
-            <p><strong>Level:</strong> {course.level || "Beginner"}</p>
-            {/* Add more course info here */}
-          </div>
+
         </div>
 
         {/* Right Column: Pricing & category */}

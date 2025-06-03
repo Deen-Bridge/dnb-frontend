@@ -48,10 +48,10 @@ export default function Notybell() {
     return (
         <>
             <div
-                className="relative p-2 rounded-full hover:bg-highlight/20 bg-accent/10 transition cursor-pointer"
+                className="relative p-2 rounded-full hover:bg-muted/20 bg-muted transition cursor-pointer"
                 onClick={() => setOpen(true)}
             >
-                <Bell size={20} className="text-highlight hover:text-black" />
+                <Bell size={20} className="text-accent hover:text-black" />
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
             </div>
 

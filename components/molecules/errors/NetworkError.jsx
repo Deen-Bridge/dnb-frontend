@@ -60,7 +60,7 @@ const NetworkErrorComp = ({
           `rounded-2xl py-3 px-8 text-base lg:text-lg`,
           Space_Grotesk_400.className
         )}
-        flat
+   
       >
         Retry
       </Button>

@@ -37,12 +37,12 @@ const RecommendedCourseCard = ({ course }) => (
                     </div>
 
                     {/* Category & Price */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-center">
                         <span className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
                             {course.price ? `$${course.price}` : "Free"}
                         </span>
                         <span>
-                            <Badge className="bg-primary  text-white/90 text-xs font-semibold">
+                            <Badge className="bg-gradient-to-r from-highlight to-accent rounded-full  text-white/90 text-xs px-3 py-1  font-semibold shadow">
                                 {course.category || "General"}
                             </Badge>
 

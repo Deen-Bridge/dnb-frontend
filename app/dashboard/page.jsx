@@ -7,7 +7,7 @@ import RecentChats from "@/components/organisms/dashboard/RecentChats";
 import LearningProgress from "@/components/organisms/dashboard/LearningProgress";
 export default function Dashboard() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-6 space-y-6">
       <GreetingCard />
       <StatsOverview />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
