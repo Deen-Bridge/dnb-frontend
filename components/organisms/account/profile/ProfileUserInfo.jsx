@@ -8,7 +8,6 @@ import {useAuth} from '@/hooks/useAuth';
 
 const ProfileUserInfo = ({ user }) => {
    const { user: currentUser } = useAuth();
-   console.log("ProfileUserInfo currentUser:", currentUser);
     return (
         <div className="pt-16 px-6 pb-6">
                 <div className='flex justify-between items-center gap-4 pb-3'>
