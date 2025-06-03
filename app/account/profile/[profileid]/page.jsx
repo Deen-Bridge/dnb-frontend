@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { use,useState, useEffect } from "react";
 import ProfileHeader from "@/components/organisms/account/profile/ProfileHeader";
 import ProfileUserInfo from "@/components/organisms/account/profile/ProfileUserInfo";
 import ProfileTabs from "@/components/organisms/account/profile/ProfileTabs";
@@ -8,7 +8,7 @@ import {getUserById} from "@/lib/actions/users/getUserById"
 import NotFoundComp from "@/components/molecules/errors/NotFound";
 
 const page = ({ params }) => {
-  const { profileid } =  React.use(params);
+  const { profileid } =  use(params);
   const [selectedTab, setSelectedTab] = useState("courses");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,6 +18,7 @@ const page = ({ params }) => {
       setLoading(true);
       const res = await getUserById(profileid);
       setUser(res?.user || null);
+      console.log("Fetched user:", res?.user);
       setLoading(false);
     };
     fetchUser();
@@ -36,7 +37,7 @@ const page = ({ params }) => {
         <ProfileHeader avatar={user?.avatar} />
         <ProfileUserInfo user={user} />
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
-        <ProfileContent selectedTab={selectedTab} profileId={profileid} />
+        <ProfileContent selectedTab={selectedTab} profileId={user?._id} />
       </div>
     </>
   );

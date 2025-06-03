@@ -12,7 +12,7 @@ import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 const ProfileContent = ({ selectedTab, profileId }) => {
     switch (selectedTab) {
         case "courses":
-            return <CoursesTab />;
+            return <CoursesTab profileId={profileId} />;
         case "books":
             return <BooksTab profileId={profileId} />;
         case "followers":
@@ -32,8 +32,8 @@ const Placeholder = ({ title }) => (
 );
 
 
-const CoursesTab = ({profileId}) => {
-    const {loading } = useAuth();
+const CoursesTab = ({ profileId }) => {
+    const { loading } = useAuth();
     const [userCourses, setUserCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -44,8 +44,9 @@ const CoursesTab = ({profileId}) => {
             setIsLoading(true);
             setError(null);
             try {
-                if (profileId && profileId._id) {
-                    const data = await fetchUserCourses(profileId._id);
+                if (profileId) {
+                    console.log("Fetching courses for profileId:", profileId);
+                    const data = await fetchUserCourses(profileId);
                     setUserCourses(data);
                 } else {
                     userCourses([]);
@@ -59,7 +60,7 @@ const CoursesTab = ({profileId}) => {
             }
         };
         getCourses();
-    }, [user, loading]);
+    }, [loading]);
 
     if (error) {
         return (
@@ -68,14 +69,14 @@ const CoursesTab = ({profileId}) => {
                 reset={() => {
                     setError(null);
                     setIsLoading(true);
-                    // re-trigger fetch
-                    if (user && user._id) {
-                        fetchUserCourses(user._id)
-                            .then(data => setCourses(data))
+                    if (profileId) {
+                        fetchUserCourses(profileId)
+                            .then(data => setUserCourses(data))
                             .catch(() => setError("Failed to fetch courses. Please check your connection."))
                             .finally(() => setIsLoading(false));
                     }
                 }}
+
             />
         );
     }
@@ -84,8 +85,8 @@ const CoursesTab = ({profileId}) => {
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 pt-5">
             {isLoading ? (
                 [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
-            ) : courses && courses.length > 0 ? (
-                courses.map((course, index) => (
+            ) : userCourses && userCourses.length > 0 ? (
+                userCourses.map((course, index) => (
                     <CourseCard key={course.id || course._id || index} course={course} />
                 ))
             ) : (
@@ -107,6 +108,7 @@ const BooksTab = ({ profileId }) => {
             setIsLoading(true);
             setError(null);
             try {
+                console.log("Fetching books for profileId:", profileId);
                 const data = await fetchUserBooks(profileId);
                 setUserBooks(data);
             } catch (err) {
