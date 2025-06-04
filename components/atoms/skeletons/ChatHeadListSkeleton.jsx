@@ -10,7 +10,7 @@ export const ChatHeadListSkeleton = () => {
                     <div className="mt-4 min-h-[80px] border-wmt-dash-line-gray border-b-2 p-4 animate-pulse w-full">
                         <div className="flex gap-4 items-center">
                             {/* Shimmer loader for the avatar */}
-                            <div className="h-12 w-12 bg-gray-300 rounded-full" />
+                            <div className="h-10 w-10 bg-gray-300 rounded-full" />
                             <div className="w-full">
                                 {/* Shimmer loader for the name */}
                                 <div className="h-4 bg-gray-300 w-2/3 rounded" />
