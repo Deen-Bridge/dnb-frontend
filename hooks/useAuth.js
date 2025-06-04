@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import axios from "axios";
+import axiosInstance from "@/lib/config/axios.config";
 import config from "@/lib/config/req.header.config";
 
 export const useAuth = () => {
@@ -42,7 +42,7 @@ export const useAuth = () => {
   // Add a function to refresh user data from backend after profile update
   const refreshUser = async (userId) => {
     try {
-      const res = await axios.get(`https://dnb-backend-api.onrender.com/api/users/${userId}`,config);
+      const res = await axiosInstance.get(`/api/users/${userId}`, config);
       if (res.data && (res.data.user || res.data)) {
         let freshUser = res.data.user || res.data;
         // Normalize user object to always have _id
@@ -66,7 +66,7 @@ export const useAuth = () => {
 // Export login function separately
 export const login = async (email, password) => {
   try {
-    const res = await axios.post("/api/auth/login", {
+    const res = await axiosInstance.post("/api/auth/login", {
       email,
       password,
     });
@@ -74,7 +74,7 @@ export const login = async (email, password) => {
     // Normalize user object to always have _id
     if (user.id && !user._id) user._id = user.id;
     // Save token and user info in cookies
-    Cookies.set("authToken", token, { expires: 1 }); 
+    Cookies.set("authToken", token, { expires: 1 });
     Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
     toast.success("Login successful");
     return user;
@@ -93,7 +93,7 @@ export const login = async (email, password) => {
 };
 export const signup = async (name, email, password, role) => {
   try {
-    const res = await axios.post("/api/auth/signup", {
+    const res = await axiosInstance.post("/api/auth/signup", {
       name,
       email,
       password,
