@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_SOCKET_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:5000";
+
+if (!process.env.NEXT_PUBLIC_SOCKET_URL && !process.env.NEXT_PUBLIC_API_URL) {
+  console.warn(
+    "Socket URL is not defined in environment variables. Using default URL."
+  );
+}
 
 export const useChatSocket = ({ conversationId, onMessage }) => {
   const socket = useRef(null);
