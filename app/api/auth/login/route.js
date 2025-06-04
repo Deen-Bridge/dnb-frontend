@@ -1,11 +1,11 @@
-import axios from "axios";
+import axiosInstance from "@/lib/config/axios.config";
 
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
     console.log("Forwarding login request to backend:", { email, password }); // Debugging
 
-    const res = await axios.post(
+    const res = await axiosInstance.post(
       "https://dnb-backend-api.onrender.com/api/auth/login",
       {
         email,

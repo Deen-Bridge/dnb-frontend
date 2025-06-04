@@ -1,25 +1,21 @@
 "use client";
-import { useState, useEffect, use } from "react";
+import { use, useState, useEffect, useRef } from "react";
 import { useChatSocket } from "@/hooks/useSocket";
 import { fetchMessages } from "@/lib/actions/messages/fetchMessages";
 import { fetchConversations } from "@/lib/actions/messages/fetchConversations";
 import { sendMessage as sendMessageAPI } from "@/lib/actions/messages/sendMessage";
 import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Mic, Paperclip, ImageIcon } from "lucide-react";
+import { ArrowLeft, MessageSquare, Users, Globe } from "lucide-react";
 import { FiSend } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
-import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Page({ params }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const { user } = useAuth();
   const resolvedParams = use(params);
   const room = resolvedParams.room;
@@ -29,6 +25,16 @@ export default function Page({ params }) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentConversation, setCurrentConversation] = useState(null);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const { sendMessage, connectionStatus } = useChatSocket({
     conversationId: room,
@@ -43,18 +49,20 @@ export default function Page({ params }) {
     setIsConnected(connectionStatus === "connected");
   }, [connectionStatus]);
 
-  // Fetch conversations
+  // Fetch conversations and set current conversation
   useEffect(() => {
     const loadConversations = async () => {
       try {
         const convos = await fetchConversations();
         setConversations(convos);
+        const current = convos.find((conv) => conv._id === room);
+        setCurrentConversation(current);
       } catch (err) {
         console.error("Error loading conversations:", err);
       }
     };
     loadConversations();
-  }, []);
+  }, [room]);
 
   // Fetch messages for current room
   useEffect(() => {
@@ -102,144 +110,196 @@ export default function Page({ params }) {
     }
   };
 
-  return (
-    <div className="flex h-full">
-      {/* Chat Area */}
-      <div className="flex-1 bg-highlight/20 rounded-xl relative hidden md:flex h-full flex-col p-4">
-        <div className="flex justify-end items-center mb-4">
-         
-          <div
-            className={`text-sm ${
-              isConnected ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {isConnected ? "🟢" : "🔴"}
+  const getOtherParticipant = () => {
+    if (!currentConversation) return null;
+    return currentConversation.participants.find((p) => p._id !== user?._id);
+  };
+
+  const otherParticipant = getOtherParticipant();
+
+  // If no room is selected, show welcome message
+  if (!room) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center p-4 sm:p-6 text-center bg-muted/50">
+        <div className="max-w-md space-y-4 sm:space-y-6">
+          <div className="flex justify-center">
+            <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-accent/10 flex items-center justify-center">
+              <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl sm:text-2xl font-semibold">
+              Welcome to DeenBridge Messages
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Connect with Muslims around the world through meaningful
+              conversations
+            </p>
+          </div>
+          <div className="grid gap-3 sm:gap-4 text-left">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5" />
+              <div>
+                <h3 className="text-sm sm:text-base font-medium">
+                  Connect with Others
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Find and chat with Muslims who share your interests
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2 sm:gap-3">
+              <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5" />
+              <div>
+                <h3 className="text-sm sm:text-base font-medium">
+                  Global Community
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Exchange ideas and experiences with Muslims worldwide
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-            {error}
+  return (
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      {/* Chat Header */}
+      <div className="flex items-center gap-2 p-2 sm:p-4 border-b bg-background">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+          <AvatarImage src={otherParticipant?.avatar} />
+          <AvatarFallback>{otherParticipant?.name?.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-semibold text-sm sm:text-base truncate">
+            {otherParticipant?.name}
+          </h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {isConnected ? "Online" : "Offline"}
+          </p>
+        </div>
+        <div
+          className={`text-xs sm:text-sm ${
+            isConnected ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {isConnected ? "🟢" : "🔴"}
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-destructive/15 text-destructive px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 scrollbar-hide">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-accent"></div>
           </div>
-        )}
+        ) : messages.length === 0 ? (
+          <div className="flex justify-center items-center h-full text-muted-foreground text-sm sm:text-base">
+            No messages yet. Start the conversation!
+          </div>
+        ) : (
+          messages.map((msg, i) => {
+            const isOwnMessage = msg.sender?._id === user?._id;
+            const showAvatar =
+              !isOwnMessage &&
+              (i === 0 || messages[i - 1]?.sender?._id !== msg.sender?._id);
+            const isConsecutiveMessage =
+              i > 0 && messages[i - 1]?.sender?._id === msg.sender?._id;
+            const showTime =
+              i === messages.length - 1 ||
+              messages[i + 1]?.sender?._id !== msg.sender?._id;
 
-        <div className="flex-1 overflow-auto space-y-4 p-4">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="flex justify-center items-center h-full text-gray-500">
-              No messages yet. Start the conversation!
-            </div>
-          ) : (
-            messages.map((msg, i) => {
-              const isOwnMessage = msg.sender?._id === user?._id;
-              return (
-                <div
-                  key={msg._id || i}
-                  className={`flex items-start gap-2 ${
-                    isOwnMessage ? "flex-row-reverse" : "flex-row"
-                  }`}
-                >
+            return (
+              <div
+                key={msg._id || i}
+                className={`flex items-end gap-2 ${
+                  isOwnMessage ? "flex-row-reverse" : "flex-row"
+                } ${isConsecutiveMessage ? "mt-1" : "mt-4"}`}
+              >
+                {showAvatar && (
                   <div className="flex-shrink-0">
-                    <Avatar className="h-10 w-10 rounded-lg">
+                    <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                       <AvatarImage
-                        src={msg?.sender?.avatar || "/images/placeholder.jpg"}
-                        alt={msg?.sender?.name || "User"}
+                        src={msg?.sender?.avatar}
+                        alt={msg?.sender?.name}
                       />
-                      <AvatarFallback className="rounded-lg">
-                        {msg?.sender?.name?.charAt(0) || "U"}
+                      <AvatarFallback>
+                        {msg?.sender?.name?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </div>
+                )}
+                {!showAvatar && <div className="w-6 sm:w-8" />}
+                <div
+                  className={`flex flex-col ${
+                    isOwnMessage ? "items-end" : "items-start"
+                  } max-w-[85%] sm:max-w-[70%]`}
+                >
                   <div
-                    className={`flex flex-col ${
-                      isOwnMessage ? "items-end" : "items-start"
-                    }`}
+                    className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm ${
+                      isOwnMessage
+                        ? "bg-accent text-white rounded-tr-none"
+                        : "bg-muted rounded-tl-none"
+                    } shadow-sm`}
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-gray-700">
-                        {msg.sender?.name || "Unknown User"}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {format(new Date(msg.createdAt), "HH:mm")}
-                      </span>
-                    </div>
-                    <div
-                      className={`rounded-lg px-4 py-2 max-w-[70%] ${
-                        isOwnMessage
-                          ? "bg-accent text-white rounded-tr-none"
-                          : "bg-white text-gray-800 rounded-tl-none"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
+                    {msg.text}
                   </div>
+                  {showTime && (
+                    <span className="text-[10px] text-muted-foreground mt-1 px-1">
+                      {format(new Date(msg.createdAt), "HH:mm")}
+                    </span>
+                  )}
                 </div>
-              );
-            })
-          )}
-        </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-        <form
-          className="relative overflow-hidden rounded-lg bottom-0 border bg-background focus-within:ring-1 focus-within:ring-accent mt-4"
-          onSubmit={handleSend}
-        >
-          <Label htmlFor="message" className="sr-only">
-            Message
-          </Label>
+      {/* Message Input */}
+      <form className="border-t p-2 sm:p-4 bg-background" onSubmit={handleSend}>
+        <div className="flex relative max-w-4xl mx-auto">
           <Textarea
-            id="message"
-            placeholder="Type your message here..."
+            placeholder="Type your message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+            className="min-h-[40px] sm:min-h-[44px] resize-none pr-10 sm:pr-12 rounded-full border-none shadow-none focus:outline-none bg-muted/50 text-sm sm:text-base"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e);
+              }
+            }}
           />
-
-          <div className="flex justify-between items-center p-3 pt-0">
-            <div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Paperclip className="size-4" />
-                    <span className="sr-only">Attach file</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Attach File</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <ImageIcon className="size-4" />
-                    <span className="sr-only">Attach Image</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Attach Image</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Mic className="size-4" />
-                    <span className="sr-only">Use Microphone</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Use Microphone</TooltipContent>
-              </Tooltip>
-            </div>
-            <div>
-              <Button
-                round
-                type="submit"
-                className="text-sm ml-auto p-3 mb-2 rounded-full gap-1.5 text-white flex justify-end bg-accent hover:bg-highlight"
-              >
-                <FiSend className="size-3.5" />
-              </Button>
-            </div>
-          </div>
-        </form>
-      </div>
+          <Button
+            round
+            type="submit"
+            size="icon"
+            className="absolute right-1 h-8 w-8 sm:h-10 sm:w-10 text-white font-thin bg-accent hover:bg-accent/90"
+            disabled={!newMessage.trim()}
+          >
+            <FiSend className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
