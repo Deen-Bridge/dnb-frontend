@@ -104,8 +104,8 @@ export const signup = async (name, email, password, role) => {
     // Normalize user object to always have _id
     if (user.id && !user._id) user._id = user.id;
     // Save token and user info in cookies
-    Cookies.set("authToken", token, { expires: 1 }); // Expires in 1 day
-    Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
+    Cookies.set("authToken", token, { expires: 7 }); // Expires in 1 day
+    Cookies.set("userInfo", JSON.stringify(user), { expires: 7 });
     toast.success("Signup successful! Redirecting to dashboard...");
     return user; // Return user data if needed
   } catch (error) {
