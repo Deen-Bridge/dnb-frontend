@@ -20,11 +20,15 @@ export async function POST(req) {
       },
     });
   } catch (error) {
-    return new Response(JSON.stringify(error.response.data), {
-      status: error.response.status,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    console.error("Signup error:", error.response?.data || error.message);
+    return new Response(
+      JSON.stringify(error.response?.data || { message: "Signup failed" }),
+      {
+        status: error.response?.status || 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
