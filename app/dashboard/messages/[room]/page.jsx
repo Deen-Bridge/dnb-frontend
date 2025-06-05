@@ -39,7 +39,28 @@ export default function Page({ params }) {
   const { sendMessage, connectionStatus } = useChatSocket({
     conversationId: room,
     onMessage: (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      console.log("Received new message:", msg);
+      setMessages((prev) => {
+        // Check if message already exists
+        const exists = prev.some(
+          (m) =>
+            m._id === msg._id ||
+            (m.text === msg.text &&
+              m.sender === msg.sender &&
+              m.timestamp === msg.timestamp)
+        );
+        if (exists) {
+          return prev;
+        }
+        // Add message to the end of the array
+        const newMessages = [...prev, msg];
+        // Sort messages by timestamp
+        return newMessages.sort((a, b) => {
+          const timeA = new Date(a.timestamp || a.createdAt).getTime();
+          const timeB = new Date(b.timestamp || b.createdAt).getTime();
+          return timeA - timeB;
+        });
+      });
       setError(null);
     },
   });
@@ -72,7 +93,13 @@ export default function Page({ params }) {
       setIsLoading(true);
       try {
         const msgs = await fetchMessages(room);
-        setMessages(msgs);
+        // Sort messages by timestamp
+        const sortedMessages = msgs.sort((a, b) => {
+          const timeA = new Date(a.createdAt || a.timestamp).getTime();
+          const timeB = new Date(b.createdAt || b.timestamp).getTime();
+          return timeA - timeB;
+        });
+        setMessages(sortedMessages);
         setError(null);
       } catch (err) {
         setError("Failed to load messages");
@@ -84,31 +111,73 @@ export default function Page({ params }) {
     loadMessages();
   }, [room]);
 
-  const handleSend = async (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const messageData = {
-      conversationId: room,
-      text: newMessage,
-      sender: user?._id,
-    };
-
     try {
-      if (!isConnected) {
-        setError("Not connected to chat server. Please refresh the page.");
-        return;
+      const messageData = {
+        conversationId: room,
+        text: newMessage,
+        sender: user._id,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Optimistically add message to UI
+      setMessages((prev) => {
+        const newMessages = [...prev, messageData];
+        return newMessages.sort((a, b) => {
+          const timeA = new Date(a.timestamp || a.createdAt).getTime();
+          const timeB = new Date(b.timestamp || b.createdAt).getTime();
+          return timeA - timeB;
+        });
+      });
+      setNewMessage("");
+
+      // Send message through socket
+      try {
+        sendMessage(messageData);
+      } catch (error) {
+        console.error("Socket error:", error);
+        // Don't remove from UI, just log the error
+        // The message will be resent when socket reconnects
       }
 
-      sendMessage(messageData); // realtime
-      await sendMessageAPI(null, messageData); // persist
-      setNewMessage(""); // clears input
-      setError(null);
-    } catch (err) {
-      setError("Failed to send message");
-      console.error("Error sending message:", err);
+      // Also persist to database
+      try {
+        await sendMessageAPI(null, messageData);
+      } catch (err) {
+        console.error("Error persisting message:", err);
+        // Don't remove from UI, just log the error
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("Failed to send message. Please try again.");
     }
   };
+
+  // Add a useEffect to handle socket reconnection
+  useEffect(() => {
+    if (connectionStatus === "connected" && room) {
+      // Reload messages when socket reconnects
+      const loadMessages = async () => {
+        try {
+          const msgs = await fetchMessages(room);
+          // Sort messages by timestamp
+          const sortedMessages = msgs.sort((a, b) => {
+            const timeA = new Date(a.createdAt || a.timestamp).getTime();
+            const timeB = new Date(b.createdAt || b.timestamp).getTime();
+            return timeA - timeB;
+          });
+          setMessages(sortedMessages);
+          setError(null);
+        } catch (err) {
+          console.error("Error reloading messages:", err);
+        }
+      };
+      loadMessages();
+    }
+  }, [connectionStatus, room]);
 
   const getOtherParticipant = () => {
     if (!currentConversation) return null;
@@ -186,15 +255,15 @@ export default function Page({ params }) {
             {otherParticipant?.name}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            {isConnected ? "Online" : "Offline"}
+            {connectionStatus === "connected" ? "Online" : "Offline"}
           </p>
         </div>
         <div
           className={`text-xs sm:text-sm ${
-            isConnected ? "text-green-500" : "text-red-500"
+            connectionStatus === "connected" ? "text-green-500" : "text-red-500"
           }`}
         >
-          {isConnected ? "🟢" : "🔴"}
+          {connectionStatus === "connected" ? "🟢" : "🔴"}
         </div>
       </div>
 
@@ -216,15 +285,25 @@ export default function Page({ params }) {
           </div>
         ) : (
           messages.map((msg, i) => {
-            const isOwnMessage = msg.sender?._id === user?._id;
+            const isOwnMessage =
+              msg.sender === user?._id || msg.sender?._id === user?._id;
             const showAvatar =
               !isOwnMessage &&
-              (i === 0 || messages[i - 1]?.sender?._id !== msg.sender?._id);
+              (i === 0 ||
+                messages[i - 1]?.sender === msg.sender ||
+                messages[i - 1]?.sender?._id === msg.sender?._id);
             const isConsecutiveMessage =
-              i > 0 && messages[i - 1]?.sender?._id === msg.sender?._id;
+              i > 0 &&
+              (messages[i - 1]?.sender === msg.sender ||
+                messages[i - 1]?.sender?._id === msg.sender?._id);
             const showTime =
               i === messages.length - 1 ||
+              messages[i + 1]?.sender !== msg.sender ||
               messages[i + 1]?.sender?._id !== msg.sender?._id;
+
+            // Get timestamp from message, fallback to current time if not available
+            const messageTime =
+              msg.createdAt || msg.timestamp || new Date().toISOString();
 
             return (
               <div
@@ -259,11 +338,11 @@ export default function Page({ params }) {
                         : "bg-muted rounded-tl-none"
                     } shadow-sm`}
                   >
-                    {msg.text}
+                    {msg.text || msg.content}
                   </div>
                   {showTime && (
                     <span className="text-[10px] text-muted-foreground mt-1 px-1">
-                      {format(new Date(msg.createdAt), "HH:mm")}
+                      {format(new Date(messageTime), "HH:mm")}
                     </span>
                   )}
                 </div>
@@ -275,7 +354,10 @@ export default function Page({ params }) {
       </div>
 
       {/* Message Input */}
-      <form className="border-t p-2 sm:p-4 bg-background" onSubmit={handleSend}>
+      <form
+        className="border-t p-2 sm:p-4 bg-background"
+        onSubmit={handleSendMessage}
+      >
         <div className="flex relative max-w-4xl mx-auto">
           <Textarea
             placeholder="Type your message..."
@@ -285,7 +367,7 @@ export default function Page({ params }) {
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                handleSend(e);
+                handleSendMessage(e);
               }
             }}
           />
