@@ -73,18 +73,53 @@ export default function Dashboard() {
     setIsLoading(true);
 
     try {
-      const response = await axiosInstance.post("/api/ai/chat", {
-        message: userMessage,
+      const response = await fetch("/api/ai/chat/route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userMessage }),
       });
 
-      const aiResponse = response.data.response;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Full AI Response:", data);
+      const aiResponse = data.response;
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: aiResponse },
       ]);
+
+      // Store chat history if needed
+      if (data.history) {
+        // You can use this to populate the history sidebar
+        console.log("Chat history:", data.history);
+      }
     } catch (error) {
-      console.error("Error getting AI response:", error);
-      toast.error("Failed to get AI response. Please try again.");
+      console.error("Error getting AI response:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.details ||
+        error.message ||
+        "Failed to get AI response. Please try again.";
+
+      toast.error(errorMessage);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "I apologize, but I'm having trouble connecting to the AI service. Please try again later.",
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
