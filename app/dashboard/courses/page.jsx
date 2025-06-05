@@ -15,13 +15,8 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        setLoading(true);
-        const res = await axiosInstance.get("/api/courses");
-        if (res.data && Array.isArray(res.data.courses)) {
-          setCourses(res.data.courses);
-        } else {
-          setCourses([]);
-        }
+        const response = await axiosInstance.get("/api/courses");
+        setCourses(response.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -31,6 +26,14 @@ export default function CoursesPage() {
 
     fetchCourses();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -51,11 +54,9 @@ export default function CoursesPage() {
 
         <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
-            {loading
-              ? [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
-              : courses.map((course, index) => (
-                  <CourseCard key={course.id || index} course={course} />
-                ))}
+            {courses?.map((course) => (
+              <CourseCard key={course._id} course={course} />
+            ))}
           </div>
         </div>
       </div>
