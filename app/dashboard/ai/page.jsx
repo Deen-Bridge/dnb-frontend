@@ -73,7 +73,7 @@ export default function Dashboard() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/ai/chat/route", {
+      const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
