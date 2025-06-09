@@ -6,7 +6,7 @@ export async function POST(req) {
     console.log("Sending message to AI:", message);
 
     // Always use localhost for now
-    const AI_API_URL = "http://localhost:8000/chat";
+    const AI_API_URL = "https://dnb-ai.onrender.com/chat";
 
     console.log("Using AI API URL:", AI_API_URL);
 
