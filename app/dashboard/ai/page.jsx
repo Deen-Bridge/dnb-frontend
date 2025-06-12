@@ -126,8 +126,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="grid h-full w-full">
-      <div className="flex flex-col">
+    <div className="grid h-[calc(100vh-4rem)] w-full">
+      <div className="flex flex-col h-full">
         <header className="sticky top-0 z-10 flex h-[57px] justify-between items-center gap-1 border-b bg-background px-4">
           <div className="flex flex-col my-2">
             <h1 className="text-3xl font-semibold bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text">
@@ -145,17 +145,17 @@ export default function Dashboard() {
             </Button>
           </div>
         </header>
-        <main className="grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3">
+        <main className="grid flex-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 h-[calc(100%-57px)]">
           <div
-            className="relative hidden flex-col items-start gap-8 md:flex"
+            className="relative hidden flex-col items-start gap-8 md:flex h-full"
             x-chunk="dashboard-03-chunk-0"
           >
-            <div className="grid w-full items-start gap-6 ">
-              <fieldset className="grid gap-6 rounded-lg border p-4 overflow-auto overscroll-y-auto">
+            <div className="grid w-full items-start gap-6 h-full">
+              <fieldset className="grid gap-6 rounded-lg border p-4 h-full overflow-y-auto">
                 <legend className="-ml-1 px-1 text-md font-medium">
                   History
                 </legend>
-                <fieldset className="grid gap-6 rounded-lg border p-4 overflow-auto overscroll-y-auto">
+                <fieldset className="grid gap-6 rounded-lg border p-4 h-full overflow-y-auto">
                   <legend className="-ml-1 px-1 text-md font-medium">
                     Today
                   </legend>
@@ -170,14 +170,14 @@ export default function Dashboard() {
               </fieldset>
             </div>
           </div>
-          <div className="relative flex  h-full flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
+          <div className="relative flex h-full flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
             <Badge
               variant="outline"
               className="absolute right-3 top-3 border-accent"
             >
               Output
             </Badge>
-            <div className="flex-1 overflow-y-auto mb-4">
+            <div className="flex-1 overflow-y-auto mb-4 scrollbar-thin scrollbar-thumb-accent scrollbar-track-transparent">
               {messages.map((message, index) => (
                 <div
                   key={index}
