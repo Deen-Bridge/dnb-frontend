@@ -5,35 +5,25 @@ import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton"
 import Button from "@/components/atoms/form/Button";
 import Modal from "@/components/molecules/Modal";
 import CreateCourseForm from "@/components/organisms/create/course-create-form";
-import axiosInstance from "@/lib/config/axios.config";
-
+import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/api/courses");
-        setCourses(response.data);
+        const response = await fetchCourses();
+        console.log("Fetched courses:", response);
+        setCourses(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
-        setLoading(false);
       }
     };
 
-    fetchCourses();
+    fetchData();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
-  }
 
   return (
     <>
