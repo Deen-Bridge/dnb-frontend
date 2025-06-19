@@ -9,9 +9,11 @@ import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await fetchCourses();
         console.log("Fetched courses:", response);
@@ -19,6 +21,7 @@ export default function CoursesPage() {
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
+        setLoading(false);
       }
     };
 
@@ -44,9 +47,15 @@ export default function CoursesPage() {
 
         <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
-            {courses?.map((course) => (
-              <CourseCard key={course._id} course={course} />
-            ))}
+            {loading ? (
+              [...Array(6)].map((_, idx) => (
+                <CourseCardSkeleton key={`skeleton-${idx}`} />
+              ))
+            ) : (
+              courses?.map((course) => (
+                <CourseCard key={course._id} course={course} />
+              ))
+            )}
           </div>
         </div>
       </div>

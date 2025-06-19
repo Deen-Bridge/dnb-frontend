@@ -34,7 +34,7 @@ const Header = () => {
             <Link
               key={link.to}
               href={link.to}
-              className="hover:text-white transition-all duration-200"
+              className="text-white hover:text-secondary transition-all duration-200"
             >
               {link.name}
             </Link>
@@ -71,7 +71,7 @@ function MobileNav() {
         <SheetHeader className="mb-4 text-left text-xl font-semibold">
           Menu
         </SheetHeader>
-        <nav className="flex flex-col space-y-4 px-4 ">
+        <nav className="flex flex-col space-y-4 px-4 font-stretch-125%">
           {links.map((link) => (
             <SheetClose asChild key={link.to}>
               <Link

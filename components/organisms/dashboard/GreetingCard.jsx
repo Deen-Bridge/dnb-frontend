@@ -49,7 +49,7 @@ const GreetingCard = () => {
             {/* Text and Button Group */}
             <div className="flex flex-1 flex-col gap-3 md:gap-4">
                 <h2 className={cn("text-xl md:text-2xl lg:text-4xl  leading-snug font-stretch-125%", poppins_700.className)}>
-                    Assalamu ʿalaykum Yah
+                    As-salāmu ʿalaykum 
                     <span className={cn("bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold pl-2", poppins_600.className)}>{getLastName(user?.name)}</span>
                 </h2>
                 {progress === 100 && (<span className="text-sm flex sm:text-base md:text-lg font-stretch-125% "> Starting your day with the Quran feels your day with enjoyment and peace <QuoteIcon size={13} className="top-5" /></span>)}

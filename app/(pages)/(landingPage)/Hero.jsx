@@ -26,19 +26,18 @@ const Hero = () => {
                 <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 max-w-xl text-green-200">
                     Your journey to{" "}
                     <span className="text-white font-semibold">excellence</span>
-                  {" "}  starts here.
+                    {" "}  starts here.
                 </p>
-
                 <Button
                     wide
                     round
                     to="/dashboard"
                     className=" text-white px-10 py-3 animate-in-out transition-all"
                 >
-                  Lets Dive
+                    Lets Dive
                 </Button>
             </div>
-    </main>
+        </main>
     );
 };
 
