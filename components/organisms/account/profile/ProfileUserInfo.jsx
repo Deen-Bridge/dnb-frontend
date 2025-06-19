@@ -6,30 +6,19 @@ import { cn } from "@/lib/utils";
 import { roboto_900 } from "@/lib/config/font.config";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import axiosInstance from "@/lib/config/axios.config";
-import config from "@/lib/config/req.header.config";
+
+import { joinOrCreateConversation } from "@/lib/actions/messages/joinRoom";
+
+
 const ProfileUserInfo = ({ user }) => {
   const { user: currentUser } = useAuth();
   const router = useRouter();
 
   const handleStartConversation = async () => {
-    console.log("Starting conversation with user:", user?._id);
-    console.log("Current user ID:", currentUser?._id);
+    if (!currentUser?._id || !user?._id) return;
     try {
-      const { data } = await axiosInstance.post(
-        "http://localhost:5000/api/messages/conversation",
-        {
-          userId1: currentUser?._id,
-          userId2: user?._id,
-        },
-        config
-      );
-
-      if (!data || !data.conversationId) {
-        throw new Error("Conversation ID not returned from server");
-      }
-
-      router.push(`/dashboard/messages/${data.conversationId}`);
+      const conversationId = await joinOrCreateConversation(currentUser._id, user._id);
+      router.push(`/dashboard/messages/${conversationId}`);
     } catch (err) {
       console.error("Error starting conversation:", err);
       alert("Failed to start conversation. Please try again.");
