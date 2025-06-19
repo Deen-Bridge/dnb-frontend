@@ -6,7 +6,7 @@ import UpcomingSessions from "@/components/organisms/dashboard/UpcomingSessions"
 import RecentChats from "@/components/organisms/dashboard/RecentChats";
 import LearningProgress from "@/components/organisms/dashboard/LearningProgress";
 import OngoingSessions from "@/components/organisms/dashboard/OngoingSessions";
-import ReccomendedBooks from "@/components/organisms/dashboard/RecommendedBooks";
+import RecommendedBooks from "@/components/organisms/dashboard/RecommendedBooks";
 import SupportPalestine from "@/components/organisms/dashboard/Supports";
 export default function Dashboard() {
   return (
@@ -16,7 +16,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <RecommendedCourses />
-          <ReccomendedBooks/>
+          <RecommendedBooks />
         </div>
         <div className="space-y-6">
           <OngoingSessions/>

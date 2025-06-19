@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
@@ -13,16 +12,17 @@ const MessagesHeadSideList = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userCache, setUserCache] = useState({});
+  const [fetchingUsers, setFetchingUsers] = useState(new Set());
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
+  // Fetch conversations
   useEffect(() => {
     const loadConversations = async () => {
-      if (!user?._id) return; // ✅ Add guard
-
+      if (!user?._id) return;
+      setLoading(true);
       try {
-        setLoading(true);
         const convos = await fetchUserConversations(user._id);
         setConversations(convos);
       } catch (err) {
@@ -31,30 +31,47 @@ const MessagesHeadSideList = () => {
         setLoading(false);
       }
     };
-
     loadConversations();
   }, [user?._id]);
 
-  // Fetch user info for all other participants
+  // Fetch all other participants' info as soon as conversations load
   useEffect(() => {
-    const ids = new Set();
+    if (!conversations.length) return;
+    const idsToFetch = [];
     conversations.forEach(conv => {
       conv.participants.forEach(id => {
-        if (id !== user?._id && !userCache[id]) ids.add(id);
+        if (id !== user?._id && !userCache[id] && !fetchingUsers.has(id)) {
+          idsToFetch.push(id);
+        }
       });
     });
-    ids.forEach(async id => {
-      if (!userCache[id]) {
+    if (idsToFetch.length === 0) return;
+    setFetchingUsers(prev => new Set([...prev, ...idsToFetch]));
+    Promise.all(
+      idsToFetch.map(async id => {
         const res = await getUserById(id);
-        setUserCache(prev => ({ ...prev, [id]: res?.user }));
-      }
+        return { id, user: res?.user };
+      })
+    ).then(results => {
+      setUserCache(prev => {
+        const updated = { ...prev };
+        results.forEach(({ id, user }) => {
+          if (user) updated[id] = user;
+        });
+        return updated;
+      });
+      setFetchingUsers(prev => {
+        const updated = new Set(prev);
+        idsToFetch.forEach(id => updated.delete(id));
+        return updated;
+      });
     });
     // eslint-disable-next-line
   }, [conversations]);
 
   const getOtherParticipant = (participants) => {
     const otherId = participants.find((p) => p !== user?._id);
-    return userCache[otherId];
+    return userCache[otherId] || null;
   };
 
   const handleConversationClick = (conversationId) => {
@@ -71,7 +88,7 @@ const MessagesHeadSideList = () => {
       (typeof a.lastMessage?.createdAt === "string" || typeof a.lastMessage?.createdAt === "number"
         ? new Date(a.lastMessage.createdAt)
         : undefined) ||
-      new Date(0); // fallback to epoch if no date
+      new Date(0);
 
     const bTime =
       b.lastMessage?.timestamp?.toDate?.() ||
@@ -98,9 +115,7 @@ const MessagesHeadSideList = () => {
           </div>
         ) : (
           sortedConversations.map((conversation) => {
-            const otherParticipant = getOtherParticipant(
-              conversation.participants
-            );
+            const otherParticipant = getOtherParticipant(conversation.participants);
             const lastMessage = conversation.lastMessage;
             const isActive =
               pathname === `/dashboard/messages/${conversation._id}`;
@@ -116,15 +131,18 @@ const MessagesHeadSideList = () => {
               >
                 <div className="flex gap-3 flex-1 min-w-0">
                   <Avatar className="h-10 w-10 rounded-lg">
-                    <AvatarImage src={otherParticipant?.avatar} />
-                    <AvatarFallback>
-                      {otherParticipant?.name?.charAt(0)}
-                    </AvatarFallback>
+                    {otherParticipant?.avatar ? (
+                      <AvatarImage src={otherParticipant.avatar} />
+                    ) : (
+                      <AvatarFallback>
+                        {otherParticipant?.name?.charAt(0) || "?"}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold truncate">
-                        {otherParticipant?.name}
+                        {otherParticipant?.name || "Loading..."}
                       </span>
                       {lastMessage && (
                         <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
