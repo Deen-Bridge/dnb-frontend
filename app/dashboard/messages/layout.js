@@ -1,19 +1,23 @@
 "use client";
 import MessagesHeadSideList from "@/components/molecules/dashboard/messages/MessagesHeadSideList";
 import { useState, useEffect } from "react";
-import { fetchConversations } from "@/lib/actions/messages/fetchConversations";
+import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Layout({ children }) {
   const [hasConversations, setHasConversations] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   const isInChat = pathname !== "/dashboard/messages";
+  const { user } = useAuth();
 
   useEffect(() => {
+    if (!user?._id) return; // ✅ Don't even try
+
     const checkConversations = async () => {
       try {
-        const conversations = await fetchConversations();
+        const conversations = await fetchUserConversations(user._id);
         setHasConversations(conversations.length > 0);
       } catch (error) {
         console.error("Error fetching conversations:", error);
@@ -22,8 +26,10 @@ export default function Layout({ children }) {
         setIsLoading(false);
       }
     };
+
     checkConversations();
-  }, []);
+  }, [user?._id]);
+  
 
   if (isLoading) {
     return (

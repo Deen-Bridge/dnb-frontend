@@ -1,39 +1,27 @@
-import Button from "@/components/atoms/form/Button";
+"use client";
+import { useState, useEffect } from "react";
 import { AiSidebar } from "@/components/organisms/dashboard/ai/Ai-Sidebar";
-import {
-    SidebarInset,
-    SidebarProvider,
-} from "@/components/ui/sidebar"
-import { Share } from "lucide-react";
-
+import { usePathname } from "next/navigation";
 
 export default function Layout({ children }) {
-  return (
-    <SidebarProvider>
-  <AiSidebar/>
-      <SidebarInset>
-        <section className="h-[calc(100vh-4rem)]  overflow-hidden">
-          <div className="flex justify-between items-center gap-1 bg-background px-4">
-            <div className="flex flex-col my-2">
-              <h1 className="text-3xl font-semibold bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text">
-                Deen Bridge AI
-              </h1>
-              {/* <span className="text-sm">Your personal islamic ai</span> */}
-            </div>
-            <div>
-              <Button
-                round
-                className="ml-auto w-full text-sm  text-white bg-accent hover:bg-highlight"
-              >
-                <Share className="size-3.5 pr-3" />
-                Share
-              </Button>
-            </div>
-          </div>
+  const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
 
+  return (
+    <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row gap-4 p-2 sm:p-4 h-full">
+        {/* Left Side List - Always visible on desktop, conditional on mobile */}
+        <div
+          className={`bg-muted/50 hidden sm:block rounded-xl p-2 sm:p-4 h-full overflow-y-auto scrollbar-hide transition-all duration-300  md:w-1/3 lg:w-1/4`}
+        >
+          <AiSidebar />
+        </div>
+
+        {/* Chat Panel (right side) */}
+        <div className=" transition-all duration-300 h-full w-full rounded-xl">
           {children}
-        </section>
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+      </div>
+    </div>
   );
 }
