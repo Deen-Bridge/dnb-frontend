@@ -71,7 +71,7 @@ const ReportIssue = () => {
           wide
           loading={loading}
           type="submit"
-          className="bg-accent hover:bg-highlight transition delay-75 mt-12 py-3 font-medium flex items-center justify-center rounded-full text-white  "
+          className=" transition delay-75 mt-12 py-3 font-medium flex items-center justify-center rounded-full text-white  "
         >
           Create a ticket
         </Button>

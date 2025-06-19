@@ -26,7 +26,7 @@ const Button = ({
     ...props
 }) => {
     const commonClasses = cn(
-        wide && 'flex-grow w-full',
+        wide && 'flex-grow w-full bg-accent hover:bg-highlight transitions-all',
         outlined && 'border border-accent bg-white hover:bg-accent text-black hover:text-white animate-in-out transition-all delay-100',
         round ? 'rounded-full' : 'rounded-lg',
         'inline-block py-2 px-4 font-medium flex items-center justify-center cursor-pointer flex-shrink-0 font-nunito font-normal focus:outline-none focus:ring-0',

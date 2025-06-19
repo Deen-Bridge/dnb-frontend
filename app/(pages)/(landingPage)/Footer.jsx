@@ -5,7 +5,7 @@ import { poppins_600 } from '@/lib/config/font.config';
 import Link from 'next/link';
 export default function Footer() {
     return (
-        <footer className="relative bg-basic text-white overflow-hidden">
+        <footer className="relative bg-basic text-white overflow-hidden ">
             {/* Glowing Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-tr from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0" />
 
@@ -16,7 +16,7 @@ export default function Footer() {
                     <div>
                         <span className={cn(
                             poppins_600,
-                            "text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold  leading-snug bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text"
+                            "text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold  leading-snug bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-stretch-125%"
                         )}>
                             Deen Bridge
                         </span>
@@ -29,7 +29,7 @@ export default function Footer() {
 
                     {/* Navigation Links */}
                     <div className=" md:justify-self-center">
-                        <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4">Explore</h3>
+                        <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">Explore</h3>
                         <ul className="space-y-4 text-sm">
                             {["Pricing Policy",
                                 "Payment and Refund Policy",
@@ -52,7 +52,7 @@ export default function Footer() {
 
                     {/* Newsletter & Socials */}
                     <div>
-                        <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4">Stay in the Loop</h3>
+                        <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">Stay in the Loop</h3>
                         <form className="flex items-center mb-4">
                             <input
                                 type="email"
@@ -62,7 +62,7 @@ export default function Footer() {
                             <Button
                                 type="submit"
                                 round
-                                className="px-4 py-2 bg-accent hover:bg-green-500 rounded-l-md transition border border-accent"
+                                className="px-4 py-2  rounded-l-md transition border border-accent"
                             >
                                 Subscribe
                             </Button>
@@ -82,7 +82,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-green-900 pt-6 flex items-center justify-center text-sm text-white">
+                <div className="border-t border-green-900 pt-6 flex items-center justify-center text-sm text-white font-stretch-125%">
                     <p className="text-center md:text-left mt-4 md:mt-0">
                         © 2025 Deen Bridge . All rights reserved.
                     </p>

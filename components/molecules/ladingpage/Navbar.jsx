@@ -21,7 +21,7 @@ const Header = () => {
   return (
     <>
       {/* Desktop Nav */}
-      <nav className="px-4 sticky top-0 z-10 bg-transparent text-secondary hidden lg:flex justify-between items-center h-20">
+      <nav className="px-4 sticky top-0 z-10 bg-transparent text-secondary hidden lg:flex justify-between items-center h-20 font-stretch-125%">
         <Image
           src="/images/dnb-nobg.png"
           width={150}
