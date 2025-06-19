@@ -7,7 +7,7 @@ import { ArrowLeft, MessageSquare, Users, Globe } from "lucide-react";
 import { FiSend } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter, usePathname } from "next/navigation";
-import { isValid,format } from "date-fns";
+import { isValid, format } from "date-fns";
 import { listenToMessages } from "@/lib/actions/messages/fetchMessages";
 import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
 import { sendMessage } from "@/lib/actions/messages/sendMessage";
@@ -68,15 +68,23 @@ export default function Page({ params }) {
       if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants)) return;
       const otherId = currentConversation.participants.find(id => id !== user._id);
       if (!otherId) return;
+      // Check cache first
+      if (userCache[otherId]) {
+        setOtherParticipantInfo(userCache[otherId]);
+        return;
+      }
       try {
         const res = await getUserById(otherId);
-        if (res?.user) setOtherParticipantInfo(res.user);
+        if (res?.user) {
+          setOtherParticipantInfo(res.user);
+          setUserCache(prev => ({ ...prev, [otherId]: res.user }));
+        }
       } catch (error) {
         console.error("Failed to fetch other participant info:", error);
       }
     };
     fetchOtherParticipant();
-  }, [currentConversation, user?._id]);
+  }, [currentConversation, user?._id, userCache]);
 
   // Fetch user info for all senders (for avatars)
   useEffect(() => {
@@ -154,7 +162,8 @@ export default function Page({ params }) {
           variant="ghost"
           size="icon"
           className="md:hidden"
-          onClick={() => router.back()}
+          onClick={() => router.push("/dashboard/messages")}
+          aria-label="Back to messages list"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -167,15 +176,16 @@ export default function Page({ params }) {
             {otherParticipantInfo?.name}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground">Active now</p>
-        </div>
-        <div className="text-xs sm:text-sm text-green-500">// Show typing indicator
+          {/* // Show typing indicator */}
           {Object.entries(typingUsers).map(([uid, isTyping]) =>
             uid !== user._id && isTyping ? (
-              <div key={uid} className="text-xs text-muted-foreground px-2 py-1">
-                {userCache[uid]?.name || "Someone"} is typing...
-              </div>
+              <p key={uid} className="text-xs text-muted-foreground">
+                typing...
+              </p>
             ) : null
-          )}🟢</div>
+          )}
+        </div>
+        <div className="text-xs sm:text-sm text-green-500">🟢</div>
       </div>
 
       {error && (
