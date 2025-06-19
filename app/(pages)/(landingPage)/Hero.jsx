@@ -10,7 +10,7 @@ const Hero = () => {
         <main className=" relative h-screen flex flex-col bg-basic text-white overflow-hidden overscroll-none">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0" />
             <Navbar />
-            <div className="relative z-10 flex flex-1 flex-col items-center justify-center space-y-10 text-center">
+            <div className="relative z-10 flex flex-1 flex-col items-center justify-center space-y-10 text-center font-stretch-125%">
                 <h1
                     className={cn(
                         poppins_600,
@@ -18,7 +18,7 @@ const Hero = () => {
                     )}
                 >
                     Welcome to{" "}
-                    <span className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text">
+                    <span className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text ">
                         Deen Bridge
                     </span>
                 </h1>
@@ -33,7 +33,7 @@ const Hero = () => {
                     wide
                     round
                     to="/dashboard"
-                    className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"
+                    className=" text-white px-10 py-3 animate-in-out transition-all"
                 >
                   Lets Dive
                 </Button>

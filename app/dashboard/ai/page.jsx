@@ -1,44 +1,15 @@
 "use client";
-
 import {
-  Bird,
-  Book,
   Bot,
-  Code2,
   CornerDownLeft,
-  LifeBuoy,
   Mic,
   Paperclip,
-  Rabbit,
-  Settings,
-  Settings2,
   Share,
-  SquareTerminal,
-  SquareUser,
-  Triangle,
   ImageIcon,
-  Turtle,
 } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
@@ -47,7 +18,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import axiosInstance from "@/lib/config/axios.config";
 
 export default function Dashboard() {
   const [messages, setMessages] = useState([]);
@@ -126,58 +96,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="grid h-[calc(100vh-4rem)] w-full">
+    <div className="grid  w-full overflow-y-hidden overscroll-none absolute h-full pt-16">
       <div className="flex flex-col h-full">
-        <header className="sticky top-0 z-10 flex h-[57px] justify-between items-center gap-1 border-b bg-background px-4">
-          <div className="flex flex-col my-2">
-            <h1 className="text-3xl font-semibold bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text">
-              Deen Bridge AI
-            </h1>
-            {/* <span className="text-sm">Your personal islamic ai</span> */}
-          </div>
-          <div>
-            <Button
-              round
-              className="ml-auto w-full text-sm  text-white bg-accent hover:bg-highlight"
-            >
-              <Share className="size-3.5 pr-3" />
-              Share
-            </Button>
-          </div>
-        </header>
-        <main className="grid flex-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 h-[calc(100%-57px)]">
-          <div
-            className="relative hidden flex-col items-start gap-8 md:flex h-full"
-            x-chunk="dashboard-03-chunk-0"
-          >
-            <div className="grid w-full items-start gap-6 h-full">
-              <fieldset className="grid gap-6 rounded-lg border p-4 h-full overflow-y-auto">
-                <legend className="-ml-1 px-1 text-md font-medium">
-                  History
-                </legend>
-                <fieldset className="grid gap-6 rounded-lg border p-4 h-full overflow-y-auto">
-                  <legend className="-ml-1 px-1 text-md font-medium">
-                    Today
-                  </legend>
-                  {messages
-                    .filter((msg) => msg.role === "user")
-                    .map((msg, index) => (
-                      <div key={index} className="grid gap-3">
-                        <span className="text-sm">{msg.content}</span>
-                      </div>
-                    ))}
-                </fieldset>
-              </fieldset>
-            </div>
-          </div>
-          <div className="relative flex h-full flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
+       
+        <div className="grid flex-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 h-[calc(100%-57px)]">
+         
+          <div className="relative flex flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
             <Badge
               variant="outline"
               className="absolute right-3 top-3 border-accent"
             >
               Output
             </Badge>
-            <div className="flex-1 overflow-y-auto mb-4 scrollbar-thin scrollbar-thumb-accent scrollbar-track-transparent">
+            <div className="relative flex-1 overflow-y-auto mb-4 overscroll-auto">
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -251,14 +182,14 @@ export default function Dashboard() {
                     className="text-sm ml-auto gap-1.5 text-white flex justify-end bg-accent hover:bg-highlight"
                     disabled={isLoading || !inputMessage.trim()}
                   >
-                    Send Message
+                  
                     <CornerDownLeft className="size-3.5" />
                   </Button>
                 </div>
               </div>
             </form>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );

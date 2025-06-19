@@ -5,19 +5,25 @@ import RecommendedCourses from "@/components/organisms/dashboard/RecommendedCour
 import UpcomingSessions from "@/components/organisms/dashboard/UpcomingSessions";
 import RecentChats from "@/components/organisms/dashboard/RecentChats";
 import LearningProgress from "@/components/organisms/dashboard/LearningProgress";
+import OngoingSessions from "@/components/organisms/dashboard/OngoingSessions";
+import ReccomendedBooks from "@/components/organisms/dashboard/RecommendedBooks";
+import SupportPalestine from "@/components/organisms/dashboard/Supports";
 export default function Dashboard() {
   return (
-    <div className="p-2 sm:p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       <GreetingCard />
       <StatsOverview />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <RecommendedCourses />
+          <ReccomendedBooks/>
         </div>
         <div className="space-y-6">
+          <OngoingSessions/>
           <UpcomingSessions />
           <RecentChats />
           <LearningProgress />
+          <SupportPalestine/>
         </div>
       </div>
     </div>

@@ -41,7 +41,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="age">Age</Label>
+                    <Label htmlFor="age" className="text-md">Age</Label>
                     <Input
                         id="age"
                         name="age"
@@ -56,7 +56,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="country">Country</Label>
+                    <Label htmlFor="country" className="text-md">Country</Label>
                     <Input
                         id="country"
                         name="country"
@@ -68,7 +68,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="language">Language</Label>
+                    <Label htmlFor="language" className="text-md" >Language</Label>
                     <Input
                         id="language"
                         name="language"
@@ -80,7 +80,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="profilePicture">Profile Picture</Label>
+                    <Label htmlFor="profilePicture" className="text-md">Profile Picture</Label>
                     <ImageUpload
                         id="profilePicture"
                         onChange={handleAvatarChange}
@@ -93,7 +93,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
                 </div>
             </div>
 
-            <Button wide round type="submit" className="bg-accent hover:bg-highlight">
+            <Button wide round type="submit" className="bg-accent hover:bg-highlight text-sm">
               Next
             </Button>
         </form>

@@ -20,21 +20,21 @@ import {
 import { cn } from "@/lib/utils";
 import { roboto_500 } from "@/lib/config/font.config";
 const chartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    { month: "January", course: 186, book: 80 },
+    { month: "February", course: 305, book: 200 },
+    { month: "March", course: 237, book: 120 },
+    { month: "April", course: 73, book: 190 },
+    { month: "May", course: 209, book: 130 },
+    { month: "June", course: 214, book: 140 },
 ]
 
 const chartConfig = {
-    desktop: {
-        label: "Desktop",
+    course: {
+        label: "course",
         color: "hsl(var(--chart-1))",
     },
-    mobile: {
-        label: "Mobile",
+    book: {
+        label: "book",
         color: "hsl(var(--chart-2))",
     },
 }
@@ -44,11 +44,11 @@ export default function LearningProgress() {
         <Card>
             <CardHeader className="pt-4">
                 <CardTitle className={cn(roboto_500.className)}>Study Progress</CardTitle>
-                <CardDescription> Surahs completed (January – June)</CardDescription>
+                <CardDescription> Activities completed (January – June)</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
-                    <BarChart accessibilityLayer data={chartData}>
+                <ChartContainer config={chartConfig} >
+                    <BarChart accessibilityLayer data={chartData} >
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey="month"
@@ -56,13 +56,15 @@ export default function LearningProgress() {
                             tickMargin={10}
                             axisLine={false}
                             tickFormatter={(value) => value.slice(0, 3)}
+                            
                         />
                         <ChartTooltip
                             cursor={false}
-                            content={<ChartTooltipContent indicator="dashed" />}
+                            className="bg-accent text-white" 
+                            content={<ChartTooltipContent indicator="dashed"/>}
                         />
-                        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                        <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+                        <Bar dataKey="course" fill="var(--color-accent)" radius={4} />
+                        <Bar dataKey="book" fill="var(--color-accent)" radius={4} />
                     </BarChart>
                 </ChartContainer>
             </CardContent>

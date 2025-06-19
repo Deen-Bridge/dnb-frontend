@@ -22,18 +22,17 @@ const RecommendedCourseCard = ({ course }) => (
         {/* Content */}
         <div className="flex flex-col justify-between p-4 flex-grow">
             <div>
-                <h4 className="text-lg font-semibold">{course.title}</h4>
+                <h4 className="text-lg font-semibold font-stretch-125%">{course.title}</h4>
 
 
                 {/* Instructor */}
                 <div className="flex items-center gap-2 mt-2">
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="h-10 w-10 rounded-lg">
                         <AvatarImage src="/images/img1.jpeg" alt={course.instructor || "Image"} />
                         <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm">
-                        <span className="truncate">{course.instructor}</span>
-                        {/* <span className="truncate text-xs">{user?.email}</span> */}
+                        <span className="font-sans text-md">{course.instructor}</span>
                     </div>
 
                     {/* Category & Price */}
