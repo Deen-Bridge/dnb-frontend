@@ -1,80 +1,57 @@
 "use client";
-import { use, useState, useEffect, useRef } from "react";
-import { useChatSocket } from "@/hooks/useSocket";
-import { fetchMessages } from "@/lib/actions/messages/fetchMessages";
-import { fetchConversations } from "@/lib/actions/messages/fetchConversations";
-import { sendMessage as sendMessageAPI } from "@/lib/actions/messages/sendMessage";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, MessageSquare, Users, Globe } from "lucide-react";
 import { FiSend } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
-import { format } from "date-fns";
 import { useRouter, usePathname } from "next/navigation";
-
+import { isValid,format } from "date-fns";
+import { listenToMessages } from "@/lib/actions/messages/fetchMessages";
+import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
+import { sendMessage } from "@/lib/actions/messages/sendMessage";
+import { getUserById } from "@/lib/actions/users/getUserById";
+import { setTyping } from "@/lib/actions/messages/typing";
+import { listenToTyping } from "@/lib/actions/messages/listen-to-typing";
 export default function Page({ params }) {
   const router = useRouter();
-  const pathname = usePathname();
   const { user } = useAuth();
-  const resolvedParams = use(params);
-  const room = resolvedParams.room;
+  const { room } = React.use(params); // Unwrap params for Next.js 14+
+
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentConversation, setCurrentConversation] = useState(null);
+  const [otherParticipantInfo, setOtherParticipantInfo] = useState(null);
+  const [userCache, setUserCache] = useState({});
+  const [typingUsers, setTypingUsers] = useState({});
+
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Listen to messages
   useEffect(() => {
-    scrollToBottom();
+    if (!room) return;
+    const unsubscribe = listenToMessages(room, (msgs) => {
+      setMessages(msgs);
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
+  }, [room]);
+
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const { sendMessage, connectionStatus } = useChatSocket({
-    conversationId: room,
-    onMessage: (msg) => {
-      console.log("Received new message:", msg);
-      setMessages((prev) => {
-        // Check if message already exists
-        const exists = prev.some(
-          (m) =>
-            m._id === msg._id ||
-            (m.text === msg.text &&
-              m.sender === msg.sender &&
-              m.timestamp === msg.timestamp)
-        );
-        if (exists) {
-          return prev;
-        }
-        // Add message to the end of the array
-        const newMessages = [...prev, msg];
-        // Sort messages by timestamp
-        return newMessages.sort((a, b) => {
-          const timeA = new Date(a.timestamp || a.createdAt).getTime();
-          const timeB = new Date(b.timestamp || b.createdAt).getTime();
-          return timeA - timeB;
-        });
-      });
-      setError(null);
-    },
-  });
-
-  // Update connection status when it changes
-  useEffect(() => {
-    setIsConnected(connectionStatus === "connected");
-  }, [connectionStatus]);
-
-  // Fetch conversations and set current conversation
+  // Fetch conversations and set current
   useEffect(() => {
     const loadConversations = async () => {
+      if (!user || !user._id || !room) return;
       try {
-        const convos = await fetchConversations();
+        const convos = await fetchUserConversations(user._id);
         setConversations(convos);
         const current = convos.find((conv) => conv._id === room);
         setCurrentConversation(current);
@@ -83,110 +60,52 @@ export default function Page({ params }) {
       }
     };
     loadConversations();
-  }, [room]);
+  }, [room, user?._id]);
 
-  // Fetch messages for current room
+  // Fetch other participant info
   useEffect(() => {
-    const loadMessages = async () => {
-      if (!room) return;
-
-      setIsLoading(true);
+    const fetchOtherParticipant = async () => {
+      if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants)) return;
+      const otherId = currentConversation.participants.find(id => id !== user._id);
+      if (!otherId) return;
       try {
-        const msgs = await fetchMessages(room);
-        // Sort messages by timestamp
-        const sortedMessages = msgs.sort((a, b) => {
-          const timeA = new Date(a.createdAt || a.timestamp).getTime();
-          const timeB = new Date(b.createdAt || b.timestamp).getTime();
-          return timeA - timeB;
-        });
-        setMessages(sortedMessages);
-        setError(null);
-      } catch (err) {
-        setError("Failed to load messages");
-        console.error("Error loading messages:", err);
-      } finally {
-        setIsLoading(false);
+        const res = await getUserById(otherId);
+        if (res?.user) setOtherParticipantInfo(res.user);
+      } catch (error) {
+        console.error("Failed to fetch other participant info:", error);
       }
     };
-    loadMessages();
-  }, [room]);
+    fetchOtherParticipant();
+  }, [currentConversation, user?._id]);
 
+  // Fetch user info for all senders (for avatars)
+  useEffect(() => {
+    const uniqueSenderIds = [...new Set(messages.map(m => m.senderId))];
+    uniqueSenderIds.forEach(async id => {
+      if (!userCache[id]) {
+        const res = await getUserById(id);
+        setUserCache(prev => ({ ...prev, [id]: res?.user }));
+      }
+    });
+    // eslint-disable-next-line
+  }, [messages]);
+  useEffect(() => {
+    if (!room) return;
+    const unsubscribe = listenToTyping(room, setTypingUsers);
+    return () => unsubscribe();
+  }, [room]);
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-
     try {
-      const messageData = {
-        conversationId: room,
-        text: newMessage,
-        sender: user._id,
-        timestamp: new Date().toISOString(),
-      };
-
-      // Optimistically add message to UI
-      setMessages((prev) => {
-        const newMessages = [...prev, messageData];
-        return newMessages.sort((a, b) => {
-          const timeA = new Date(a.timestamp || a.createdAt).getTime();
-          const timeB = new Date(b.timestamp || b.createdAt).getTime();
-          return timeA - timeB;
-        });
-      });
+      await sendMessage(room, user._id, newMessage);
       setNewMessage("");
-
-      // Send message through socket
-      try {
-        sendMessage(messageData);
-      } catch (error) {
-        console.error("Socket error:", error);
-        // Don't remove from UI, just log the error
-        // The message will be resent when socket reconnects
-      }
-
-      // Also persist to database
-      try {
-        await sendMessageAPI(null, messageData);
-      } catch (err) {
-        console.error("Error persisting message:", err);
-        // Don't remove from UI, just log the error
-      }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Failed to send message:", error);
       alert("Failed to send message. Please try again.");
     }
   };
 
-  // Add a useEffect to handle socket reconnection
-  useEffect(() => {
-    if (connectionStatus === "connected" && room) {
-      // Reload messages when socket reconnects
-      const loadMessages = async () => {
-        try {
-          const msgs = await fetchMessages(room);
-          // Sort messages by timestamp
-          const sortedMessages = msgs.sort((a, b) => {
-            const timeA = new Date(a.createdAt || a.timestamp).getTime();
-            const timeB = new Date(b.createdAt || b.timestamp).getTime();
-            return timeA - timeB;
-          });
-          setMessages(sortedMessages);
-          setError(null);
-        } catch (err) {
-          console.error("Error reloading messages:", err);
-        }
-      };
-      loadMessages();
-    }
-  }, [connectionStatus, room]);
-
-  const getOtherParticipant = () => {
-    if (!currentConversation) return null;
-    return currentConversation.participants.find((p) => p._id !== user?._id);
-  };
-
-  const otherParticipant = getOtherParticipant();
-
-  // If no room is selected, show welcome message
   if (!room) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center p-4 sm:p-6 text-center bg-muted/50">
@@ -201,17 +120,14 @@ export default function Page({ params }) {
               Welcome to DeenBridge Messages
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Connect with Muslims around the world through meaningful
-              conversations
+              Connect with Muslims around the world through meaningful conversations
             </p>
           </div>
           <div className="grid gap-3 sm:gap-4 text-left">
             <div className="flex items-start gap-2 sm:gap-3">
               <Users className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5" />
               <div>
-                <h3 className="text-sm sm:text-base font-medium">
-                  Connect with Others
-                </h3>
+                <h3 className="text-sm sm:text-base font-medium">Connect with Others</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground">
                   Find and chat with Muslims who share your interests
                 </p>
@@ -220,9 +136,7 @@ export default function Page({ params }) {
             <div className="flex items-start gap-2 sm:gap-3">
               <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5" />
               <div>
-                <h3 className="text-sm sm:text-base font-medium">
-                  Global Community
-                </h3>
+                <h3 className="text-sm sm:text-base font-medium">Global Community</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground">
                   Exchange ideas and experiences with Muslims worldwide
                 </p>
@@ -233,10 +147,8 @@ export default function Page({ params }) {
       </div>
     );
   }
-
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      {/* Chat Header */}
       <div className="flex items-center gap-2 p-2 sm:p-4 border-b bg-background">
         <Button
           variant="ghost"
@@ -247,24 +159,23 @@ export default function Page({ params }) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-          <AvatarImage src={otherParticipant?.avatar} />
-          <AvatarFallback>{otherParticipant?.name?.charAt(0)}</AvatarFallback>
+          <AvatarImage src={otherParticipantInfo?.avatar} />
+          <AvatarFallback>{otherParticipantInfo?.name?.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <h2 className="font-semibold text-sm sm:text-base truncate">
-            {otherParticipant?.name}
+            {otherParticipantInfo?.name}
           </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {connectionStatus === "connected" ? "Online" : "Offline"}
-          </p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Active now</p>
         </div>
-        <div
-          className={`text-xs sm:text-sm ${
-            connectionStatus === "connected" ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {connectionStatus === "connected" ? "🟢" : "🔴"}
-        </div>
+        <div className="text-xs sm:text-sm text-green-500">// Show typing indicator
+          {Object.entries(typingUsers).map(([uid, isTyping]) =>
+            uid !== user._id && isTyping ? (
+              <div key={uid} className="text-xs text-muted-foreground px-2 py-1">
+                {userCache[uid]?.name || "Someone"} is typing...
+              </div>
+            ) : null
+          )}🟢</div>
       </div>
 
       {error && (
@@ -273,7 +184,6 @@ export default function Page({ params }) {
         </div>
       )}
 
-      {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 scrollbar-hide">
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
@@ -285,66 +195,78 @@ export default function Page({ params }) {
           </div>
         ) : (
           messages.map((msg, i) => {
-            const isOwnMessage =
-              msg.sender === user?._id || msg.sender?._id === user?._id;
+            const isOwnMessage = msg.senderId === user?._id;
             const showAvatar =
               !isOwnMessage &&
-              (i === 0 ||
-                messages[i - 1]?.sender === msg.sender ||
-                messages[i - 1]?.sender?._id === msg.sender?._id);
+              (i === 0 || messages[i - 1]?.senderId !== msg.senderId);
             const isConsecutiveMessage =
-              i > 0 &&
-              (messages[i - 1]?.sender === msg.sender ||
-                messages[i - 1]?.sender?._id === msg.sender?._id);
+              i > 0 && messages[i - 1]?.senderId === msg.senderId;
+            const rawTime = msg.timestamp?.toDate?.() // Firestore Timestamp object
+              || msg.timestamp // ISO string or Date
+              || msg.createdAt
+              || msg.created_at
+              || null;
+
+            let displayTime = "";
+            if (rawTime) {
+              const dateObj = rawTime instanceof Date ? rawTime : new Date(rawTime);
+              if (isValid(dateObj)) {
+                displayTime = format(dateObj, "HH:mm");
+              }
+            }
             const showTime =
               i === messages.length - 1 ||
-              messages[i + 1]?.sender !== msg.sender ||
-              messages[i + 1]?.sender?._id !== msg.sender?._id;
+              messages[i + 1]?.senderId !== msg.senderId;
 
-            // Get timestamp from message, fallback to current time if not available
             const messageTime =
               msg.createdAt || msg.timestamp || new Date().toISOString();
+
+            const sender = userCache[msg.senderId];
 
             return (
               <div
                 key={msg._id || i}
-                className={`flex items-end gap-2 ${
-                  isOwnMessage ? "flex-row-reverse" : "flex-row"
-                } ${isConsecutiveMessage ? "mt-1" : "mt-4"}`}
+                className={`flex items-end gap-2 ${isOwnMessage ? "flex-row-reverse" : "flex-row"
+                  } ${isConsecutiveMessage ? "mt-1" : "mt-4"}`}
               >
                 {showAvatar && (
                   <div className="flex-shrink-0">
                     <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                       <AvatarImage
-                        src={msg?.sender?.avatar}
-                        alt={msg?.sender?.name}
+                        src={sender?.avatar}
+                        alt={sender?.name}
                       />
                       <AvatarFallback>
-                        {msg?.sender?.name?.charAt(0)}
+                        {sender?.name?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </div>
                 )}
                 {!showAvatar && <div className="w-6 sm:w-8" />}
                 <div
-                  className={`flex flex-col ${
-                    isOwnMessage ? "items-end" : "items-start"
-                  } max-w-[85%] sm:max-w-[70%]`}
+                  className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"
+                    } max-w-[85%] sm:max-w-[70%]`}
                 >
                   <div
-                    className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm ${
-                      isOwnMessage
-                        ? "bg-accent text-white rounded-tr-none"
-                        : "bg-muted rounded-tl-none"
-                    } shadow-sm`}
+                    className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm ${isOwnMessage
+                      ? "bg-accent text-white rounded-tr-none"
+                      : "bg-muted rounded-tl-none"
+                      } shadow-sm`}
                   >
                     {msg.text || msg.content}
                   </div>
-                  {showTime && (
-                    <span className="text-[10px] text-muted-foreground mt-1 px-1">
-                      {format(new Date(messageTime), "HH:mm")}
-                    </span>
-                  )}
+                  <span className="text-xs text-muted-foreground">
+                    {showTime &&
+                      (() => {
+                        try {
+                          const d = msg.timestamp?.toDate?.() || msg.timestamp || msg.createdAt;
+                          return d ? format(new Date(d), "HH:mm") : "--:--";
+                        } catch {
+                          return "--:--";
+                        }
+                      })()
+                    }
+                  </span>
                 </div>
               </div>
             );
@@ -353,7 +275,6 @@ export default function Page({ params }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
       <form
         className="border-t p-2 sm:p-4 bg-background"
         onSubmit={handleSendMessage}
@@ -362,7 +283,12 @@ export default function Page({ params }) {
           <Textarea
             placeholder="Type your message..."
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={e => {
+              setNewMessage(e.target.value);
+              setTyping(room, user._id, true);
+              // Optionally, debounce and set to false after user stops typing
+            }}
+            onBlur={() => setTyping(room, user._id, false)}
             className="min-h-[40px] sm:min-h-[44px] resize-none pr-10 sm:pr-12 rounded-full border-none shadow-none focus:outline-none bg-muted/50 text-sm sm:text-base"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {

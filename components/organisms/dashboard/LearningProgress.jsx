@@ -43,7 +43,7 @@ export default function LearningProgress() {
     return (
         <Card>
             <CardHeader className="pt-4">
-                <CardTitle className={cn(roboto_500.className)}>Study Progress</CardTitle>
+                <CardTitle className={"text-lg font-semibold"}>Study Progress</CardTitle>
                 <CardDescription> Activities completed (January – June)</CardDescription>
             </CardHeader>
             <CardContent>
