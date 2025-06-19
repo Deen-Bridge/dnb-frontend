@@ -15,9 +15,7 @@ const About = () => {
                     <span className="">Excellence</span>
                 </h2>
                 <p className="text-lg leading-relaxed text-black mt-4 w-full sm:max-w-lg">
-                    We believe in providing quality education at an affordable cost. Our fee structure is
-                    clear, well-structured, and designed to ensure every child gets the best learning experience
-                    without financial strain.
+                    We are dedicated to connecting Muslims worldwide through meaningful conversations, authentic knowledge, and a supportive community. DeenBridge empowers users to learn, share, and grow in their faith by providing access to trusted resources, inspiring books, and opportunities to engage with others on their journey of Islamic excellence.
                 </p>
 
                 {/* CTA Button */}
