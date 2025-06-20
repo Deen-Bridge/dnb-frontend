@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from "@/components/ui/label"
 import Button from "@/components/atoms/form/Button"
@@ -202,27 +202,27 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="bio" className="text-md">Bio</Label>
-                     <Textarea
-                                    name="bio"
-                                     id="bio"
-                                  value={localData.bio}
-                                  onChange={handleInputChange}
-                                    placeholder="Tell us a bit about yourself..."
-                                    required
-                                    className="w-full h-24 resize-none overflow-y-auto"
-                                    maxLength={500}
-                                />
+                    <Textarea
+                        name="bio"
+                        id="bio"
+                        value={localData.bio}
+                        onChange={handleInputChange}
+                        placeholder="Tell us a bit about yourself..."
+                        required
+                        className="w-full h-24 resize-none overflow-y-auto"
+                        maxLength={500}
+                    />
                 </div>
 
                 {error && <div className="text-red-500 text-sm">{error}</div>}
                 <div className="flex justify-between mt-4 gap-4">
-                    <Button wide round  onClick={handleBack} disabled={loading} className="bg-accent hover:bg-highlight transition-colors text-sm">
-                    <ArrowBigLeft className="mr-2" size={20}/>    Back
+                    <Button wide round onClick={handleBack} disabled={loading} className="bg-accent hover:bg-highlight transition-colors text-sm">
+                        <ArrowBigLeft className="mr-2" size={20} />    Back
                     </Button>
-                    <Button wide  loading={loading} round onClick={handleSubmit} disabled={loading} className="bg-accent hover:bg-highlight transition-colors text-sm">
-                       Complete Setup
+                    <Button wide loading={loading} round onClick={handleSubmit} disabled={loading} className="bg-accent hover:bg-highlight transition-colors text-sm">
+                        Complete Setup
                     </Button>
-                </div> 
+                </div>
             </div>
         </div>
     )
