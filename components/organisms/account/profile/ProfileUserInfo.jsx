@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React,{useState} from "react";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
 import { roboto_900 } from "@/lib/config/font.config";
@@ -13,15 +13,19 @@ import { joinOrCreateConversation } from "@/lib/actions/messages/joinRoom";
 const ProfileUserInfo = ({ user }) => {
   const { user: currentUser } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleStartConversation = async () => {
     if (!currentUser?._id || !user?._id) return;
     try {
+      setLoading(true);
       const conversationId = await joinOrCreateConversation(currentUser._id, user._id);
       router.push(`/dashboard/messages/${conversationId}`);
     } catch (err) {
       console.error("Error starting conversation:", err);
       alert("Failed to start conversation. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,7 +40,8 @@ const ProfileUserInfo = ({ user }) => {
         ) : (
           <Button
             outlined
-            round
+              round
+              loading={loading}
             className="text-sm px-6 py-2"
             onClick={handleStartConversation}
           >
