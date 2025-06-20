@@ -17,8 +17,7 @@ const ProfileSetupPage = () => {
 
     const steps = {
         1: <StepOne data={formData} setData={setFormData} onNext={nextStep} />,
-        2: <StepTwo data={formData} setData={setFormData} onNext={nextStep} onPrev={prevStep} />,
-        // 3: <StepThree data={formData} setData={setFormData} onPrev={prevStep} />,
+        2: <StepTwo data={formData} setData={setFormData} onNext={nextStep} onPrev={prevStep} />
     }
 
     return (

@@ -18,7 +18,7 @@ const ProfileTabs = ({ selectedTab, onChange }) => {
                         <TabsTrigger
                             key={tab.value}
                             value={tab.value}
-                            className="px-4 py-2 rounded-full text-sm font-medium data-[state=active]:bg-accent data-[state=active]:text-white"
+                            className="px-4 py-2 rounded-full text-sm font-medium data-[state=active]:bg-accent data-[state=active]:text-white font-stretch-125%"
                         >
                             {tab.label}
                         </TabsTrigger>
