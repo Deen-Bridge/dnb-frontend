@@ -56,30 +56,6 @@ const StepOne = ({ onNext, data, setData, className }) => {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="country" className="text-md">Country</Label>
-                    <Input
-                        id="country"
-                        name="country"
-                        value={data.country || ""}
-                        onChange={handleChange}
-                        placeholder="e.g. Nigeria"
-                        required
-                    />
-                </div>
-
-                <div className="grid gap-2">
-                    <Label htmlFor="language" className="text-md" >Language</Label>
-                    <Input
-                        id="language"
-                        name="language"
-                        value={data.language || ""}
-                        onChange={handleChange}
-                        placeholder="e.g. English"
-                        required
-                    />
-                </div>
-
-                <div className="grid gap-2">
                     <Label htmlFor="profilePicture" className="text-md">Profile Picture</Label>
                     <ImageUpload
                         id="profilePicture"
