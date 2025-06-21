@@ -14,6 +14,8 @@ import { sendMessage } from "@/lib/actions/messages/sendMessage";
 import { getUserById } from "@/lib/actions/users/getUserById";
 import { setTyping } from "@/lib/actions/messages/typing";
 import { listenToTyping } from "@/lib/actions/messages/listen-to-typing";
+import Link from "next/link";
+
 export default function Page({ params }) {
   const router = useRouter();
   const { user } = useAuth();
@@ -114,50 +116,10 @@ export default function Page({ params }) {
     }
   };
 
-  if (!room) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center p-4 sm:p-6 text-center bg-muted/50">
-        <div className="max-w-md space-y-4 sm:space-y-6">
-          <div className="flex justify-center">
-            <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-accent/10 flex items-center justify-center">
-              <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl sm:text-2xl font-semibold">
-              Welcome to DeenBridge Messages
-            </h2>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Connect with Muslims around the world through meaningful conversations
-            </p>
-          </div>
-          <div className="grid gap-3 sm:gap-4 text-left">
-            <div className="flex items-start gap-2 sm:gap-3">
-              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5" />
-              <div>
-                <h3 className="text-sm sm:text-base font-medium">Connect with Others</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  Find and chat with Muslims who share your interests
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2 sm:gap-3">
-              <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-accent mt-0.5" />
-              <div>
-                <h3 className="text-sm sm:text-base font-medium">Global Community</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  Exchange ideas and experiences with Muslims worldwide
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="flex items-center gap-2 p-2 sm:p-4 border-b bg-background">
+    <div className="flex h-full w-full flex-col overflow-hidden overscroll-none">
+      <div className="flex items-center gap-2 p-2 sm:p-4 border-t border-b bg-accent/10 border-b-accent/20 rounded-t-2xl">
         <Button
           variant="ghost"
           size="icon"
@@ -167,15 +129,18 @@ export default function Page({ params }) {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+        <Link href={`/account/profile/${otherParticipantInfo?._id}`}> 
+        <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
           <AvatarImage src={otherParticipantInfo?.avatar} />
           <AvatarFallback>{otherParticipantInfo?.name?.charAt(0)}</AvatarFallback>
-        </Avatar>
+          </Avatar>
+        </Link>
+        <Link href={`/account/profile/${otherParticipantInfo?._id}`}> 
         <div className="flex-1 min-w-0">
-          <h2 className="font-semibold text-sm sm:text-base truncate">
+          <h2 className="font-semibold font-stretch-125% text-sm sm:text-base truncate">
             {otherParticipantInfo?.name}
           </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground">Active now</p>
+          <p className="text-xs sm:text-sm text-accent">Active now</p>
           {/* // Show typing indicator */}
           {Object.entries(typingUsers).map(([uid, isTyping]) =>
             uid !== user._id && isTyping ? (
@@ -184,7 +149,8 @@ export default function Page({ params }) {
               </p>
             ) : null
           )}
-        </div>
+          </div>
+          </Link>
         <div className="text-xs sm:text-sm text-green-500">🟢</div>
       </div>
 
@@ -286,10 +252,10 @@ export default function Page({ params }) {
       </div>
 
       <form
-        className="border-t p-2 sm:p-4 bg-background"
+        className="border-b-4 rounded-b-2xl p-2 sm:p-4 bg-accent/10 "
         onSubmit={handleSendMessage}
       >
-        <div className="flex relative max-w-4xl mx-auto">
+        <div className="flex relative max-w-4xl mx-auto gap-4">
           <Textarea
             placeholder="Type your message..."
             value={newMessage}

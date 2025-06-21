@@ -33,7 +33,7 @@ const page = ({ params }) => {
 
   return (
     <>
-      <div className="min-h-screen bg-muted p-4">
+      <div className="min-h-screen bg-muted p-2 sm:p-4">
         <ProfileHeader avatar={user?.avatar} />
         <ProfileUserInfo user={user} />
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
