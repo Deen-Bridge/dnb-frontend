@@ -53,7 +53,7 @@ export default function Layout({ children }) {
 
         {/* Chat Panel (right side) */}
         <div
-          className={`bg-muted rounded-xl flex flex-col  sm:p-4 transition-all duration-300 ${
+          className={`bg-muted rounded-xl flex flex-col  transition-all duration-300 ${
             isInChat ? "md:flex-1" : "w-full"
           } h-full overflow-hidden`}
         >
