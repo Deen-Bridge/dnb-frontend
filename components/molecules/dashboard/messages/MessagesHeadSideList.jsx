@@ -141,7 +141,7 @@ const MessagesHeadSideList = () => {
                   </Avatar>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold truncate">
+                      <span className="font-semibold truncate font-stretch-125%">
                         {otherParticipant?.name || "Loading..."}
                       </span>
                       {lastMessage && (
