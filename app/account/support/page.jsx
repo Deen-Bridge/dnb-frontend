@@ -23,8 +23,8 @@ const ReportIssue = () => {
   };
   return (
     <div className="flex flex-col gap-2 justify-center items-center">
-      <h3 className="mx-auto text-center text-2xl font-bold mt-6">
-        What are you having issue with ? <br /> our team, is always available to attend
+      <h3 className="mx-auto text-center text-2xl font-bold mt-6 font-stretch-125%">
+        What are you having issue with ? <br /> Our team, is always available to attend
         to it
       </h3>
       <form
@@ -71,7 +71,7 @@ const ReportIssue = () => {
           wide
           loading={loading}
           type="submit"
-          className=" transition delay-75 mt-12 py-3 font-medium flex items-center justify-center rounded-full text-white  "
+          className=" transition delay-75 mt-10 py-3 font-medium flex items-center justify-center rounded-full text-white  "
         >
           Create a ticket
         </Button>

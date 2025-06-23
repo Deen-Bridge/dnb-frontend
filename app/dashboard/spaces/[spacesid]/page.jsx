@@ -17,7 +17,7 @@ export default async function Page({ params }) {
     try {
         space = await getSpaceById(spacesid);
     } catch (err) {
-        console.error("Error fetching space:", err);
+        console.log("Error fetching space:", err);
         return notFound();
     }
     if (!space) return notFound();
@@ -44,7 +44,7 @@ export default async function Page({ params }) {
                             <Badge variant="accent" className="bg-white/10 text-highlight">
                                 {space.price ? `$${space.price}` : "Free"}
                             </Badge>
-                             <Badge variant="accent" className="bg-white/10 text-highlight">
+                            <Badge variant="accent" className="bg-white/10 text-highlight">
                                 {space.status.toUpperCase()}
                             </Badge>
                         </div>
@@ -59,29 +59,29 @@ export default async function Page({ params }) {
                             round
                             to="#" // TODO: Add join logic or link
                         >
-                          Join Space
+                            Join Space
                         </Button>
                         <Button
                             outlined
                             round
                             to="#" // TODO: Add waitlist logic or link
                         >
-                         <Clock className="w-5 h-5 mr-2" /> Join Waitlist
+                            <Clock className="w-5 h-5 mr-2" /> Join Waitlist
                         </Button>
                     </div>
 
-                 
+
 
                 </div>
 
                 {/* Sidebar */}
                 <aside className="md:col-span-4 space-y-8 sticky top-20 self-start">
-        
-                 {/* Host Card */}
+
+                    {/* Host Card */}
                     <div className="flex items-center gap-4 mt-10 bg-accent/10 p-4 rounded-2xl shadow">
                         <Avatar className="h-14 w-14 border border-white/10 shadow-lg">
                             <AvatarImage src={space.host?.avatar || "/images/avatar-placeholder.png"} />
-                            <AvatarFallback>{space.host?.name?.slice(0,2).toUpperCase() || "HN"}</AvatarFallback>
+                            <AvatarFallback>{space.host?.name?.slice(0, 2).toUpperCase() || "HN"}</AvatarFallback>
                         </Avatar>
                         <div className="text-accent ">
                             <p className="font-bold ">{space.host?.name || "Host"}</p>

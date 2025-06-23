@@ -2,7 +2,6 @@
 
 import StepOne from '@/components/organisms/profile-setup/step-one'
 import StepTwo from '@/components/organisms/profile-setup/step-two'
-// import StepThree from '@/components/organisms/profile-setup/step-three' // you can add more steps later
 import { GalleryVerticalEnd } from 'lucide-react'
 import React, { useState } from 'react'
 import Image from "next/image"

@@ -28,44 +28,44 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-        const formData = new FormData();
-        formData.append("title", form.title);
-        formData.append("description", form.description);
-        formData.append("category", form.category);
-        formData.append("price", form.price);
-        formData.append("duration", form.duration);
-        formData.append("eventDate", eventDate ? eventDate.toISOString() : "");
-        if (thumbnail) formData.append("thumbnail", thumbnail);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append("title", form.title);
+            formData.append("description", form.description);
+            formData.append("category", form.category);
+            formData.append("price", form.price);
+            formData.append("duration", form.duration);
+            formData.append("eventDate", eventDate ? eventDate.toISOString() : "");
+            if (thumbnail) formData.append("thumbnail", thumbnail);
 
-        console.log("Submitting space with FormData:");
-        for (let pair of formData.entries()) {
-            console.log(pair[0]+ ': ' + pair[1]);
+            console.log("Submitting space with FormData:");
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
+            const data = await createSpace(formData); // pass true to indicate FormData
+
+            console.log("Response from createSpace:", data);
+
+            if (data.success) {
+                toast.success('Space created successfully');
+                if (onSpaceCreated) onSpaceCreated();
+                setTimeout(() => {
+                    router.push(`/dashboard/spaces/${data.space._id}`);
+                }, 2000);
+            } else {
+                console.log("Space creation failed:", data.message || 'Unknown error');
+            }
+        } catch (error) {
+            console.log("Error in handleSubmit:", error);
+            alert('Something went wrong!');
+        } finally {
+            setLoading(false);
         }
-
-        const data = await createSpace(formData); // pass true to indicate FormData
-
-        console.log("Response from createSpace:", data);
-
-        if (data.success) {
-            toast.success('Space created successfully');
-            if (onSpaceCreated) onSpaceCreated();
-            setTimeout(() => {
-                router.push(`/dashboard/spaces/${data.space._id}`);
-            }, 2000);
-        } else {
-            console.log("Space creation failed:", data.message || 'Unknown error');
-        }
-    } catch (error) {
-        console.error("Error in handleSubmit:", error);
-        alert('Something went wrong!');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     return (
         <form
@@ -121,7 +121,7 @@ const handleSubmit = async (e) => {
                 required
             />
             <div className="my-4">
-                <Label  className="block mb-1 text-sm font-medium">Upload Space Thumbnail Image</Label>
+                <Label className="block mb-1 text-sm font-medium">Upload Space Thumbnail Image</Label>
                 <ImageUpload id="thumbnail" image={thumbnail} onChange={(e) => setThumbnail(e.target.files[0])} />
             </div>
             <Button round wide loading={loading} type="submit" disabled={loading} className="w-full bg-accent hover:bg-highlight transition">

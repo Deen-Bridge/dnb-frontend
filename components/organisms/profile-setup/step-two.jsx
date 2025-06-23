@@ -11,8 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/navigation"
 import { updateUser } from "@/lib/actions/updateUser"
 import { toast } from "sonner"
-import useAuth from "@/hooks/useAuth"
 import { ArrowBigLeft } from "lucide-react"
+import useAuth from "@/hooks/useAuth";
+
 const islamicInterestsList = [
     "Qur'an Recitation",
     "Hadith Studies",
@@ -105,6 +106,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
             } else if (response && response.message) {
                 throw new Error(response.message);
             } else {
+                toast.error("Network error")
                 throw new Error("Failed to update profile (no response from server)");
             }
         } catch (err) {
@@ -122,7 +124,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
     return (
         <div className={cn("flex flex-col gap-6", className)}>
             <div className="flex flex-col items-center gap-2 text-center">
-                <h2 className="text-xl font-semibold">More about you</h2>
+                <h2 className="text-xl font-semibold font-stretch-125%">More about you</h2>
                 <p className="text-sm text-muted-foreground">
                     This helps us personalize your experience.
                 </p>
@@ -130,9 +132,9 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label className="text-md">Gender</Label>
+                    <Label className="text-md font-stretch-125%">Gender</Label>
                     <RadioGroup
-                        value={localData.gender}
+                        value={localData.gender || user?.gender}
                         onValueChange={handleGenderChange}
                         className="flex gap-4 h-10 w-10"
                     >
@@ -148,8 +150,8 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label className="text-md">Islamic Interests</Label>
-                    <div className="grid gap-2">
+                    <Label className="text-md font-stretch-125%">Islamic Interests</Label>
+                    <div className="grid grid-cols-2 gap-2">
                         {islamicInterestsList.map((item) => (
                             <div key={item} className="flex items-center gap-2">
                                 <Checkbox
@@ -163,53 +165,55 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                         ))}
                     </div>
                 </div>
-
-                {/* Country Dropdown */}
-                <div className="grid gap-2">
-                    <Label className="text-md">Country</Label>
-                    <Select
-                        value={localData.country}
-                        onValueChange={val => setLocalData(prev => ({ ...prev, country: val }))}
-                        required
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {countryList.map((c) => (
-                                <SelectItem key={c} value={c}>{c}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                <div className="sm:flex sm:justify-between">
+                    {/* Country Dropdown */}
+                    <div className="grid gap-2">
+                        <Label className="text-md font-stretch-125%">Country</Label>
+                        <Select
+                            value={localData.country || user?.country}
+                            onValueChange={val => setLocalData(prev => ({ ...prev, country: val }))}
+                            required
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {countryList.map((c) => (
+                                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {/* Language Dropdown */}
+                    <div className="grid gap-2">
+                        <Label className="text-md font-stretch-125%">Language</Label>
+                        <Select
+                            value={localData.language || user?.language}
+                            onValueChange={val => setLocalData(prev => ({ ...prev, language: val }))}
+                            required
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {languageList.map((l) => (
+                                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
-                {/* Language Dropdown */}
+                {/* bio description */}
                 <div className="grid gap-2">
-                    <Label className="text-md">Language</Label>
-                    <Select
-                        value={localData.language}
-                        onValueChange={val => setLocalData(prev => ({ ...prev, language: val }))}
-                        required
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select language" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {languageList.map((l) => (
-                                <SelectItem key={l} value={l}>{l}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="bio" className="text-md">Bio</Label>
+                    <Label htmlFor="bio" className="text-md font-stretch-125%">Bio</Label>
                     <Textarea
                         name="bio"
                         id="bio"
-                        value={localData.bio}
+                        value={localData.bio || user?.bio}
                         onChange={handleInputChange}
                         placeholder="Tell us a bit about yourself..."
                         required
-                        className="w-full h-24 resize-none overflow-y-auto"
+                        className="w-full h-32 resize-none overflow-y-auto"
                         maxLength={500}
                     />
                 </div>
