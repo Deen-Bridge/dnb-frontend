@@ -55,7 +55,7 @@ export const useAuth = () => {
         return freshUser;
       }
     } catch (error) {
-      console.error("Failed to refresh user:", error);
+      console.log("Failed to refresh user:", error);
       toast.error("Failed to refresh user info");
     }
   };
@@ -81,11 +81,11 @@ export const login = async (email, password) => {
   } catch (error) {
     if (error.response) {
       const errorMessage = error.response.data?.message || "Login failed";
-      console.error("Login failed:", errorMessage);
+      console.log("Login failed:", errorMessage);
       toast.error(errorMessage);
     } else {
       // Network or other unexpected errors
-      console.error("Login failed:", error.message);
+      console.log("Login failed:", error.message);
       toast.error("An unexpected error occurred. Please try again.");
     }
     throw error; // Re-throw error for handling in the component
@@ -112,11 +112,11 @@ export const signup = async (name, email, password, role) => {
     if (error.response) {
       // Handle backend error response
       const errorMessage = error.response.data?.message || "Signup failed";
-      console.error("Signup failed:", errorMessage);
+      console.log("Signup failed:", errorMessage);
       toast.error(errorMessage); // Show the error message from the backend
     } else {
       // Handle network or unexpected errors
-      console.error("Signup failed:", error.message);
+      console.log("Signup failed:", error.message);
       toast.error("An unexpected error occurred. Please try again.");
     }
     throw error; // Re-throw error for handling in the component

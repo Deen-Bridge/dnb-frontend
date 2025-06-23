@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { format, isValid } from "date-fns";
 import { ChatHeadListSkeleton } from "@/components/atoms/skeletons/ChatHeadListSkeleton";
 import { getUserById } from "@/lib/actions/users/getUserById";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/config/firebaseConfig";
 
 const MessagesHeadSideList = () => {
   const [conversations, setConversations] = useState([]);
@@ -26,12 +28,34 @@ const MessagesHeadSideList = () => {
         const convos = await fetchUserConversations(user._id);
         setConversations(convos);
       } catch (err) {
-        console.error("Error loading conversations:", err);
+        console.log("Error loading conversations:", err);
       } finally {
         setLoading(false);
       }
     };
     loadConversations();
+  }, [user?._id]);
+
+  // Real-time listener for conversations
+  useEffect(() => {
+    if (!user?._id) return;
+    setLoading(true);
+
+    const q = query(
+      collection(db, "conversations"),
+      where("participants", "array-contains", user._id)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const convos = snapshot.docs.map(doc => ({
+        _id: doc.id,
+        ...doc.data(),
+      }));
+      setConversations(convos);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [user?._id]);
 
   // Fetch all other participants' info as soon as conversations load
