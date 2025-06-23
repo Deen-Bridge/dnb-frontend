@@ -43,7 +43,7 @@ const BookCreateForm = ({ onBookCreated }) => {
                 alert(data.message || 'Book creation failed');
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
             alert('Something went wrong!');
         } finally {
             setLoading(false);

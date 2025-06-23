@@ -8,8 +8,10 @@ import Modal from "@/components/molecules/Modal";
 import BookCreateForm from "@/components/organisms/create/book-create-form";
 import { fetchBooks } from "@/lib/actions/library/fetch-books";
 import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
+import useAuth from "@/hooks/useAuth";  
 
 const LibraryPage = () => {
+  const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,12 +65,14 @@ const LibraryPage = () => {
             [...Array(6)].map((_, idx) => (
               <LibraryBookSkeleton key={`skeleton-${idx}`} />
             ))
-          ) : books.length === 0 ? (
+          ) : books.length === 0 ?  (
             <div className="col-span-full text-center text-accent">
               No books found.
             </div>
           ) : (
-            books.map((book) => <LibraryBookCard key={book._id} book={book} />)
+                books
+                  .filter((book) => book.author._id !== user._id)
+                  .map((book) => <LibraryBookCard key={book._id} book={book} />)
           )}
         </div>
       </div>

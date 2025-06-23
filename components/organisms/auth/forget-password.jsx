@@ -23,7 +23,7 @@ const ForgetPassword = ({ className, ...props }) => {
             // Add your API call logic here
             alert('Password reset link sent to your email!');
         } catch (error) {
-            console.error('Error sending password reset email:', error);
+            console.log('Error sending password reset email:', error);
         } finally {
             setIsLoading(false);
         }
