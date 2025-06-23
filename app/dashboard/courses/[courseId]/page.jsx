@@ -20,7 +20,7 @@ export default async function Page({ params }) {
       <h2 className="text-3xl font-extrabold mb-6">Watch Course</h2>
 
       {/* Video Player Full Width */}
-      <div className="w-full min-h-[360px] lg:min-h-[480px] mb-8">
+      <div className="w-full min-h-[460px] lg:min-h-[480px] mb-8">
         <VidPlayerBox data={course} />
       </div>
 

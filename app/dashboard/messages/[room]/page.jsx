@@ -58,7 +58,7 @@ export default function Page({ params }) {
         const current = convos.find((conv) => conv._id === room);
         setCurrentConversation(current);
       } catch (err) {
-        console.error("Error loading conversations:", err);
+        console.log("Error loading conversations:", err);
       }
     };
     loadConversations();
@@ -82,7 +82,7 @@ export default function Page({ params }) {
           setUserCache(prev => ({ ...prev, [otherId]: res.user }));
         }
       } catch (error) {
-        console.error("Failed to fetch other participant info:", error);
+        console.log("Failed to fetch other participant info:", error);
       }
     };
     fetchOtherParticipant();
@@ -111,7 +111,7 @@ export default function Page({ params }) {
       await sendMessage(room, user._id, newMessage);
       setNewMessage("");
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.log("Failed to send message:", error);
       alert("Failed to send message. Please try again.");
     }
   };
@@ -129,28 +129,28 @@ export default function Page({ params }) {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <Link href={`/account/profile/${otherParticipantInfo?._id}`}> 
-        <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
-          <AvatarImage src={otherParticipantInfo?.avatar} />
-          <AvatarFallback>{otherParticipantInfo?.name?.charAt(0)}</AvatarFallback>
+        <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
+          <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
+            <AvatarImage src={otherParticipantInfo?.avatar} />
+            <AvatarFallback>{otherParticipantInfo?.name?.charAt(0)}</AvatarFallback>
           </Avatar>
         </Link>
-        <Link href={`/account/profile/${otherParticipantInfo?._id}`}> 
-        <div className="flex-1 min-w-0">
-          <h2 className="font-semibold font-stretch-125% text-sm sm:text-base truncate">
-            {otherParticipantInfo?.name}
-          </h2>
-          <p className="text-xs sm:text-sm text-accent">Active now</p>
-          {/* // Show typing indicator */}
-          {Object.entries(typingUsers).map(([uid, isTyping]) =>
-            uid !== user._id && isTyping ? (
-              <p key={uid} className="text-xs text-muted-foreground">
-                typing...
-              </p>
-            ) : null
-          )}
+        <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold font-stretch-125% text-sm sm:text-base truncate">
+              {otherParticipantInfo?.name}
+            </h2>
+            <p className="text-xs sm:text-sm text-accent">Active now</p>
+            {/* // Show typing indicator */}
+            {Object.entries(typingUsers).map(([uid, isTyping]) =>
+              uid !== user._id && isTyping ? (
+                <p key={uid} className="text-xs text-muted-foreground">
+                  typing...
+                </p>
+              ) : null
+            )}
           </div>
-          </Link>
+        </Link>
         <div className="text-xs sm:text-sm text-green-500">🟢</div>
       </div>
 

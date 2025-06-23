@@ -6,7 +6,10 @@ import Button from "@/components/atoms/form/Button";
 import Modal from "@/components/molecules/Modal";
 import CreateCourseForm from "@/components/organisms/create/course-create-form";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
+import useAuth from "@/hooks/useAuth";
+
 export default function CoursesPage() {
+  const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -19,7 +22,7 @@ export default function CoursesPage() {
         console.log("Fetched courses:", response);
         setCourses(response);
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        console.log("Error fetching courses:", error);
       } finally {
         setLoading(false);
       }
@@ -52,7 +55,9 @@ export default function CoursesPage() {
                 <CourseCardSkeleton key={`skeleton-${idx}`} />
               ))
             ) : (
-              courses?.map((course) => (
+              courses
+              .filter((course) => course.createdBy._id !== user._id )
+              .map((course) => (
                 <CourseCard key={course._id} course={course} />
               ))
             )}

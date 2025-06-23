@@ -20,7 +20,7 @@ export default function Layout({ children }) {
         const conversations = await fetchUserConversations(user._id);
         setHasConversations(conversations.length > 0);
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.log("Error fetching conversations:", error);
         setHasConversations(false);
       } finally {
         setIsLoading(false);
@@ -29,7 +29,6 @@ export default function Layout({ children }) {
 
     checkConversations();
   }, [user?._id]);
-  
 
   if (isLoading) {
     return (

@@ -2,8 +2,6 @@
 
 import {
   Card,
-  CardContent,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +27,14 @@ const SpaceCard = ({ space }) => {
     duration,
     host,
   } = space;
-
+  function formatDuration(minutes) {
+    if (minutes < 60) return `${minutes} mins`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins === 0
+      ? `${hours} hr${hours > 1 ? "s" : ""}`
+      : `${hours} hr${hours > 1 ? "s" : ""} ${mins} min${mins > 1 ? "s" : ""}`;
+  }
   const formattedTime = format(new Date(eventDate), "PPpp");
 
   return (
@@ -52,7 +57,7 @@ const SpaceCard = ({ space }) => {
               {category}
             </Badge>
           )}
-          {status  && (
+          {status && (
             <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-accent text-white text-xs rounded-full font-semibold shadow-md  border-0">
               🟢 {status.toUpperCase()}
             </div>
@@ -80,10 +85,10 @@ const SpaceCard = ({ space }) => {
             <span className="font-medium text-accent/90">{formattedTime}</span>
           </div>
           <div className="bg-gradient-to-r from-highlight to-accent text-white px-2 py-0.5 rounded-full font-bold shadow border-0 text-xs">
-            {duration} mins
+            {formatDuration(duration)}
           </div>
         </div>
-             {/* Host */}
+        {/* Host */}
         <div className="flex items-center gap-3 mb-2">
           <Avatar className="h-10 w-10">
             <AvatarImage
@@ -114,5 +119,8 @@ const SpaceCard = ({ space }) => {
     </Card>
   );
 };
+
+
+
 
 export default SpaceCard;

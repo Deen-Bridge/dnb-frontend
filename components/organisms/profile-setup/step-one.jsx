@@ -6,10 +6,12 @@ import { Label } from "@/components/ui/label"
 import Button from "@/components/atoms/form/Button"
 import { cn } from "@/lib/utils"
 import ImageUpload from "@/components/atoms/form/ImageInput"
+import useAuth from "@/hooks/useAuth";
 
 const StepOne = ({ onNext, data, setData, className }) => {
     const [avatar, setAvatar] = useState(null)
     const [error, setError] = useState("")
+    const { user } = useAuth();
 
     const handleChange = (e) => {
         setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -33,7 +35,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
             className={cn("space-y-6 max-w-md mx-auto", className)}
         >
             <div className="text-center">
-                <h1 className="text-2xl font-bold">Profile Setup</h1>
+                <h1 className="text-2xl font-bold font-stretch-125%">Profile Setup</h1>
                 <p className="text-sm text-muted-foreground">
                     Let’s start with your basic information
                 </p>
@@ -41,14 +43,14 @@ const StepOne = ({ onNext, data, setData, className }) => {
 
             <div className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="age" className="text-md">Age</Label>
+                    <Label htmlFor="age" className="text-md font-stretch-125%">Age</Label>
                     <Input
                         id="age"
                         name="age"
                         type="number"
                         min={5}
                         max={120}
-                        value={data.age || ""}
+                        value={data.age || user?.age}
                         onChange={handleChange}
                         placeholder="e.g. 25"
                         required
@@ -56,7 +58,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="profilePicture" className="text-md">Profile Picture</Label>
+                    <Label htmlFor="profilePicture" className="text-md font-stretch-125%">Profile Picture</Label>
                     <ImageUpload
                         id="profilePicture"
                         onChange={handleAvatarChange}
@@ -70,7 +72,7 @@ const StepOne = ({ onNext, data, setData, className }) => {
             </div>
 
             <Button wide round type="submit" className="bg-accent hover:bg-highlight text-sm">
-              Next
+                Next
             </Button>
         </form>
     )

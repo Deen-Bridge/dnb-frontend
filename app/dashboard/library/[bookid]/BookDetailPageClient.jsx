@@ -11,6 +11,9 @@ import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { CustomSidebar } from "@/components/organisms/dashboard/CustomSidebar";
 import BookStatsInfo from "@/components/molecules/dashboard/BookStats&Info";
+import { useHasBook } from "@/hooks/usePurchase";
+
+const hasBook = useHasBook(book._id);
 
 export default function BookDetailPage({ book }) {
     const { user } = useAuth();
