@@ -7,22 +7,24 @@ import Modal from "@/components/molecules/Modal";
 import CreateCourseForm from "@/components/organisms/create/course-create-form";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import useAuth from "@/hooks/useAuth";
+import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
 export default function CoursesPage() {
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError(false);
       try {
         const response = await fetchCourses();
-        console.log("Fetched courses:", response);
         setCourses(response);
       } catch (error) {
-        console.log("Error fetching courses:", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -31,9 +33,13 @@ export default function CoursesPage() {
     fetchData();
   }, []);
 
+  if (error) {
+    return <NetworkErrorComp errMsg="Failed to get courses, reload or try again later" />;
+  }
+
   return (
     <>
-      <div className="bg-muted">
+      <div className="bg-muted h-full w-full">
         <div className="flex justify-between items-center p-5">
           <h2 className="font-semibold text-lg sm:text-3xl text-accent ">
             Courses created to suit your soul
@@ -41,7 +47,7 @@ export default function CoursesPage() {
           <Button
             round
             outlined
-            className="text-xs sm:text-normal"
+            className="text-normal"
             onClick={() => setModalOpen(!modalOpen)}
           >
             Create Course
@@ -56,10 +62,10 @@ export default function CoursesPage() {
               ))
             ) : (
               courses
-              .filter((course) => course.createdBy._id !== user._id )
-              .map((course) => (
-                <CourseCard key={course._id} course={course} />
-              ))
+                .filter((course) => course.createdBy._id !== user._id)
+                .map((course) => (
+                  <CourseCard key={course._id} course={course} />
+                ))
             )}
           </div>
         </div>
