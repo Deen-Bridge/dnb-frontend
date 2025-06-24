@@ -8,22 +8,26 @@ import Modal from "@/components/molecules/Modal";
 import BookCreateForm from "@/components/organisms/create/book-create-form";
 import { fetchBooks } from "@/lib/actions/library/fetch-books";
 import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
-import useAuth from "@/hooks/useAuth";  
+import useAuth from "@/hooks/useAuth";
+import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
 const LibraryPage = () => {
   const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const getBooks = async () => {
       setLoading(true);
+      setError(false);
       try {
         const data = await fetchBooks();
         setBooks(data);
       } catch (err) {
         setBooks([]);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -38,6 +42,10 @@ const LibraryPage = () => {
   const handleBookCreated = () => {
     setModalOpen(false);
   };
+
+  if (error) {
+    return <NetworkErrorComp errMsg="Error getting Books, Please try again" />;
+  }
 
   return (
     <>
@@ -65,14 +73,10 @@ const LibraryPage = () => {
             [...Array(6)].map((_, idx) => (
               <LibraryBookSkeleton key={`skeleton-${idx}`} />
             ))
-          ) : books.length === 0 ?  (
-            <div className="col-span-full text-center text-accent">
-              No books found.
-            </div>
           ) : (
-                books
-                  .filter((book) => book.author._id !== user._id)
-                  .map((book) => <LibraryBookCard key={book._id} book={book} />)
+            books
+              .filter((book) => book.author._id !== user._id)
+              .map((book) => <LibraryBookCard key={book._id} book={book} />)
           )}
         </div>
       </div>
