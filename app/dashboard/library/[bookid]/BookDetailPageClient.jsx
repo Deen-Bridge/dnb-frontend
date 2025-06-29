@@ -17,16 +17,28 @@ import { usePurchaseBook } from "@/hooks/usePurchase";
 
 
 export default function BookDetailPage({ book }) {
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState("");
     const hasBook = useHasBook(book?._id);
+    const [loading, setLoading] = useState(false);
+
+
     const handlePurchaseBook = async () => {
-        usePurchaseBook(book._id)
-    }
+        setLoading(true);
+        try {
+            await usePurchaseBook(book._id);
+            await refreshUser(user._id);
+            toast.success("Book purchased successfully!");
+        } catch (error) {
+            toast.error("Failed to purchase book.");
+        } finally {
+            setLoading(false);
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -102,6 +114,7 @@ export default function BookDetailPage({ book }) {
                                 className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
                                 round
                                 onClick={handlePurchaseBook}
+                                loading={loading}
                             >
                                 Purchase Book
                             </Button>
