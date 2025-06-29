@@ -14,14 +14,23 @@ export function useHasBook(bookId) {
 
 // purchase a book
 export async function usePurchaseBook(bookId) {
+  if (!bookId) {
+    console.error("No bookId provided to usePurchaseBook");
+    return;
+  }
   try {
-    await axiosInstance.post(
+    const res = await axiosInstance.post(
       "/api/purchase/book",
-      { bookId: bookId },
+      { bookId: bookId.toString() },
       config
     );
+    // Optionally: trigger a user state refresh here if needed
+    return res.data;
   } catch (e) {
-    console.log(e);
+    // Show backend error message if available
+    const msg = e?.response?.data?.message || e.message || "Purchase failed";
+    console.error("Purchase error:", msg);
+    throw new Error(msg);
   }
 }
 
