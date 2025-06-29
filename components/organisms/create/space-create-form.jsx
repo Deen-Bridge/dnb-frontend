@@ -70,10 +70,9 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
     return (
         <form
             onSubmit={handleSubmit}
-            className="w-sm sm:w-lg mx-auto rounded-xl p-1 space-y-3"
+            className="w-xs sm:w-lg mx-auto rounded-xl p-1 space-y-3"
         >
-            <h2 className="text-2xl font-bold mb-4">Create a New Space</h2>
-            <Label htmlFor="title">Space Title</Label>
+            <Label htmlFor="title">Title</Label>
             <Input
                 name="title"
                 placeholder="Space Title"
@@ -81,7 +80,7 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
                 onChange={handleChange}
                 required
             />
-            <Label htmlFor="description">Space Description</Label>
+            <Label htmlFor="description">Description</Label>
             <Textarea
                 name="description"
                 placeholder="Space Description"
@@ -90,7 +89,7 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
                 required
                 className="w-full h-24 resize-none overflow-y-auto"
             />
-            <Label htmlFor="category">Space Category</Label>
+            <Label htmlFor="category">Category</Label>
             <Input
                 name="category"
                 placeholder="Category (e.g., Fiqh, Aqeedah)"
@@ -98,17 +97,17 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
                 onChange={handleChange}
                 required
             />
-            <Label htmlFor="price">Space Price</Label>
+            <Label htmlFor="price">Price</Label>
             <Input
                 name="price"
                 type="number"
-                placeholder="Price (₦)"
+                placeholder="Price ($)"
                 value={form.price}
                 onChange={handleChange}
                 min={0}
                 required
             />
-            <Label htmlFor="eventDate">Start Time</Label>
+            <Label htmlFor="eventDate">Event Date</Label>
             <DatePicker value={eventDate} onChange={setEventDate} /> {/* <-- Use DatePicker here */}
             <Label htmlFor="duration">Duration (minutes)</Label>
             <Input
@@ -121,7 +120,7 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
                 required
             />
             <div className="my-4">
-                <Label className="block mb-1 text-sm font-medium">Upload Space Thumbnail Image</Label>
+                <Label className="block mb-1 text-sm font-medium">Upload Thumbnail Image</Label>
                 <ImageUpload id="thumbnail" image={thumbnail} onChange={(e) => setThumbnail(e.target.files[0])} />
             </div>
             <Button round wide loading={loading} type="submit" disabled={loading} className="w-full bg-accent hover:bg-highlight transition">

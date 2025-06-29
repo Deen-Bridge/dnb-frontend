@@ -6,14 +6,15 @@ import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { DownloadCloud } from "lucide-react";
 import StarRate from "@/components/atoms/form/StarRate";
-import { addBookReview } from "@/lib/actions/library/addReveiw";
+import { addBookReview } from "@/lib/actions/library/addReview";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { CustomSidebar } from "@/components/organisms/dashboard/CustomSidebar";
 import BookStatsInfo from "@/components/molecules/dashboard/BookStats&Info";
 import { useHasBook } from "@/hooks/usePurchase";
+import { usePurchaseBook } from "@/hooks/usePurchase";
 
-const hasBook = useHasBook(book._id);
+
 
 export default function BookDetailPage({ book }) {
     const { user } = useAuth();
@@ -22,6 +23,10 @@ export default function BookDetailPage({ book }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState("");
+    const hasBook = useHasBook(book?._id);
+    const handlePurchaseBook = async () => {
+        usePurchaseBook(book._id)
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -71,64 +76,74 @@ export default function BookDetailPage({ book }) {
                     </div>
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-4">
-                        <Button
-                            wide
-                            className=" bg-accent hover:highlight text-white font-bold shadow-lg transition"
-                            round
-                            to={`/dashboard/library/read/${book.id}`}
-                        >
-                            Start Reading
-                        </Button>
-                        <Button
-                            outlined
-                            round
-                            to={book.fileUrl}
-                            download
-                            target="_blank"
-                        >
-                            <DownloadCloud className="w-4 h-4 mr-2" /> Download
-                        </Button>
-                    </div>
-
-                    
-                    {/* Review Section */}
-                    {user?._id !== book.author._id && (
-                       
-                    <div className="pt-10 space-y-5 border-t border-white/10">
-                    {!submitted && (
-                        <>
-                            <h2 className="text-3xl font-semibold">Leave a Review</h2>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <StarRate
-                                    value={rating}
-                                    onChange={setRating}
-                                    maxStars={5}
-                                    editable={!submitting && !submitted}
-                                    label={rating > 0 ? `Your rating: ${rating} star${rating > 1 ? "s" : ""}` : undefined}
-                                />
-                                <Textarea
-                                    placeholder="What did you think about the book?"
-                                    className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
-                                    value={review}
-                                    onChange={e => setReview(e.target.value)}
-                                    disabled={submitting || submitted}
-                                />
-                                {error && <div className="text-red-500 text-sm">{error}</div>}
+                        {hasBook ? (
+                            <>
                                 <Button
                                     wide
+                                    className="bg-accent hover:highlight text-white font-bold shadow-lg transition"
                                     round
-                                    className="bg-accent hover:bg-highlight font-semibold mt-2 transition"
-                                    type="submit"
-                                    disabled={submitting || rating === 0 || review.trim() === ""}
-                                    loading={submitting}
+                                    to={`/dashboard/library/read/${book.id}`}
                                 >
-                                Submit Review
+                                    Start Reading
                                 </Button>
-                            </form>
-                        </>
-                    )}
+                                <Button
+                                    outlined
+                                    round
+                                    to={book.fileUrl}
+                                    download
+                                    target="_blank"
+                                >
+                                    <DownloadCloud className="w-4 h-4 mr-2" /> Download
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                wide
+                                className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
+                                round
+                                onClick={handlePurchaseBook}
+                            >
+                                Purchase Book
+                            </Button>
+                        )}
                     </div>
-                         )}
+                    {/* Review Section */}
+                    {user?._id !== book.author._id && (
+                        <div className="pt-10 space-y-5 border-t border-white/10">
+                            {!submitted && (
+                                <>
+                                    <h2 className="text-3xl font-semibold">Leave a Review</h2>
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        <StarRate
+                                            value={rating}
+                                            onChange={setRating}
+                                            maxStars={5}
+                                            editable={!submitting && !submitted}
+                                            label={rating > 0 ? `Your rating: ${rating} star${rating > 1 ? "s" : ""}` : undefined}
+                                        />
+                                        <Textarea
+                                            placeholder="What did you think about the book?"
+                                            className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
+                                            value={review}
+                                            onChange={e => setReview(e.target.value)}
+                                            disabled={submitting || submitted}
+                                        />
+                                        {error && <div className="text-red-500 text-sm">{error}</div>}
+                                        <Button
+                                            wide
+                                            round
+                                            className="bg-accent hover:bg-highlight font-semibold mt-2 transition"
+                                            type="submit"
+                                            disabled={submitting || rating === 0 || review.trim() === ""}
+                                            loading={submitting}
+                                        >
+                                            Submit Review
+                                        </Button>
+                                    </form>
+                                </>
+                            )}
+                        </div>
+                    )}
                 </div>
                 {/* Sidebar for desktop/tablet */}
                 <div className="md:col-span-4 hidden md:block space-y-8 sticky top-20 self-start">

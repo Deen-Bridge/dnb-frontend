@@ -55,7 +55,6 @@ const BookCreateForm = ({ onBookCreated }) => {
             onSubmit={handleSubmit}
             className="w-sm sm:w-lg mx-auto  rounded-xl p-1 space-y-3"
         >
-            <h2 className="text-2xl font-bold mb-4">Create a New Book</h2>
             <Label htmlFor="title">Book title</Label>
             <Input
                 name="title"
