@@ -20,12 +20,12 @@ export function DatePicker({ value, onChange }) {
           wide 
           round
           className={cn(
-            "w-full text-black bg-transparent hover:bg-transparent border-1 justify-start text-left font-normal",
+            "w-full bg-transparent hover:bg-transparent border-1 justify-start text-left font-normal text-sm text-muted-foreground",
           
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, "PPP") : <span>Pick a date</span>}
+          {value ? format(value, "PPP") : <span className="">Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -33,7 +33,7 @@ export function DatePicker({ value, onChange }) {
           mode="single"
           selected={value}
           onSelect={onChange}
-          initialFocus
+          
         />
       </PopoverContent>
     </Popover>

@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import ImageUpload from "@/components/atoms/form/ImageInput";
 import { toast } from "sonner";
 import { createCourse } from "@/lib/actions/courses/create-course";
+import CategoryCombobox from "@/components/atoms/form/ComboBox";
+
 const CreateCourseForm = () => {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -55,7 +57,6 @@ const CreateCourseForm = () => {
       onSubmit={handleSubmit}
       className="w-sm sm:w-lg mx-auto  rounded-xl p-1 space-y-3"
     >
-      <h2 className="text-2xl font-bold mb-4">Create a New Course</h2>
       <Label htmlFor="title">Course title</Label>
       <Input
         name="title"
@@ -74,13 +75,14 @@ const CreateCourseForm = () => {
         className="w-full h-24 resize-none overflow-y-auto"
       />
       <Label htmlFor="title">Course Category</Label>
-      <Input
+      {/* <Input
         name="category"
         placeholder="Category (e.g., Aqeedah)"
         value={form.category}
         onChange={handleChange}
         required
-      />
+      /> */}
+      <CategoryCombobox/>
       <Label htmlFor="title">Course price</Label>
       <Input
         name="price"

@@ -15,6 +15,8 @@ import { getUserById } from "@/lib/actions/users/getUserById";
 import { setTyping } from "@/lib/actions/messages/typing";
 import { listenToTyping } from "@/lib/actions/messages/listen-to-typing";
 import Link from "next/link";
+import Loader from "@/components/molecules/loaders/rootLoader";
+
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -162,9 +164,7 @@ export default function Page({ params }) {
 
       <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 scrollbar-hide">
         {isLoading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-accent"></div>
-          </div>
+        <Loader/>
         ) : messages.length === 0 ? (
           <div className="flex justify-center items-center h-full text-muted-foreground text-sm sm:text-base">
             No messages yet. Start the conversation!

@@ -1,15 +1,11 @@
-// components/spaceDetailPage.tsx
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import Button from "@/components/atoms/form/Button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
 import { DownloadCloud, Eye, Star, UserRound, BarChart3 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { poppins_600 } from "@/lib/config/font.config";
 import { getSpaceById } from "@/lib/actions/spaces/doGetSpacesById";
-import { Clock } from "lucide-react";
+import JaasMeetingClientButtons from "@/components/organisms/dashboard/JaasMeetingClientSection";
+import { joinSpaceWaitlist } from "@/lib/actions/spaces/joinSpaceWaitlist";
 
 export default async function Page({ params }) {
     const { spacesid } = params;
@@ -53,25 +49,8 @@ export default async function Page({ params }) {
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-4">
-                        <Button
-                            wide
-                            className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
-                            round
-                            to="#" // TODO: Add join logic or link
-                        >
-                            Join Space
-                        </Button>
-                        <Button
-                            outlined
-                            round
-                            to="#" // TODO: Add waitlist logic or link
-                        >
-                            <Clock className="w-5 h-5 mr-2" /> Join Waitlist
-                        </Button>
+                        <JaasMeetingClientButtons space={space} JitsiMeetRoomName={space.title} />
                     </div>
-
-
-
                 </div>
 
                 {/* Sidebar */}
