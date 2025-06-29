@@ -55,11 +55,10 @@ const NetworkErrorComp = ({
         {errMsg ? errMsg : "Please check your network and try again"}
       </p>
       <Button
-        wide 
         round
         func={reset}
         className={cn(
-          `text-base lg:text-lg`,
+          `text-base lg:text-lg bg-accent hover:bg-highlight text-white`,
           Space_Grotesk_400.className
         )}
    

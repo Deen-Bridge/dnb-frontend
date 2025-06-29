@@ -3,8 +3,6 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { poppins_700 } from "@/lib/config/font.config";
 const Modal = ({ isOpen, onClose, children, title }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -25,14 +23,7 @@ const Modal = ({ isOpen, onClose, children, title }) => {
     <div className="fixed inset-0 bg-[rgb(0,0,0,0.25)] flex items-center justify-center z-50 w-full p-0 sm:p-6">
       <div className="bg-white rounded-none sm:rounded-lg w-full h-full sm:w-fit sm:h-fit shadow-lg overscroll-y-auto overflow-y-auto flex flex-col max-h-screen">
         <div className="flex justify-between items-center mb-2 px-4 sm:px-8 py-2 bg-accent ">
-          <h2
-            className={cn(
-              "text-lg sm:text-xl font-bold text-truncate text-white ",
-              poppins_700.className
-            )}
-          >
-            {title}
-          </h2>
+          <h2 className="text-lg sm:text-2xl font-bold text-white">{title}</h2>
           <button
             onClick={onClose}
             className="text-white hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-accent focus:ring-white"
