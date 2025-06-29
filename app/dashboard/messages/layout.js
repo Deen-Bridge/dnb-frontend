@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-
+import Loader from "@/components/molecules/loaders/rootLoader";
 export default function Layout({ children }) {
   const [hasConversations, setHasConversations] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,9 +32,7 @@ export default function Layout({ children }) {
 
   if (isLoading) {
     return (
-      <div className="w-full h-[calc(100vh-4rem)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-      </div>
+    <Loader/>
     );
   }
 
@@ -43,7 +41,7 @@ export default function Layout({ children }) {
       <main className="flex-1 flex flex-col md:flex-row gap-4 p-2 sm:p-4 h-full">
         {/* Left Side List - Always visible on desktop, conditional on mobile */}
         <div
-          className={`bg-muted rounded-xl p-2 sm:p-4 h-full overflow-y-auto scrollbar-hide transition-all duration-300 ${
+          className={`bg-muted rounded-xl p-2 sm:p-3 h-full overflow-y-auto scrollbar-hide transition-all duration-300 ${
             isInChat ? "hidden md:block" : "block"
           } md:w-1/3 lg:w-1/4`}
         >

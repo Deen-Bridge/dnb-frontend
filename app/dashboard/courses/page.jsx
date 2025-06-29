@@ -62,7 +62,7 @@ export default function CoursesPage() {
               ))
             ) : (
               courses
-                .filter((course) => course.createdBy._id !== user._id)
+                .filter((course) => course?.createdBy?._id !== user?._id)
                 .map((course) => (
                   <CourseCard key={course._id} course={course} />
                 ))

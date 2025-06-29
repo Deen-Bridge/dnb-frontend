@@ -1,14 +1,11 @@
 "use client";
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-
-
 const DashTabs = ({ selectedTab, onChange, tabs }) => {
     return (
-        <div className="w-full mt-6 overflow-auto overscroll-x-auto">
+        <div className="w-full mt-6 overflow-x-auto">
             <Tabs defaultValue={selectedTab} onValueChange={onChange}>
-                <TabsList className="w-full flex flex-wrap justify-start gap-2 bg-white rounded-full">
+                <TabsList className="flex flex-nowrap min-w-max sm:w-full gap-2 bg-white rounded-full overflow-x-auto scrollbar-hide">
                     {tabs.map((tab) => (
                         <TabsTrigger
                             key={tab.value}
@@ -25,4 +22,3 @@ const DashTabs = ({ selectedTab, onChange, tabs }) => {
 };
 
 export default DashTabs;
-
