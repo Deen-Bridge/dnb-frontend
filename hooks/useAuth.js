@@ -27,7 +27,7 @@ export const useAuth = () => {
       setUser(null);
       setIsAuthenticated(false);
     }
-    setLoading(false); // Set loading to false after checking
+    setLoading(false);
   }, []);
 
   const logout = () => {
