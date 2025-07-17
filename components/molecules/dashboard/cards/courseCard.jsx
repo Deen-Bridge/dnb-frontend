@@ -2,10 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
+import { Ellipsis } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const CourseCard = ({ course }) => {
+  const { user } = useAuth();
   return (
     <Card className="relative flex flex-col overflow-hidden rounded-2xl  bg-muted/30 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:scale-[1.015] transition-all group">
       {/* Image */}
@@ -20,10 +23,15 @@ const CourseCard = ({ course }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
 
         {/* Category  */}
-        <div className="absolute top-3 left-3 right-3 z-20 ">
+        <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
           <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
             {course.category || "General"}
           </Badge>
+          {user?._id === course?.createdBy?._id ? (
+            <Badge className="bg-white/80 text-accent font-bold px-2 py-1 rounded-full shadow border-0  uppercase tracking-wider">
+              <Ellipsis className="size-6" />
+            </Badge>
+          ) : null}
         </div>
       </div>
 
