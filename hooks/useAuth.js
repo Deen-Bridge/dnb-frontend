@@ -52,6 +52,7 @@ export const useAuth = () => {
         setUser(freshUser);
         Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1 });
         setIsAuthenticated(true);
+        window.reload()
         return freshUser;
       }
     } catch (error) {

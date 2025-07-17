@@ -16,7 +16,7 @@ import { setTyping } from "@/lib/actions/messages/typing";
 import { listenToTyping } from "@/lib/actions/messages/listen-to-typing";
 import Link from "next/link";
 import Loader from "@/components/molecules/loaders/rootLoader";
-
+import { markMessagesAsRead } from "@/hooks/markMessageAsRead";
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -69,8 +69,15 @@ export default function Page({ params }) {
   // Fetch other participant info
   useEffect(() => {
     const fetchOtherParticipant = async () => {
-      if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants)) return;
-      const otherId = currentConversation.participants.find(id => id !== user._id);
+      if (
+        !currentConversation ||
+        !user?._id ||
+        !Array.isArray(currentConversation.participants)
+      )
+        return;
+      const otherId = currentConversation.participants.find(
+        (id) => id !== user._id
+      );
       if (!otherId) return;
       // Check cache first
       if (userCache[otherId]) {
@@ -81,7 +88,7 @@ export default function Page({ params }) {
         const res = await getUserById(otherId);
         if (res?.user) {
           setOtherParticipantInfo(res.user);
-          setUserCache(prev => ({ ...prev, [otherId]: res.user }));
+          setUserCache((prev) => ({ ...prev, [otherId]: res.user }));
         }
       } catch (error) {
         console.log("Failed to fetch other participant info:", error);
@@ -92,11 +99,11 @@ export default function Page({ params }) {
 
   // Fetch user info for all senders (for avatars)
   useEffect(() => {
-    const uniqueSenderIds = [...new Set(messages.map(m => m.senderId))];
-    uniqueSenderIds.forEach(async id => {
+    const uniqueSenderIds = [...new Set(messages.map((m) => m.senderId))];
+    uniqueSenderIds.forEach(async (id) => {
       if (!userCache[id]) {
         const res = await getUserById(id);
-        setUserCache(prev => ({ ...prev, [id]: res?.user }));
+        setUserCache((prev) => ({ ...prev, [id]: res?.user }));
       }
     });
     // eslint-disable-next-line
@@ -106,6 +113,14 @@ export default function Page({ params }) {
     const unsubscribe = listenToTyping(room, setTypingUsers);
     return () => unsubscribe();
   }, [room]);
+
+  // Mark messages as read when user views this conversation
+  useEffect(() => {
+    if (user?._id && room) {
+      markMessagesAsRead(room, user._id);
+    }
+  }, [user?._id, room]);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -117,7 +132,6 @@ export default function Page({ params }) {
       alert("Failed to send message. Please try again.");
     }
   };
-
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden overscroll-none">
@@ -134,7 +148,9 @@ export default function Page({ params }) {
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
             <AvatarImage src={otherParticipantInfo?.avatar} />
-            <AvatarFallback>{otherParticipantInfo?.name?.charAt(0)}</AvatarFallback>
+            <AvatarFallback>
+              {otherParticipantInfo?.name?.charAt(0)}
+            </AvatarFallback>
           </Avatar>
         </Link>
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
@@ -164,7 +180,7 @@ export default function Page({ params }) {
 
       <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 scrollbar-hide">
         {isLoading ? (
-        <Loader/>
+          <Loader />
         ) : messages.length === 0 ? (
           <div className="flex justify-center items-center h-full text-muted-foreground text-sm sm:text-base">
             No messages yet. Start the conversation!
@@ -177,15 +193,17 @@ export default function Page({ params }) {
               (i === 0 || messages[i - 1]?.senderId !== msg.senderId);
             const isConsecutiveMessage =
               i > 0 && messages[i - 1]?.senderId === msg.senderId;
-            const rawTime = msg.timestamp?.toDate?.() // Firestore Timestamp object
-              || msg.timestamp // ISO string or Date
-              || msg.createdAt
-              || msg.created_at
-              || null;
+            const rawTime =
+              msg.timestamp?.toDate?.() || // Firestore Timestamp object
+              msg.timestamp || // ISO string or Date
+              msg.createdAt ||
+              msg.created_at ||
+              null;
 
             let displayTime = "";
             if (rawTime) {
-              const dateObj = rawTime instanceof Date ? rawTime : new Date(rawTime);
+              const dateObj =
+                rawTime instanceof Date ? rawTime : new Date(rawTime);
               if (isValid(dateObj)) {
                 displayTime = format(dateObj, "HH:mm");
               }
@@ -202,32 +220,30 @@ export default function Page({ params }) {
             return (
               <div
                 key={msg._id || i}
-                className={`flex items-end gap-2 ${isOwnMessage ? "flex-row-reverse" : "flex-row"
-                  } ${isConsecutiveMessage ? "mt-1" : "mt-4"}`}
+                className={`flex items-end gap-2 ${
+                  isOwnMessage ? "flex-row-reverse" : "flex-row"
+                } ${isConsecutiveMessage ? "mt-1" : "mt-4"}`}
               >
                 {showAvatar && (
                   <div className="flex-shrink-0">
                     <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
-                      <AvatarImage
-                        src={sender?.avatar}
-                        alt={sender?.name}
-                      />
-                      <AvatarFallback>
-                        {sender?.name?.charAt(0)}
-                      </AvatarFallback>
+                      <AvatarImage src={sender?.avatar} alt={sender?.name} />
+                      <AvatarFallback>{sender?.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </div>
                 )}
                 {!showAvatar && <div className="w-6 sm:w-8" />}
                 <div
-                  className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"
-                    } max-w-[85%] sm:max-w-[70%]`}
+                  className={`flex flex-col ${
+                    isOwnMessage ? "items-end" : "items-start"
+                  } max-w-[85%] sm:max-w-[70%]`}
                 >
                   <div
-                    className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm ${isOwnMessage
-                      ? "bg-accent text-white rounded-tr-none"
-                      : "bg-muted rounded-tl-none"
-                      } shadow-sm`}
+                    className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm ${
+                      isOwnMessage
+                        ? "bg-accent text-white rounded-tr-none"
+                        : "bg-muted rounded-tl-none"
+                    } shadow-sm`}
                   >
                     {msg.text || msg.content}
                   </div>
@@ -235,13 +251,15 @@ export default function Page({ params }) {
                     {showTime &&
                       (() => {
                         try {
-                          const d = msg.timestamp?.toDate?.() || msg.timestamp || msg.createdAt;
+                          const d =
+                            msg.timestamp?.toDate?.() ||
+                            msg.timestamp ||
+                            msg.createdAt;
                           return d ? format(new Date(d), "HH:mm") : "--:--";
                         } catch {
                           return "--:--";
                         }
-                      })()
-                    }
+                      })()}
                   </span>
                 </div>
               </div>
@@ -259,7 +277,7 @@ export default function Page({ params }) {
           <Textarea
             placeholder="Type your message..."
             value={newMessage}
-            onChange={e => {
+            onChange={(e) => {
               setNewMessage(e.target.value);
               setTyping(room, user._id, true);
               // Optionally, debounce and set to false after user stops typing
