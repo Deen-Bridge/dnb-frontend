@@ -6,7 +6,7 @@ import { Clock } from "lucide-react";
 import { joinSpaceWaitlist } from "@/lib/actions/spaces/joinSpaceWaitlist";
 import { useState } from "react";
 
-export default function JaasMeetingClientButtons({ space, JitsiMeetRoomName }) {
+export default function JaasMeetingClientButtons({ space }) {
     const { user } = useAuth();
     // Directly check if user is in waitlist
     const isInWaitlist = space?.waitlist?.includes(user?._id);
@@ -20,7 +20,7 @@ export default function JaasMeetingClientButtons({ space, JitsiMeetRoomName }) {
     return (
         <div className="flex flex-wrap gap-4">
             {space?.host?._id === user?._id ? (
-                <JaasMeetingComponent JitsiMeetRoomName={JitsiMeetRoomName} />
+                <JaasMeetingComponent />
             ) : (
                 <Button
                     wide
