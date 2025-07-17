@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import { cn } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
@@ -9,8 +10,10 @@ import { ChatHeadListSkeleton } from "@/components/atoms/skeletons/ChatHeadListS
 import { getUserById } from "@/lib/actions/users/getUserById";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/config/firebaseConfig";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 const MessagesHeadSideList = () => {
+  const unreadCounts = useUnreadMessages(); // { conversationId: count }
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userCache, setUserCache] = useState({});
@@ -19,7 +22,6 @@ const MessagesHeadSideList = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Fetch conversations
   useEffect(() => {
     const loadConversations = async () => {
       if (!user?._id) return;
@@ -36,7 +38,6 @@ const MessagesHeadSideList = () => {
     loadConversations();
   }, [user?._id]);
 
-  // Real-time listener for conversations
   useEffect(() => {
     if (!user?._id) return;
     setLoading(true);
@@ -47,7 +48,7 @@ const MessagesHeadSideList = () => {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const convos = snapshot.docs.map(doc => ({
+      const convos = snapshot.docs.map((doc) => ({
         _id: doc.id,
         ...doc.data(),
       }));
@@ -58,39 +59,37 @@ const MessagesHeadSideList = () => {
     return () => unsubscribe();
   }, [user?._id]);
 
-  // Fetch all other participants' info as soon as conversations load
   useEffect(() => {
     if (!conversations.length) return;
     const idsToFetch = [];
-    conversations.forEach(conv => {
-      conv.participants.forEach(id => {
+    conversations.forEach((conv) => {
+      conv.participants.forEach((id) => {
         if (id !== user?._id && !userCache[id] && !fetchingUsers.has(id)) {
           idsToFetch.push(id);
         }
       });
     });
     if (idsToFetch.length === 0) return;
-    setFetchingUsers(prev => new Set([...prev, ...idsToFetch]));
+    setFetchingUsers((prev) => new Set([...prev, ...idsToFetch]));
     Promise.all(
-      idsToFetch.map(async id => {
+      idsToFetch.map(async (id) => {
         const res = await getUserById(id);
         return { id, user: res?.user };
       })
-    ).then(results => {
-      setUserCache(prev => {
+    ).then((results) => {
+      setUserCache((prev) => {
         const updated = { ...prev };
         results.forEach(({ id, user }) => {
           if (user) updated[id] = user;
         });
         return updated;
       });
-      setFetchingUsers(prev => {
+      setFetchingUsers((prev) => {
         const updated = new Set(prev);
-        idsToFetch.forEach(id => updated.delete(id));
+        idsToFetch.forEach((id) => updated.delete(id));
         return updated;
       });
     });
-    // eslint-disable-next-line
   }, [conversations]);
 
   const getOtherParticipant = (participants) => {
@@ -102,29 +101,23 @@ const MessagesHeadSideList = () => {
     router.push(`/dashboard/messages/${conversationId}`);
   };
 
-  // Sort conversations by last message time (descending)
   const sortedConversations = [...conversations].sort((a, b) => {
-    const aTime =
-      a.lastMessage?.timestamp?.toDate?.() ||
-      (typeof a.lastMessage?.timestamp === "string" || typeof a.lastMessage?.timestamp === "number"
-        ? new Date(a.lastMessage.timestamp)
-        : undefined) ||
-      (typeof a.lastMessage?.createdAt === "string" || typeof a.lastMessage?.createdAt === "number"
-        ? new Date(a.lastMessage.createdAt)
-        : undefined) ||
-      new Date(0);
+    const getTime = (msg) => {
+      return (
+        msg?.timestamp?.toDate?.() ||
+        (typeof msg?.timestamp === "string" ||
+        typeof msg?.timestamp === "number"
+          ? new Date(msg.timestamp)
+          : undefined) ||
+        (typeof msg?.createdAt === "string" ||
+        typeof msg?.createdAt === "number"
+          ? new Date(msg.createdAt)
+          : undefined) ||
+        new Date(0)
+      );
+    };
 
-    const bTime =
-      b.lastMessage?.timestamp?.toDate?.() ||
-      (typeof b.lastMessage?.timestamp === "string" || typeof b.lastMessage?.timestamp === "number"
-        ? new Date(b.lastMessage.timestamp)
-        : undefined) ||
-      (typeof b.lastMessage?.createdAt === "string" || typeof b.lastMessage?.createdAt === "number"
-        ? new Date(b.lastMessage.createdAt)
-        : undefined) ||
-      new Date(0);
-
-    return bTime - aTime;
+    return getTime(b.lastMessage) - getTime(a.lastMessage);
   });
 
   return (
@@ -139,19 +132,24 @@ const MessagesHeadSideList = () => {
           </div>
         ) : (
           sortedConversations.map((conversation) => {
-            const otherParticipant = getOtherParticipant(conversation.participants);
+            const otherParticipant = getOtherParticipant(
+              conversation.participants
+            );
             const lastMessage = conversation.lastMessage;
             const isActive =
               pathname === `/dashboard/messages/${conversation._id}`;
+            const unreadCount = unreadCounts[conversation._id] || 0;
 
             return (
               <button
                 key={conversation._id}
                 onClick={() => handleConversationClick(conversation._id)}
-                className={`flex items-center justify-between gap-3 p-3 rounded-lg transition-colors ${isActive
-                  ? "bg-accent/10 hover:bg-accent/20"
-                  : "hover:bg-muted/80"
-                  }`}
+                className={cn(
+                  "flex items-center justify-between gap-3 p-3 rounded-lg transition-colors cursor-pointer",
+                  isActive
+                    ? "bg-accent/10 hover:bg-accent/20"
+                    : "hover:bg-muted/80"
+                )}
               >
                 <div className="flex gap-3 flex-1 min-w-0">
                   <Avatar className="h-10 w-10 rounded-lg">
@@ -173,10 +171,12 @@ const MessagesHeadSideList = () => {
                           {(() => {
                             let rawTime =
                               lastMessage.timestamp?.toDate?.() ||
-                              (typeof lastMessage.timestamp === "string" || typeof lastMessage.timestamp === "number"
+                              (typeof lastMessage.timestamp === "string" ||
+                              typeof lastMessage.timestamp === "number"
                                 ? new Date(lastMessage.timestamp)
                                 : undefined) ||
-                              (typeof lastMessage.createdAt === "string" || typeof lastMessage.createdAt === "number"
+                              (typeof lastMessage.createdAt === "string" ||
+                              typeof lastMessage.createdAt === "number"
                                 ? new Date(lastMessage.createdAt)
                                 : undefined) ||
                               undefined;
@@ -188,11 +188,26 @@ const MessagesHeadSideList = () => {
                         </span>
                       )}
                     </div>
-                    <span className="flex items-start text-sm text-muted-foreground truncate">
+                    <span
+                      className={cn(
+                        "flex items-start text-sm truncate",
+                        unreadCount
+                          ? "font-semibold text-foreground"
+                          : "text-muted-foreground"
+                      )}
+                    >
                       {lastMessage?.text || "No messages yet"}
                     </span>
                   </div>
                 </div>
+
+                {unreadCount > 0 && (
+                  <div className="ml-auto">
+                    <div className="min-w-[20px] text-xs text-white bg-red-500 px-2 py-0.5 rounded-full text-center">
+                      {unreadCount}
+                    </div>
+                  </div>
+                )}
               </button>
             );
           })
