@@ -5,6 +5,8 @@ import About from "./(pages)/(landingPage)/About";
 import WhyDeenBridge from "./(pages)/(landingPage)/WhyDeenBridge";
 import HowItWorks from "./(pages)/(landingPage)/HowItWorks";
 import Testimonials from "./(pages)/(landingPage)/Testimonials";
+import CTA from "./(pages)/(landingPage)/CTA";
+import Partners from "./(pages)/(landingPage)/Partners";
 
 const page = () => {
   return (
@@ -14,6 +16,8 @@ const page = () => {
       <WhyDeenBridge />
       <HowItWorks />
       <Testimonials />
+      <Partners />
+      <CTA />
       <Footer />
     </>
   );
