@@ -46,7 +46,7 @@ const features = [
 
 export default function WhyDeenBridge() {
   return (
-    <section className="relative py-20 px-2 sm:px-6 bg-gradient-to-br from-green-50 via-white to-green-100/80 overflow-hidden">
+    <section className="relative py-20 px-2 sm:px-6 bg-basic overflow-hidden">
       {/* Decorative Islamic motif background */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute left-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl" />
