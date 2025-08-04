@@ -9,7 +9,7 @@ import { format, isValid } from "date-fns";
 import { ChatHeadListSkeleton } from "@/components/atoms/skeletons/ChatHeadListSkeleton";
 import { getUserById } from "@/lib/actions/users/getUserById";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/config/firebaseConfig";
+import { db } from "@/lib/config/firebase.config";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 const MessagesHeadSideList = () => {
@@ -106,11 +106,11 @@ const MessagesHeadSideList = () => {
       return (
         msg?.timestamp?.toDate?.() ||
         (typeof msg?.timestamp === "string" ||
-        typeof msg?.timestamp === "number"
+          typeof msg?.timestamp === "number"
           ? new Date(msg.timestamp)
           : undefined) ||
         (typeof msg?.createdAt === "string" ||
-        typeof msg?.createdAt === "number"
+          typeof msg?.createdAt === "number"
           ? new Date(msg.createdAt)
           : undefined) ||
         new Date(0)
@@ -172,11 +172,11 @@ const MessagesHeadSideList = () => {
                             let rawTime =
                               lastMessage.timestamp?.toDate?.() ||
                               (typeof lastMessage.timestamp === "string" ||
-                              typeof lastMessage.timestamp === "number"
+                                typeof lastMessage.timestamp === "number"
                                 ? new Date(lastMessage.timestamp)
                                 : undefined) ||
                               (typeof lastMessage.createdAt === "string" ||
-                              typeof lastMessage.createdAt === "number"
+                                typeof lastMessage.createdAt === "number"
                                 ? new Date(lastMessage.createdAt)
                                 : undefined) ||
                               undefined;
