@@ -1,4 +1,4 @@
-import { db } from "@/lib/config/firebaseConfig";
+import { db } from "@/lib/config/firebase.config";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export async function setUserOnline(userId, isOnline) {

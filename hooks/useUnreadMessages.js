@@ -6,7 +6,7 @@ import {
   onSnapshot,
   getDocs,
 } from "firebase/firestore";
-import { db } from "@/lib/config/firebaseConfig";
+import { db } from "@/lib/config/firebase.config";
 import { useAuth } from "@/hooks/useAuth";
 
 export function useUnreadMessages() {
