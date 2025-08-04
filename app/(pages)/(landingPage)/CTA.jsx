@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function CTA() {
   return (
-    <section className="relative mx-auto py-10 px-4 sm:px-8 bg-basic text-white rounded-lg shadow-xl my-12 flex flex-col items-center justify-center overflow-hidden">
+    <section className="relative mx-auto py-10 px-4 sm:px-8 bg-basic text-white  shadow-xl my-12 flex flex-col items-center justify-center overflow-hidden">
       <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-center">
         Ready to Join Deen Bridge?
       </h2>
