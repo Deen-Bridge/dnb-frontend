@@ -27,16 +27,10 @@ export default function Footer() {
             >
               Deen Bridge
             </span>
-            <p className="text-gray-200 text-sm leading-relaxed">
-              lbewjbehfjkvfe fnbje hj ejh jda fehvhsf fdjvhjrv hdjlsvhlvf
-              lbewjbehfjkvfe fnbje hj ejh jda fehvhsf fdjvhjrv hdjlsvhlvf
-              sjvhjvrenfhkbliub;eoqnw hurhwbeiuth jwkrbjibierwb;j fdjbirewb k
-              beiefb jk wrvf;wrgtiygwrtjkhv iusvb rbilrvsbiiul
-              sjvhjvrenfhkbliub;eoqnw hurhwbeiuth jwkrbjibierwb;j fdjb
-              lbewjbehfjkvfe fnbje hj ejh jda fehvhsf fdjvhjrv hdjlsvhlvf
-              sjvhjvrenfhkbliub;eoqnw hurhwbeiuth jwkrbjibierwb;j fdjbirewb k
-              beiefb jk wrvf;wrgtiygwrtjkhv iusvb rbilrvsbiiul irewb k beiefb jk
-              wrvf;wrgtiygwrtjkhv iusvb rbilrvsbiiul
+            <p className="text-gray-200 text-sm leading-relaxed">      
+                Deen Bridge is your trusted platform for connecting learners and educators in a vibrant, supportive community. 
+                Explore a wide range of courses, resources, and events designed to help you grow in knowledge and faith. 
+                Join us on our mission to make quality Islamic education accessible to everyone, everywhere around the globe.
             </p>
           </div>
 
