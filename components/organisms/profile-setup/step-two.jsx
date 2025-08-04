@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
-import { updateUser } from "@/lib/actions/updateUser"
+import { updateUser } from "@/lib/actions/users/updateUser"
 import { toast } from "sonner"
 import { ArrowBigLeft } from "lucide-react"
 import useAuth from "@/hooks/useAuth";
