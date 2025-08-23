@@ -14,7 +14,7 @@ const Hero = () => {
                 <h1
                     className={cn(
                         poppins_600,
-                        "text-6xl lg:text-7xl font-bold mb-4 leading-snug"
+                        "text-6xl lg:text-8xl font-bold mb-4 leading-snug"
                     )}
                 >
                     Welcome to{" "}
@@ -23,7 +23,7 @@ const Hero = () => {
                     </span>
                 </h1>
 
-                <p className="text-lg md:text-xl lg:text-2xl mb-6 max-w-xl text-green-200">
+                <p className="text-lg md:text-xl lg:text-3xl mb-6 text-green-200">
                     Your journey to{" "}
                     <span className="text-white font-semibold">excellence</span>
                     {" "}  starts here.

@@ -125,7 +125,7 @@ const ProfileUserInfo = ({ user }) => {
             Edit Profile
           </Button>
         ) : (
-          <div className="space-x-2">
+          <div className="space-x-2 flex justify-center items-center">
             <Button
               outlined
               round
@@ -152,20 +152,6 @@ const ProfileUserInfo = ({ user }) => {
       </div>
 
       <div>
-        {currentUser?._id !== user?._id ? (
-          <div className="flex flex-row gap-4 items-center text-md font-light sm:font-stretch-125% pb-3">
-            <p className="text-sm">Country: {user?.country}</p>
-            <p className="text-sm">Age: {user?.age}</p>
-            <p className="text-sm">Gender: {user?.gender}</p>
-            <p className="text-sm">Language: {user?.language}</p>
-            <p className="text-sm hidden sm:block">
-              Interests: {user?.interests?.join(", ") || "No interests"}
-            </p>
-          </div>
-        ) : (
-          ""
-        )}
-
         {/* Follower/Following Stats */}
         {/* <div className="flex flex-row gap-6 mb-3">
           <div className="flex text-center">

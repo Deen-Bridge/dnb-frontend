@@ -141,7 +141,7 @@ export function SignupForm({ className, ...props }) {
         {...props}
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold font-stretch-125%">Create your account</h1>
+          <h1 className="text-2xl sm:text-4xl text-nowrap font-bold font-stretch-125%">Create your account</h1>
           <p className="text-sm text-muted-foreground">
             Enter your information below to sign up.
           </p>
