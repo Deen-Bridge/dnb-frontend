@@ -12,7 +12,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { VideoIcon, Clock } from "lucide-react";
+import { VideoIcon, Clock, CirclePlus } from "lucide-react";
 import { format } from "date-fns";
 
 const SpaceCard = ({ space }) => {
@@ -89,20 +89,28 @@ const SpaceCard = ({ space }) => {
           </div>
         </div>
         {/* Host */}
-        <div className="flex items-center gap-3 mb-2">
-          <Avatar className="h-10 w-10">
-            <AvatarImage
-              src={host?.avatar || "/images/avatar-placeholder.png"}
-              alt={host?.name}
-            />
-            <AvatarFallback className="rounded-xl">
-              {host?.name?.slice(0, 2).toUpperCase() || "HN"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-semibold text-accent leading-tight text-base">{host?.name || "Ustadh Ahmad"}</span>
-            <span className="text-muted-foreground text-xs">Host</span>
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="flex gap-2">
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src={host?.avatar || "/images/avatar-placeholder.png"}
+                alt={host?.name}
+              />
+              <AvatarFallback className="rounded-xl">
+                {host?.name?.slice(0, 2).toUpperCase() || "HN"}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex flex-col">
+              <span className="font-semibold text-accent leading-tight text-base">{host?.name || "Ustadh Ahmad"}</span>
+              <span className="text-muted-foreground text-xs">Host</span>
+            </div>
           </div>
+
+          <div>
+            <CirclePlus className="w-5 sm:w-8 h-5 sm:h-8  text-accent hover:bg-accent hover:text-white rounded-full p-1 transition" />
+          </div>
+
         </div>
 
         {/* CTA Button */}

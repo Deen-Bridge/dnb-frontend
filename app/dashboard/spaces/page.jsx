@@ -9,7 +9,7 @@ import Button from "@/components/atoms/form/Button";
 import SpaceCreateForm from "@/components/organisms/create/space-create-form";
 import Modal from "@/components/molecules/Modal";
 import { getSpaces } from "@/lib/actions/spaces/get-spaces"; // <-- import your fetch function
-
+import useAuth from "@/hooks/useAuth"; // <-- import useAuth hook
 
 
 const tabnames = [
@@ -25,7 +25,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setmodalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("all");
-
+  const {user } = useAuth();
 
 
   useEffect(() => {
