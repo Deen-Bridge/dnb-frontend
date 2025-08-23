@@ -5,6 +5,7 @@ import { DollarSign } from "lucide-react"
 import { Book } from 'lucide-react';
 import { TimerIcon } from 'lucide-react';
 import { AudioWaveform } from 'lucide-react';
+import useStats from "@/hooks/useStats";
 
 const stats = [
     { label: "Courses Enrolled", icon: <DollarSign className="h-4 w-4 text-accent" />, value: 8 },
@@ -15,6 +16,8 @@ const stats = [
 ];
 
 export default function StatsOverview() {
+    const { coursesEnrolled, booksRead, upcomingSessions, messagesUnread, totalUptime, loading, error } = useStats();
+
     const { ref, inView } = useInView({
         triggerOnce: true,
         threshold: 0.3,

@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, children, title }) => {
 
   const modalContent = (
     <div className="fixed inset-0 bg-[rgb(0,0,0,0.25)] flex items-center justify-center z-50 w-full p-0 sm:p-6">
-      <div className="bg-white rounded-none sm:rounded-lg w-full h-full sm:w-fit sm:h-fit shadow-lg overscroll-y-auto overflow-y-auto flex flex-col max-h-screen">
+      <div className="bg-white rounded-lg sm:w-fit sm:h-fit shadow-lg overscroll-y-auto overflow-y-auto flex flex-col max-h-screen">
         <div className="flex justify-between items-center mb-2 px-4 sm:px-8 py-2 bg-accent ">
           <h2 className="text-lg sm:text-2xl font-bold text-white">{title}</h2>
           <button

@@ -5,19 +5,19 @@ import Button from "@/components/atoms/form/Button";
 
 const About = () => {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white to-green-50/30">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Section - Text Content */}
           <div className="space-y-6 lg:space-y-8">
             <div className="space-y-4">
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gray-900">
+              <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-accent to-highlight">
                 Where Deen Meets{" "}
-                <span className="text-secondary">Excellence</span>
+                <span>Excellence</span>
               </h2>
             </div>
 
-            <p className="text-lg leading-relaxed text-gray-700 max-w-2xl">
+            <p className="text-xl leading-relaxed text-gray-700 max-w-2xl">
               We are dedicated to connecting Muslims worldwide through
               meaningful conversations, authentic knowledge, and a supportive
               community. DeenBridge empowers users to learn, share, and grow in

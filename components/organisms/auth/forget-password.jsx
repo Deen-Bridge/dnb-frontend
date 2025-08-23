@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input';
 import Button from '@/components/atoms/form/Button';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-const ForgetPassword = ({ className, ...props }) => {
+import { toast } from 'sonner';
+import { forgetPassword } from '@/lib/services/emails/forgetPassword';
+
+const ForgetPassword = ({ className, onSuccess, ...props }) => {
     const [formData, setFormData] = useState({ email: '' });
     const [isLoading, setIsLoading] = useState(false);
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -21,7 +23,12 @@ const ForgetPassword = ({ className, ...props }) => {
             // Simulate API call for password reset
             console.log('Sending password reset email to:', formData.email);
             // Add your API call logic here
-            alert('Password reset link sent to your email!');
+            try {
+                await forgetPassword(formData.email)
+            } catch (e) {
+                console.log("Error during login:", error.message);
+            }
+            toast.success('Password reset link sent to your email!');
         } catch (error) {
             console.log('Error sending password reset email:', error);
         } finally {
@@ -32,8 +39,7 @@ const ForgetPassword = ({ className, ...props }) => {
     return (
         <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
             <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Forgot Password</h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-center text-muted-foreground">
                     Enter your email address to receive a password reset link.
                 </p>
             </div>
@@ -62,13 +68,6 @@ const ForgetPassword = ({ className, ...props }) => {
                 >
                     Send Reset Link
                 </Button>
-
-                <div className="text-center text-sm">
-                    Remembered your password?{" "}
-                    <Link href="/login" className="underline underline-offset-4">
-                        Login
-                    </Link>
-                </div>
             </div>
         </form>
     );

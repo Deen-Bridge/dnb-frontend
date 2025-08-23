@@ -1,26 +1,45 @@
 "use client"
 import VidPlayerBox from "@/components/atoms/dashboard/vid-player-box";
-import { getCourseById } from "@/lib/actions/courses/get-course";
-import { notFound } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import React,{useState} from "react";
+import React, { useState } from "react";
 import Button from "@/components/atoms/form/Button";
 import StarRate from "@/components/atoms/form/StarRate";
 import { useAuth } from "@/hooks/useAuth";
 import { Textarea } from "@/components/ui/textarea";
 import { addCourseReview } from "@/lib/actions/courses/addReview";
+import { useHasCourse, usePurchaseCourse } from "@/hooks/usePurchase";
+import { toast } from "sonner";
 
-export default  function CourseDetailClient({ course }) {
-    const { user } = useAuth();
+export default function CourseDetailClient({ course }) {
+    const { user, refreshUser } = useAuth();
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
+    // Check if user already owns the course
+    const hasCourse = useHasCourse(course?._id);
+    // Local state to hide button after purchase
+    const [purchased, setPurchased] = useState(false);
 
-  const handleSubmit = async (e) => {
+    const handlePurchaseCourse = async () => {
+        setLoading(true);
+        try {
+            await usePurchaseCourse(course._id);
+            await refreshUser(user._id);
+            setPurchased(true); // Hide button immediately after purchase
+            toast.success("Course purchased successfully!");
+        } catch (error) {
+            toast.error("Failed to purchase course.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         setError("");
@@ -43,26 +62,17 @@ export default  function CourseDetailClient({ course }) {
         }
     };
 
-
-
     if (!course) {
-        setTimeout(() => {
-            return notFound();
-        }, 4000)
+        return null;
     }
 
     return (
         <div className="max-w-full px-2 sm:px-4 py-4">
             <h2 className="text-3xl font-extrabold mb-6">Watch Course</h2>
-
-            {/* Video Player Full Width */}
             <div className="w-full min-h-[460px] lg:min-h-[480px] mb-8">
                 <VidPlayerBox data={course} />
             </div>
-
-            {/* Info Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-2 sm:px-10">
-                {/* Left Column: Course details */}
                 <div className="lg:col-span-2 space-y-4">
                     <h3 className="text-4xl font-semibold">{course.title}</h3>
                     <p className="text-gray-700 leading-relaxed">{course.description}</p>
@@ -76,17 +86,13 @@ export default  function CourseDetailClient({ course }) {
                                 <span className="font-medium text-black">{course.createdBy?.name || "Unknown creator"}</span>
                                 <span className="text-sm text-muted">{course.createdBy?.role || "Unknown creator"}</span>
                             </div>
-
                             <div className="border-t pt-4 text-gray-600 text-sm space-y-2">
                                 <p><strong>Duration:</strong> {course.duration || "N/A"}</p>
                                 <p><strong>Level:</strong> {course.level || "Beginner"}</p>
-                                {/* Add more course info here */}
                             </div>
                         </div>
                     </Link>
-                    {/* Review Section */}
                     {user?._id !== course.createdBy?._id && (
-
                         <div className="pt-10 space-y-5 border-t border-white/10">
                             {!submitted && (
                                 <>
@@ -122,9 +128,7 @@ export default  function CourseDetailClient({ course }) {
                             )}
                         </div>
                     )}
-
                 </div>
-
                 {/* Right Column: Pricing & category */}
                 <aside className="border rounded-md p-6 h-fit shadow-sm bg-white space-y-4">
                     <h3 className="text-xl font-semibold">{course.title}</h3>
@@ -134,10 +138,18 @@ export default  function CourseDetailClient({ course }) {
                         </span>
                         <p className="text-2xl font-bold mb-3">${course.price}</p>
                     </div>
-
-                    <Button wide round className="bg-accent hover:bg-accent/90 text-white">
-                        Buy Course
-                    </Button>
+                    {/* Show Buy button only if not purchased */}
+                    {(!hasCourse && !purchased) && (
+                        <Button
+                            wide
+                            round
+                            onClick={handlePurchaseCourse}
+                            loading={loading}
+                            className="bg-accent hover:bg-accent/90 text-white"
+                        >
+                            Buy Course
+                        </Button>
+                    )}
                 </aside>
             </div>
         </div>
