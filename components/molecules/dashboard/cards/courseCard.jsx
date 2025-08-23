@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
-import { Ellipsis } from "lucide-react";
+import { Ellipsis, CirclePlus } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -66,10 +66,12 @@ const CourseCard = ({ course }) => {
               <p className="text-muted-foreground text-xs">Instructor</p>
             </div>
           </Link>
-          <div>
+          <div className="flex gap-4 justify-between items-center">
             <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
               {course.price ? `$${course.price}` : "Free"}
             </div>
+            <CirclePlus className="w-5 sm:w-8 h-5 sm:h-8  text-accent hover:bg-accent hover:text-white rounded-full p-1 transition" />
+
           </div>
         </div>
       </CardContent>

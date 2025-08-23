@@ -4,6 +4,7 @@ import { Star } from "lucide-react"; // optional: use a custom star icon or emoj
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
+import { CirclePlus } from 'lucide-react';
 
 
 const LibraryBookCard = ({ book }) => {
@@ -31,6 +32,7 @@ const LibraryBookCard = ({ book }) => {
             </div>
             {/* Author, Reads, Rating */}
             <div className="px-4 py-4 flex flex-col gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between gap-2 mb-2 ">
                 {/* Author */}
                 <Link href={`/account/profile/${book.author?._id}`} className="flex items-center gap-2">
 
@@ -42,7 +44,10 @@ const LibraryBookCard = ({ book }) => {
                         <span className="font-medium text-black">{book.author?.name || "Unknown Author"}</span>
                         <span className="text-sm">{book.author?.role || "Unknown Author"}</span>
                     </div>
-                </Link>
+                    </Link>
+
+                    <CirclePlus className="w-5 sm:w-8 h-5 sm:h-8  text-accent hover:bg-accent hover:text-white rounded-full p-1 transition" />
+                </div>
                 {/* Reads & Rating */}
                 <div className="flex justify-between items-center text-xs">
                     <span>{book.readCount || 0} readers</span>

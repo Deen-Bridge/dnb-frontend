@@ -4,56 +4,7 @@ import { cn } from '@/lib/utils';
 import { poppins_600 } from '@/lib/config/font.config';
 import Button from '@/components/atoms/form/Button';
 
-const steps = [
-  {
-    id: 1,
-    icon: <FaUserPlus className="text-white w-6 h-6" />,
-    title: "Join Community",
-    desc: "Create your account and become part of our growing Ummah",
-    position: "top-0 left-1/2 -translate-x-1/2 -translate-y-4",
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
-    id: 2,
-    icon: <FaSearch className="text-white w-6 h-6" />,
-    title: "Discover Resources",
-    desc: "Explore curated courses, books, and learning materials",
-    position: "top-1/4 right-4 translate-x-0",
-    color: "from-emerald-500 to-teal-500",
-  },
-  {
-    id: 3,
-    icon: <FaUsers className="text-white w-6 h-6" />,
-    title: "Connect & Learn",
-    desc: "Join live sessions and connect with fellow Muslims",
-    position: "bottom-1/4 right-4 translate-x-0",
-    color: "from-purple-500 to-pink-500",
-  },
-  {
-    id: 4,
-    icon: <FaGraduationCap className="text-white w-6 h-6" />,
-    title: "Grow Together",
-    desc: "Share knowledge and grow in your spiritual journey",
-    position: "bottom-0 left-1/2 -translate-x-1/2 translate-y-4",
-    color: "from-orange-500 to-red-500",
-  },
-  {
-    id: 5,
-    icon: <FaUsers className="text-white w-6 h-6" />,
-    title: "Share Knowledge",
-    desc: "Contribute your wisdom and inspire others in the community",
-    position: "bottom-1/4 left-4 -translate-x-0",
-    color: "from-indigo-500 to-blue-500",
-  },
-  {
-    id: 6,
-    icon: <FaGraduationCap className="text-white w-6 h-6" />,
-    title: "Achieve Excellence",
-    desc: "Reach spiritual heights and become a beacon of knowledge",
-    position: "top-1/4 left-4 -translate-x-0",
-    color: "from-green-500 to-emerald-500",
-  },
-];
+import { steps } from "@/lib/data";
 
 export default function HowItWorks() {
   return (
@@ -70,7 +21,7 @@ export default function HowItWorks() {
         <div className="text-center mb-20">
           <h2 className={cn(
             poppins_600,
-            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text font-stretch-125% animate-pulse"
+            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text font-stretch-125%"
           )}>
             How It Works
           </h2>

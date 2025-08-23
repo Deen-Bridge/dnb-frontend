@@ -14,8 +14,6 @@ import BookStatsInfo from "@/components/molecules/dashboard/BookStats&Info";
 import { useHasBook } from "@/hooks/usePurchase";
 import { usePurchaseBook } from "@/hooks/usePurchase";
 
-
-
 export default function BookDetailPage({ book }) {
     const { user, refreshUser } = useAuth();
     const [rating, setRating] = useState(0);
@@ -25,13 +23,14 @@ export default function BookDetailPage({ book }) {
     const [error, setError] = useState("");
     const hasBook = useHasBook(book?._id);
     const [loading, setLoading] = useState(false);
-
+    const [purchased, setPurchased] = useState(false); // <-- Add this
 
     const handlePurchaseBook = async () => {
         setLoading(true);
         try {
             await usePurchaseBook(book._id);
             await refreshUser(user._id);
+            setPurchased(true); // <-- Set purchased to true
             toast.success("Book purchased successfully!");
         } catch (error) {
             toast.error("Failed to purchase book.");
@@ -88,7 +87,7 @@ export default function BookDetailPage({ book }) {
                     </div>
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-4">
-                        {hasBook ? (
+                        {(hasBook || purchased) ? ( // <-- Check both
                             <>
                                 <Button
                                     wide
