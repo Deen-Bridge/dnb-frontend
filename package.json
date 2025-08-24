@@ -65,6 +65,7 @@
     "react-ripples": "^2.2.1",
     "react-select-country-list": "^2.2.3",
     "react-star-ratings": "^2.3.0",
+    "react-time-picker": "^8.0.2",
     "recharts": "^2.15.3",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.3",
