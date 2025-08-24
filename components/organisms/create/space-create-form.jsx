@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
 import { Textarea } from '@/components/ui/textarea';
 import Button from '@/components/atoms/form/Button';
 import ImageUpload from '@/components/atoms/form/ImageInput';
@@ -22,6 +24,7 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
     });
     const [eventDate, setEventDate] = useState(null); // <-- use Date object for date picker
     const [thumbnail, setThumbnail] = useState(null);
+    const [eventTime, setEventTime] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -31,6 +34,13 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        if (!eventTime) {
+            toast.error("Please select an event time.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append("title", form.title);
@@ -39,6 +49,8 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
             formData.append("price", form.price);
             formData.append("duration", form.duration);
             formData.append("eventDate", eventDate ? eventDate.toISOString() : "");
+            // formData.append("eventTime", eventTime); // This should be a string like "14:30"
+
             if (thumbnail) formData.append("thumbnail", thumbnail);
 
             console.log("Submitting space with FormData:");
@@ -58,6 +70,7 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
                 }, 2000);
             } else {
                 console.log("Space creation failed:", data.message || 'Unknown error');
+                toast.error(data.message || 'Unknown error');
             }
         } catch (error) {
             console.log("Error in handleSubmit:", error);
@@ -109,6 +122,13 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
             />
             <Label htmlFor="eventDate">Event Date</Label>
             <DatePicker value={eventDate} onChange={setEventDate} /> {/* <-- Use DatePicker here */}
+            {/* <Label htmlFor="eventTime">Event Time</Label>
+            <TimePicker
+                onChange={setEventTime}
+                value={eventTime}
+                disableClock
+                required
+            /> */}
             <Label htmlFor="duration">Duration (minutes)</Label>
             <Input
                 name="duration"
