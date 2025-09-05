@@ -12,8 +12,7 @@ import React from "react";
 
 const NetworkErrorComp = ({
   className,
-  errMsg,
-  reset,
+  errMsg
 }) => {
   return (
     <div
@@ -56,7 +55,7 @@ const NetworkErrorComp = ({
       </p>
       <Button
         round
-        func={reset}
+        onClick={()=>{window.location.reload()}}
         className={cn(
           `text-base lg:text-lg bg-accent hover:bg-highlight text-white`,
           Space_Grotesk_400.className
