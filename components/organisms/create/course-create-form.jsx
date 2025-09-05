@@ -28,6 +28,10 @@ const CreateCourseForm = () => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleCategoryChange = (selectedCategory) => {
+    setForm((prev) => ({ ...prev, category: selectedCategory }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,15 +78,11 @@ const CreateCourseForm = () => {
         required
         className="w-full h-24 resize-none overflow-y-auto"
       />
-      <Label htmlFor="title">Course Category</Label>
-      {/* <Input
-        name="category"
-        placeholder="Category (e.g., Aqeedah)"
+      <Label htmlFor="category">Course Category</Label>
+      <CategoryCombobox
         value={form.category}
-        onChange={handleChange}
-        required
-      /> */}
-      <CategoryCombobox/>
+        onChange={handleCategoryChange}
+      />
       <Label htmlFor="title">Course price</Label>
       <Input
         name="price"
