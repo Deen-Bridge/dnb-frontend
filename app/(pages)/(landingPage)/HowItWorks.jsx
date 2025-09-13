@@ -51,9 +51,7 @@ export default function HowItWorks() {
                       <h3 className="text-lg font-bold text-accent font-stretch-125%">
                         {step.title}
                       </h3>
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-r from-accent to-highlight flex items-center justify-center">
-                        <span className="text-white font-bold text-xs">{step.id}</span>
-                      </div>
+                  
                     </div>
                     <p className="text-gray-600 text-sm font-stretch-110%">
                       {step.desc}
