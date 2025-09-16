@@ -34,7 +34,7 @@ const CreateCourseForm = () => {
     try {
       setLoading(true);
 
-      const data = await createCourse({ form, thumbnail, video });
+      const data = await createCourse({ form, thumbnail, video, category: form.category });
 
       if (data && data.success) {
         toast.success("Course created successfully!");
@@ -75,14 +75,7 @@ const CreateCourseForm = () => {
         className="w-full h-24 resize-none overflow-y-auto"
       />
       <Label htmlFor="title">Course Category</Label>
-      {/* <Input
-        name="category"
-        placeholder="Category (e.g., Aqeedah)"
-        value={form.category}
-        onChange={handleChange}
-        required
-      /> */}
-      <CategoryCombobox/>
+      <CategoryCombobox category={form.category} setCategory={(value) => setForm((prev) => ({ ...prev, category: value }))} />
       <Label htmlFor="title">Course price</Label>
       <Input
         name="price"
