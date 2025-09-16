@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { islamicCategories } from "@/lib/data";
 
-export default function CategoryCombobox() {
+export default function CategoryCombobox({ category, setCategory }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
@@ -51,6 +51,7 @@ export default function CategoryCombobox() {
                     onSelect={(currentValue) => {
                       setValue(currentValue === value ? "" : currentValue);
                       setOpen(false);
+                      setCategory(currentValue);
                     }}
                   >
                     {subcategory}
