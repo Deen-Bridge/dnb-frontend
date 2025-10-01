@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Button from "@/components/atoms/form/Button";
@@ -40,7 +39,6 @@ export function SignupForm({ className, ...props }) {
   const [otpLoading, setOtpLoading] = useState(false);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
   const correctOtpRef = useRef(null);
 
   const { checkPasswords } = usePasswordMatch();
@@ -49,46 +47,11 @@ export function SignupForm({ className, ...props }) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    if (!checkPasswords(formData.password, formData.confirmPassword)) {
-      setError("Passwords do not match");
-      return;
+  const handleSignup = async (e) => {
+    e.preventDefault()
+    if (checkPasswords(formData.password, formData.confirmPassword)){
+      alert("hi")
     }
-    setOtpLoading(true);
-    setError("");
-    try {
-      const res = await sendOtp(formData.email);
-      if (res && res.otp) {
-        correctOtpRef.current = res.otp;
-        setOtpSent(true);
-        toast.success("OTP sent to your email!");
-        setModalOpen(true);
-      } else {
-        throw new Error("Failed to send OTP");
-      }
-    } catch (err) {
-      setError(err?.message || "Failed to send OTP. Please try again.");
-      toast.error("Failed to send OTP. Please try again.");
-    } finally {
-      setOtpLoading(false);
-    }
-  };
-
-  const handleVerifyOtpAndSignup = async () => {
-    if (!correctOtpRef.current) {
-      setError("Please request an OTP first");
-      return;
-    }
-
-    if (otp !== correctOtpRef.current) {
-      setError("Invalid OTP");
-      toast.error("Invalid OTP. Please try again.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
     try {
       await signup(
         formData.name,
@@ -136,7 +99,7 @@ export function SignupForm({ className, ...props }) {
   return (
     <>
       <form
-        onSubmit={handleSendOtp}
+        onSubmit={handleSignup}
         className={cn("flex flex-col gap-6", className)}
         {...props}
       >
@@ -234,7 +197,7 @@ export function SignupForm({ className, ...props }) {
         </div>
       </form>
 
-      <Modal
+      {/* <Modal
         title="Verify Your Email"
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -276,7 +239,7 @@ export function SignupForm({ className, ...props }) {
 
           {error && <ErrorMessage message={error} />}
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 }
