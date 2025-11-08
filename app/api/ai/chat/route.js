@@ -2,18 +2,23 @@ import axios from "axios";
 
 export async function POST(req) {
   try {
-    const { message } = await req.json();
+    const { message, chat_id, user_id } = await req.json();
     console.log("Sending message to AI:", message);
+    console.log("Chat ID:", chat_id, "User ID:", user_id);
 
-    // Always use localhost for now
-    const AI_API_URL = "https://dnb-ai.onrender.com/chat";
+    // Use environment variable or fallback to localhost
+    const AI_API_URL =
+      process.env.NEXT_PUBLIC_AI_API_URL || "http://localhost:8000";
+    const endpoint = `${AI_API_URL}/chat`;
 
-    console.log("Using AI API URL:", AI_API_URL);
+    console.log("Using AI API URL:", endpoint);
 
     const response = await axios.post(
-      AI_API_URL,
+      endpoint,
       {
         prompt: message,
+        chat_id: chat_id,
+        user_id: user_id,
         context: "Islamic knowledge and guidance",
       },
       {

@@ -10,6 +10,8 @@ import ImageUpload from "@/components/atoms/form/ImageInput";
 import { toast } from "sonner";
 import { createCourse } from "@/lib/actions/courses/create-course";
 import CategoryCombobox from "@/components/atoms/form/ComboBox";
+import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
+import { Progress } from "@/components/ui/progress";
 
 const CreateCourseForm = () => {
   const router = useRouter();
@@ -24,6 +26,17 @@ const CreateCourseForm = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Cloudinary upload hooks
+  const thumbnailUpload = useCloudinaryUpload("dnb_courses_thumbnails", {
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ["image/*"],
+  });
+
+  const videoUpload = useCloudinaryUpload("dnb_courses_videoss", {
+    maxSize: 100 * 1024 * 1024, // 100MB
+    allowedTypes: ["video/*"],
+  });
+
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -33,12 +46,31 @@ const CreateCourseForm = () => {
 
     try {
       setLoading(true);
+      let thumbnailUrl = null;
+      let videoUrl = null;
 
-      const data = await createCourse({ form, thumbnail, video, category: form.category });
+      // Upload thumbnail to Cloudinary first
+      if (thumbnail) {
+        toast.info("Uploading thumbnail...");
+        thumbnailUrl = await thumbnailUpload.uploadFile(thumbnail);
+      }
+
+      // Upload video to Cloudinary
+      if (video) {
+        toast.info("Uploading video... This may take a while.");
+        videoUrl = await videoUpload.uploadFile(video);
+      }
+
+      // Now create course with URLs
+      const data = await createCourse({
+        form,
+        thumbnailUrl,
+        videoUrl,
+        category: form.category,
+      });
 
       if (data && data.success) {
         toast.success("Course created successfully!");
-
         router.push(`/dashboard/courses/${data.course._id}`);
       } else {
         toast.error(data?.message || "Failed to create course.");
@@ -49,6 +81,8 @@ const CreateCourseForm = () => {
       );
     } finally {
       setLoading(false);
+      thumbnailUpload.reset();
+      videoUpload.reset();
     }
   };
 
@@ -75,7 +109,12 @@ const CreateCourseForm = () => {
         className="w-full h-24 resize-none overflow-y-auto"
       />
       <Label htmlFor="title">Course Category</Label>
-      <CategoryCombobox category={form.category} setCategory={(value) => setForm((prev) => ({ ...prev, category: value }))} />
+      <CategoryCombobox
+        category={form.category}
+        setCategory={(value) =>
+          setForm((prev) => ({ ...prev, category: value }))
+        }
+      />
       <Label htmlFor="title">Course price</Label>
       <Input
         name="price"
@@ -95,6 +134,14 @@ const CreateCourseForm = () => {
           image={thumbnail}
           onChange={(e) => setThumbnail(e.target.files[0])}
         />
+        {thumbnailUpload.uploading && (
+          <div className="mt-2 space-y-1">
+            <Progress value={thumbnailUpload.progress} className="h-2" />
+            <p className="text-xs text-muted-foreground">
+              Uploading thumbnail: {thumbnailUpload.progress}%
+            </p>
+          </div>
+        )}
       </div>
 
       <div>
@@ -106,17 +153,31 @@ const CreateCourseForm = () => {
           video={video}
           onChange={(e) => setVideo(e.target.files[0])}
         />
+        {videoUpload.uploading && (
+          <div className="mt-2 space-y-1">
+            <Progress value={videoUpload.progress} className="h-2" />
+            <p className="text-xs text-muted-foreground">
+              Uploading video: {videoUpload.progress}%
+            </p>
+          </div>
+        )}
       </div>
 
       <Button
-        loading={loading}
+        loading={loading || thumbnailUpload.uploading || videoUpload.uploading}
         round
         wide
         type="submit"
-        disabled={loading}
+        disabled={loading || thumbnailUpload.uploading || videoUpload.uploading}
         className="w-full bg-accent hover:bg-highlight transition"
       >
-        Create Course
+        {thumbnailUpload.uploading
+          ? "Uploading Thumbnail..."
+          : videoUpload.uploading
+          ? `Uploading Video... ${videoUpload.progress}%`
+          : loading
+          ? "Creating Course..."
+          : "Create Course"}
       </Button>
     </form>
   );

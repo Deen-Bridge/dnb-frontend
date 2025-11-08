@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
@@ -11,161 +11,217 @@ import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { CustomSidebar } from "@/components/organisms/dashboard/CustomSidebar";
 import BookStatsInfo from "@/components/molecules/dashboard/BookStats&Info";
-import { useHasBook } from "@/hooks/usePurchase";
-import { usePurchaseBook } from "@/hooks/usePurchase";
+import { useHasBook, usePurchaseBook } from "@/hooks/usePurchase";
 
 export default function BookDetailPage({ book }) {
-    const { user, refreshUser } = useAuth();
-    const [rating, setRating] = useState(0);
-    const [review, setReview] = useState("");
-    const [submitting, setSubmitting] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const [error, setError] = useState("");
-    const hasBook = useHasBook(book?._id);
-    const [loading, setLoading] = useState(false);
-    const [purchased, setPurchased] = useState(false); // <-- Add this
+  const { user, refreshUser } = useAuth();
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const hasBook = useHasBook(book?._id);
+  const [loading, setLoading] = useState(false);
+  const [purchased, setPurchased] = useState(
+    () => hasBook || book?.price === 0
+  );
 
-    const handlePurchaseBook = async () => {
-        setLoading(true);
-        try {
-            await usePurchaseBook(book._id);
-            await refreshUser(user._id);
-            setPurchased(true); // <-- Set purchased to true
-            toast.success("Book purchased successfully!");
-        } catch (error) {
-            toast.error("Failed to purchase book.");
-        } finally {
-            setLoading(false);
-        }
-    };
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        setError("");
-        try {
-            const res = await addBookReview({
-                bookId: book._id || book.id,
-                rating,
-                comment: review,
-            });
-            if (res.success) {
-                setSubmitted(true);
-                toast.success("Thank you for your review!");
-            } else {
-                setError(res.message || "Failed to submit review");
-            }
-        } catch (err) {
-            setError("Something went wrong. Please try again.");
-        } finally {
-            setSubmitting(false);
-        }
-    };
+  useEffect(() => {
+    if (hasBook) {
+      setPurchased(true);
+    }
+  }, [hasBook]);
 
-    return (
-        <div className="min-h-screen py-12 px-4 md:px-12">
-            <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-10">
-                {/* Book Showcase and Main Content */}
-                <div className="md:col-span-8 space-y-12">
-                    <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 backdrop-blur-md bg-white/5">
-                        <Image
-                            src={book.image || "/images/placeholder.jpg"}
-                            alt={book.title}
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    {/* Title & Category */}
-                    <div className="space-y-4">
-                        <h1 className="text-5xl font-black tracking-tight">{book.title}</h1>
-                        <div className="flex flex-wrap items-center gap-3">
-                            <Badge className="bg-accent ">{book.category}</Badge>
-                            <Badge variant="accent" className="bg-white/10 text-highlight">
-                                {book.price ? `$${book.price}` : "Free"}
-                            </Badge>
-                        </div>
-                        <p className="text-md /80 leading-relaxed">{book.description}</p>
-                    </div>
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-4">
-                        {(hasBook || purchased) ? ( // <-- Check both
-                            <>
-                                <Button
-                                    wide
-                                    className="bg-accent hover:highlight text-white font-bold shadow-lg transition"
-                                    round
-                                    to={`/dashboard/library/read/${book.id}`}
-                                >
-                                    Start Reading
-                                </Button>
-                                <Button
-                                    outlined
-                                    round
-                                    to={book.fileUrl}
-                                    download
-                                    target="_blank"
-                                >
-                                    <DownloadCloud className="w-4 h-4 mr-2" /> Download
-                                </Button>
-                            </>
-                        ) : (
-                            <Button
-                                wide
-                                className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
-                                round
-                                onClick={handlePurchaseBook}
-                                loading={loading}
-                            >
-                                Purchase Book
-                            </Button>
-                        )}
-                    </div>
-                    {/* Review Section */}
-                    {user?._id !== book.author._id && (
-                        <div className="pt-10 space-y-5 border-t border-white/10">
-                            {!submitted && (
-                                <>
-                                    <h2 className="text-3xl font-semibold">Leave a Review</h2>
-                                    <form onSubmit={handleSubmit} className="space-y-4">
-                                        <StarRate
-                                            value={rating}
-                                            onChange={setRating}
-                                            maxStars={5}
-                                            editable={!submitting && !submitted}
-                                            label={rating > 0 ? `Your rating: ${rating} star${rating > 1 ? "s" : ""}` : undefined}
-                                        />
-                                        <Textarea
-                                            placeholder="What did you think about the book?"
-                                            className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
-                                            value={review}
-                                            onChange={e => setReview(e.target.value)}
-                                            disabled={submitting || submitted}
-                                        />
-                                        {error && <div className="text-red-500 text-sm">{error}</div>}
-                                        <Button
-                                            wide
-                                            round
-                                            className="bg-accent hover:bg-highlight font-semibold mt-2 transition"
-                                            type="submit"
-                                            disabled={submitting || rating === 0 || review.trim() === ""}
-                                            loading={submitting}
-                                        >
-                                            Submit Review
-                                        </Button>
-                                    </form>
-                                </>
-                            )}
-                        </div>
-                    )}
-                </div>
-                {/* Sidebar for desktop/tablet */}
-                <div className="md:col-span-4 hidden md:block space-y-8 sticky top-20 self-start">
-                    <CustomSidebar book={book} side="right" collapsible="none" />
-                </div>
-                {/* BookStatsInfo for mobile only */}
-                <div className="block md:hidden mt-8">
-                    <BookStatsInfo book={book} />
-                </div>
+  const canAccessBook = useMemo(
+    () =>
+      Boolean(
+        book?.price === 0 ||
+          hasBook ||
+          purchased ||
+          (user?._id && user._id === book?.author?._id?.toString?.())
+      ),
+    [book?.author?._id, book?.price, hasBook, purchased, user?._id]
+  );
+
+  const handlePurchaseBook = async () => {
+    if (!user?._id) {
+      toast.error("Please sign in to purchase this book.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await usePurchaseBook(book._id);
+
+      if (response?.success) {
+        setPurchased(true);
+        toast.success(response.message || "Book purchased successfully!");
+      } else {
+        const fallbackMessage =
+          response?.message || "Purchase completed. Happy reading!";
+        toast.success(fallbackMessage);
+        setPurchased(true);
+      }
+
+      if (user?._id) {
+        const updatedUser = await refreshUser(user._id);
+        if (
+          !hasBook &&
+          !updatedUser?.purchasedBooks?.some(
+            (entry) =>
+              entry.bookId?.toString?.() === book._id?.toString?.() ||
+              entry._id?.toString?.() === book._id?.toString?.()
+          )
+        ) {
+          setPurchased(false);
+        }
+      }
+    } catch (error) {
+      toast.error(
+        error?.message || "Failed to purchase book. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await addBookReview({
+        bookId: book._id || book.id,
+        rating,
+        comment: review,
+      });
+      if (res.success) {
+        setSubmitted(true);
+        toast.success("Thank you for your review!");
+      } else {
+        setError(res.message || "Failed to submit review");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen py-12 px-4 md:px-12">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-10">
+        {/* Book Showcase and Main Content */}
+        <div className="md:col-span-8 space-y-12">
+          <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 backdrop-blur-md bg-white/5">
+            <Image
+              src={book.image || "/images/placeholder.jpg"}
+              alt={book.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+          {/* Title & Category */}
+          <div className="space-y-4">
+            <h1 className="text-5xl font-black tracking-tight">{book.title}</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge className="bg-accent ">{book.category}</Badge>
+              <Badge variant="accent" className="bg-white/10 text-highlight">
+                {book.price ? `$${book.price}` : "Free"}
+              </Badge>
             </div>
+            <p className="text-md /80 leading-relaxed">{book.description}</p>
+          </div>
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-4">
+            {canAccessBook ? (
+              <>
+                <Button
+                  wide
+                  className="bg-accent hover:highlight text-white font-bold shadow-lg transition"
+                  round
+                  to={`/dashboard/library/read/${book._id ?? book.id}`}
+                >
+                  Start Reading
+                </Button>
+                <Button
+                  outlined
+                  round
+                  to={book.fileUrl}
+                  download
+                  target="_blank"
+                >
+                  <DownloadCloud className="w-4 h-4 mr-2" /> Download
+                </Button>
+              </>
+            ) : (
+              <Button
+                wide
+                className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
+                round
+                onClick={handlePurchaseBook}
+                loading={loading}
+              >
+                Purchase Book
+              </Button>
+            )}
+          </div>
+          {/* Review Section */}
+          {user?._id !== book.author._id && (
+            <div className="pt-10 space-y-5 border-t border-white/10">
+              {!submitted && (
+                <>
+                  <h2 className="text-3xl font-semibold">Leave a Review</h2>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <StarRate
+                      value={rating}
+                      onChange={setRating}
+                      maxStars={5}
+                      editable={!submitting && !submitted}
+                      label={
+                        rating > 0
+                          ? `Your rating: ${rating} star${
+                              rating > 1 ? "s" : ""
+                            }`
+                          : undefined
+                      }
+                    />
+                    <Textarea
+                      placeholder="What did you think about the book?"
+                      className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
+                      value={review}
+                      onChange={(e) => setReview(e.target.value)}
+                      disabled={submitting || submitted}
+                    />
+                    {error && (
+                      <div className="text-red-500 text-sm">{error}</div>
+                    )}
+                    <Button
+                      wide
+                      round
+                      className="bg-accent hover:bg-highlight font-semibold mt-2 transition"
+                      type="submit"
+                      disabled={
+                        submitting || rating === 0 || review.trim() === ""
+                      }
+                      loading={submitting}
+                    >
+                      Submit Review
+                    </Button>
+                  </form>
+                </>
+              )}
+            </div>
+          )}
         </div>
-    );
+        {/* Sidebar for desktop/tablet */}
+        <div className="md:col-span-4 hidden md:block space-y-8 sticky top-20 self-start">
+          <CustomSidebar book={book} side="right" collapsible="none" />
+        </div>
+        {/* BookStatsInfo for mobile only */}
+        <div className="block md:hidden mt-8">
+          <BookStatsInfo book={book} />
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -4,17 +4,21 @@ import {
   roboto_400,
   roboto_900,
 } from "@/lib/config/font.config";
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import Button from "@/components/atoms/form/Button";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const NetworkErrorComp = ({
-  className,
-  errMsg,
-  reset,
-}) => {
+const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
+  const handleRetry = React.useCallback(() => {
+    if (typeof onRetry === "function") {
+      onRetry();
+    } else if (typeof reset === "function") {
+      reset();
+    }
+  }, [onRetry, reset]);
+
   return (
     <div
       className={cn(
@@ -56,12 +60,11 @@ const NetworkErrorComp = ({
       </p>
       <Button
         round
-        func={reset}
+        onClick={handleRetry}
         className={cn(
           `text-base lg:text-lg bg-accent hover:bg-highlight text-white`,
           Space_Grotesk_400.className
         )}
-   
       >
         Retry
       </Button>

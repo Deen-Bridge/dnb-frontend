@@ -2,13 +2,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
-import { Ellipsis, CirclePlus } from "lucide-react";
+import { Ellipsis, Bookmark, BookmarkCheck } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useBookmark } from "@/hooks/useBookmark";
 
-const CourseCard = ({ course }) => {
+const CourseCard = ({ course, onBookmarkChange }) => {
   const { user } = useAuth();
+  const { isBookmarked, loading, toggle } = useBookmark(
+    course._id,
+    onBookmarkChange
+  );
+
+  const handleBookmark = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await toggle();
+  };
   return (
     <Card className="relative flex flex-col overflow-hidden rounded-2xl  bg-muted/30 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:scale-[1.015] transition-all group">
       {/* Image */}
@@ -70,8 +81,18 @@ const CourseCard = ({ course }) => {
             <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
               {course.price ? `$${course.price}` : "Free"}
             </div>
-            <CirclePlus className="w-5 sm:w-8 h-5 sm:h-8  text-accent hover:bg-accent hover:text-white rounded-full p-1 transition" />
-
+            <button
+              onClick={handleBookmark}
+              disabled={loading}
+              className="transition-all hover:scale-110 cursor-pointer"
+              title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
+            >
+              {isBookmarked ? (
+                <BookmarkCheck className="w-6 h-6 text-accent fill-accent" />
+              ) : (
+                <Bookmark className="w-6 h-6 text-accent hover:fill-accent/20" />
+              )}
+            </button>
           </div>
         </div>
       </CardContent>

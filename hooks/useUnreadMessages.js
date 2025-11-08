@@ -1,83 +1,86 @@
-import { useEffect, useState } from "react";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  getDocs,
-} from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/config/firebase.config";
 import { useAuth } from "@/hooks/useAuth";
 
 export function useUnreadMessages() {
   const { user } = useAuth();
-  const [unread, setUnread] = useState({}); // { conversationId: count }
+  const [unread, setUnread] = useState({});
+  const messageListenersRef = useRef({});
 
   useEffect(() => {
     if (!user?._id) return;
 
-    // Listen to conversations in real-time
     const q = query(
       collection(db, "conversations"),
       where("participants", "array-contains", user._id)
     );
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const unreadCounts = {};
+    const unsubscribeConversations = onSnapshot(q, (snapshot) => {
+      const activeConversationIds = new Set();
 
-      // Process each conversation
-      for (const doc of snapshot.docs) {
+      snapshot.docs.forEach((doc) => {
         const convoId = doc.id;
+        activeConversationIds.add(convoId);
 
-        try {
-          // Fetch messages for this conversation
-          const messagesSnap = await getDocs(
-            collection(db, `conversations/${convoId}/messages`)
+        if (!messageListenersRef.current[convoId]) {
+          const messagesRef = collection(
+            db,
+            `conversations/${convoId}/messages`
           );
 
-          const messages = messagesSnap.docs.map((msgDoc) => ({
-            _id: msgDoc.id,
-            ...msgDoc.data(),
-          }));
+          const unsubscribeMessages = onSnapshot(messagesRef, (messagesSnap) => {
+            let count = 0;
+            messagesSnap.forEach((messageDoc) => {
+              const data = messageDoc.data();
+              const senderId = data.senderId || data.sender;
+              const readBy = data.readBy || [];
 
-          // Count unread messages - check both senderId and sender fields
-          const unreadMsgs = messages.filter((msg) => {
-            const isNotOwnMessage =
-              msg.senderId !== user._id && msg.sender !== user._id;
-            const isUnread = !msg.readBy || !msg.readBy.includes(user._id);
+              const isNotOwnMessage = senderId && senderId !== user._id;
+              const isUnread = isNotOwnMessage && !readBy.includes(user._id);
 
-            // Debug logging for first few messages
-            if (messages.indexOf(msg) < 3) {
-              console.log("Message debug:", {
-                id: msg._id,
-                senderId: msg.senderId,
-                sender: msg.sender,
-                readBy: msg.readBy,
-                isNotOwnMessage,
-                isUnread,
-                userId: user._id,
-              });
-            }
+              if (isUnread) {
+                count += 1;
+              }
+            });
 
-            return isNotOwnMessage && isUnread;
+            setUnread((prev) => {
+              const next = { ...prev };
+              if (count > 0) {
+                next[convoId] = count;
+              } else {
+                delete next[convoId];
+              }
+              return next;
+            });
           });
 
-          if (unreadMsgs.length > 0) {
-            unreadCounts[convoId] = unreadMsgs.length;
-          }
-        } catch (error) {
-          console.error(
-            `Error fetching messages for conversation ${convoId}:`,
-            error
-          );
+          messageListenersRef.current[convoId] = unsubscribeMessages;
         }
-      }
+      });
 
-      setUnread(unreadCounts);
+      Object.keys(messageListenersRef.current).forEach((convoId) => {
+        if (!activeConversationIds.has(convoId)) {
+          messageListenersRef.current[convoId]?.();
+          delete messageListenersRef.current[convoId];
+          setUnread((prev) => {
+            const next = { ...prev };
+            delete next[convoId];
+            return next;
+          });
+        }
+      });
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeConversations();
+      Object.values(messageListenersRef.current).forEach((unsubscribe) => {
+        unsubscribe?.();
+      });
+      messageListenersRef.current = {};
+      setUnread({});
+    };
   }, [user?._id]);
 
-  return unread; // { conversationId: count }
+  return unread;
 }

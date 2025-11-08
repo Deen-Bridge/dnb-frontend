@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 import { login } from "@/hooks/useAuth";
-import Button from '@/components/atoms/form/Button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import Button from "@/components/atoms/form/Button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import Link from 'next/link';
-import React, { useState } from 'react';
+import Link from "next/link";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/molecules/Modal";
 import ForgetPassword from "./forget-password";
@@ -21,16 +21,15 @@ export function LoginForm({ className, ...props }) {
     password: "",
   });
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleForgetPassword = (e) => {
-    e.preventDefault()
-    setModalOpen(true)
-  }
+    e.preventDefault();
+    setModalOpen(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,22 +37,28 @@ export function LoginForm({ className, ...props }) {
 
     try {
       await login(formData.email, formData.password);
+
+      // Small delay to ensure cookies are set before redirect
       setTimeout(() => {
-        router.push("/dashboard")
-      }, 2000);
+        window.location.href = "/dashboard";
+      }, 500);
     } catch (error) {
-      console.log("Error during login:", error.message);
-    } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false); // Stop loading on error
     }
+    // Don't stop loading on success - let it continue until redirect
   };
 
   return (
     <>
       {/* login form */}
-      <form className={cn("flex flex-col gap-6", className)}  onSubmit={handleSubmit}>
+      <form
+        className={cn("flex flex-col gap-6", className)}
+        onSubmit={handleSubmit}
+      >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl sm:text-4xl font-bold font-stretch-125%">Welcome back</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold font-stretch-125%">
+            Welcome back
+          </h1>
           <p className="text-sm  text-muted-foreground">
             Enter your email and password to login.
           </p>
@@ -92,7 +97,6 @@ export function LoginForm({ className, ...props }) {
               onChange={handleChange}
               required
             />
-
           </div>
 
           <Button
@@ -116,13 +120,13 @@ export function LoginForm({ className, ...props }) {
         </div>
       </form>
 
-
       {/* Reset password modal form */}
 
-      <Modal isOpen={modalOpen}
+      <Modal
+        isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Forget password">
-
+        title="Forget password"
+      >
         {/* resrt passwoerd form */}
         <ForgetPassword onSuccess />
       </Modal>

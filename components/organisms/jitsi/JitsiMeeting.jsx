@@ -1,84 +1,132 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import Button from '@/components/atoms/form/Button';
+import React, { useEffect, useMemo, useRef } from 'react';
 
-const JitsiMeetComponent = () => {
-    const [showMeeting, setShowMeeting] = useState(false);
-    const jitsiContainerRef = useRef(null);
-    const [roomName] = useState(`openll-ddddfds-meeting-${Math.floor(Math.random() * 1e9)}`);
+const getNormalizedDomain = (domain = 'meet.jit.si') =>
+    domain.replace(/^https?:\/\//i, '').replace(/\/+$/g, '');
+
+const loadExternalApi = (domain) =>
+    new Promise((resolve, reject) => {
+        if (typeof window === 'undefined') {
+            reject(new Error('Window is undefined'));
+            return;
+        }
+
+        if (window.JitsiMeetExternalAPI) {
+            resolve();
+            return;
+        }
+
+        const normalizedDomain = getNormalizedDomain(domain);
+        const script = document.createElement('script');
+        script.src = `https://${normalizedDomain}/external_api.js`;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = (err) => reject(err);
+        document.body.appendChild(script);
+    });
+
+const JitsiMeetComponent = ({
+    roomName,
+    displayName = 'Guest User',
+    domain = 'meet.jit.si',
+    height = '80vh',
+    onReadyToClose,
+    className,
+    jwt,
+    requiresJwt = false,
+}) => {
+    const containerRef = useRef(null);
+    const apiRef = useRef(null);
+    const normalizedDomain = useMemo(() => getNormalizedDomain(domain), [domain]);
 
     useEffect(() => {
-        if (!showMeeting || typeof window === 'undefined') return;
+        if (!roomName || typeof window === 'undefined') return undefined;
+        if (requiresJwt && !jwt) return undefined;
 
-        const domain = 'meet.jit.si';
+        let isMounted = true;
 
-        const loadJitsiScript = () => {
-            return new Promise((resolve) => {
-                if (window.JitsiMeetExternalAPI) {
-                    resolve();
+        const initializeMeeting = async () => {
+            try {
+                await loadExternalApi(normalizedDomain);
+
+                if (!isMounted || !containerRef.current || !window.JitsiMeetExternalAPI) {
                     return;
                 }
 
-                const script = document.createElement('script');
-                script.src = 'https://meet.jit.si/external_api.js';
-                script.async = true;
-                script.onload = resolve;
-                document.body.appendChild(script);
-            });
+                containerRef.current.innerHTML = '';
+
+                const options = {
+                    roomName,
+                    parentNode: containerRef.current,
+                    width: '100%',
+                    height: '100%',
+                    userInfo: {
+                        displayName,
+                    },
+                    configOverwrite: {
+                        prejoinPageEnabled: false,
+                        startWithAudioMuted: true,
+                        startWithVideoMuted: false,
+                    },
+                    interfaceConfigOverwrite: {
+                        DEFAULT_REMOTE_DISPLAY_NAME: 'Guest',
+                        SHOW_JITSI_WATERMARK: false,
+                        SHOW_BRAND_WATERMARK: false,
+                        SHOW_POWERED_BY: false,
+                        SHOW_CHROME_EXTENSION_BANNER: false,
+                        SUPPORT_URL: 'https://deenbridge.com/support',
+                    },
+                };
+
+                if (jwt) {
+                    options.jwt = jwt;
+                }
+
+                const api = new window.JitsiMeetExternalAPI(normalizedDomain, options);
+
+                apiRef.current = api;
+
+                const handleReadyToClose = () => {
+                    apiRef.current?.dispose();
+                    apiRef.current = null;
+                    onReadyToClose?.();
+                };
+
+                api.addEventListener('readyToClose', handleReadyToClose);
+
+                return () => {
+                    api.removeEventListener('readyToClose', handleReadyToClose);
+                };
+            } catch (error) {
+                console.error('Failed to initialize Jitsi meeting:', error);
+            }
         };
 
-        loadJitsiScript().then(() => {
-            const api = new window.JitsiMeetExternalAPI(domain, {
-                roomName,
-                parentNode: jitsiContainerRef.current,
-                width: '100%',
-                height: '100%',
-                userInfo: {
-                    displayName: 'Guest User',
-                },
-                configOverwrite: {
-                    enableWelcomePage: false,
-                    startWithAudioMuted: true,
-                    startWithVideoMuted: false,
-                },
-                interfaceConfigOverwrite: {
-                    DEFAULT_REMOTE_DISPLAY_NAME: 'Guest',
-                    SHOW_JITSI_WATERMARK: false,
-                    SHOW_POWERED_BY: false,
-                    SHOW_CHROME_EXTENSION_BANNER: false,
-                },
-            });
+        initializeMeeting();
 
-            // Clean up when component unmounts
-            return () => api.dispose?.();
-        });
-    }, [showMeeting, roomName]);
+        return () => {
+            isMounted = false;
+            if (apiRef.current) {
+                apiRef.current.dispose();
+                apiRef.current = null;
+            }
+        };
+    }, [roomName, displayName, normalizedDomain, onReadyToClose, jwt, requiresJwt]);
 
     return (
-        <div>
-            {!showMeeting ? (
-                <Button
-                    round
-                    wide
-                    className="bg-accent text-white"
-                    onClick={() => setShowMeeting(true)}
-                >
-                    Start Meeting Now
-                </Button>
-            ) : (
-                <div
-                    ref={jitsiContainerRef}
-                    style={{
-                        width: '100%',
-                        height: '80vh',
-                        marginTop: '1rem',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                    }}
-                />
-            )}
-        </div>
+        <div
+            ref={containerRef}
+            className={className}
+            style={{
+                width: '100%',
+                height,
+                marginTop: '1rem',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                backgroundColor: '#0a0f14',
+            }}
+        />
     );
 };
 
