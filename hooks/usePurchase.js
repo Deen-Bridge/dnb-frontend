@@ -33,18 +33,32 @@ export async function usePurchaseBook(bookId) {
   }
 }
 
-// Returns true if the user has purchased the course
+// Returns true if the user has purchased/enrolled in the course
 export function useHasCourse(courseId) {
   const { user } = useAuth();
-  if (!user || !Array.isArray(user.purchasedCourses) || !courseId) return false;
-  return user.purchasedCourses.some(
-    (c) =>
-      c.courseId?.toString?.() === courseId.toString() ||
-      c._id?.toString?.() === courseId.toString()
-  );
+  if (!user || !courseId) return false;
+
+  // Check purchasedCourses array
+  if (Array.isArray(user.purchasedCourses)) {
+    const purchased = user.purchasedCourses.some(
+      (c) =>
+        c.courseId?.toString?.() === courseId.toString() ||
+        c._id?.toString?.() === courseId.toString()
+    );
+    if (purchased) return true;
+  }
+
+  // Also check enrolledCourses if it exists
+  if (Array.isArray(user.enrolledCourses)) {
+    return user.enrolledCourses.some(
+      (c) => c?.toString?.() === courseId.toString()
+    );
+  }
+
+  return false;
 }
 
-// purchase a course
+// purchase a course (enroll)
 export async function usePurchaseCourse(courseId) {
   if (!courseId) {
     console.error("No courseId provided to usePurchaseCourse");
@@ -52,8 +66,8 @@ export async function usePurchaseCourse(courseId) {
   }
   try {
     const res = await axiosInstance.post(
-      "/api/purchase/course",
-      { courseId: courseId.toString() },
+      `/api/courses/${courseId}/enroll`,
+      {},
       config
     );
     return res.data;

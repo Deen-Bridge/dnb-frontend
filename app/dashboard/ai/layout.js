@@ -1,11 +1,22 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { AiSidebar } from "@/components/organisms/dashboard/ai/Ai-Sidebar";
 import { usePathname } from "next/navigation";
 
 export default function Layout({ children }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentChatId, setCurrentChatId] = useState(null);
+  const [chatData, setChatData] = useState({ messages: [], chatId: null });
   const pathname = usePathname();
+
+  const handleChatSelect = (chatId, history) => {
+    setCurrentChatId(chatId);
+    setChatData({ messages: history, chatId });
+  };
+
+  const handleNewChat = () => {
+    setCurrentChatId(null);
+    setChatData({ messages: [], chatId: null });
+  };
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
@@ -14,12 +25,22 @@ export default function Layout({ children }) {
         <div
           className={`bg-muted/50 hidden sm:block rounded-xl p-2 sm:p-4 h-full overflow-y-auto scrollbar-hide transition-all duration-300  md:w-1/3 lg:w-1/4`}
         >
-          <AiSidebar />
+          <AiSidebar
+            onChatSelect={handleChatSelect}
+            currentChatId={currentChatId}
+            onNewChat={handleNewChat}
+          />
         </div>
 
         {/* Chat Panel (right side) */}
         <div className=" transition-all duration-300 h-full w-full rounded-xl">
-          {children}
+          {/* Pass chatData to children */}
+          {children &&
+            typeof children === "object" &&
+            React.cloneElement(children, {
+              chatData,
+              onChatUpdate: setCurrentChatId,
+            })}
         </div>
       </div>
     </div>

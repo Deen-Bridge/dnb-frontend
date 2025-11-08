@@ -116,10 +116,10 @@ export default function Page({ params }) {
 
   // Mark messages as read when user views this conversation
   useEffect(() => {
-    if (user?._id && room) {
+    if (user?._id && room && messages.length) {
       markMessagesAsRead(room, user._id);
     }
-  }, [user?._id, room]);
+  }, [user?._id, room, messages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();

@@ -31,8 +31,8 @@ export const useAuth = () => {
   }, []);
 
   const logout = () => {
-    Cookies.remove("authToken");
-    Cookies.remove("userInfo");
+    Cookies.remove("authToken", { path: "/" });
+    Cookies.remove("userInfo", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
     toast.success("Logged out successfully");
@@ -52,7 +52,6 @@ export const useAuth = () => {
         setUser(freshUser);
         Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1 });
         setIsAuthenticated(true);
-        window.reload()
         return freshUser;
       }
     } catch (error) {
@@ -74,9 +73,11 @@ export const login = async (email, password) => {
     const { token, user } = res.data;
     // Normalize user object to always have _id
     if (user.id && !user._id) user._id = user.id;
-    // Save token and user info in cookies
-    Cookies.set("authToken", token, { expires: 1 });
-    Cookies.set("userInfo", JSON.stringify(user), { expires: 1 });
+
+    // Save token and user info in cookies with proper path
+    Cookies.set("authToken", token, { expires: 1, path: "/" });
+    Cookies.set("userInfo", JSON.stringify(user), { expires: 1, path: "/" });
+
     toast.success("Login successful");
     return user;
   } catch (error) {

@@ -43,6 +43,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.13",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^11.9.1",
     "framer-motion": "^12.11.3",
@@ -70,6 +71,7 @@
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.3",
     "styled-components": "^6.1.17",
+    "pdfjs-dist": "^3.11.174",
     "tailwind-merge": "^3.2.0",
     "vaul": "^1.1.2",
     "zod": "^3.24.3"

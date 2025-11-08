@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import CacheProvider from "@/components/providers/CacheProvider";
 import "../styles/globals.css";
 
 const geistSans = Geist({
@@ -20,11 +21,11 @@ export const metadata = {
     title: "Deen Bridge ",
     description:
       "Empowering Muslims with authentic knowledge — Learn Qur'an, Arabic, Fiqh, and more through 1-on-1 live mentorship and lots more.",
-    url: "https://deenbridge.com", 
+    url: "https://deenbridge.com",
     type: "website",
     images: [
       {
-        url: "/favicon.ico", 
+        url: "/favicon.ico",
         width: 1200,
         height: 630,
         alt: "Deen Bridge - Islamic Learning Platform",
@@ -40,16 +41,14 @@ export const metadata = {
   },
 };
 
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-     
-        {children}
-        <Toaster  position="top-right"/>
+        <CacheProvider>{children}</CacheProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

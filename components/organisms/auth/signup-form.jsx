@@ -48,10 +48,26 @@ export function SignupForm({ className, ...props }) {
   };
 
   const handleSignup = async (e) => {
-    e.preventDefault()
-    if (checkPasswords(formData.password, formData.confirmPassword)){
-      alert("hi")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    // Validate passwords match
+    if (!checkPasswords(formData.password, formData.confirmPassword)) {
+      setError("Passwords do not match");
+      toast.error("Passwords do not match");
+      setLoading(false);
+      return;
     }
+
+    // Validate role is selected
+    if (!formData.role) {
+      setError("Please select a role");
+      toast.error("Please select a role");
+      setLoading(false);
+      return;
+    }
+
     try {
       await signup(
         formData.name,
@@ -59,9 +75,10 @@ export function SignupForm({ className, ...props }) {
         formData.password,
         formData.role
       );
-      toast.success("Signup successful!");
-      setModalOpen(false);
-      router.push("/dashboard");
+      toast.success("Signup successful! Redirecting to dashboard...");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1500);
     } catch (err) {
       setError(err?.message || "Signup failed. Please try again.");
       toast.error(err?.message || "Signup failed. Please try again.");
@@ -104,7 +121,9 @@ export function SignupForm({ className, ...props }) {
         {...props}
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl sm:text-4xl text-nowrap font-bold font-stretch-125%">Create your account</h1>
+          <h1 className="text-2xl sm:text-4xl text-nowrap font-bold font-stretch-125%">
+            Create your account
+          </h1>
           <p className="text-sm text-muted-foreground">
             Enter your information below to sign up.
           </p>
@@ -180,11 +199,11 @@ export function SignupForm({ className, ...props }) {
           <Button
             className="bg-accent hover:bg-highlight animate-in-out duration-300"
             wide
-            loading={otpLoading}
+            loading={loading}
             loaderColor="white"
             loaderSize={24}
             type="submit"
-            disabled={otpLoading}
+            disabled={loading}
           >
             Sign Up
           </Button>

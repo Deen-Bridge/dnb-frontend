@@ -23,7 +23,7 @@ const UpcomingSessions = () => (
                         </Avatar>
                         <span className="font-stretch-125% font-medium text-md">{s.name}</span>
                     </div>
-                    <div className="flex flex-col items-end text-muted-foreground text-xs ">
+                    <div className="flex flex-col items-end text-muted-foreground text-xs">
                         <span>{s.date} </span>
                         <span>{s.time}</span>
                     </div>
