@@ -14,46 +14,7 @@ export default function Partners() {
         that share our vision for growth and learning.
       </p>
 
-      <div className="w-full max-w-6xl">
-        <div className="flex animate-scroll">
-          {/* First set of logos */}
-          {partners.map((partner) => (
-            <div
-              key={partner.name}
-              className="flex-shrink-0 mx-8 flex items-center justify-center"
-            >
-              <Image
-                src={partner.logo}
-                alt={partner.name}
-                width={120}
-                height={60}
-                className="object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                onError={(e) => {
-                  e.target.src = "/images/dnb.png"; // Fallback image
-                }}
-              />
-            </div>
-          ))}
-          {/* Duplicate set for seamless loop */}
-          {partners.map((partner) => (
-            <div
-              key={`${partner.name}-duplicate`}
-              className="flex-shrink-0 mx-8 flex items-center justify-center"
-            >
-              <Image
-                src={partner.logo}
-                alt={partner.name}
-                width={120}
-                height={60}
-                className="object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                onError={(e) => {
-                  e.target.src = "/images/dnb.png"; // Fallback image
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+    
     </section>
   );
 }
