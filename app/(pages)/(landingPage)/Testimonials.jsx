@@ -48,6 +48,14 @@ const testimonials = [
   },
 ];
 
+// Split testimonials into two rows
+const row1 = testimonials.slice(0, 3);
+const row2 = testimonials.slice(3);
+
+// Duplicate for seamless loop
+const row1Duplicated = [...row1, ...row1];
+const row2Duplicated = [...row2, ...row2];
+
 export default function Testimonials() {
   return (
     <section className="relative py-20 px-2 sm:px-6 bg-basic overflow-hidden">
@@ -56,7 +64,7 @@ export default function Testimonials() {
         <div className="absolute left-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl" />
         <div className="absolute right-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl" />
       </div>
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-7xl mx-auto">
         <h2
           className={cn(
             poppins_600,
@@ -65,29 +73,60 @@ export default function Testimonials() {
         >
           What Our Community Says
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((t, i) => (
-            <div
-              key={t.name}
-              className="rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col border-0 border-accent/10"
-            >
-              {/* Quote */}
-              <blockquote className="italic text-lg text-gray-700 mb-4 font-stretch-110% flex-1">
-                "{t.quote}"
-              </blockquote>
-              {/* Avatar and name at bottom */}
-              <div className="flex items-center gap-4">
-                <div>
-                  <span className="block font-bold text-accent text-lg">
-                    {t.name}
-                  </span>
-                  <span className="block text-sm text-muted-foreground">
-                    {t.role}
-                  </span>
+        
+        {/* Marquee Container */}
+        <div className="space-y-6">
+          {/* First Row - Moving Left to Right */}
+          <div className="overflow-hidden">
+            <div className="flex animate-marquee-reverse">
+              {row1Duplicated.map((t, i) => (
+                <div
+                  key={`row1-${i}`}
+                  className="flex-shrink-0 w-[350px] mx-4 rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col border-0 border-accent/10"
+                >
+                  <blockquote className="italic text-lg text-gray-700 mb-4 font-stretch-110% flex-1">
+                    "{t.quote}"
+                  </blockquote>
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <span className="block font-bold text-accent text-lg">
+                        {t.name}
+                      </span>
+                      <span className="block text-sm text-muted-foreground">
+                        {t.role}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Second Row - Moving Right to Left */}
+          <div className="overflow-hidden">
+            <div className="flex animate-marquee">
+              {row2Duplicated.map((t, i) => (
+                <div
+                  key={`row2-${i}`}
+                  className="flex-shrink-0 w-[350px] mx-4 rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col border-0 border-accent/10"
+                >
+                  <blockquote className="italic text-lg text-gray-700 mb-4 font-stretch-110% flex-1">
+                    "{t.quote}"
+                  </blockquote>
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <span className="block font-bold text-accent text-lg">
+                        {t.name}
+                      </span>
+                      <span className="block text-sm text-muted-foreground">
+                        {t.role}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
