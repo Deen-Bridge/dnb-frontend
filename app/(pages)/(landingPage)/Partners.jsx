@@ -11,9 +11,8 @@ export default function Partners() {
       </h2>
       <p className="text-xl mb-20 text-center max-w-2xl">
         We're proud to collaborate with Islamic organizations and communities
-        that share our vision for growth and learning.
+        that share our vision for growth and learning. 
       </p>
-
     
     </section>
   );

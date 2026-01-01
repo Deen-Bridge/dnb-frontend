@@ -16,10 +16,10 @@ const page = () => {
       <About />
       <WhyDeenBridge />
       <Stats />
-      <HowItWorks />
+      {/* <HowItWorks /> */}
       <Testimonials />
       <Partners />
-      <CTA />
+      {/* <CTA /> */}
       <Footer />
     </>
   );

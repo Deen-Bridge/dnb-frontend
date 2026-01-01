@@ -5,7 +5,7 @@ import { poppins_600 } from "@/lib/config/font.config";
 
 const testimonials = [
   {
-    name: "Fatimah Yusuf",
+    name: "Zahra Yusuf",
     role: "Student, Nigeria",
     avatar: "/images/img-9.jpeg",
     quote:
@@ -88,6 +88,7 @@ export default function Testimonials() {
                     "{t.quote}"
                   </blockquote>
                   <div className="flex items-center gap-4">
+                  
                     <div>
                       <span className="block font-bold text-accent text-lg">
                         {t.name}
@@ -114,6 +115,7 @@ export default function Testimonials() {
                     "{t.quote}"
                   </blockquote>
                   <div className="flex items-center gap-4">
+              
                     <div>
                       <span className="block font-bold text-accent text-lg">
                         {t.name}

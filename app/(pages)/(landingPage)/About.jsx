@@ -32,6 +32,7 @@ const About = () => {
               <Button
                 wide
                 round
+                to="/signup"
                 className=" text-white font-semibold py-4 px-8 text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
                 Explore DeenBridge

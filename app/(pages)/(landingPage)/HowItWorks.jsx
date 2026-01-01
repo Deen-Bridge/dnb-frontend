@@ -30,6 +30,40 @@ export default function HowItWorks() {
           </p>
         </div>
 
+        {/* Desktop Layout */}
+        <div className="hidden md:block mb-16">
+          <div className="relative min-h-[600px]">
+            {steps.map((step, index) => (
+              <div
+                key={step.id}
+                className={cn(
+                  "absolute bg-white/95 backdrop-blur-xl rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 border border-white/20 group w-64",
+                  step.position
+                )}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className={cn(
+                    "w-16 h-16 rounded-2xl bg-gradient-to-r flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform",
+                    step.color
+                  )}>
+                    {step.icon}
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-accent to-highlight flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">{step.id}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-accent font-stretch-125%">
+                    {step.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm font-stretch-110%">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Mobile Layout */}
         <div className="md:hidden mb-16">
           <div className="space-y-6">
@@ -82,6 +116,7 @@ export default function HowItWorks() {
             <Button
               wide
               round
+              to="/signup"
               className="bg-gradient-to-r from-accent to-highlight hover:from-highlight hover:to-accent text-white px-12 py-4 text-lg font-bold animate-in-out transition-all shadow-lg"
             >
               Get Started Now
