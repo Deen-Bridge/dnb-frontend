@@ -17,7 +17,7 @@ const links = [
   { name: "Mission", to: "#mission" },
 ];
 
-const Header = () => {
+const Navbar = () => {
   return (
     <>
       {/* Desktop Nav */}
@@ -57,14 +57,14 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Navbar;
 
 function MobileNav() {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button size="icon" className="focus:outline-none bg-transparent hover:bg-transparent">
-          <AlignJustify size={80} />
+          <AlignJustify size={24} className="text-white" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 bg-muted">
