@@ -160,6 +160,6 @@ This project is licensed under the [MIT License](LICENSE).
 ## 🧑‍💻 Author Info
 
 *   **Deen Bridge**
-    *   [Website](https://deenbridge.com)
-    *   [Twitter](Twitter placeholder)
-    *   [GitHub](GitHub placeholder)
+    *   [Website](https://dnb-frontend.vercel.app/)
+    *   [Twitter](https://x.com/deen_bridge?s=20)
+    *   [GitHub](https://github.com/Deen-Bridge/dnb-frontend)
