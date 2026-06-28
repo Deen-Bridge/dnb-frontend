@@ -10,32 +10,43 @@ import { Textarea } from "@/components/ui/textarea";
 import { addCourseReview } from "@/lib/actions/courses/addReview";
 import { useHasCourse, usePurchaseCourse } from "@/hooks/usePurchase";
 import { toast } from "sonner";
+import { Wallet } from "lucide-react";
+import PaymentModal from "@/components/stellar/PaymentModal";
+import { useStellar } from "@/components/stellar/StellarProvider";
 
 export default function CourseDetailClient({ course }) {
   const { user, refreshUser } = useAuth();
+  const { connectedWallet } = useStellar();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Check if user already owns the course
   const hasCourse = useHasCourse(course?._id);
   // Local state to hide button after purchase
   const [purchased, setPurchased] = useState(false);
 
-  const handlePurchaseCourse = async () => {
-    setLoading(true);
-    try {
-      await usePurchaseCourse(course._id);
+  // Check if creator has wallet connected
+  const creatorHasWallet = course?.createdBy?.stellarWallet?.publicKey;
+
+  // Handle opening the payment modal
+  const handlePurchaseCourse = () => {
+    if (!user?._id) {
+      toast.error("Please sign in to purchase this course.");
+      return;
+    }
+    setShowPaymentModal(true);
+  };
+
+  // Handle successful payment
+  const handlePaymentSuccess = async (result) => {
+    setPurchased(true);
+    if (user?._id) {
       await refreshUser(user._id);
-      setPurchased(true); // Hide button immediately after purchase
-      toast.success("Course purchased successfully!");
-    } catch (error) {
-      toast.error("Failed to purchase course.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -196,17 +207,25 @@ export default function CourseDetailClient({ course }) {
 
             {/* Purchase/Access Button */}
             {!hasCourse && !purchased && user?._id !== course.createdBy?._id ? (
-              <Button
-                wide
-                round
-                onClick={handlePurchaseCourse}
-                loading={loading}
-                className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-6 text-lg"
-              >
-                {course.price === 0
-                  ? "Enroll Now - Free!"
-                  : `Buy Course for $${course.price}`}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  wide
+                  round
+                  onClick={handlePurchaseCourse}
+                  loading={loading}
+                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-6 text-lg"
+                >
+                  <Wallet className="w-5 h-5 mr-2" />
+                  {course.price === 0
+                    ? "Enroll Now - Free!"
+                    : `Pay $${course.price} with Stellar`}
+                </Button>
+                {!creatorHasWallet && course.price > 0 && (
+                  <p className="text-sm text-orange-500 text-center">
+                    Note: Creator has not connected their Stellar wallet yet
+                  </p>
+                )}
+              </div>
             ) : canAccess ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
                 <p className="text-green-600 font-semibold">
@@ -241,6 +260,15 @@ export default function CourseDetailClient({ course }) {
           </div>
         </aside>
       </div>
+
+      {/* Stellar Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        item={course}
+        itemType="course"
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }

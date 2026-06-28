@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import CacheProvider from "@/components/providers/CacheProvider";
+import StellarProvider from "@/components/stellar/StellarProvider";
 import "../styles/globals.css";
 
 const geistSans = Geist({
@@ -47,7 +48,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CacheProvider>{children}</CacheProvider>
+        <CacheProvider>
+          <StellarProvider>{children}</StellarProvider>
+        </CacheProvider>
         <Toaster position="top-right" />
       </body>
     </html>
