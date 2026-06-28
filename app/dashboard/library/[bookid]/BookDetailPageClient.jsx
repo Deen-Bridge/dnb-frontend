@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
-import { DownloadCloud } from "lucide-react";
+import { DownloadCloud, Wallet } from "lucide-react";
 import StarRate from "@/components/atoms/form/StarRate";
 import { addBookReview } from "@/lib/actions/library/addReview";
 import { toast } from "sonner";
@@ -12,9 +12,12 @@ import useAuth from "@/hooks/useAuth";
 import { CustomSidebar } from "@/components/organisms/dashboard/CustomSidebar";
 import BookStatsInfo from "@/components/molecules/dashboard/BookStats&Info";
 import { useHasBook, usePurchaseBook } from "@/hooks/usePurchase";
+import PaymentModal from "@/components/stellar/PaymentModal";
+import { useStellar } from "@/components/stellar/StellarProvider";
 
 export default function BookDetailPage({ book }) {
   const { user, refreshUser } = useAuth();
+  const { connectedWallet } = useStellar();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -25,6 +28,7 @@ export default function BookDetailPage({ book }) {
   const [purchased, setPurchased] = useState(
     () => hasBook || book?.price === 0
   );
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     if (hasBook) {
@@ -43,47 +47,25 @@ export default function BookDetailPage({ book }) {
     [book?.author?._id, book?.price, hasBook, purchased, user?._id]
   );
 
-  const handlePurchaseBook = async () => {
+  // Handle opening the payment modal
+  const handlePurchaseBook = () => {
     if (!user?._id) {
       toast.error("Please sign in to purchase this book.");
       return;
     }
+    setShowPaymentModal(true);
+  };
 
-    setLoading(true);
-    try {
-      const response = await usePurchaseBook(book._id);
-
-      if (response?.success) {
-        setPurchased(true);
-        toast.success(response.message || "Book purchased successfully!");
-      } else {
-        const fallbackMessage =
-          response?.message || "Purchase completed. Happy reading!";
-        toast.success(fallbackMessage);
-        setPurchased(true);
-      }
-
-      if (user?._id) {
-        const updatedUser = await refreshUser(user._id);
-        if (
-          !hasBook &&
-          !updatedUser?.purchasedBooks?.some(
-            (entry) =>
-              entry.bookId?.toString?.() === book._id?.toString?.() ||
-              entry._id?.toString?.() === book._id?.toString?.()
-          )
-        ) {
-          setPurchased(false);
-        }
-      }
-    } catch (error) {
-      toast.error(
-        error?.message || "Failed to purchase book. Please try again."
-      );
-    } finally {
-      setLoading(false);
+  // Handle successful payment
+  const handlePaymentSuccess = async (result) => {
+    setPurchased(true);
+    if (user?._id) {
+      await refreshUser(user._id);
     }
   };
+
+  // Check if creator has wallet connected (for showing appropriate message)
+  const creatorHasWallet = book?.author?.stellarWallet?.publicKey;
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -154,15 +136,22 @@ export default function BookDetailPage({ book }) {
                 </Button>
               </>
             ) : (
-              <Button
-                wide
-                className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
-                round
-                onClick={handlePurchaseBook}
-                loading={loading}
-              >
-                Purchase Book
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  wide
+                  className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
+                  round
+                  onClick={handlePurchaseBook}
+                  loading={loading}
+                >
+                  <Wallet className="w-4 h-4 mr-2" /> Pay with Stellar
+                </Button>
+                {!creatorHasWallet && (
+                  <p className="text-sm text-orange-500">
+                    Note: Creator has not connected their Stellar wallet yet
+                  </p>
+                )}
+              </div>
             )}
           </div>
           {/* Review Section */}
@@ -222,6 +211,15 @@ export default function BookDetailPage({ book }) {
           <BookStatsInfo book={book} />
         </div>
       </div>
+
+      {/* Stellar Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        item={book}
+        itemType="book"
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }

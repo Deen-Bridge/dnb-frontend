@@ -4,7 +4,6 @@ import ProtectedRoute from "@/hooks/protected-route";
 import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import NavHeader from "@/components/molecules/dashboard/nav-header";
-import DebugAuthLogs from "@/components/DebugAuthLogs";
 
 export default function Layout({ children }) {
   return (
@@ -29,9 +28,6 @@ export default function Layout({ children }) {
           </SidebarInset>
         </SidebarProvider>
       </ProtectedRoute>
-
-      {/* Debug logs - remove in production */}
-      <DebugAuthLogs />
     </>
   );
 }

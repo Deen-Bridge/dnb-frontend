@@ -113,6 +113,8 @@ Your application should now be running on `http://localhost:3000`.
 *   **📱 Mobile-Friendly**: Enjoy a seamless experience on all devices.
 *   **🔒 Secure Authentication**: Safe and secure user authentication.
 *   **🎨 Customizable Profiles**: Personalize your learning journey.
+*   **⭐ Stellar Payments**: Purchase courses and books with USDC on Stellar blockchain.
+*   **👛 Wallet Integration**: Connect Freighter, xBull, or Albedo wallets for seamless payments.
 
 ## 🛠️ Technologies Used
 
@@ -127,6 +129,8 @@ Your application should now be running on `http://localhost:3000`.
 | ESLint            | Tool for identifying and reporting on patterns found in ECMAScript/JavaScript code. | [https://eslint.org/](https://eslint.org/)      |
 | React Hook Form        | Performant, flexible and extensible forms with easy-to-use validation.  | [https://www.react-hook-form.com/](https://www.react-hook-form.com/)         |
 | Sonner        |  An opinionated toast component for react. | [https://sonner.emilkowalski.com/](https://sonner.emilkowalski.com/)         |
+| Stellar SDK   | Blockchain integration for payments | [https://stellar.org](https://stellar.org) |
+| Stellar Wallets Kit | Multi-wallet support (Freighter, xBull, Albedo) | [https://github.com/AhaLabs/stellar-wallets-kit](https://github.com/creit-tech/stellar-wallets-kit) |
 
 ## 🤝 Contributing
 
@@ -143,9 +147,15 @@ Please follow these guidelines:
 *   Submit **pull requests** with detailed descriptions of the changes.
 *   Be **respectful** and **collaborative** in discussions and code reviews.
 
+## 🌊 Drips Wave
+
+This repository participates in the **Stellar Drips Wave** bounty program. Contributors can earn rewards by completing issues tagged with Wave labels (`wave:1`, `wave:2`, `wave:3`, `wave:4`).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to participate.
+
 ## 📜 License
 
-This project is licensed under the [MIT License](link-to-license).
+This project is licensed under the [MIT License](LICENSE).
 
 ## 🧑‍💻 Author Info
 
