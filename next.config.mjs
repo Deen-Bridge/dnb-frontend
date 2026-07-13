@@ -9,7 +9,13 @@ const nextConfig = {
       "cdn.pixabay.com",
       "logo.clearbit.com",
     ],
-  }
+  },
+  webpack: (config) => {
+    // pdfjs-dist optionally requires the native "canvas" package, which is
+    // not installed; stub it out so the server bundle builds.
+    config.resolve.alias.canvas = false;
+    return config;
+  },
 };
 
 export default nextConfig;
