@@ -26,6 +26,7 @@ This repository participates in the **Stellar Drips Wave** bounty program. Contr
 
 - One contributor per issue (first come, first served)
 - PRs must be linked to the issue
+- **PRs must target the `dev` branch** (not `main`)
 - Code must pass all tests and linting
 - Follow the coding standards below
 
@@ -55,11 +56,21 @@ npm install
 npm run dev
 ```
 
+## Branching Strategy
+
+| Branch | Purpose                                                        |
+|--------|----------------------------------------------------------------|
+| `main` | Stable, production-ready code — releases only                  |
+| `dev`  | Active development — **all pull requests must target `dev`**   |
+
+Maintainers periodically merge `dev` into `main` for releases. Pull requests opened against `main` will be asked to retarget `dev`.
+
 ### Making Changes
 
-1. Create a branch from `main`:
+1. Create a branch from the latest `dev`:
    ```bash
-   git checkout -b feature/your-feature-name
+   git fetch upstream
+   git checkout -b feature/your-feature-name upstream/dev
    ```
 
 2. Make your changes following our coding standards
@@ -75,7 +86,7 @@ npm run dev
    git commit -m "feat: add wallet connection status indicator"
    ```
 
-5. Push and create a PR:
+5. Push and create a PR **with `dev` as the base branch**:
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -109,11 +120,12 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Pull Request Guidelines
 
-1. **Title**: Use conventional commit format
-2. **Description**: Explain what and why
-3. **Link Issue**: Reference the issue number (`Closes #123`)
-4. **Screenshots**: Include for UI changes
-5. **Testing**: Describe how you tested
+1. **Base Branch**: open the PR against `dev`, never `main`
+2. **Title**: Use conventional commit format
+3. **Description**: Explain what and why
+4. **Link Issue**: Reference the issue number (`Closes #123`)
+5. **Screenshots**: Include for UI changes
+6. **Testing**: Describe how you tested
 
 ## Issue Guidelines
 
