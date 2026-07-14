@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Deen Bridge! We welcome contribut
 
 ## Drips Wave Program
 
-This repository participates in the **Stellar Drips Wave** bounty program. Contributors can earn rewards by completing issues tagged with Wave labels.
+This repository participates in the **Stellar Drips Wave** bounty program. Contributors can earn rewards by resolving issues during Wave cycles. Everyone is welcome to contribute — no religious background or knowledge is required; our issues are regular engineering tasks.
 
 ### How It Works
 
@@ -23,7 +23,7 @@ Points are assigned per issue by the maintainer in the Drips Wave dashboard usin
 | Medium     | 150    | Standard features or involved bug fixes    |
 | High       | 200    | Complex features, refactors, integrations  |
 
-The `wave:1`–`wave:4` labels on our issues are internal sizing hints that map to the tiers roughly as: `wave:1` → Trivial, `wave:2` → Medium, `wave:3`/`wave:4` → High.
+Issues carry `complexity:trivial`, `complexity:medium`, or `complexity:high` labels that mirror these tiers.
 
 ### Wave Rules
 
@@ -154,7 +154,7 @@ Include:
 - Be respectful and inclusive
 - Welcome newcomers
 - Focus on constructive feedback
-- Follow Islamic principles of brotherhood
+- Contributors of all backgrounds and faiths are welcome
 
 ## Questions?
 
