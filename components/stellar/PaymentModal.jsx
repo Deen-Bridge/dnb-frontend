@@ -16,9 +16,11 @@ import {
   AlertCircle,
   ExternalLink,
   ArrowRight,
+  QrCode,
 } from "lucide-react";
 import { useStellar } from "./StellarProvider";
 import useStellarPayment from "@/hooks/useStellarPayment";
+import Sep7QrCode from "./Sep7QrCode";
 
 export default function PaymentModal({
   isOpen,
@@ -36,6 +38,7 @@ export default function PaymentModal({
   const [paymentData, setPaymentData] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [showQr, setShowQr] = useState(false);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -44,6 +47,7 @@ export default function PaymentModal({
       setPaymentData(null);
       setResult(null);
       setError(null);
+      setShowQr(false);
     }
   }, [isOpen]);
 
@@ -81,8 +85,11 @@ export default function PaymentModal({
     setPaymentData(null);
     setResult(null);
     setError(null);
+    setShowQr(false);
     onClose();
   };
+
+  const sep7Uri = paymentData?.sep7Uri || paymentData?.payment?.sep7Uri;
 
   const truncateAddress = (addr) => {
     if (!addr) return "";
@@ -210,6 +217,27 @@ export default function PaymentModal({
                   <span className="font-semibold">{paymentData.creator.name}</span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Pay by QR (SEP-7) */}
+          {step === "confirm" && sep7Uri && (
+            <div className="space-y-3">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowQr((prev) => !prev)}
+                className="w-full text-muted-foreground"
+              >
+                <QrCode className="mr-2 h-4 w-4" />
+                {showQr ? "Hide QR code" : "Pay by QR instead"}
+              </Button>
+              {showQr && (
+                <div className="p-4 border rounded-lg">
+                  <Sep7QrCode uri={sep7Uri} />
+                </div>
+              )}
             </div>
           )}
 
