@@ -8,7 +8,8 @@ import {
   Inbox,
   Book,
   Play,
-  LaptopMinimal
+  LaptopMinimal,
+  HeartHandshake
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -49,6 +50,12 @@ const links = [
     name: "Messages",
     link: "/dashboard/messages",
     icon: Inbox,
+  },
+
+  {
+    name: "Sadaqah",
+    link: "/dashboard/sadaqah",
+    icon: HeartHandshake,
   },
 
 ];
