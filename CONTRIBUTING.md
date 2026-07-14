@@ -27,7 +27,7 @@ The `wave:1`–`wave:4` labels on our issues are internal sizing hints that map 
 
 ### Wave Rules
 
-- One contributor per issue (first come, first served)
+- One contributor per issue — apply through the Drips Wave app; the maintainer reviews all applications and selects who is assigned
 - PRs must be linked to the issue
 - **PRs must target the `dev` branch** (not `main`)
 - Code must pass all tests and linting
