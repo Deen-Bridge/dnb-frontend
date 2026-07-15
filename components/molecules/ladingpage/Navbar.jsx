@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/sheet";
 import { AlignJustify } from 'lucide-react';
 const links = [
-  { name: "Service", to: "#services" },
-  { name: "Contact", to: "#contact" },
+  { name: "Mission", to: "/#mission" },
+  { name: "Services", to: "/#services" },
   { name: "Blog", to: "/blog" },
-  { name: "Mission", to: "#mission" },
+  { name: "GitHub", to: "https://github.com/Deen-Bridge" },
+  { name: "Contact", to: "/#contact" },
 ];
 
 const Navbar = () => {
@@ -22,6 +23,7 @@ const Navbar = () => {
     <>
       {/* Desktop Nav */}
       <nav className="px-4 sticky top-0 z-10 bg-transparent text-secondary hidden lg:flex justify-between items-center h-20 font-stretch-125%">
+        <Link href="/">
         <Image
           src="/images/dnb-nobg.png"
           width={150}
@@ -29,6 +31,7 @@ const Navbar = () => {
           alt="Logo"
           className="m-6"
         />
+        </Link>
         <div className="flex items-center space-x-6">
           {links.map((link) => (
             <Link
@@ -45,12 +48,14 @@ const Navbar = () => {
 
       {/* Mobile Nav */}
       <nav className="lg:hidden flex items-center justify-between   sticky top-0 z-10 bg-transparent text-secondary">
+        <Link href="/">
         <Image
           src="/images/dnb-nobg.png"
           width={80}
           height={26}
           alt="Logo"
         />
+        </Link>
         <MobileNav />
       </nav>
     </>
