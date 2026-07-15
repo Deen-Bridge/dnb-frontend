@@ -7,31 +7,31 @@ import { cn } from "@/lib/utils";
 
 const stats = [
   {
-    k: "10K+",
-    v: "Active Members",
-    icon: Users,
-    description: "Join our growing community of Muslims worldwide",
-    isDark: true,
-  },
-  {
-    k: "500+",
-    v: "Islamic Resources",
+    k: "100%",
+    v: "Non-Custodial Payments",
     icon: CheckCircle2,
-    description: "Curated books, courses, and authentic knowledge",
+    description: "You sign every transaction in your own wallet — we never hold your funds",
     isDark: true,
   },
   {
-    k: "50K+",
-    v: "Discussions",
-    icon: TrendingUp,
-    description: "Meaningful conversations and knowledge sharing",
-    isDark: true,
-  },
-  {
-    k: "98%",
-    v: "Satisfaction Rate",
+    k: "$0.01",
+    v: "Max Network Fees",
     icon: DollarSign,
-    description: "Community members satisfied with their journey",
+    description: "Near-zero fees on Stellar make learning accessible worldwide",
+    isDark: true,
+  },
+  {
+    k: "5s",
+    v: "Payment Settlement",
+    icon: TrendingUp,
+    description: "Educators receive USDC in seconds, not weeks",
+    isDark: true,
+  },
+  {
+    k: "3",
+    v: "Open-Source Services",
+    icon: Users,
+    description: "Web app, API, and AI — all MIT-licensed and built in the open",
     isDark: true,
   },
 ];
