@@ -1,16 +1,10 @@
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaLongArrowAltRight,
-} from "react-icons/fa";
-import Button from "@/components/atoms/form/Button";
+import { FaTwitter, FaGithub } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
 import Link from "next/link";
 export default function Footer() {
   return (
-    <footer className="relative bg-basic text-white overflow-hidden ">
+    <footer id="contact" className="relative bg-basic text-white overflow-hidden ">
      
       {/* Glowing Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-tr from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0" />
@@ -41,20 +35,19 @@ export default function Footer() {
             </h3>
             <ul className="space-y-4 text-sm">
               {[
-                "Pricing Policy",
-                "Payment and Refund Policy",
-                "Scheduling Policy",
-                "Cancellation and rescheduling policy",
-                "Privacy Policy",
-                "Terms of Service",
-                "Cookies Policy",
+                { name: "Courses", href: "/dashboard/courses" },
+                { name: "Library", href: "/dashboard/library" },
+                { name: "Community Spaces", href: "/dashboard/spaces" },
+                { name: "Sadaqah Fund", href: "/dashboard/sadaqah" },
+                { name: "Blog", href: "/blog" },
+                { name: "Open Source on GitHub", href: "https://github.com/Deen-Bridge" },
               ].map((link) => (
-                <li key={link}>
+                <li key={link.name}>
                   <a
-                    href={`/${link.toLowerCase()}`}
+                    href={link.href}
                     className="hover:text-secondary transition duration-300 font-light"
                   >
-                    {link}
+                    {link.name}
                   </a>
                 </li>
               ))}
@@ -64,40 +57,31 @@ export default function Footer() {
           {/* Newsletter & Socials */}
           <div>
             <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">
-              Stay in the Loop
+              Join the Community
             </h3>
-            <form className="flex items-center mb-4">
-              <input
-                type="email"
-                placeholder="Input your email"
-                className="px-4 py-2 w-full sm:w-auto flex-grow text-white rounded-full rounded-r-none focus:outline-none border border-accent placeholder-white"
-              />
-              <Button
-                type="submit"
-                round
-                className="px-4 py-2  rounded-l-md transition border border-accent"
-              >
-                Subscribe
-              </Button>
-            </form>
-            <div className="flex space-x-4 text-2xl  justify-start hover:text-green-600">
+            <p className="text-gray-200 text-sm leading-relaxed mb-6">
+              Deen Bridge is open source and built in public on the Stellar
+              network. Follow our journey, star the project, or contribute
+              on GitHub.
+            </p>
+            <div className="flex items-center gap-4 text-2xl">
               <Link
-                href="#"
-                className="hover:bg-slate-200 rounded-full p-2 sm:p-6 "
+                href="https://github.com/Deen-Bridge"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Deen Bridge on GitHub"
+                className="hover:text-secondary rounded-full p-2 transition"
               >
-                <FaFacebookF className=" transition" />
+                <FaGithub />
               </Link>
               <Link
-                href="#"
-                className="hover:bg-slate-200 rounded-full p-2 sm:p-6"
+                href="https://x.com/deen_bridge"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Deen Bridge on X"
+                className="hover:text-secondary rounded-full p-2 transition"
               >
-                <FaTwitter className=" transition" />
-              </Link>
-              <Link
-                href="#"
-                className="hover:bg-slate-200 rounded-full p-2 sm:p-6"
-              >
-                <FaLinkedinIn className=" transition" />
+                <FaTwitter />
               </Link>
             </div>
           </div>
@@ -106,7 +90,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-green-900 pt-6 flex items-center justify-center text-sm text-white font-stretch-125%">
           <p className="text-center md:text-left mt-4 md:mt-0">
-            © 2025 Deen Bridge . All rights reserved.
+            © {new Date().getFullYear()} Deen Bridge. All rights reserved.
           </p>
         </div>
       </div>
