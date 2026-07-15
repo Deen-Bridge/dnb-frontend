@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/sheet";
 import { AlignJustify } from 'lucide-react';
 const links = [
-  { name: "Service", to: "#services" },
-  { name: "Contact", to: "#contact" },
-  { name: "Blog", to: "/blog" },
   { name: "Mission", to: "#mission" },
+  { name: "Services", to: "#services" },
+  { name: "Blog", to: "/blog" },
+  { name: "GitHub", to: "https://github.com/Deen-Bridge" },
+  { name: "Contact", to: "#contact" },
 ];
 
 const Navbar = () => {
