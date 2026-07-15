@@ -4,7 +4,7 @@ import React from "react";
 import About from "./(pages)/(landingPage)/About";
 import WhyDeenBridge from "./(pages)/(landingPage)/WhyDeenBridge";
 import HowItWorks from "./(pages)/(landingPage)/HowItWorks";
-import Testimonials from "./(pages)/(landingPage)/Testimonials";
+// import Testimonials from "./(pages)/(landingPage)/Testimonials"; // re-enable with real testimonials
 import CTA from "./(pages)/(landingPage)/CTA";
 import Partners from "./(pages)/(landingPage)/Partners";
 import Stats from "./(pages)/(landingPage)/Stats";
@@ -17,9 +17,9 @@ const page = () => {
       <WhyDeenBridge />
       <Stats />
       {/* <HowItWorks /> */}
-      <Testimonials />
+      {/* <Testimonials /> — disabled until we have real, attributable testimonials */}
       <Partners />
-      {/* <CTA /> */}
+      <CTA />
       <Footer />
     </>
   );
