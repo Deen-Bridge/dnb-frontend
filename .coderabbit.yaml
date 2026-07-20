@@ -1,0 +1,40 @@
+# CodeRabbit configuration — https://docs.coderabbit.ai/reference/configuration
+language: "en-US"
+tone_instructions: "Be welcoming and constructive with contributors, many of whom are first-time open-source contributors. Be strict about correctness, security, accessibility, and CI health. Explain the why behind every requested change."
+reviews:
+  profile: "chill"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+      - "dev"
+  path_instructions:
+    - path: "app/**"
+      instructions: >-
+        This is a Next.js 15 App Router project using React 19 with JSX (not TypeScript)
+        and Tailwind CSS v4. Flag use of deprecated patterns (synchronous params/cookies,
+        pages-router idioms), client components that could be server components, and
+        missing loading/error states for data fetching.
+    - path: "{components,hooks}/**/*stellar*/**"
+      instructions: >-
+        Stellar payment code is strictly non-custodial: the frontend must never handle,
+        request, or log secret keys. Transactions are built server-side as unsigned XDR,
+        signed in the user's wallet via Stellar Wallets Kit, and verified on Horizon.
+        Flag any deviation from this flow, any secret-key handling, and any amount
+        arithmetic done with floating point.
+    - path: "package-lock.json"
+      instructions: >-
+        The lockfile must stay npm 10 compatible (lockfileVersion 3, generated with npm 10).
+        Flag lockfile churn unrelated to the PR's dependency changes.
+    - path: "**/*.{js,jsx}"
+      instructions: >-
+        Flag hardcoded secrets, API keys, or wallet secret keys. Environment variables
+        exposed to the client must be prefixed NEXT_PUBLIC_ and must never contain secrets.
+chat:
+  auto_reply: true
