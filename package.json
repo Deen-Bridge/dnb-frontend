@@ -73,7 +73,6 @@
     "react-star-ratings": "^2.3.0",
     "react-time-picker": "^8.0.2",
     "recharts": "^2.15.3",
-    "sharp": "^0.35.3",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.3",
     "styled-components": "^6.1.17",
