@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "token": "e2e-test-jwt-token-12345",
+  "user": {
+    "_id": "e2e-user-001",
+    "id": "e2e-user-001",
+    "name": "Test User",
+    "email": "test@example.com",
+    "role": "student"
+  }
+}

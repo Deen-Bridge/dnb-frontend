@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "transaction": {
+    "id": "txn-e2e-001",
+    "hash": "abc123def456",
+    "status": "completed",
+    "explorerUrl": "https://stellar.expert/explorer/testnet/txn/abc123def456"
+  },
+  "message": "Payment successful"
+}

@@ -82,6 +82,7 @@ Maintainers periodically merge `dev` into `main` for releases. Pull requests ope
    ```bash
    npm run lint
    npm run build
+   npm run test:e2e   # Run Playwright E2E tests (requires build first)
    ```
 
 4. Commit with a descriptive message:
@@ -161,6 +162,46 @@ Include:
 - Open a GitHub Discussion
 - Check existing issues and PRs
 - Review the documentation
+
+## Testing
+
+### Unit & Component Tests
+
+_Coming soon — see separate issue for Jest/RTL setup._
+
+### End-to-End Tests (Playwright)
+
+E2E tests live in the `e2e/` directory and use Playwright to exercise critical user journeys in a headless browser.
+
+**What is covered:**
+
+- **Authentication** (`e2e/auth.spec.js`): login form submission, redirect to dashboard, logged-out redirect to login, logout flow
+- **Course browsing** (`e2e/courses.spec.js`): course grid rendering, locked preview state, owned course access, empty state
+- **Stellar payment** (`e2e/payment.spec.js`): full payment state machine (preview → confirm → processing → success), error state, API payload verification
+
+**How it works:**
+
+1. All backend API calls are intercepted by Playwright's `page.route()` and served from JSON fixtures in `e2e/fixtures/`. No real backend needed.
+2. The Stellar wallet browser extension is replaced by a test-mode wallet (`components/stellar/e2eWallet.js`) enabled by `NEXT_PUBLIC_E2E_WALLET=true`. This flag is tree-shaken in production builds.
+3. The Playwright `webServer` config builds and starts a production Next.js server automatically.
+
+**Running locally:**
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install --with-deps chromium
+
+# Run E2E tests (builds app automatically)
+npm run test:e2e
+
+# Run with UI mode for debugging
+npm run test:e2e -- --ui
+
+# Run a specific test file
+npm run test:e2e -- e2e/auth.spec.js
+```
+
+**CI:** The E2E job runs in GitHub Actions on every PR to `dev`/`main`. Playwright report is uploaded as an artifact on failure.
 
 ## License
 

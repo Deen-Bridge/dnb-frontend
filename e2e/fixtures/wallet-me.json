@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "connected": true,
+  "wallet": {
+    "publicKey": "GA7QYNF7SOWQ3GLR2GMK2G5TTF2JRTTN2KXT3KGYRK3H4X2BYKT4QXYZ",
+    "usdcBalance": "100.00",
+    "network": "testnet"
+  }
+}

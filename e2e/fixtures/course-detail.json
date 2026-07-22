@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "course": {
+    "_id": "course-001",
+    "title": "Introduction to Islamic Finance",
+    "description": "Learn the basics of Islamic banking and finance principles.",
+    "price": 25,
+    "category": "finance",
+    "level": "Beginner",
+    "duration": "4 weeks",
+    "thumbnail": "https://images.unsplash.com/photo-1609592424104-2e1f0f76c1c5",
+    "videos": [
+      { "title": "Chapter 1: Introduction", "url": "https://example.com/video1.mp4" },
+      { "title": "Chapter 2: Key Principles", "url": "https://example.com/video2.mp4" }
+    ],
+    "createdBy": {
+      "_id": "creator-001",
+      "name": "Dr. Ahmad",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "role": "Instructor",
+      "stellarWallet": { "publicKey": "GA7QYNF7SOWQ3GLR2GMK2G5TTF2JRTTN2KXT3KGYRK3H4X2BYKT4QXYZ" }
+    },
+    "enrolledUsers": [],
+    "reviews": [],
+    "rating": 4.5
+  }
+}
