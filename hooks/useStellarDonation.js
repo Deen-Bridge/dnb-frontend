@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback } from "react";
 import { Networks } from "@creit.tech/stellar-wallets-kit";
+import * as Sentry from "@sentry/nextjs";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
@@ -97,6 +98,13 @@ export const useStellarDonation = () => {
         }
       } catch (error) {
         const message = error.response?.data?.message || error.message;
+
+        // Terminal failure the user already sees via toast below - still
+        // worth capturing so we notice patterns (wallet issues, backend
+        // errors) even though it's "handled".
+        Sentry.captureException(error, {
+          tags: { feature: "stellar-payment" },
+        });
 
         // Handle specific Stellar errors
         if (message.includes("insufficient") || message.includes("underfunded")) {
