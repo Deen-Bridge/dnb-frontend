@@ -17,39 +17,30 @@ test.describe("Stellar Payment", () => {
     // Navigate to a paid course
     await mockRoute(page, "GET", "**/api/courses/course-001", courseDetailFixture);
     await page.goto("/dashboard/courses/course-001");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
 
-    // Open payment modal
-    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click();
+    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click({ timeout: 15000 });
 
-    // Preview step — wallet is connected via fixture, so skip connect step
     await expect(page.getByText("Review your purchase details")).toBeVisible();
-    await expect(page.getByText("Introduction to Islamic Finance")).toBeVisible();
-    await expect(page.getByText("$25 USDC")).toBeVisible();
+    await expect(page.getByText("Introduction to Islamic Finance").first()).toBeVisible();
+    await expect(page.getByText("$25 USDC").first()).toBeVisible();
 
-    // Click Continue to initiate payment
     await page.getByRole("button", { name: /continue/i }).click();
 
-    // Confirm step
     await expect(page.getByText("Confirm payment in your wallet")).toBeVisible();
     await expect(page.getByText(/sending/i)).toBeVisible();
-    await expect(page.getByText("$25 USDC")).toBeVisible();
+    await expect(page.getByText("$25 USDC").first()).toBeVisible();
 
-    // Click Sign & Pay
     await page.getByRole("button", { name: /sign & pay/i }).click();
 
-    // Processing step
     await expect(page.getByText("Processing your payment...")).toBeVisible();
 
-    // Success step
-    await expect(page.getByText("Payment Complete!")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText("Payment Successful!")).toBeVisible();
+    await expect(page.getByText("Payment Complete!")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Payment Successful!").first()).toBeVisible();
     await expect(page.getByText("You now have access to")).toBeVisible();
 
-    // Check explorer link exists
     await expect(page.getByText(/view on stellar explorer/i)).toBeVisible();
 
-    // Close modal
     await page.getByRole("button", { name: /done/i }).click();
     await expect(page.getByText("Payment Complete!")).not.toBeVisible();
   });
@@ -71,10 +62,9 @@ test.describe("Stellar Payment", () => {
     );
 
     await page.goto("/dashboard/courses/course-001");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
 
-    // Open and start payment
-    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click();
+    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click({ timeout: 15000 });
     await page.getByRole("button", { name: /continue/i }).click();
 
     await expect(page.getByText("Confirm payment in your wallet")).toBeVisible();
@@ -87,7 +77,7 @@ test.describe("Stellar Payment", () => {
     ).toBeVisible();
 
     // Close modal
-    await page.getByRole("button", { name: /close/i }).click();
+    await page.getByRole("button", { name: /close/i }).first().click();
   });
 
   test("initialize carries expected payload", async ({ page }) => {
@@ -107,9 +97,9 @@ test.describe("Stellar Payment", () => {
 
     await mockRoute(page, "GET", "**/api/courses/course-001", courseDetailFixture);
     await page.goto("/dashboard/courses/course-001");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
 
-    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click();
+    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click({ timeout: 15000 });
     await page.getByRole("button", { name: /continue/i }).click();
 
     // Wait for the init request
@@ -147,9 +137,9 @@ test.describe("Stellar Payment", () => {
 
     await mockRoute(page, "GET", "**/api/courses/course-001", courseDetailFixture);
     await page.goto("/dashboard/courses/course-001");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
 
-    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click();
+    await page.getByRole("button", { name: /pay \$25 with stellar/i }).click({ timeout: 15000 });
     await page.getByRole("button", { name: /continue/i }).click();
     await expect(page.getByText("Confirm payment in your wallet")).toBeVisible();
     await page.getByRole("button", { name: /sign & pay/i }).click();

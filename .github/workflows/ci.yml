@@ -57,7 +57,7 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:9999/api
+          NEXT_PUBLIC_API_URL: http://localhost:9999
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           NEXT_PUBLIC_E2E_WALLET: "true"
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: test
@@ -65,7 +65,7 @@ jobs:
           NEXT_PUBLIC_CLOUDINARY_API_SECRET: test
           NEXT_PUBLIC_CLOUDINARY_URL: https://test.cloudinary.com
           NEXT_PUBLIC_JITSI_DOMAIN: https://meet.jit.si
-          DNB_API_URL: http://localhost:9999/api
+          DNB_API_URL: http://localhost:9999
           NEXT_PUBLIC_SOCKET_URL: http://localhost:9999
 
       - name: Upload Playwright report on failure

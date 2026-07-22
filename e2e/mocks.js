@@ -25,6 +25,7 @@ const ROUTES = [
 
   // Courses
   { method: "GET", urlPattern: "**/api/courses", fixture: "courses" },
+  { method: "GET", urlPattern: "**/api/courses/*", fixture: "course-detail" },
   {
     method: "GET",
     urlPattern: "**/api/courses/**/bookmark/check",

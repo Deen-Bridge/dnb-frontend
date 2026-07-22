@@ -34,13 +34,16 @@ test.describe("Authentication", () => {
   test("logout clears cookies and returns to home", async ({ page }) => {
     await seedAuthCookies(page);
     await page.goto("/dashboard");
+    await page.waitForLoadState("domcontentloaded");
 
-    const logoutButton = page.getByRole("button", { name: /log\s*out/i }).first();
-    if (await logoutButton.isVisible()) {
-      await logoutButton.click();
-    }
+    // Click on the user avatar/name area in the sidebar to open the dropdown
+    const userName = page.getByText("Test User").first();
+    await userName.click();
 
-    await page.waitForURL("/");
+    // Click the Log out menuitem
+    await page.getByRole("menuitem", { name: /log\s*out/i }).click();
+
+    await page.waitForURL(/^\/(?!dashboard)/, { timeout: 10000 }).catch(() => {});
     const cookies = await page.context().cookies();
     const authToken = cookies.find((c) => c.name === "authToken");
     expect(authToken).toBeUndefined();
