@@ -2,7 +2,17 @@ import { FaTwitter, FaGithub } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 export default function Footer() {
+  const t = useTranslations("landing.footer");
+  const links = [
+    { name: t("courses"), href: "/dashboard/courses" },
+    { name: t("library"), href: "/dashboard/library" },
+    { name: t("spaces"), href: "/dashboard/spaces" },
+    { name: t("sadaqah"), href: "/dashboard/sadaqah" },
+    { name: t("blog"), href: "/blog" },
+    { name: t("github"), href: "https://github.com/Deen-Bridge" },
+  ];
   return (
     <footer id="contact" className="relative bg-basic text-white overflow-hidden ">
      
@@ -22,26 +32,17 @@ export default function Footer() {
               Deen Bridge
             </span>
             <p className="text-gray-200 text-sm leading-relaxed">      
-                Deen Bridge is your trusted platform for connecting learners and educators in a vibrant, supportive community. 
-                Explore a wide range of courses, resources, and events designed to help you grow in knowledge and faith. 
-                Join us on our mission to make quality Islamic education accessible to everyone, everywhere around the globe.
+                {t("description")}
             </p>
           </div>
 
           {/* Navigation Links */}
           <div className=" md:justify-self-center">
             <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">
-              Explore
+              {t("explore")}
             </h3>
             <ul className="space-y-4 text-sm">
-              {[
-                { name: "Courses", href: "/dashboard/courses" },
-                { name: "Library", href: "/dashboard/library" },
-                { name: "Community Spaces", href: "/dashboard/spaces" },
-                { name: "Sadaqah Fund", href: "/dashboard/sadaqah" },
-                { name: "Blog", href: "/blog" },
-                { name: "Open Source on GitHub", href: "https://github.com/Deen-Bridge" },
-              ].map((link) => (
+              {links.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
@@ -57,12 +58,10 @@ export default function Footer() {
           {/* Newsletter & Socials */}
           <div>
             <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">
-              Join the Community
+              {t("community")}
             </h3>
             <p className="text-gray-200 text-sm leading-relaxed mb-6">
-              Deen Bridge is open source and built in public on the Stellar
-              network. Follow our journey, star the project, or contribute
-              on GitHub.
+              {t("communityDescription")}
             </p>
             <div className="flex items-center gap-4 text-2xl">
               <Link
@@ -89,7 +88,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-green-900 pt-6 flex items-center justify-center text-sm text-white font-stretch-125%">
-          <p className="text-center md:text-left mt-4 md:mt-0">
+          <p className="mt-4 text-center md:mt-0 md:text-start">
             © {new Date().getFullYear()} Deen Bridge. All rights reserved.
           </p>
         </div>

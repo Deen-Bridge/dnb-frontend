@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { useSidebar } from '@/components/ui/sidebar';
+import { useTranslations } from "next-intl";
 const links = [
   {
     name: "Dashboard",
@@ -61,6 +62,7 @@ const links = [
 ];
 
 const Navrouter = () => {
+  const t = useTranslations("dashboard.sidebar");
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar(); // ⬅️ use the context
 
@@ -88,11 +90,11 @@ const Navrouter = () => {
                   round
                   to={item.link}
                   onClick={handleNavClick} // ⬅️ close sidebar on click
-                  className={`flex justify-start items-center pl-16 ${isActive ? "bg-accent text-white" : ""
+                  className={`flex justify-start items-center ps-16 ${isActive ? "bg-accent text-white" : ""
                     }`}
                 >
-                  <item.icon size={15} className="mr-4" />
-                  <span>{item.name}</span>
+                  <item.icon size={15} className="me-4" />
+                  <span>{t(item.name.toLowerCase())}</span>
                 </Button>
               </SidebarMenuItem>
             );

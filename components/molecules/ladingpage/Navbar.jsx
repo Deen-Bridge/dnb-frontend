@@ -10,15 +10,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { AlignJustify } from 'lucide-react';
-const links = [
-  { name: "Mission", to: "/#mission" },
-  { name: "Services", to: "/#services" },
-  { name: "Blog", to: "/blog" },
-  { name: "GitHub", to: "https://github.com/Deen-Bridge" },
-  { name: "Contact", to: "/#contact" },
-];
+import { useTranslations } from "next-intl";
+import LocaleSwitcher from "@/components/i18n/LocaleSwitcher";
 
 const Navbar = () => {
+  const t = useTranslations("landing.nav");
+  const links = [
+    { name: t("mission"), to: "/#mission" },
+    { name: t("services"), to: "/#services" },
+    { name: t("blog"), to: "/blog" },
+    { name: t("github"), to: "https://github.com/Deen-Bridge" },
+    { name: t("contact"), to: "/#contact" },
+  ];
   return (
     <>
       {/* Desktop Nav */}
@@ -28,7 +31,7 @@ const Navbar = () => {
           src="/images/dnb-nobg.png"
           width={150}
           height={26}
-          alt="Logo"
+          alt={t("logo")}
           className="m-6"
         />
         </Link>
@@ -44,6 +47,7 @@ const Navbar = () => {
           ))}
         </div>
         <AuthNavButtons />
+        <LocaleSwitcher className="text-white" />
       </nav>
 
       {/* Mobile Nav */}
@@ -56,7 +60,7 @@ const Navbar = () => {
           alt="Logo"
         />
         </Link>
-        <MobileNav />
+        <MobileNav links={links} />
       </nav>
     </>
   );
@@ -64,7 +68,8 @@ const Navbar = () => {
 
 export default Navbar;
 
-function MobileNav() {
+function MobileNav({ links }) {
+  const t = useTranslations("landing.nav");
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -73,8 +78,8 @@ function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 bg-muted">
-        <SheetHeader className="mb-4 text-left text-xl font-semibold">
-          Menu
+        <SheetHeader className="mb-4 text-start text-xl font-semibold">
+          {t("menu")}
         </SheetHeader>
         <nav className="flex flex-col space-y-4 px-4 font-stretch-125%">
           {links.map((link) => (
@@ -90,6 +95,7 @@ function MobileNav() {
         </nav>
         <div className="mt-6 px-4 text-sm">
           <AuthNavButtons />
+          <LocaleSwitcher />
         </div>
       </SheetContent>
     </Sheet>

@@ -11,8 +11,8 @@ export default function HowItWorks() {
     <section className="relative py-24 px-4 sm:px-6 bg-gradient-to-br from-green-50 via-white to-green-100/80 overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute left-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute right-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl animate-pulse" />
+        <div className="absolute start-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 end-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl animate-pulse" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/5 to-highlight/5 rounded-full blur-3xl animate-pulse" />
       </div>
       

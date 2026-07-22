@@ -61,8 +61,8 @@ export default function Testimonials() {
     <section className="relative py-20 px-2 sm:px-6 bg-basic overflow-hidden">
       {/* Decorative Islamic motif background */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute left-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl" />
-        <div className="absolute right-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl" />
+        <div className="absolute start-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 end-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl" />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto">
         <h2

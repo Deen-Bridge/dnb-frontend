@@ -3,11 +3,12 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import Notybell from "@/components/atoms/dashboard/Notybell";
 import Searchbox from "@/components/atoms/dashboard/Searchbox";
 import { useRouter } from "next/navigation";
-
-const searchParams = ["Courses", " Books", " Spaces", " Authors"];
+import { useTranslations } from "next-intl";
+import LocaleSwitcher from "@/components/i18n/LocaleSwitcher";
 
 const NavHeader = () => {
   const router = useRouter();
+  const t = useTranslations("dashboard");
 
   const handleSearch = (term) => {
     if (term && term.trim()) {
@@ -21,14 +22,15 @@ const NavHeader = () => {
         <div className="flex items-center gap-3 flex-1">
           <SidebarTrigger />
           <Searchbox
-            placeholder={searchParams}
+            placeholder={t("search")}
             className="max-w-[300px]"
             onSearch={handleSearch}
           />
         </div>
 
         {/* Right: Bell */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
+          <LocaleSwitcher />
           <Notybell />
         </div>
       </div>

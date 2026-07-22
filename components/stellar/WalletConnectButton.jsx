@@ -84,7 +84,7 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className="gap-2">
           <div className="h-2 w-2 bg-green-500 rounded-full" />
-          {truncateAddress(connectedWallet)}
+          <span dir="ltr">{truncateAddress(connectedWallet)}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
@@ -98,13 +98,13 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">USDC Balance</span>
-              <span className="font-bold text-primary">
+              <span dir="ltr" className="font-bold text-primary">
                 {parseFloat(walletInfo?.usdcBalance || 0).toFixed(2)} USDC
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">XLM Balance</span>
-              <span className="font-medium">
+              <span dir="ltr" className="font-medium">
                 {parseFloat(walletInfo?.xlmBalance || 0).toFixed(4)} XLM
               </span>
             </div>

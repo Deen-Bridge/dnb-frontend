@@ -1,8 +1,10 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Naskh_Arabic } from "next/font/google";
 import { Toaster } from "sonner";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import CacheProvider from "@/components/providers/CacheProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
-import "../styles/globals.css";
+import "../../styles/globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,6 +14,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const arabic = Noto_Naskh_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
 });
 
 export const metadata = {
@@ -42,16 +49,22 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children, params }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${arabic.variable} antialiased`}
       >
-        <CacheProvider>
-          <StellarProvider>{children}</StellarProvider>
-        </CacheProvider>
-        <Toaster position="top-right" />
+        <NextIntlClientProvider messages={messages}>
+          <CacheProvider>
+            <StellarProvider>{children}</StellarProvider>
+          </CacheProvider>
+          <Toaster position={locale === "ar" ? "top-left" : "top-right"} />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -7,10 +7,12 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useTranslations } from "next-intl"
 
 export function NavMain({
     items,
 }) {
+    const t = useTranslations("dashboard.sidebar")
     return (
         <SidebarMenu>
             {items.map((item) => (
@@ -18,7 +20,7 @@ export function NavMain({
                     <SidebarMenuButton asChild isActive={item.isActive}>
                         <a href={item.url}>
                             <item.icon />
-                            <span>{item.title}</span>
+                            <span>{t(item.title === "Ask AI" ? "askAi" : item.title.toLowerCase())}</span>
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

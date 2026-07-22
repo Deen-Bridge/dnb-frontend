@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
+import { useTranslations } from "next-intl";
 
 const Hero = () => {
+    const t = useTranslations("landing.hero");
     return (
         <main className="relative h-screen flex flex-col bg-basic text-white overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0" />
@@ -17,16 +19,11 @@ const Hero = () => {
                         "text-6xl lg:text-8xl font-bold mb-4 leading-snug"
                     )}
                 >
-                    Welcome to{" "}
-                    <span className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text ">
-                        Deen Bridge
-                    </span>
+                    {t.rich("title", { brand: (chunks) => <span className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text">{chunks}</span> })}
                 </h1>
 
                 <p className="text-lg md:text-xl lg:text-3xl mb-6 text-green-200">
-                    Your journey to{" "}
-                    <span className="text-white font-semibold">excellence</span>
-                    {" "}  starts here.
+                    {t.rich("subtitle", { emphasis: (chunks) => <span className="text-white font-semibold">{chunks}</span> })}
                 </p>
                 <Button
                     wide
@@ -34,7 +31,7 @@ const Hero = () => {
                     to="/dashboard"
                     className=" text-white px-10 py-3 animate-in-out transition-all"
                 >
-                    Lets Dive
+                    {t("cta")}
                 </Button>
             </div>
         </main>

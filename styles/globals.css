@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), var(--font-geist-sans), sans-serif;
+}
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
