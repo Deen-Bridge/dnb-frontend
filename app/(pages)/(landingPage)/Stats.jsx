@@ -1,6 +1,11 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import {
+  motion,
+  MotionConfig,
+  useInView,
+  useReducedMotion,
+} from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { TrendingUp, Users, DollarSign, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -40,6 +45,7 @@ function AnimatedCounter({ value }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const prefersReducedMotion = useReducedMotion();
 
   // Extract numeric value and preserve the rest (prefixes, suffixes like K, M, %, +, $)
   const numericValue = parseFloat(value.replace(/[^0-9.]/g, ""));
@@ -48,6 +54,13 @@ function AnimatedCounter({ value }) {
 
   useEffect(() => {
     if (!isInView) return;
+
+    // Respect prefers-reduced-motion immediately — show the final value,
+    // skip the ticking counter animation.
+    if (prefersReducedMotion) {
+      setCount(numericValue);
+      return;
+    }
 
     const duration = 2000;
     const steps = 60;
@@ -65,7 +78,7 @@ function AnimatedCounter({ value }) {
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, [isInView, numericValue]);
+  }, [isInView, numericValue, prefersReducedMotion]);
 
   const formatCount = () => {
     const formatted = count % 1 !== 0 ? count.toFixed(1) : count.toFixed(0);
@@ -80,7 +93,15 @@ function AnimatedCounter({ value }) {
 }
 
 const Stats = () => (
-  <section className="relative mx-auto max-w-7xl px-4 py-20 sm:py-28 bg-white/80 backdrop-blur-xl">
+  // MotionConfig reducedMotion="user" makes framer-motion honor the
+  // OS-level prefers-reduced-motion setting: entrance animations and the
+  // spring counter stop playing and snap to their final state.
+  <MotionConfig reducedMotion="user">
+    <section
+      id="stats"
+      aria-labelledby="stats-heading"
+      className="relative mx-auto max-w-7xl px-4 py-20 sm:py-28 bg-white/80 backdrop-blur-xl"
+    >
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -96,7 +117,7 @@ const Stats = () => (
       >
         Our Community
       </motion.span>
-      <h2 className="pb-5 bg-gradient-to-r from-accent via-green-500 to-highlight bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl">
+      <h2 id="stats-heading" className="pb-5 bg-gradient-to-r from-accent via-green-500 to-highlight bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl">
         Growing Together in Faith
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-700">
@@ -212,6 +233,7 @@ const Stats = () => (
       ))}
     </div>
   </section>
+  </MotionConfig>
 );
 
 export default Stats;

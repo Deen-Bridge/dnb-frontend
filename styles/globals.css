@@ -281,3 +281,19 @@
 .animate-marquee-reverse {
   animation: marquee-reverse 30s linear infinite;
 }
+
+/* Respect users who prefer reduced motion:
+ * Disable marquee, scroll, fade-in, gradient, and spin animations.
+ * Framer-Motion handled separately via <MotionConfig reducedMotion="user">. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll,
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-spin-slow,
+  .animate-gradient,
+  .animate-fade-in,
+  .animate-in-out {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+}
