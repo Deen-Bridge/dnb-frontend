@@ -7,7 +7,7 @@ import Navbar from "@/components/molecules/ladingpage/Navbar";
 
 const Hero = () => {
   return (
-    <header className="relative h-screen flex flex-col bg-basic text-white overflow-hidden">
+    <main className="relative h-screen flex flex-col bg-basic text-white overflow-hidden">
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-br from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0"
@@ -40,7 +40,7 @@ const Hero = () => {
           Lets Dive
         </Button>
       </div>
-    </header>
+    </main>
   );
 };
 
