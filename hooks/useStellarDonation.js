@@ -103,7 +103,7 @@ export const useStellarDonation = () => {
         // worth capturing so we notice patterns (wallet issues, backend
         // errors) even though it's "handled".
         Sentry.captureException(error, {
-          tags: { feature: "stellar-payment" },
+          tags: { feature: "stellar-donation" },
         });
 
         // Handle specific Stellar errors

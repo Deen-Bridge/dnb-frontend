@@ -81,6 +81,19 @@ function scrubBreadcrumbs(breadcrumbs) {
   });
 }
 
+function scrubValue(value) {
+  if (typeof value === "string") {
+    return scrubString(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(scrubValue);
+  }
+  if (value && typeof value === "object") {
+    return scrubExtra(value);
+  }
+  return value;
+}
+
 function scrubExtra(extra) {
   if (!extra || typeof extra !== "object") return extra;
   const cleaned = { ...extra };
@@ -91,7 +104,7 @@ function scrubExtra(extra) {
   delete cleaned.Cookie;
   delete cleaned.cookie;
   for (const [key, value] of Object.entries(cleaned)) {
-    if (typeof value === "string") cleaned[key] = scrubString(value);
+    cleaned[key] = scrubValue(value);
   }
   return cleaned;
 }
@@ -140,6 +153,9 @@ export function sentryBeforeSend(event) {
 export function sentryBeforeSendTransaction(event) {
   if (event.request) {
     event.request = scrubRequest(event.request);
+  }
+  if (event.extra) {
+    event.extra = scrubExtra(event.extra);
   }
   if (event.user) {
     event.user = event.user.id ? { id: event.user.id } : undefined;
