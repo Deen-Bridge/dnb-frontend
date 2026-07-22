@@ -17,14 +17,24 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { islamicCategories } from "@/lib/data";
+import { getGroupedCategories } from "@/lib/categories";
 
+/**
+ * CategoryCombobox — controlled component.
+ *
+ * Props:
+ *   category   {string}  — current value (label string); controlled by parent
+ *   setCategory {Function} — called with the newly selected label string
+ */
 export default function CategoryCombobox({ category, setCategory }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+
+  // `category` is the source of truth — no internal value state.
+  const displayLabel = category || "Select category...";
+
+  const groups = getGroupedCategories();
 
   return (
-
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
@@ -33,7 +43,7 @@ export default function CategoryCombobox({ category, setCategory }) {
           aria-expanded={open}
           className="w-full justify-between text-muted-foreground hover:bg-transparent"
         >
-          {value || "Select category..."}
+          {displayLabel}
           <ChevronsUpDown className="opacity-50 h-4 w-4 ml-2" />
         </Button>
       </PopoverTrigger>
@@ -42,23 +52,24 @@ export default function CategoryCombobox({ category, setCategory }) {
           <CommandInput placeholder="Search category..." className="h-9" />
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
-            {islamicCategories.map((group) => (
-              <CommandGroup key={group.main} heading={group.main}>
-                {group.subcategories.map((subcategory) => (
+            {groups.map(({ group, categories }) => (
+              <CommandGroup key={group} heading={group}>
+                {categories.map((cat) => (
                   <CommandItem
-                    key={subcategory}
-                    value={subcategory}
+                    key={cat.slug}
+                    value={cat.label}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      // Toggle off if same value is selected again
+                      setCategory(currentValue === category ? "" : currentValue);
                       setOpen(false);
-                      setCategory(currentValue);
                     }}
                   >
-                    {subcategory}
+                    <span className="mr-2">{cat.icon}</span>
+                    {cat.label}
                     <Check
                       className={cn(
                         "ml-auto h-4 w-4",
-                        value === subcategory ? "opacity-100" : "opacity-0"
+                        category === cat.label ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
@@ -68,6 +79,6 @@ export default function CategoryCombobox({ category, setCategory }) {
           </CommandList>
         </Command>
       </PopoverContent>
-      </Popover>
+    </Popover>
   );
 }
