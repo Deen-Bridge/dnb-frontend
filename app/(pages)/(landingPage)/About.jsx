@@ -5,13 +5,13 @@ import Button from "@/components/atoms/form/Button";
 
 const About = () => {
   return (
-    <section id="mission" className="py-16 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-xl">
+    <section id="mission" aria-labelledby="about-heading" className="py-16 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Section - Text Content */}
           <div className="space-y-6 lg:space-y-8">
             <div className="space-y-4">
-              <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-accent to-highlight">
+              <h2 id="about-heading" className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-accent to-highlight">
                 Where Deen Meets{" "}
                 <span>Excellence</span>
               </h2>

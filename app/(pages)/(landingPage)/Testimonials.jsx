@@ -3,8 +3,7 @@ import Link from "next/link";
 import { Star, Quote } from "lucide-react";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 
-// Cache the rendered subtree for five minutes (see FeaturedCourses for
-// the rationale — axios calls can't carry `next.revalidate` themselves).
+// Cache the rendered subtree for five minutes.
 export const revalidate = 300;
 
 function getInitials(name = "") {
@@ -132,6 +131,7 @@ export default async function Testimonials() {
                         alt={`${t.name}'s avatar`}
                         width={44}
                         height={44}
+                        loading="lazy"
                         className="size-11 rounded-full object-cover ring-2 ring-white/30"
                       />
                     ) : (

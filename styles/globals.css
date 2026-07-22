@@ -282,6 +282,13 @@
   animation: marquee-reverse 30s linear infinite;
 }
 
+/* Pause helper — toggled via JS on keyboard focus */
+.animate-marquee.paused,
+.animate-marquee-reverse.paused,
+.animate-scroll.paused {
+  animation-play-state: paused;
+}
+
 /* Respect users who prefer reduced motion:
  * Disable marquee, scroll, fade-in, gradient, and spin animations.
  * Framer-Motion handled separately via <MotionConfig reducedMotion="user">. */

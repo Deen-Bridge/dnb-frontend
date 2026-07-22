@@ -15,7 +15,8 @@ const stats = [
     k: "100%",
     v: "Non-Custodial Payments",
     icon: CheckCircle2,
-    description: "You sign every transaction in your own wallet — we never hold your funds",
+    description:
+      "You sign every transaction in your own wallet — we never hold your funds",
     isDark: true,
   },
   {
@@ -36,31 +37,31 @@ const stats = [
     k: "3",
     v: "Open-Source Services",
     icon: Users,
-    description: "Web app, API, and AI — all MIT-licensed and built in the open",
+    description:
+      "Web app, API, and AI — all MIT-licensed and built in the open",
     isDark: true,
   },
 ];
 
 function AnimatedCounter({ value }) {
+  const shouldReduceMotion = useReducedMotion();
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const prefersReducedMotion = useReducedMotion();
 
-  // Extract numeric value and preserve the rest (prefixes, suffixes like K, M, %, +, $)
   const numericValue = parseFloat(value.replace(/[^0-9.]/g, ""));
-  const prefix = value.match(/^[^0-9.]*/)?.[0] || "";
+  const prefix = value.match(/^[^0-9.]*/)?.[0] ?? "";
   const suffix = value.replace(/[0-9.]/g, "").replace(prefix, "");
 
   useEffect(() => {
-    if (!isInView) return;
-
-    // Respect prefers-reduced-motion immediately — show the final value,
+    // Respect prefers-reduced-motion — show the final value immediately,
     // skip the ticking counter animation.
-    if (prefersReducedMotion) {
+    if (shouldReduceMotion) {
       setCount(numericValue);
       return;
     }
+
+    if (!isInView) return;
 
     const duration = 2000;
     const steps = 60;
@@ -78,161 +79,162 @@ function AnimatedCounter({ value }) {
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, [isInView, numericValue, prefersReducedMotion]);
+  }, [isInView, numericValue, shouldReduceMotion]);
 
   const formatCount = () => {
-    const formatted = count % 1 !== 0 ? count.toFixed(1) : count.toFixed(0);
+    const formatted =
+      count % 1 !== 0 ? count.toFixed(1) : count.toFixed(0);
     return `${prefix}${formatted}${suffix}`;
   };
 
   return (
     <span ref={ref}>
-      {isInView ? formatCount() : `${prefix}0${suffix}`}
+      {shouldReduceMotion ? value : isInView ? formatCount() : `${prefix}0${suffix}`}
     </span>
   );
 }
 
+// MotionConfig reducedMotion="user" makes framer-motion honor the
+// OS-level prefers-reduced-motion setting: entrance animations and the
+// spring counter stop playing and snap to their final state.
 const Stats = () => (
-  // MotionConfig reducedMotion="user" makes framer-motion honor the
-  // OS-level prefers-reduced-motion setting: entrance animations and the
-  // spring counter stop playing and snap to their final state.
   <MotionConfig reducedMotion="user">
     <section
       id="stats"
       aria-labelledby="stats-heading"
       className="relative mx-auto max-w-7xl px-4 py-20 sm:py-28 bg-white/80 backdrop-blur-xl"
     >
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="mb-16 text-center"
-    >
-      <motion.span
-        initial={{ opacity: 0, scale: 0.9 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="mb-4 inline-block rounded-full border border-green-200/50 bg-gradient-to-r from-green-50/80 to-emerald-50/80 px-4 py-1.5 text-sm font-medium text-green-700 backdrop-blur-sm dark:border-green-500/20 dark:from-green-500/10 dark:to-emerald-500/10 dark:text-green-300"
+        transition={{ duration: 0.6 }}
+        className="mb-16 text-center"
       >
-        Our Community
-      </motion.span>
-      <h2 id="stats-heading" className="pb-5 bg-gradient-to-r from-accent via-green-500 to-highlight bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl">
-        Growing Together in Faith
-      </h2>
-      <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-700">
-        Numbers that reflect our commitment to connecting Muslims worldwide through
-        authentic knowledge, meaningful conversations, and spiritual growth
-      </p>
-    </motion.div>
-
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-      {stats.map((s, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        <motion.span
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{
-            delay: i * 0.1,
-            duration: 0.5,
-            type: "spring",
-            stiffness: 100,
-          }}
-          className="group relative h-full"
+          className="mb-4 inline-block rounded-full border border-green-200/50 bg-gradient-to-r from-green-50/80 to-emerald-50/80 px-4 py-1.5 text-sm font-medium text-green-700 backdrop-blur-sm dark:border-green-500/20 dark:from-green-500/10 dark:to-emerald-500/10 dark:text-green-300"
         >
-          <div
-            className={cn(
-              "relative h-full overflow-hidden rounded-2xl border transition-all duration-300",
-              s.isDark
-                ? "border-green-500/20 bg-gradient-to-br from-green-950/90 to-emerald-950/90 dark:from-green-900/40 dark:to-emerald-900/40"
-                : "border-green-200/30 bg-gradient-to-br from-green-50/90 to-emerald-50/90 dark:border-green-500/10 dark:from-green-950/20 dark:to-emerald-950/20"
-            )}
+          Our Community
+        </motion.span>
+        <h2
+          id="stats-heading"
+          className="pb-5 bg-gradient-to-r from-accent via-green-500 to-highlight bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl"
+        >
+          Growing Together in Faith
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-700">
+          Numbers that reflect our commitment to connecting Muslims worldwide through
+          authentic knowledge, meaningful conversations, and spiritual growth
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              delay: i * 0.1,
+              duration: 0.5,
+              type: "spring",
+              stiffness: 100,
+            }}
+            className="group relative h-full"
           >
-            {/* Grid pattern overlay */}
             <div
               className={cn(
-                "absolute inset-0 opacity-30",
+                "relative h-full overflow-hidden rounded-2xl border transition-all duration-300",
                 s.isDark
-                  ? "bg-[linear-gradient(rgba(34,197,94,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.1)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(16,185,129,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.15)_1px,transparent_1px)]"
-                  : "bg-[linear-gradient(rgba(34,197,94,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.08)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(16,185,129,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.1)_1px,transparent_1px)]"
+                  ? "border-green-500/20 bg-gradient-to-br from-green-950/90 to-emerald-950/90 dark:from-green-900/40 dark:to-emerald-900/40"
+                  : "border-green-200/30 bg-gradient-to-br from-green-50/90 to-emerald-50/90 dark:border-green-500/10 dark:from-green-950/20 dark:to-emerald-950/20"
               )}
-              style={{ backgroundSize: "20px 20px" }}
-            />
-
-            <div className="relative p-8">
-              {/* Icon in top-left */}
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                whileInView={{ scale: 1, rotate: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  delay: i * 0.1 + 0.2,
-                  type: "spring",
-                  stiffness: 200,
-                }}
+            >
+              {/* Grid pattern overlay */}
+              <div
+                aria-hidden="true"
                 className={cn(
-                  "mb-6 inline-flex size-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
+                  "absolute inset-0 opacity-30",
                   s.isDark
-                    ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20"
-                    : "bg-gradient-to-br from-green-500/10 to-emerald-500/10"
+                    ? "bg-[linear-gradient(rgba(34,197,94,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.1)_1px,transparent_1px)]"
+                    : "bg-[linear-gradient(rgba(34,197,94,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.08)_1px,transparent_1px)]"
                 )}
-              >
-                <s.icon
+                style={{ backgroundSize: "20px 20px" }}
+              />
+
+              <div className="relative p-8">
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  whileInView={{ scale: 1, rotate: 0 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: i * 0.1 + 0.2,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
                   className={cn(
-                    "size-6",
+                    "mb-6 inline-flex size-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
                     s.isDark
-                      ? "text-green-300 dark:text-green-400"
-                      : "text-green-600 dark:text-green-400"
+                      ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20"
+                      : "bg-gradient-to-br from-green-500/10 to-emerald-500/10"
                   )}
-                />
-              </motion.div>
+                >
+                  <s.icon
+                    className={cn(
+                      "size-6",
+                      s.isDark
+                        ? "text-green-300 dark:text-green-400"
+                        : "text-green-600 dark:text-green-400"
+                    )}
+                  />
+                </motion.div>
 
-              {/* Large statistic */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 + 0.4 }}
-                className={cn(
-                  "mb-3 text-5xl font-bold tracking-tight sm:text-6xl",
-                  s.isDark
-                    ? "text-green-200 dark:text-green-300"
-                    : "text-green-700 dark:text-green-300"
-                )}
-              >
-                <AnimatedCounter value={s.k} />
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 + 0.4 }}
+                  className={cn(
+                    "mb-3 text-5xl font-bold tracking-tight sm:text-6xl",
+                    s.isDark
+                      ? "text-green-200 dark:text-green-300"
+                      : "text-green-700 dark:text-green-300"
+                  )}
+                >
+                  <AnimatedCounter value={s.k} />
+                </motion.div>
 
-              {/* Label */}
-              <p
-                className={cn(
-                  "mb-2 text-base font-semibold",
-                  s.isDark
-                    ? "text-green-300/90 dark:text-green-200"
-                    : "text-green-700 dark:text-green-300"
-                )}
-              >
-                {s.v}
-              </p>
+                <p
+                  className={cn(
+                    "mb-2 text-base font-semibold",
+                    s.isDark
+                      ? "text-green-300/90 dark:text-green-200"
+                      : "text-green-700 dark:text-green-300"
+                  )}
+                >
+                  {s.v}
+                </p>
 
-              {/* Description */}
-              <p
-                className={cn(
-                  "text-sm leading-relaxed",
-                  s.isDark
-                    ? "text-green-300/70 dark:text-green-300/60"
-                    : "text-green-600/70 dark:text-green-400/70"
-                )}
-              >
-                {s.description}
-              </p>
+                <p
+                  className={cn(
+                    "text-sm leading-relaxed",
+                    s.isDark
+                      ? "text-green-300/70 dark:text-green-300/60"
+                      : "text-green-600/70 dark:text-green-400/70"
+                  )}
+                >
+                  {s.description}
+                </p>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  </section>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   </MotionConfig>
 );
 
