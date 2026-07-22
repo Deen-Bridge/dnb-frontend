@@ -35,6 +35,19 @@ export const useAuth = () => {
     Cookies.remove("userInfo", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
+
+    if (typeof window !== "undefined" && "caches" in window) {
+      caches.keys().then((names) => {
+        const runtimeCaches = names.filter(
+          (name) =>
+            name.startsWith("serwist-") || name === "book-previews"
+        );
+        return Promise.all(
+          runtimeCaches.map((name) => caches.delete(name))
+        );
+      }).catch(() => {});
+    }
+
     toast.success("Logged out successfully");
     router.push("/");
   };
@@ -47,7 +60,6 @@ export const useAuth = () => {
         let freshUser = res.data.user || res.data;
         // Normalize user object to always have _id
         if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;
-        console.log("User data refreshed:", freshUser);
         // Update user state and cookies
         setUser(freshUser);
         Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1 });

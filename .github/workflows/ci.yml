@@ -32,3 +32,9 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          # Optional: only present on the upstream repo, not on fork PRs.
+          # When absent, next.config.mjs disables the source-map upload step
+          # so the build still succeeds.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
