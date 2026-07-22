@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export default function CTA() {
   return (
-    <section className="relative mx-auto py-10 px-4 sm:px-8 bg-basic text-white  shadow-xl flex flex-col items-center justify-center overflow-hidden">
-      <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-center">
+    <section aria-labelledby="cta-heading" className="relative mx-auto py-10 px-4 sm:px-8 bg-basic text-white shadow-xl flex flex-col items-center justify-center overflow-hidden">
+      <h2 id="cta-heading" className="text-4xl sm:text-5xl font-bold mb-4 text-center">
         Ready to Join Deen Bridge?
       </h2>
       <p className="text-lg sm:text-xl mb-8 text-center max-w-2xl">
