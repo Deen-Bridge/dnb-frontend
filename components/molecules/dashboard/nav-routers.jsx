@@ -10,6 +10,7 @@ import {
   Play,
   LaptopMinimal,
   HeartHandshake,
+  ShoppingBag,
   DollarSign,
   Bookmark,
 } from "lucide-react";
@@ -63,6 +64,11 @@ const links = [
     name: "Sadaqah",
     link: "/dashboard/sadaqah",
     icon: HeartHandshake,
+  },
+  {
+    name: "My Purchases",
+    link: "/dashboard/purchases",
+    icon: ShoppingBag,
   },
   {
     name: "Earnings",
