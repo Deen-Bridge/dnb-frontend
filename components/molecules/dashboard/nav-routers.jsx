@@ -9,7 +9,8 @@ import {
   Book,
   Play,
   LaptopMinimal,
-  HeartHandshake
+  HeartHandshake,
+  DollarSign
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -56,6 +57,11 @@ const links = [
     name: "Sadaqah",
     link: "/dashboard/sadaqah",
     icon: HeartHandshake,
+  },
+  {
+    name: "Earnings",
+    link: "/dashboard/earnings",
+    icon: DollarSign,
   },
 
 ];
