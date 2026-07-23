@@ -46,14 +46,15 @@ const features = [
 
 export default function WhyDeenBridge() {
   return (
-    <section id="services" className="relative py-20 px-2 sm:px-6 bg-basic overflow-hidden">
+    <section id="services" aria-labelledby="why-heading" className="relative py-20 px-2 sm:px-6 bg-basic overflow-hidden">
       {/* Decorative Islamic motif background */}
-      <div className="absolute inset-0 pointer-events-none z-0">
+      <div className="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
         <div className="absolute left-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl" />
         <div className="absolute right-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl" />
       </div>
       <div className="relative z-10 max-w-6xl mx-auto">
         <h2
+          id="why-heading"
           className={cn(
             poppins_600,
             "text-4xl sm:text-8xl font-bold text-center pb-12 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text font-stretch-125%"
