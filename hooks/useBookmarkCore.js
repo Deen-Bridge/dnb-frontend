@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   toggleCourseBookmark,
   checkIfBookmarked,
@@ -25,6 +25,7 @@ export const useBookmarkCore = (
   initialIsBookmarked = null
 ) => {
   const { user } = useAuth();
+  const hasToggledRef = useRef(false);
   const [isBookmarked, setIsBookmarked] = useState(() => {
     return typeof initialIsBookmarked === "boolean" ? initialIsBookmarked : false;
   });
@@ -48,10 +49,14 @@ export const useBookmarkCore = (
         try {
           if (type === "course") {
             const bookmarked = await checkIfBookmarked(itemId);
-            setIsBookmarked(Boolean(bookmarked));
+            if (!hasToggledRef.current) {
+              setIsBookmarked(Boolean(bookmarked));
+            }
           } else if (type === "book") {
             const bookmarked = await checkIfBookBookmarked(itemId);
-            setIsBookmarked(Boolean(bookmarked));
+            if (!hasToggledRef.current) {
+              setIsBookmarked(Boolean(bookmarked));
+            }
           }
         } catch (_error) {
           // Silently handle error for check request
@@ -68,6 +73,7 @@ export const useBookmarkCore = (
       return;
     }
 
+    hasToggledRef.current = true;
     const previousState = isBookmarked;
     const nextState = !previousState;
 
