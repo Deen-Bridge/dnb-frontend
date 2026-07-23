@@ -52,7 +52,11 @@ export default function PrayerTimesWidget() {
     try {
       const activeLocation = locObj || location || (user?.country ? { city: user.country } : null);
       const res = await fetchPrayerTimes(activeLocation);
-      setData(res);
+      if (!res || (res.isFallback && !activeLocation)) {
+        setError(true);
+      } else {
+        setData(res);
+      }
     } catch (_err) {
       setError(true);
     } finally {
@@ -97,7 +101,7 @@ export default function PrayerTimesWidget() {
     if (!data?.timings) return;
 
     const updateTimer = () => {
-      const info = getNextPrayerInfo(data.timings);
+      const info = getNextPrayerInfo(data.timings, data.timezone);
       setNextPrayerInfo(info);
 
       const sec = info.remainingSeconds;
@@ -121,7 +125,7 @@ export default function PrayerTimesWidget() {
         clearInterval(timerRef.current);
       }
     };
-  }, [data?.timings]);
+  }, [data?.timings, data?.timezone]);
 
   // Manual Location Search Handler
   const handleLocationSubmit = (e) => {
@@ -288,8 +292,9 @@ export default function PrayerTimesWidget() {
       >
         <form onSubmit={handleLocationSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">City</label>
+            <label htmlFor="prayer-city" className="text-xs font-medium text-muted-foreground">City</label>
             <input
+              id="prayer-city"
               type="text"
               placeholder="e.g. London, Dallas, Cairo"
               value={cityInput}
@@ -300,8 +305,9 @@ export default function PrayerTimesWidget() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Country (Optional)</label>
+            <label htmlFor="prayer-country" className="text-xs font-medium text-muted-foreground">Country (Optional)</label>
             <input
+              id="prayer-country"
               type="text"
               placeholder="e.g. UK, USA, Egypt"
               value={countryInput}

@@ -1,4 +1,4 @@
-// pages/dashboard.jsx
+// app/dashboard/page.jsx
 import GreetingCard from "@/components/organisms/dashboard/GreetingCard";
 import PrayerTimesWidget from "@/components/organisms/dashboard/PrayerTimesWidget";
 import StatsOverview from "@/components/organisms/dashboard/StatsOverview";
