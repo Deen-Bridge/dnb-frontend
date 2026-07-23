@@ -1,5 +1,6 @@
 // pages/dashboard.jsx
 import GreetingCard from "@/components/organisms/dashboard/GreetingCard";
+import PrayerTimesWidget from "@/components/organisms/dashboard/PrayerTimesWidget";
 import StatsOverview from "@/components/organisms/dashboard/StatsOverview";
 import RecommendedCourses from "@/components/organisms/dashboard/RecommendedCourses";
 import UpcomingSessions from "@/components/organisms/dashboard/UpcomingSessions";
@@ -8,10 +9,12 @@ import LearningProgress from "@/components/organisms/dashboard/LearningProgress"
 import OngoingSessions from "@/components/organisms/dashboard/OngoingSessions";
 import RecommendedBooks from "@/components/organisms/dashboard/RecommendedBooks";
 import SupportPalestine from "@/components/organisms/dashboard/Supports";
+
 export default function Dashboard() {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       <GreetingCard />
+      <PrayerTimesWidget />
       <StatsOverview />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -19,11 +22,11 @@ export default function Dashboard() {
           <RecommendedBooks />
         </div>
         <div className="space-y-6">
-          <OngoingSessions/>
+          <OngoingSessions />
           <UpcomingSessions />
           <RecentChats />
           <LearningProgress />
-          <SupportPalestine/>
+          <SupportPalestine />
         </div>
       </div>
     </div>
