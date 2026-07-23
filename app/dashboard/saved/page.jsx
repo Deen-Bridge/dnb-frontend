@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
@@ -18,6 +18,9 @@ export default function SavedPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const removedCoursesRef = useRef({});
+  const removedBooksRef = useRef({});
 
   const fetchSavedItems = async () => {
     setLoading(true);
@@ -54,13 +57,27 @@ export default function SavedPage() {
 
   const handleCourseBookmarkChange = (isBookmarked, courseId) => {
     if (!isBookmarked) {
-      setCourses((prev) => prev.filter((c) => c._id !== courseId));
+      setCourses((prev) => {
+        const removed = prev.find((c) => c._id === courseId);
+        if (removed) removedCoursesRef.current[courseId] = removed;
+        return prev.filter((c) => c._id !== courseId);
+      });
+    } else if (removedCoursesRef.current[courseId]) {
+      setCourses((prev) => [...prev, removedCoursesRef.current[courseId]]);
+      delete removedCoursesRef.current[courseId];
     }
   };
 
   const handleBookBookmarkChange = (isBookmarked, bookId) => {
     if (!isBookmarked) {
-      setBooks((prev) => prev.filter((b) => b._id !== bookId));
+      setBooks((prev) => {
+        const removed = prev.find((b) => b._id === bookId);
+        if (removed) removedBooksRef.current[bookId] = removed;
+        return prev.filter((b) => b._id !== bookId);
+      });
+    } else if (removedBooksRef.current[bookId]) {
+      setBooks((prev) => [...prev, removedBooksRef.current[bookId]]);
+      delete removedBooksRef.current[bookId];
     }
   };
 
