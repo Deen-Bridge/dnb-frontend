@@ -11,6 +11,7 @@ import {
   LaptopMinimal,
   HeartHandshake,
   ShoppingBag
+  DollarSign
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -62,6 +63,9 @@ const links = [
     name: "My Purchases",
     link: "/dashboard/purchases",
     icon: ShoppingBag,
+    name: "Earnings",
+    link: "/dashboard/earnings",
+    icon: DollarSign,
   },
 
 ];
