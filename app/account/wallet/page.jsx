@@ -7,13 +7,15 @@ import TransactionHistory from "@/components/stellar/TransactionHistory";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Wallet, ExternalLink, Info } from "lucide-react";
+import { Wallet, ExternalLink, Info, ArrowRight } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
+import WalletOnboarding from "@/components/stellar/WalletOnboarding";
 
 export default function WalletPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { connectedWallet, walletInfo, isLoading, network } = useStellar();
+  const [showWizard, setShowWizard] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -125,12 +127,20 @@ export default function WalletPage() {
 
               {/* Trustline Warning */}
               {!walletInfo?.hasTrustline && (
-                <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
-                  <h4 className="font-medium text-orange-800">USDC Trustline Required</h4>
-                  <p className="text-sm text-orange-700 mt-1">
-                    To send or receive USDC payments, you need to add a USDC trustline to your wallet.
-                    Open your wallet app (like Freighter) and add the USDC asset.
-                  </p>
+                <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-medium text-orange-800">Wallet Setup Required</h4>
+                    <p className="text-sm text-orange-700 mt-1">
+                      To send or receive USDC payments, you need to enable USDC in your wallet.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => setShowWizard(true)}
+                    className="whitespace-nowrap"
+                  >
+                    Set up my wallet
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
               )}
             </div>
@@ -167,49 +177,67 @@ export default function WalletPage() {
         <CardHeader>
           <CardTitle>Need Help?</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <h4 className="font-medium">Getting Started with Stellar</h4>
-            <p className="text-sm text-muted-foreground">
-              1. Install the{" "}
-              <a
-                href="https://www.freighter.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Freighter Wallet
-              </a>{" "}
-              browser extension
-            </p>
-            <p className="text-sm text-muted-foreground">
-              2. Create or import a Stellar account
-            </p>
-            <p className="text-sm text-muted-foreground">
-              3. Add USDC trustline in your wallet settings
-            </p>
-            <p className="text-sm text-muted-foreground">
-              4. Fund your wallet with USDC to make purchases
-            </p>
-          </div>
-          {network === "testnet" && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-medium text-blue-800">Testnet Mode</h4>
-              <p className="text-sm text-blue-700">
-                You are on testnet. Get free test XLM from the{" "}
+        <CardContent className="space-y-4">
+          <Button 
+            variant="outline" 
+            className="w-full sm:w-auto"
+            onClick={() => setShowWizard(true)}
+          >
+            Launch Setup Wizard
+          </Button>
+
+          <details className="group border rounded-lg">
+            <summary className="cursor-pointer font-medium p-4 hover:bg-muted/50 rounded-lg">
+              Prefer to set up manually? View instructions
+            </summary>
+            <div className="p-4 pt-0 space-y-3 border-t mt-2">
+              <h4 className="font-medium mt-2">Getting Started with Stellar</h4>
+              <p className="text-sm text-muted-foreground">
+                1. Install the{" "}
                 <a
-                  href="https://laboratory.stellar.org/#account-creator?network=test"
+                  href="https://www.freighter.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline"
+                  className="text-primary hover:underline"
                 >
-                  Stellar Laboratory
-                </a>
+                  Freighter Wallet
+                </a>{" "}
+                browser extension
               </p>
+              <p className="text-sm text-muted-foreground">
+                2. Create or import a Stellar account
+              </p>
+              <p className="text-sm text-muted-foreground">
+                3. Add USDC trustline in your wallet settings
+              </p>
+              <p className="text-sm text-muted-foreground">
+                4. Fund your wallet with USDC to make purchases
+              </p>
+              {network === "testnet" && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-3">
+                  <h4 className="font-medium text-blue-800">Testnet Mode</h4>
+                  <p className="text-sm text-blue-700">
+                    You are on testnet. Get free test XLM from the{" "}
+                    <a
+                      href="https://laboratory.stellar.org/#account-creator?network=test"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Stellar Laboratory
+                    </a>
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+          </details>
         </CardContent>
       </Card>
+
+      <WalletOnboarding 
+        isOpen={showWizard} 
+        onOpenChange={setShowWizard} 
+      />
     </div>
   );
 }
