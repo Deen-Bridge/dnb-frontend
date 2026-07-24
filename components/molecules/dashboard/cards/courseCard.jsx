@@ -2,17 +2,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
-import { Ellipsis, Bookmark, BookmarkCheck } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useBookmark } from "@/hooks/useBookmark";
+import BookmarkButton from "@/components/atoms/BookmarkButton";
 
-const CourseCard = ({ course, onBookmarkChange }) => {
+const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked }) => {
   const { user } = useAuth();
   const { isBookmarked, loading, toggle } = useBookmark(
     course._id,
-    onBookmarkChange
+    onBookmarkChange,
+    initialIsBookmarked
   );
 
   const handleBookmark = async (e) => {
@@ -81,18 +83,12 @@ const CourseCard = ({ course, onBookmarkChange }) => {
             <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
               {course.price ? `$${course.price}` : "Free"}
             </div>
-            <button
+            <BookmarkButton
+              isBookmarked={isBookmarked}
+              loading={loading}
               onClick={handleBookmark}
-              disabled={loading}
-              className="transition-all hover:scale-110 cursor-pointer"
-              title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            >
-              {isBookmarked ? (
-                <BookmarkCheck className="w-6 h-6 text-accent fill-accent" />
-              ) : (
-                <Bookmark className="w-6 h-6 text-accent hover:fill-accent/20" />
-              )}
-            </button>
+              variant="course"
+            />
           </div>
         </div>
       </CardContent>
