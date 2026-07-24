@@ -11,19 +11,13 @@ import {
 import { toast } from "sonner";
 import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import { getAverageRating } from "@/hooks/getAverageRating";
 
 const RecommendedBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasInterests, setHasInterests] = useState(true);
-
-  // Calculate average rating from reviews
-  const getAverageRating = (reviews = []) => {
-    if (!reviews || reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return Math.round(sum / reviews.length);
-  };
 
   const loadBooks = async () => {
     try {
@@ -167,7 +161,7 @@ const RecommendedBooks = () => {
             key={book._id || book.id}
             book={{
               ...book,
-              rating: getAverageRating(book.reviews),
+              rating: Math.round(getAverageRating(book.reviews)),
               instructor: book.author?.name || "DeenBridge Author",
               price: book.price === 0 ? "Free" : book.price,
             }}
