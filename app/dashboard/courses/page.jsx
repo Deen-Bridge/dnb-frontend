@@ -1,19 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import Button from "@/components/atoms/form/Button";
-import Modal from "@/components/molecules/Modal";
-import CreateCourseForm from "@/components/organisms/create/course-create-form";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { getBookmarkedCourses } from "@/lib/actions/courses/bookmark-course";
 import useAuth from "@/hooks/useAuth";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
 export default function CoursesPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
@@ -61,7 +60,7 @@ export default function CoursesPage() {
               round
               outlined
               className="text-normal"
-              onClick={() => setModalOpen(!modalOpen)}
+              onClick={() => router.push("/dashboard/courses/create")}
             >
               Create Course
             </Button>
@@ -114,14 +113,6 @@ export default function CoursesPage() {
           )}
         </div>
       </div>
-      <Modal
-        title="Create Course"
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        className="max-w-md w-full"
-      >
-        <CreateCourseForm />
-      </Modal>
     </>
   );
 }
