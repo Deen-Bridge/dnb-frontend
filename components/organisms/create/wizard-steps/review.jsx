@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAuth from "@/hooks/useAuth";
-import { PlayCircle, Video, CheckCircle2, Lock } from "lucide-react";
+import { PlayCircle, CheckCircle2 } from "lucide-react";
 
 export default function WizardStepReview({ watch }) {
   const { user } = useAuth();
@@ -15,11 +15,21 @@ export default function WizardStepReview({ watch }) {
   const price = parseFloat(formValues.price) || 0;
   const lessons = formValues.lessons || [];
 
-  // Local object URL for thumbnail preview
+  const thumbnailFile = formValues.thumbnailFile;
+  const [objectUrl, setObjectUrl] = useState(null);
+
+  // Manage object URL lifecycle to prevent memory leaks
+  useEffect(() => {
+    if (typeof window !== "undefined" && thumbnailFile instanceof File) {
+      const url = URL.createObjectURL(thumbnailFile);
+      setObjectUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setObjectUrl(null);
+  }, [thumbnailFile]);
+
   const thumbnailUrl =
-    formValues.thumbnailFile instanceof File
-      ? URL.createObjectURL(formValues.thumbnailFile)
-      : formValues.thumbnailUrl || "/images/dnb.png";
+    objectUrl || formValues.thumbnailUrl || "/images/dnb.png";
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
@@ -98,7 +108,7 @@ export default function WizardStepReview({ watch }) {
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    {lesson.videoFile ? (
+                    {lesson.videoFile || lesson.videoUrl ? (
                       <span className="flex items-center gap-1 text-green-600 font-medium">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Video Ready
                       </span>
