@@ -2,9 +2,10 @@
 import VidPlayerBox from "@/components/atoms/dashboard/vid-player-box";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Button from "@/components/atoms/form/Button";
 import StarRate from "@/components/atoms/form/StarRate";
+import ReviewsSection from "@/components/organisms/dashboard/ReviewsSection";
 import { useAuth } from "@/hooks/useAuth";
 import { Textarea } from "@/components/ui/textarea";
 import { addCourseReview } from "@/lib/actions/courses/addReview";
@@ -29,6 +30,14 @@ export default function CourseDetailClient({ course }) {
   const hasCourse = useHasCourse(course?._id);
   // Local state to hide button after purchase
   const [purchased, setPurchased] = useState(false);
+
+  // Check if the current user has already reviewed
+  const userReview = useMemo(() => {
+    if (!user?._id || !course?.reviews) return null;
+    return course.reviews.find(
+      (r) => r.user?._id === user._id || r.user?.id === user._id
+    );
+  }, [user, course?.reviews]);
 
   // Check if creator has wallet connected
   const creatorHasWallet = course?.createdBy?.stellarWallet?.publicKey;
@@ -149,7 +158,18 @@ export default function CourseDetailClient({ course }) {
           </Link>
           {user?._id !== course.createdBy?._id && canAccess && (
             <div className="pt-10 space-y-5 border-t border-white/10">
-              {!submitted && (
+              {userReview && (
+                <div className="text-sm text-muted-foreground">
+                  You reviewed this course on{" "}
+                  {new Date(userReview.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                  .
+                </div>
+              )}
+              {!submitted && !userReview && (
                 <>
                   <h2 className="text-3xl font-semibold">Leave a Review</h2>
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,7 +187,7 @@ export default function CourseDetailClient({ course }) {
                       }
                     />
                     <Textarea
-                      placeholder="What did you think about the book?"
+                      placeholder="What did you think about the course?"
                       className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
                       value={review}
                       onChange={(e) => setReview(e.target.value)}
@@ -259,6 +279,17 @@ export default function CourseDetailClient({ course }) {
             </div>
           </div>
         </aside>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="px-2 sm:px-10 mt-12">
+        <h2 className="text-3xl font-semibold mb-6">Reviews</h2>
+        <ReviewsSection
+          reviews={course.reviews || []}
+          currentUserId={user?._id}
+          loading={false}
+          enableEditDelete={false}
+        />
       </div>
 
       {/* Stellar Payment Modal */}

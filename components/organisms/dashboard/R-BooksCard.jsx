@@ -3,7 +3,6 @@ import Button from "@/components/atoms/form/Button";
 import { Star } from "lucide-react"; // optional: use a custom star icon or emoji
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import { getAverageRating } from "@/hooks/getAverageRating";
 import RecommendedCourseCard from "./R-CourseCard";
 
 
