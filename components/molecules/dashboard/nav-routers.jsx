@@ -12,6 +12,7 @@ import {
   HeartHandshake,
   ShoppingBag,
   DollarSign,
+  Bookmark,
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -36,6 +37,11 @@ const links = [
     name: "Library",
     link: "/dashboard/library",
     icon: Book,
+  },
+  {
+    name: "Saved",
+    link: "/dashboard/saved",
+    icon: Bookmark,
   },
   {
     name: "Spaces",

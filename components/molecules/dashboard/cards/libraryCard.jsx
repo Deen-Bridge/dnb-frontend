@@ -4,14 +4,14 @@ import { Star } from "lucide-react"; // optional: use a custom star icon or emoj
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
-import { CirclePlus } from "lucide-react";
-import { cn } from "@/lib/utils";
 import useBookBookmark from "@/hooks/useBookBookmark";
+import BookmarkButton from "@/components/atoms/BookmarkButton";
 
-const LibraryBookCard = ({ book, onBookmarkChange }) => {
+const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
   const { isBookmarked, loading, toggle } = useBookBookmark(
     book._id,
-    onBookmarkChange
+    onBookmarkChange,
+    initialIsBookmarked
   );
 
   const handleBookmark = async (event) => {
@@ -66,24 +66,12 @@ const LibraryBookCard = ({ book, onBookmarkChange }) => {
             </div>
           </Link>
           {/* Bookmark button */}
-          <button
+          <BookmarkButton
+            isBookmarked={isBookmarked}
+            loading={loading}
             onClick={handleBookmark}
-            disabled={loading}
-            className={cn(
-              "flex items-center justify-center rounded-full p-1 transition-all",
-              "hover:bg-accent hover:text-white",
-              loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
-              isBookmarked ? "bg-accent text-white" : "text-accent"
-            )}
-            title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-          >
-            <CirclePlus
-              className="w-6 h-6"
-              strokeWidth={1.75}
-              fill={isBookmarked ? "currentColor" : "none"}
-            />
-          </button>
+            variant="book"
+          />
         </div>
         {/* Reads & Rating */}
         <div className="flex justify-between items-center text-xs">
