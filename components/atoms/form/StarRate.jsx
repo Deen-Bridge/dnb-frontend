@@ -16,7 +16,14 @@ const StarRate = ({ value = 0, onChange, maxStars = 5, editable = true, label })
   };
 
   return (
-    <div>
+    <div
+      role={editable ? undefined : "img"}
+      aria-label={
+        editable
+          ? undefined
+          : `Rating: ${value} out of ${maxStars} stars`
+      }
+    >
       <StarRatings
         rating={value}
         starRatedColor="#265902"
