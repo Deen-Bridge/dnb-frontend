@@ -11,19 +11,13 @@ import {
 import { toast } from "sonner";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import { getAverageRating } from "@/hooks/getAverageRating";
 
 const RecommendedCourses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasInterests, setHasInterests] = useState(true);
-
-  // Calculate average rating from reviews
-  const getAverageRating = (reviews = []) => {
-    if (!reviews || reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return sum / reviews.length;
-  };
 
   const loadCourses = async () => {
     try {
