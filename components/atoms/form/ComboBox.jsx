@@ -21,7 +21,11 @@ import { islamicCategories } from "@/lib/data";
 
 export default function CategoryCombobox({ category, setCategory }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(category || "");
+
+  React.useEffect(() => {
+    setValue(category || "");
+  }, [category]);
 
   return (
 
