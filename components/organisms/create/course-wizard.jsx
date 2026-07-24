@@ -21,28 +21,33 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw } from "lucide-react";
 
 // Full Course Schema
-const courseSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  category: z.string().min(1, "Please select a category"),
-  price: z.number().min(0, "Price cannot be negative"),
-  lessons: z
-    .array(
-      z.object({
-        id: z.string(),
-        title: z.string().min(1, "Lesson title is required"),
-        description: z.string().optional(),
-        duration: z.string().optional(),
-        videoFile: z.any().optional(),
-        videoUrl: z.string().optional(),
-        thumbnailFile: z.any().optional(),
-        thumbnailUrl: z.string().optional(),
-      })
-    )
-    .min(1, "At least one lesson is required in the curriculum"),
-  thumbnailFile: z.any().optional(),
-  thumbnailUrl: z.string().optional(),
-});
+const courseSchema = z
+  .object({
+    title: z.string().min(3, "Title must be at least 3 characters"),
+    description: z.string().min(10, "Description must be at least 10 characters"),
+    category: z.string().min(1, "Please select a category"),
+    price: z.number().min(0, "Price cannot be negative"),
+    lessons: z
+      .array(
+        z.object({
+          id: z.string(),
+          title: z.string().min(1, "Lesson title is required"),
+          description: z.string().optional(),
+          duration: z.string().optional(),
+          videoFile: z.any().optional(),
+          videoUrl: z.string().optional(),
+          thumbnailFile: z.any().optional(),
+          thumbnailUrl: z.string().optional(),
+        })
+      )
+      .min(1, "At least one lesson is required in the curriculum"),
+    thumbnailFile: z.any().optional(),
+    thumbnailUrl: z.string().optional(),
+  })
+  .refine((data) => !!data.thumbnailFile || !!data.thumbnailUrl, {
+    message: "A course cover thumbnail is required",
+    path: ["thumbnailFile"],
+  });
 
 const STEPS = [
   { id: "basics", label: "Basics" },
@@ -154,16 +159,21 @@ export default function CourseWizard({ courseId }) {
             thumbnailUrl: course.thumbnail || "",
             videoUrl: course.video || "",
           });
+        } else {
+          toast.error("Course not found or failed to load.");
+          router.push("/dashboard/courses");
+          return;
         }
       } catch (err) {
         toast.error("Failed to load course details.");
+        router.push("/dashboard/courses");
       } finally {
         setInitialLoading(false);
       }
     };
 
     loadCourse();
-  }, [courseId, isEditMode, reset]);
+  }, [courseId, isEditMode, reset, router]);
 
   const handleResumeDraft = () => {
     const draft = loadDraft();
@@ -199,38 +209,53 @@ export default function CourseWizard({ courseId }) {
     try {
       setSubmitting(true);
       let thumbnailUrl = data.thumbnailUrl || null;
-      let videoUrl = data.videoUrl || null;
+      let primaryVideoUrl = data.videoUrl || null;
 
-      // Upload course thumbnail if a new file is selected
+      // 1. Upload course thumbnail if a new file is selected
       if (data.thumbnailFile instanceof File) {
         toast.info("Uploading course thumbnail...");
         thumbnailUrl = await thumbnailUpload.uploadFile(data.thumbnailFile);
       }
 
-      // Upload primary lesson video (first lesson video or first selected file)
-      const primaryVideoFile =
-        data.lessons?.[0]?.videoFile instanceof File
-          ? data.lessons[0].videoFile
-          : null;
-
-      if (primaryVideoFile) {
-        toast.info("Uploading primary course video... Please wait.");
-        videoUrl = await videoUpload.uploadFile(primaryVideoFile);
+      // 2. Upload per-lesson video files sequentially
+      const processedLessons = [];
+      for (let i = 0; i < (data.lessons || []).length; i++) {
+        const lesson = { ...data.lessons[i] };
+        if (lesson.videoFile instanceof File) {
+          toast.info(
+            `Uploading video for Lesson ${i + 1} (${i + 1}/${
+              data.lessons.length
+            })...`
+          );
+          const uploadedUrl = await videoUpload.uploadFile(lesson.videoFile);
+          lesson.videoUrl = uploadedUrl;
+          if (i === 0) {
+            primaryVideoUrl = uploadedUrl;
+          }
+        }
+        delete lesson.videoFile;
+        delete lesson.thumbnailFile;
+        processedLessons.push(lesson);
       }
+
+      const payload = {
+        ...data,
+        lessons: processedLessons,
+      };
 
       let res;
       if (isEditMode) {
         res = await editCourse(courseId, {
-          form: data,
+          form: payload,
           thumbnailUrl,
-          videoUrl,
+          videoUrl: primaryVideoUrl,
           category: data.category,
         });
       } else {
         res = await createCourse({
-          form: data,
+          form: payload,
           thumbnailUrl,
-          videoUrl,
+          videoUrl: primaryVideoUrl,
           category: data.category,
         });
       }

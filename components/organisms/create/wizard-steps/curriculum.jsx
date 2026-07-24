@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button as ShadcnButton } from "@/components/ui/button";
-import { Plus, Trash2, ArrowUp, ArrowDown, Video, GripVertical } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Video } from "lucide-react";
 
 export default function WizardStepCurriculum({ control, errors, register }) {
   const { fields, append, remove, swap } = useFieldArray({
@@ -53,6 +53,9 @@ export default function WizardStepCurriculum({ control, errors, register }) {
       <div className="space-y-4">
         {fields.map((field, index) => {
           const lessonError = errors.lessons?.[index];
+          const titleId = `lesson-${index}-title`;
+          const durationId = `lesson-${index}-duration`;
+          const descId = `lesson-${index}-description`;
 
           return (
             <div
@@ -111,10 +114,11 @@ export default function WizardStepCurriculum({ control, errors, register }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2 space-y-1.5">
-                  <Label className="text-xs font-medium">
+                  <Label htmlFor={titleId} className="text-xs font-medium">
                     Lesson Title <span className="text-red-500">*</span>
                   </Label>
                   <Input
+                    id={titleId}
                     placeholder="e.g. Lesson 1: Introduction & Alphabet"
                     {...register(`lessons.${index}.title`)}
                     className={lessonError?.title ? "border-red-500" : ""}
@@ -127,10 +131,11 @@ export default function WizardStepCurriculum({ control, errors, register }) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">
+                  <Label htmlFor={durationId} className="text-xs font-medium">
                     Est. Duration (Optional)
                   </Label>
                   <Input
+                    id={durationId}
                     placeholder="e.g. 15 mins"
                     {...register(`lessons.${index}.duration`)}
                   />
@@ -138,10 +143,11 @@ export default function WizardStepCurriculum({ control, errors, register }) {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">
+                <Label htmlFor={descId} className="text-xs font-medium">
                   Lesson Summary (Optional)
                 </Label>
                 <Textarea
+                  id={descId}
                   placeholder="Briefly describe what is covered in this lesson..."
                   rows={2}
                   {...register(`lessons.${index}.description`)}

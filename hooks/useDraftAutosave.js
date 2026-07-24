@@ -9,27 +9,37 @@ export function useDraftAutosave(watch, courseId = null) {
     courseId ? `_${courseId}` : ""
   }`;
 
-  // Save form draft to localStorage on form state changes
+  // Debounced save form draft to localStorage on form state changes
   useEffect(() => {
     if (!watch) return;
+
+    let timer = null;
+
     const subscription = watch((formValues) => {
-      try {
-        // Strip non-serializable File objects
-        const serializable = JSON.parse(
-          JSON.stringify(formValues, (key, value) => {
-            if (typeof window !== "undefined" && value instanceof File) {
-              return { _file: true, name: value.name, size: value.size };
-            }
-            return value;
-          })
-        );
-        localStorage.setItem(storageKey, JSON.stringify(serializable));
-      } catch (e) {
-        // Ignore quota exceeded or storage disabled
-      }
+      if (timer) clearTimeout(timer);
+
+      timer = setTimeout(() => {
+        try {
+          // Persist File values as null so non-serializable objects aren't restored as mock media
+          const serializable = JSON.parse(
+            JSON.stringify(formValues, (key, value) => {
+              if (typeof window !== "undefined" && value instanceof File) {
+                return null;
+              }
+              return value;
+            })
+          );
+          localStorage.setItem(storageKey, JSON.stringify(serializable));
+        } catch (e) {
+          // Ignore quota exceeded or storage disabled
+        }
+      }, 500); // 500ms debounce
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (timer) clearTimeout(timer);
+      subscription.unsubscribe();
+    };
   }, [watch, storageKey]);
 
   const hasDraft = useCallback(() => {
