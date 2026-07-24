@@ -11,6 +11,7 @@ import { getUserById } from "@/lib/actions/users/getUserById";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/config/firebase.config";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { listenToPresence } from "@/lib/actions/messages/listen-to-presence";
 
 const MessagesHeadSideList = () => {
   const unreadCounts = useUnreadMessages(); // { conversationId: count }
@@ -21,6 +22,7 @@ const MessagesHeadSideList = () => {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [presenceMap, setPresenceMap] = useState({});
 
   useEffect(() => {
     const loadConversations = async () => {
@@ -92,6 +94,17 @@ const MessagesHeadSideList = () => {
     });
   }, [conversations]);
 
+  useEffect(() => {
+    if (!user?._id || !conversations.length) return;
+    const otherIds = [...new Set(conversations.flatMap((c) => c.participants?.filter((p) => p !== user._id) || []))];
+    const unsubs = otherIds.map((id) =>
+      listenToPresence(id, (presence) => {
+        setPresenceMap((prev) => ({ ...prev, [id]: presence }));
+      })
+    );
+    return () => unsubs.forEach((u) => u());
+  }, [user?._id, conversations]);
+
   const getOtherParticipant = (participants) => {
     const otherId = participants.find((p) => p !== user?._id);
     return userCache[otherId] || null;
@@ -151,7 +164,8 @@ const MessagesHeadSideList = () => {
                     : "hover:bg-muted/80"
                 )}
               >
-                <div className="flex gap-3 flex-1 min-w-0">
+                <div className="flex gap-3 flex-1 min-w-0 relative">
+                  <div className="relative">
                   <Avatar className="h-10 w-10 rounded-lg">
                     {otherParticipant?.avatar ? (
                       <AvatarImage src={otherParticipant.avatar} />
@@ -161,6 +175,10 @@ const MessagesHeadSideList = () => {
                       </AvatarFallback>
                     )}
                   </Avatar>
+                  {presenceMap[otherParticipant?._id]?.online && (
+                    <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                  )}
+                  </div>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold truncate font-stretch-125%">
