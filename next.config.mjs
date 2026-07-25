@@ -11,13 +11,15 @@ const withSerwist = withSerwistInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "i.ibb.co",
-      "media.istockphoto.com",
-      "images.unsplash.com",
-      "res.cloudinary.com",
-      "cdn.pixabay.com",
-      "logo.clearbit.com",
+    remotePatterns: [
+      { protocol: "https", hostname: "i.ibb.co" },
+      { protocol: "https", hostname: "media.istockphoto.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "cloudinary-marketing-res.cloudinary.com" },
+      { protocol: "https", hostname: "cdn.pixabay.com" },
+      { protocol: "https", hostname: "logo.clearbit.com" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
   },
   webpack: (config) => {

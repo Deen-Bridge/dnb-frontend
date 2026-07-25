@@ -1,9 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
 import { useAuth } from "@/hooks/useAuth";
 import { format, isValid } from "date-fns";
 import { ChatHeadListSkeleton } from "@/components/atoms/skeletons/ChatHeadListSkeleton";
@@ -18,31 +17,14 @@ const MessagesHeadSideList = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userCache, setUserCache] = useState({});
-  const [fetchingUsers, setFetchingUsers] = useState(new Set());
+  const fetchingUsersRef = useRef(new Set());
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [presenceMap, setPresenceMap] = useState({});
 
   useEffect(() => {
-    const loadConversations = async () => {
-      if (!user?._id) return;
-      setLoading(true);
-      try {
-        const convos = await fetchUserConversations(user._id);
-        setConversations(convos);
-      } catch (err) {
-        console.log("Error loading conversations:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadConversations();
-  }, [user?._id]);
-
-  useEffect(() => {
     if (!user?._id) return;
-    setLoading(true);
 
     const q = query(
       collection(db, "conversations"),
@@ -66,13 +48,13 @@ const MessagesHeadSideList = () => {
     const idsToFetch = [];
     conversations.forEach((conv) => {
       conv.participants.forEach((id) => {
-        if (id !== user?._id && !userCache[id] && !fetchingUsers.has(id)) {
+        if (id !== user?._id && !userCache[id] && !fetchingUsersRef.current.has(id)) {
           idsToFetch.push(id);
         }
       });
     });
     if (idsToFetch.length === 0) return;
-    setFetchingUsers((prev) => new Set([...prev, ...idsToFetch]));
+    idsToFetch.forEach((id) => fetchingUsersRef.current.add(id));
     Promise.all(
       idsToFetch.map(async (id) => {
         const res = await getUserById(id);
@@ -86,11 +68,7 @@ const MessagesHeadSideList = () => {
         });
         return updated;
       });
-      setFetchingUsers((prev) => {
-        const updated = new Set(prev);
-        idsToFetch.forEach((id) => updated.delete(id));
-        return updated;
-      });
+      idsToFetch.forEach((id) => fetchingUsersRef.current.delete(id));
     });
   }, [conversations]);
 

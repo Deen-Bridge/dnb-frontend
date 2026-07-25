@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
-import { roboto_900 } from "@/lib/config/font.config";
+import { Inter_800 } from "@/lib/config/font.config";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
@@ -112,7 +112,7 @@ const ProfileUserInfo = ({ user }) => {
   return (
     <div className="pt-16  pb-6">
       <div className="flex justify-between items-center gap-4 pb-3">
-        <h1 className={cn("text-3xl sm:text-4xl font-bold", roboto_900)}>
+        <h1 className={cn("text-3xl sm:text-4xl font-bold", Inter_800)}>
           {user?.name}
         </h1>
         {currentUser?._id === user?._id ? (
