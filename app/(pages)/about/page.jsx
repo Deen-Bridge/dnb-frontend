@@ -3,7 +3,6 @@ import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
-import Navbar from "@/components/organisms/navbar/Navbar"; // Assuming there's a Navbar component
 import Footer from "../(landingPage)/Footer"; // Using the landing page footer
 
 export default function AboutPage() {
