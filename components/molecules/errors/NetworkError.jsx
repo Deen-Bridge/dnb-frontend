@@ -1,13 +1,8 @@
 "use client";
-import {
-  Space_Grotesk_400,
-  roboto_400,
-  roboto_900,
-} from "@/lib/config/font.config";
+import { Inter_800, Inter_400 } from "@/lib/config/font.config";
 import { cn } from "@/lib/utils";
 import Button from "@/components/atoms/form/Button";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import React from "react";
 
 const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
@@ -44,16 +39,16 @@ const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
       />
       <p
         className={cn(
-          "text-4xl lg:text-4xl text-[#252F40] text-bold mb-5 tes-center",
-          roboto_900.className
+          "text-4xl lg:text-4xl text-foreground font-bold mb-5 text-center",
+          Inter_800.className
         )}
       >
-        {errMsg ? "Oops!, something went awry 😥!." : "No network connection"}
+        {errMsg ? "Oops!, something went awry!" : "No network connection"}
       </p>
       <p
         className={cn(
-          "text-xl lg:text-2xl text-[#838DA0] text-bold text-center mb-7",
-          roboto_400.className
+          "text-xl lg:text-2xl text-muted-foreground text-center mb-7",
+          Inter_400.className
         )}
       >
         {errMsg ? errMsg : "Please check your network and try again"}
@@ -61,10 +56,7 @@ const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
       <Button
         round
         onClick={handleRetry}
-        className={cn(
-          `text-base lg:text-lg bg-accent hover:bg-highlight text-white`,
-          Space_Grotesk_400.className
-        )}
+        className="text-base lg:text-lg bg-accent hover:bg-highlight text-white"
       >
         Retry
       </Button>

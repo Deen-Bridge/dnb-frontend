@@ -15,15 +15,9 @@ import {
 } from '@vidstack/react/player/layouts/default';
 
 const VidPlayerBox = ({ data }) => {
-  const textTracks = [
-    {
-      kind: 'subtitles',
-      src: 'https://files.vidstack.io/sprite-fight/subtitles-en.vtt',
-      label: 'English',
-      srclang: 'en',
-      default: true,
-    },
-  ];
+  const textTracks = data?.subtitles?.length
+    ? data.subtitles
+    : [];
 
   return (
     <div className="w-full h-full">
@@ -44,7 +38,7 @@ const VidPlayerBox = ({ data }) => {
         </MediaProvider>
 
         <DefaultVideoLayout
-          thumbnails="https://files.vidstack.io/sprite-fight/thumbnails.vtt"
+          thumbnails={data?.thumbnails || undefined}
           icons={defaultLayoutIcons}
         />
       </MediaPlayer>
