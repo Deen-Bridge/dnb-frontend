@@ -18,6 +18,17 @@ import useAuth from "@/hooks/useAuth";
 import axiosInstance from "@/lib/config/axios.config";
 
 const NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
+const IS_E2E = process.env.NEXT_PUBLIC_E2E_WALLET === "true";
+
+// E2E test-mode wallet — when NEXT_PUBLIC_E2E_WALLET=true, replaces the
+// browser-extension StellarWalletsKit with a deterministic stub.
+// Guarded by process.env so it tree-shakes in production builds.
+let _E2E_getWalletKit = null;
+if (IS_E2E) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { createE2EWalletKit } = require("./e2eWallet");
+  _E2E_getWalletKit = () => createE2EWalletKit();
+}
 
 const StellarContext = createContext(null);
 
@@ -40,6 +51,18 @@ export default function StellarProvider({ children }) {
   // Initialize Stellar Wallets Kit
   useEffect(() => {
     try {
+      if (IS_E2E && _E2E_getWalletKit) {
+        const kit = _E2E_getWalletKit();
+        setConnectedWallet("GA7QYNF7SOWQ3GLR2GMK2G5TTF2JRTTN2KXT3KGYRK3H4X2BYKT4QXYZ");
+        setWalletInfo({
+          publicKey: "GA7QYNF7SOWQ3GLR2GMK2G5TTF2JRTTN2KXT3KGYRK3H4X2BYKT4QXYZ",
+          usdcBalance: "100.00",
+          network: NETWORK,
+        });
+        setKitInitialized(true);
+        return;
+      }
+
       // Create modules for different wallets
       const modules = [
         new FreighterModule(),
@@ -98,8 +121,17 @@ export default function StellarProvider({ children }) {
 
     setIsConnecting(true);
     try {
-      // Open the authentication modal which returns the address when successful
-      const { address } = await StellarWalletsKit.authModal();
+      let address;
+
+      if (IS_E2E && _E2E_getWalletKit) {
+        const kit = _E2E_getWalletKit();
+        const result = await kit.authModal();
+        address = result.address;
+      } else {
+        // Open the authentication modal which returns the address when successful
+        const result = await StellarWalletsKit.authModal();
+        address = result.address;
+      }
 
       if (!address) {
         throw new Error("Failed to get wallet address");
@@ -140,8 +172,12 @@ export default function StellarProvider({ children }) {
     try {
       await axiosInstance.delete("/api/stellar/wallet/disconnect");
 
-      // Disconnect from the kit as well
-      StellarWalletsKit.disconnect();
+      if (IS_E2E && _E2E_getWalletKit) {
+        const kit = _E2E_getWalletKit();
+        kit.disconnect();
+      } else {
+        StellarWalletsKit.disconnect();
+      }
 
       setConnectedWallet(null);
       setWalletInfo(null);
@@ -177,6 +213,12 @@ export default function StellarProvider({ children }) {
     async (xdr, networkPassphrase) => {
       if (!kitInitialized) {
         throw new Error("Wallet kit not initialized");
+      }
+
+      if (IS_E2E && _E2E_getWalletKit) {
+        const kit = _E2E_getWalletKit();
+        const result = await kit.signTransaction(xdr, { networkPassphrase });
+        return result.signedTxXdr;
       }
 
       const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {

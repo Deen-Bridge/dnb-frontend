@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "transactionId": "txn-e2e-001",
+  "payment": {
+    "xdr": "AAAAAgAAAABiXB8Qx5h0H4Rt3gFJ6uGXMnQWNhRn4QK5F0Y2XB8Qx5h0AAAAGQAAAABiXB8Qx5h0H4Rt3gFJ6uGXMnQWNhRn4QK5F0Y2XB8Qx5h0AAAAAQAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "networkPassphrase": "Test SDF Network ; September 2015",
+    "amount": "25",
+    "asset": "USDC"
+  },
+  "item": {
+    "_id": "course-001",
+    "title": "Introduction to Islamic Finance",
+    "price": 25
+  },
+  "creator": {
+    "name": "Dr. Ahmad",
+    "wallet": "GA7QYNF7SOWQ3GLR2GMK2G5TTF2JRTTN2KXT3KGYRK3H4X2BYKT4QXYZ"
+  }
+}
