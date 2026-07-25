@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
+import { Inter_500 } from "@/lib/config/font.config";
 import useAuth from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -18,6 +18,7 @@ const RecentChats = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userCache, setUserCache] = useState({});
+  const fetchingUsersRef = useRef(new Set());
 
   useEffect(() => {
     if (!user?._id) return;
@@ -43,19 +44,25 @@ const RecentChats = () => {
   useEffect(() => {
     if (!conversations.length || !user?._id) return;
 
-    const idsToFetch = new Set();
+    const idsToFetch = [];
     conversations.forEach((conversation) => {
       conversation.participants?.forEach((participantId) => {
-        if (participantId !== user._id && !userCache[participantId]) {
-          idsToFetch.add(participantId);
+        if (
+          participantId !== user._id &&
+          !userCache[participantId] &&
+          !fetchingUsersRef.current.has(participantId)
+        ) {
+          idsToFetch.push(participantId);
         }
       });
     });
 
-    if (idsToFetch.size === 0) return;
+    if (idsToFetch.length === 0) return;
+
+    idsToFetch.forEach((id) => fetchingUsersRef.current.add(id));
 
     Promise.all(
-      Array.from(idsToFetch).map(async (participantId) => {
+      idsToFetch.map(async (participantId) => {
         try {
           const response = await getUserById(participantId);
           return { participantId, user: response?.user || null };
@@ -74,8 +81,9 @@ const RecentChats = () => {
         });
         return updated;
       });
+      idsToFetch.forEach((id) => fetchingUsersRef.current.delete(id));
     });
-  }, [conversations, user?._id, userCache]);
+  }, [conversations, user?._id]);
 
   const sortedConversations = useMemo(() => {
     const sortByTimestamp = (conversation) => {
@@ -220,7 +228,7 @@ const RecentChats = () => {
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className={cn("text-xl font-semibold", roboto_500)}>
+        <h3 className={cn("text-xl font-semibold", Inter_500)}>
           Recent Conversations
         </h3>
         <Link
