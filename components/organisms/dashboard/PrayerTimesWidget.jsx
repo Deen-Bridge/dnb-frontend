@@ -44,6 +44,7 @@ export default function PrayerTimesWidget() {
   const [cityInput, setCityInput] = useState("");
   const [countryInput, setCountryInput] = useState("");
   const timerRef = useRef(null);
+  const loadDataRef = useRef(null);
 
   // Load Prayer Data
   const loadData = useCallback(async (locObj) => {
@@ -64,14 +65,16 @@ export default function PrayerTimesWidget() {
     }
   }, [location, user?.country]);
 
+  // Keep ref current so the initial effect doesn't depend on loadData
+  loadDataRef.current = loadData;
+
   // Initial load & Geolocation auto-detection
   useEffect(() => {
     const stored = getStoredLocation();
     if (stored) {
       setLocation(stored);
-      loadData(stored);
+      loadDataRef.current(stored);
     } else if (typeof window !== "undefined" && navigator.geolocation) {
-      // Try non-blocking geolocation
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const geoLoc = {
@@ -81,20 +84,19 @@ export default function PrayerTimesWidget() {
           };
           setLocation(geoLoc);
           setStoredLocation(geoLoc);
-          loadData(geoLoc);
+          loadDataRef.current(geoLoc);
         },
         (_geoErr) => {
-          // Fallback to profile country or default
           const fallbackLoc = user?.country ? { city: user.country } : null;
-          loadData(fallbackLoc);
+          loadDataRef.current(fallbackLoc);
         },
         { timeout: 5000 }
       );
     } else {
       const fallbackLoc = user?.country ? { city: user.country } : null;
-      loadData(fallbackLoc);
+      loadDataRef.current(fallbackLoc);
     }
-  }, [user?.country, loadData]);
+  }, [user?.country]);
 
   // Live Timer Effect
   useEffect(() => {

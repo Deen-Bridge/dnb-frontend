@@ -4,7 +4,7 @@ import { DollarSign, ShoppingCart, TrendingUp, TrendingDown, Wallet } from "luci
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/atoms/form/Button";
 import {
   ChartContainer,
   ChartTooltip,
@@ -16,11 +16,11 @@ import useEarnings from "@/hooks/useEarnings";
 import Link from "next/link";
 
 const statusColors = {
-  confirmed: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  submitted: "bg-blue-100 text-blue-800",
-  failed: "bg-red-100 text-red-800",
-  expired: "bg-gray-100 text-gray-800",
+  confirmed: "bg-success/10 text-success",
+  pending: "bg-warning/10 text-warning",
+  submitted: "bg-info/10 text-info",
+  failed: "bg-error/10 text-error",
+  expired: "bg-muted text-muted-foreground",
 };
 
 function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
@@ -42,11 +42,11 @@ function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
         {trend !== undefined && (
           <div className="mt-4 flex items-center gap-1 text-sm">
             {trend >= 0 ? (
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <TrendingUp className="h-4 w-4 text-success" />
             ) : (
-              <TrendingDown className="h-4 w-4 text-red-600" />
+              <TrendingDown className="h-4 w-4 text-error" />
             )}
-            <span className={trend >= 0 ? "text-green-600" : "text-red-600"}>
+            <span className={trend >= 0 ? "text-success" : "text-error"}>
               {Math.abs(trend)}%
             </span>
             <span className="text-muted-foreground ml-1">{trendLabel}</span>
@@ -96,8 +96,14 @@ export default function EarningsPage() {
   if (!hasWallet && !isLoading) {
     return (
       <div className="p-4 sm:p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Earnings Dashboard</h1>
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <DollarSign className="h-6 w-6 text-accent" />
+            Earnings Dashboard
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Track your sales, revenue, and payout analytics
+          </p>
         </div>
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
@@ -108,7 +114,7 @@ export default function EarningsPage() {
                 Connect your Stellar wallet to view your earnings and sales analytics
               </p>
             </div>
-            <WalletConnectButton variant="default" />
+            <WalletConnectButton />
           </CardContent>
         </Card>
       </div>
@@ -118,17 +124,20 @@ export default function EarningsPage() {
   if (error) {
     return (
       <div className="p-4 sm:p-6 space-y-6">
-        <h1 className="text-2xl font-bold">Earnings Dashboard</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <DollarSign className="h-6 w-6 text-accent" />
+          Earnings Dashboard
+        </h1>
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <div className="rounded-full bg-red-100 p-3">
-              <TrendingDown className="h-8 w-8 text-red-600" />
+            <div className="rounded-full bg-error/10 p-3">
+              <TrendingDown className="h-8 w-8 text-error" />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Failed to Load Data</h3>
               <p className="text-muted-foreground text-sm mt-1">{error}</p>
             </div>
-            <Button variant="outline" onClick={() => window.location.reload()}>
+            <Button round outlined onClick={() => window.location.reload()}>
               Try Again
             </Button>
           </CardContent>
@@ -146,13 +155,14 @@ export default function EarningsPage() {
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Earnings Dashboard</h1>
-          <p className="text-muted-foreground text-sm">
-            Track your sales, revenue, and payout analytics
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <DollarSign className="h-6 w-6 text-accent" />
+          Earnings Dashboard
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Track your sales, revenue, and payout analytics
+        </p>
       </div>
 
       {isLoading ? (
@@ -249,8 +259,9 @@ export default function EarningsPage() {
                   {["7d", "30d", "all"].map((range) => (
                     <Button
                       key={range}
-                      variant={chartRange === range ? "default" : "outline"}
-                      size="sm"
+                      round
+                      outlined={chartRange !== range}
+                      className={chartRange === range ? "bg-accent text-white" : ""}
                       onClick={() => setChartRange(range)}
                     >
                       {range === "all" ? "All" : range}
@@ -419,9 +430,7 @@ export default function EarningsPage() {
                     >
                       confirmed
                     </Badge>{" "}
-                    transactions count toward your earnings totals. Pending,
-                    failed, and expired transactions are excluded from revenue
-                    calculations.
+                    transactions count toward your earnings totals.
                   </p>
                 </div>
               </CardContent>

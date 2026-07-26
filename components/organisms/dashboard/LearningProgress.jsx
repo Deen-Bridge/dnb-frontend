@@ -18,7 +18,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
+import { Inter_500 } from "@/lib/config/font.config";
 const chartData = [
     { month: "January", course: 186, book: 80 },
     { month: "February", course: 305, book: 200 },
