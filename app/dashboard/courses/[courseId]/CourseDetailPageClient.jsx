@@ -2,7 +2,7 @@
 import VidPlayerBox from "@/components/atoms/dashboard/vid-player-box";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import Button from "@/components/atoms/form/Button";
 import StarRate from "@/components/atoms/form/StarRate";
 import ReviewsSection from "@/components/organisms/dashboard/ReviewsSection";
@@ -10,8 +10,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { Textarea } from "@/components/ui/textarea";
 import { addCourseReview } from "@/lib/actions/courses/addReview";
 import { useHasCourse, usePurchaseCourse } from "@/hooks/usePurchase";
+import { useCourseProgress, formatTime } from "@/hooks/useCourseProgress";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Wallet } from "lucide-react";
+import { Wallet, RotateCcw, Play } from "lucide-react";
 import PaymentModal from "@/components/stellar/PaymentModal";
 import { useStellar } from "@/components/stellar/StellarProvider";
 
@@ -26,12 +28,45 @@ export default function CourseDetailClient({ course }) {
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  // Check if user already owns the course
   const hasCourse = useHasCourse(course?._id);
-  // Local state to hide button after purchase
   const [purchased, setPurchased] = useState(false);
 
-  // Check if the current user has already reviewed
+  const {
+    progress,
+    reportProgress,
+    resetProgress,
+    resumeTime,
+    resumeLabel,
+  } = useCourseProgress(course?._id);
+
+  const [useResume, setUseResume] = useState(false);
+  const [playerKey, setPlayerKey] = useState(0);
+
+  const effectiveStartTime = useResume && resumeTime ? resumeTime : 0;
+
+  const handleTimeUpdate = useCallback(
+    (currentTime, duration) => {
+      reportProgress(currentTime, duration);
+    },
+    [reportProgress]
+  );
+
+  const handleEnded = useCallback(() => {
+    if (course?._id) {
+      reportProgress(progress.durationSeconds || 0, progress.durationSeconds || 0);
+    }
+  }, [reportProgress, progress.durationSeconds, course?._id]);
+
+  const handleResume = () => {
+    setUseResume(true);
+  };
+
+  const handleStartOver = () => {
+    resetProgress();
+    setUseResume(false);
+    setPlayerKey((k) => k + 1);
+  };
+
   const userReview = useMemo(() => {
     if (!user?._id || !course?.reviews) return null;
     return course.reviews.find(
@@ -39,10 +74,8 @@ export default function CourseDetailClient({ course }) {
     );
   }, [user, course?.reviews]);
 
-  // Check if creator has wallet connected
   const creatorHasWallet = course?.createdBy?.stellarWallet?.publicKey;
 
-  // Handle opening the payment modal
   const handlePurchaseCourse = () => {
     if (!user?._id) {
       toast.error("Please sign in to purchase this course.");
@@ -51,7 +84,6 @@ export default function CourseDetailClient({ course }) {
     setShowPaymentModal(true);
   };
 
-  // Handle successful payment
   const handlePaymentSuccess = async (result) => {
     setPurchased(true);
     if (user?._id) {
@@ -86,7 +118,6 @@ export default function CourseDetailClient({ course }) {
     return null;
   }
 
-  // Check if user can access the course
   const canAccess =
     hasCourse || purchased || user?._id === course.createdBy?._id;
 
@@ -97,12 +128,77 @@ export default function CourseDetailClient({ course }) {
       </h2>
 
       {canAccess ? (
-        <div className="w-full aspect-video mb-8 rounded-xl">
-          <VidPlayerBox data={course} />
+        <div className="w-full mb-8 rounded-xl">
+          {progress.percent > 0 && !progress.completed && resumeLabel && !useResume && (
+            <div className="mb-4 p-4 bg-accent/10 border border-accent/30 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Play className="h-5 w-5 text-accent" />
+                <div>
+                  <p className="font-semibold text-sm">{resumeLabel}</p>
+                  <Progress value={progress.percent} className="w-48 h-1.5 mt-1" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  round
+                  className="bg-accent hover:bg-accent/90 text-white text-sm font-semibold px-4"
+                  onClick={handleResume}
+                >
+                  <Play className="h-4 w-4 mr-1" />
+                  Resume
+                </Button>
+                <Button
+                  round
+                  outlined
+                  className="text-sm px-4"
+                  onClick={handleStartOver}
+                >
+                  <RotateCcw className="h-4 w-4 mr-1" />
+                  Start Over
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {progress.completed && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
+              <span className="text-green-600 font-semibold text-sm">
+                ✅ Course Completed
+              </span>
+              <Button
+                round
+                outlined
+                className="text-xs ml-auto px-3 py-1"
+                onClick={handleStartOver}
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Watch Again
+              </Button>
+            </div>
+          )}
+
+          <div className="w-full aspect-video rounded-xl overflow-hidden">
+            <VidPlayerBox
+              key={playerKey}
+              data={course}
+              startTime={effectiveStartTime}
+              onTimeUpdate={handleTimeUpdate}
+              onEnded={handleEnded}
+            />
+          </div>
+
+          {progress.percent > 0 && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>{progress.percent}% complete</span>
+                <span>{formatTime(progress.positionSeconds)} / {formatTime(progress.durationSeconds)}</span>
+              </div>
+              <Progress value={progress.percent} className="h-1.5" />
+            </div>
+          )}
         </div>
       ) : (
         <div className="w-full aspect-video mb-8 relative rounded-xl overflow-hidden">
-          {/* Blurred thumbnail preview */}
           <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-highlight/20 backdrop-blur-sm z-10 flex items-center justify-center">
             <div className="text-center space-y-4 p-8 bg-background/90 rounded-xl shadow-2xl">
               <h3 className="text-2xl font-bold">🔒 Course Locked</h3>
@@ -214,10 +310,8 @@ export default function CourseDetailClient({ course }) {
             </div>
           )}
         </div>
-        {/* Right Column: Pricing & Actions */}
         <aside className="space-y-4">
           <div className="border rounded-xl p-6 shadow-lg bg-card space-y-6 sticky top-4">
-            {/* Price Section */}
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">Course Price</p>
               <div className="text-5xl font-bold text-accent">
@@ -225,7 +319,6 @@ export default function CourseDetailClient({ course }) {
               </div>
             </div>
 
-            {/* Purchase/Access Button */}
             {!hasCourse && !purchased && user?._id !== course.createdBy?._id ? (
               <div className="space-y-2">
                 <Button
@@ -254,7 +347,6 @@ export default function CourseDetailClient({ course }) {
               </div>
             ) : null}
 
-            {/* Course Stats */}
             <div className="space-y-3 pt-4 border-t">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
@@ -281,7 +373,6 @@ export default function CourseDetailClient({ course }) {
         </aside>
       </div>
 
-      {/* Reviews Section */}
       <div className="px-2 sm:px-10 mt-12">
         <h2 className="text-3xl font-semibold mb-6">Reviews</h2>
         <ReviewsSection
@@ -292,7 +383,6 @@ export default function CourseDetailClient({ course }) {
         />
       </div>
 
-      {/* Stellar Payment Modal */}
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
