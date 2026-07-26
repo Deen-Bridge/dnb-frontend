@@ -60,7 +60,6 @@ export const useAuth = () => {
         let freshUser = res.data.user || res.data;
         // Normalize user object to always have _id
         if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;
-        console.log("User data refreshed:", freshUser);
         // Update user state and cookies
         setUser(freshUser);
         Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1 });
