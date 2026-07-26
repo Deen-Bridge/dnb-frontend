@@ -144,6 +144,7 @@ const ReelCard = ({
           />
         }
         label={likeCount.toLocaleString()}
+        accessibleLabel="Like"
         active={viewerLiked}
         onClick={() => handleReact("like")}
       />
@@ -157,17 +158,20 @@ const ReelCard = ({
           />
         }
         label={loveCount.toLocaleString()}
+        accessibleLabel="Love"
         active={viewerLoved}
         onClick={() => handleReact("love")}
       />
       <ReelActionButton
         icon={<MessageCircle className="h-6 w-6" />}
         label={reel.stats?.comments?.toLocaleString?.() || 0}
+        accessibleLabel="Comments"
         onClick={onOpenComments}
       />
       <ReelActionButton
         icon={<Share2 className="h-6 w-6" />}
         label={reel.stats?.shares?.toLocaleString?.() || 0}
+        accessibleLabel="Share"
         onClick={onShare}
       />
     </div>
@@ -247,6 +251,7 @@ const ReelCard = ({
                 />
               }
               label={likeCount.toLocaleString()}
+              accessibleLabel="Like"
               active={viewerLiked}
               onClick={() => handleReact("like")}
             />
@@ -260,17 +265,20 @@ const ReelCard = ({
                 />
               }
               label={loveCount.toLocaleString()}
+              accessibleLabel="Love"
               active={viewerLoved}
               onClick={() => handleReact("love")}
             />
             <ReelActionButton
               icon={<MessageCircle className="h-6 w-6" />}
               label={reel.stats?.comments?.toLocaleString?.() || 0}
+              accessibleLabel="Comments"
               onClick={onOpenComments}
             />
             <ReelActionButton
               icon={<Share2 className="h-6 w-6" />}
               label={reel.stats?.shares?.toLocaleString?.() || 0}
+              accessibleLabel="Share"
               onClick={onShare}
             />
           </div>
