@@ -196,9 +196,10 @@ export default function TransactionHistory() {
                           href={tx.explorerUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          aria-label={`View transaction for ${tx.itemTitle} on Stellar Explorer`}
                           className="text-primary hover:text-primary/80"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
                         </a>
                       )}
                     </TableCell>

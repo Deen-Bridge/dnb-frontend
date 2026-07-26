@@ -26,7 +26,6 @@ const CreateCourseForm = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Cloudinary upload hooks
   const thumbnailUpload = useCloudinaryUpload("dnb_courses_thumbnails", {
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ["image/*"],
@@ -49,19 +48,16 @@ const CreateCourseForm = () => {
       let thumbnailUrl = null;
       let videoUrl = null;
 
-      // Upload thumbnail to Cloudinary first
       if (thumbnail) {
         toast.info("Uploading thumbnail...");
         thumbnailUrl = await thumbnailUpload.uploadFile(thumbnail);
       }
 
-      // Upload video to Cloudinary
       if (video) {
         toast.info("Uploading video... This may take a while.");
         videoUrl = await videoUpload.uploadFile(video);
       }
 
-      // Now create course with URLs
       const data = await createCourse({
         form,
         thumbnailUrl,
@@ -93,14 +89,16 @@ const CreateCourseForm = () => {
     >
       <Label htmlFor="title">Course title</Label>
       <Input
+        id="title"
         name="title"
         placeholder="Course Title"
         value={form.title}
         onChange={handleChange}
         required
       />
-      <Label htmlFor="title">Course description</Label>
+      <Label htmlFor="description">Course description</Label>
       <Textarea
+        id="description"
         name="description"
         placeholder="Book Description"
         value={form.description}
@@ -108,15 +106,17 @@ const CreateCourseForm = () => {
         required
         className="w-full h-24 resize-none overflow-y-auto"
       />
-      <Label htmlFor="title">Course Category</Label>
+      <Label htmlFor="category">Course Category</Label>
       <CategoryCombobox
+        id="category"
         category={form.category}
         setCategory={(value) =>
           setForm((prev) => ({ ...prev, category: value }))
         }
       />
-      <Label htmlFor="title">Course price</Label>
+      <Label htmlFor="price">Course price</Label>
       <Input
+        id="price"
         name="price"
         type="number"
         placeholder="Price (₦)"
@@ -126,7 +126,7 @@ const CreateCourseForm = () => {
       />
 
       <div className="my-4">
-        <Label id="thumbail" className="block mb-1 text-sm font-medium">
+        <Label htmlFor="thumbnail" className="block mb-1 text-sm font-medium">
           Upload Course Thumbnail Image
         </Label>
         <ImageUpload
@@ -145,7 +145,7 @@ const CreateCourseForm = () => {
       </div>
 
       <div>
-        <Label id="file" className="block mb-1 text-sm font-medium">
+        <Label htmlFor="file" className="block mb-1 text-sm font-medium">
           Upload Course video
         </Label>
         <VideoUpload

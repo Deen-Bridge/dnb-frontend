@@ -1,18 +1,16 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useId } from "react";
 import { Search } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { poppins_400 } from "@/lib/config/font.config";
-
-const Searchbox = ({ className, placeholder, onSearch }) => {
+const Searchbox = ({ className, placeholder, onSearch, label }) => {
   const [value, setValue] = useState("");
-
+  const inputId = useId();
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && value.trim()) {
       if (onSearch) onSearch(value.trim());
     }
   };
-
   return (
     <div
       className={cn(
@@ -20,8 +18,12 @@ const Searchbox = ({ className, placeholder, onSearch }) => {
         className
       )}
     >
-      <Search size={18} className="text-accent" />
+      <Search size={18} className="text-accent" aria-hidden="true" />
+      <label htmlFor={inputId} className="sr-only">
+        {label || placeholder || "Search"}
+      </label>
       <input
+        id={inputId}
         type="search"
         placeholder={placeholder || "Search..."}
         className={cn(
@@ -35,5 +37,4 @@ const Searchbox = ({ className, placeholder, onSearch }) => {
     </div>
   );
 };
-
 export default Searchbox;
