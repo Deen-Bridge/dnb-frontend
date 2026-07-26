@@ -144,8 +144,9 @@ const ReelCard = ({
           />
         }
         label={likeCount.toLocaleString()}
-        accessibleLabel="Like"
+        accessibleLabel={`Like, ${likeCount.toLocaleString()}`}
         active={viewerLiked}
+        pressed={viewerLiked}
         onClick={() => handleReact("like")}
       />
       <ReelActionButton
@@ -158,20 +159,21 @@ const ReelCard = ({
           />
         }
         label={loveCount.toLocaleString()}
-        accessibleLabel="Love"
+        accessibleLabel={`Love, ${loveCount.toLocaleString()}`}
         active={viewerLoved}
+        pressed={viewerLoved}
         onClick={() => handleReact("love")}
       />
       <ReelActionButton
         icon={<MessageCircle className="h-6 w-6" />}
         label={reel.stats?.comments?.toLocaleString?.() || 0}
-        accessibleLabel="Comments"
+        accessibleLabel={`Comments, ${reel.stats?.comments?.toLocaleString?.() || 0}`}
         onClick={onOpenComments}
       />
       <ReelActionButton
         icon={<Share2 className="h-6 w-6" />}
         label={reel.stats?.shares?.toLocaleString?.() || 0}
-        accessibleLabel="Share"
+        accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
         onClick={onShare}
       />
     </div>
@@ -251,8 +253,9 @@ const ReelCard = ({
                 />
               }
               label={likeCount.toLocaleString()}
-              accessibleLabel="Like"
+              accessibleLabel={`Like, ${likeCount.toLocaleString()}`}
               active={viewerLiked}
+              pressed={viewerLiked}
               onClick={() => handleReact("like")}
             />
             <ReelActionButton
@@ -265,20 +268,21 @@ const ReelCard = ({
                 />
               }
               label={loveCount.toLocaleString()}
-              accessibleLabel="Love"
+              accessibleLabel={`Love, ${loveCount.toLocaleString()}`}
               active={viewerLoved}
+              pressed={viewerLoved}
               onClick={() => handleReact("love")}
             />
             <ReelActionButton
               icon={<MessageCircle className="h-6 w-6" />}
               label={reel.stats?.comments?.toLocaleString?.() || 0}
-              accessibleLabel="Comments"
+              accessibleLabel={`Comments, ${reel.stats?.comments?.toLocaleString?.() || 0}`}
               onClick={onOpenComments}
             />
             <ReelActionButton
               icon={<Share2 className="h-6 w-6" />}
               label={reel.stats?.shares?.toLocaleString?.() || 0}
-              accessibleLabel="Share"
+              accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
               onClick={onShare}
             />
           </div>
