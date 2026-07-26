@@ -21,6 +21,7 @@ import {
 import { useStellar } from "./StellarProvider";
 import useStellarPayment from "@/hooks/useStellarPayment";
 import Sep7QrCode from "./Sep7QrCode";
+import WalletOnboarding from "./WalletOnboarding";
 
 export default function PaymentModal({
   isOpen,
@@ -39,6 +40,7 @@ export default function PaymentModal({
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [showQr, setShowQr] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function PaymentModal({
       setResult(null);
       setError(null);
       setShowQr(false);
+      setShowWizard(false);
     }
   }, [isOpen]);
 
@@ -99,6 +102,8 @@ export default function PaymentModal({
   const hasInsufficientBalance =
     connectedWallet &&
     parseFloat(walletInfo?.usdcBalance || 0) < (item?.price || 0);
+
+  const needsSetup = connectedWallet && !walletInfo?.hasTrustline;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -158,8 +163,24 @@ export default function PaymentModal({
             </div>
           )}
 
+          {/* Wallet Connected - Needs Setup */}
+          {needsSetup && step === "preview" && (
+            <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
+              <p className="text-sm text-orange-700 mb-3">
+                You need to enable USDC in your wallet before making purchases.
+              </p>
+              <Button
+                onClick={() => setShowWizard(true)}
+                className="w-full"
+              >
+                Set up my wallet
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
           {/* Wallet Connected - Preview */}
-          {connectedWallet && step === "preview" && (
+          {connectedWallet && !needsSetup && step === "preview" && (
             <div className="p-4 border rounded-lg space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
@@ -301,9 +322,11 @@ export default function PaymentModal({
                 <Button
                   onClick={handleInitiate}
                   className="flex-1"
-                  disabled={hasInsufficientBalance}
+                  disabled={hasInsufficientBalance || needsSetup}
                 >
-                  {hasInsufficientBalance ? (
+                  {needsSetup ? (
+                    "Setup Required"
+                  ) : hasInsufficientBalance ? (
                     "Insufficient Balance"
                   ) : (
                     <>
@@ -339,6 +362,11 @@ export default function PaymentModal({
           </div>
         </div>
       </DialogContent>
+
+      <WalletOnboarding 
+        isOpen={showWizard} 
+        onOpenChange={setShowWizard} 
+      />
     </Dialog>
   );
 }
