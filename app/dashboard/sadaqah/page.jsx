@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -201,20 +201,20 @@ export default function SadaqahPage() {
           ))}
         </div>
       ) : statsUnconfigured ? (
-        <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg flex items-center gap-3">
-          <AlertCircle className="h-5 w-5 text-orange-500 shrink-0" />
-          <p className="text-sm text-orange-700">
+        <div className="p-4 border border-warning/20 bg-warning/5 rounded-lg flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-warning shrink-0" />
+          <p className="text-sm text-warning">
             The donation fund is not configured yet. Please check back soon,
             insha&apos;Allah.
           </p>
         </div>
       ) : statsError ? (
-        <div className="p-4 border border-red-200 bg-red-50 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 border border-error/20 bg-error/5 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
-            <p className="text-sm text-red-700">{statsError}</p>
+            <AlertCircle className="h-5 w-5 text-error shrink-0" />
+            <p className="text-sm text-error">{statsError}</p>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchStats}>
+          <Button round outlined onClick={fetchStats}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Retry
           </Button>
@@ -276,13 +276,10 @@ export default function SadaqahPage() {
                     <Button
                       key={preset}
                       type="button"
-                      variant={
-                        customAmount === "" && selectedAmount === preset
-                          ? "default"
-                          : "outline"
-                      }
+                      round
+                      outlined={!(customAmount === "" && selectedAmount === preset)}
+                      className={customAmount === "" && selectedAmount === preset ? "bg-accent text-white h-12 text-base" : "h-12 text-base"}
                       onClick={() => handlePresetSelect(preset)}
-                      className="h-12 text-base"
                     >
                       ${preset}
                     </Button>
@@ -307,13 +304,14 @@ export default function SadaqahPage() {
 
                 {/* Wallet Not Connected */}
                 {!connectedWallet ? (
-                  <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
-                    <p className="text-sm text-orange-700 mb-3">
+                  <div className="p-4 border border-warning/20 bg-warning/5 rounded-lg">
+                    <p className="text-sm text-warning mb-3">
                       Connect your Stellar wallet to donate
                     </p>
                     <Button
+                      round
                       onClick={connectWallet}
-                      className="w-full"
+                      wide
                       disabled={isConnecting}
                     >
                       {isConnecting ? (
@@ -338,8 +336,8 @@ export default function SadaqahPage() {
                       <span
                         className={`font-semibold ${
                           hasInsufficientBalance
-                            ? "text-red-500"
-                            : "text-green-600"
+                            ? "text-error"
+                            : "text-success"
                         }`}
                       >
                         {formatAmount(walletInfo?.usdcBalance)} USDC
@@ -352,7 +350,7 @@ export default function SadaqahPage() {
                       <Badge variant="secondary">{network}</Badge>
                     </div>
                     {hasInsufficientBalance && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-error">
                         Insufficient USDC balance for this amount.
                       </p>
                     )}
@@ -361,8 +359,9 @@ export default function SadaqahPage() {
 
                 {connectedWallet && (
                   <Button
+                    round
+                    wide
                     onClick={handleInitiate}
-                    className="w-full"
                     disabled={
                       !isValidAmount || hasInsufficientBalance || isProcessing
                     }
@@ -384,11 +383,11 @@ export default function SadaqahPage() {
             {/* Confirm Step */}
             {step === "confirm" && donationData && (
               <>
-                <div className="p-4 border border-blue-200 bg-blue-50 rounded-lg space-y-1">
-                  <p className="text-sm text-blue-700 font-medium">
+                <div className="p-4 border border-info/20 bg-info/5 rounded-lg space-y-1">
+                  <p className="text-sm text-info font-medium">
                     Please confirm the transaction in your wallet extension.
                   </p>
-                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                  <div className="flex items-center gap-2 text-sm text-info/80">
                     <span className="text-muted-foreground">Donating:</span>
                     <span className="font-semibold">
                       ${formatAmount(donationData.amount)} USDC
@@ -407,13 +406,14 @@ export default function SadaqahPage() {
 
                 <div className="flex gap-3">
                   <Button
-                    variant="outline"
+                    round
+                    outlined
                     onClick={handleBack}
                     className="flex-1"
                   >
                     Back
                   </Button>
-                  <Button onClick={handleConfirm} className="flex-1">
+                  <Button round onClick={handleConfirm} className="flex-1">
                     <Wallet className="mr-2 h-4 w-4" />
                     Sign & Donate
                   </Button>
@@ -439,7 +439,7 @@ export default function SadaqahPage() {
             {/* Success Step */}
             {step === "success" && (
               <div className="text-center py-4">
-                <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+                <CheckCircle className="h-16 w-16 text-success mx-auto" />
                 <h3 className="text-xl font-semibold mt-4">
                   JazakAllahu Khairan!
                 </h3>
@@ -457,7 +457,7 @@ export default function SadaqahPage() {
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
-                <Button onClick={handleReset} className="w-full mt-6">
+                <Button round wide onClick={handleReset} className="mt-6">
                   Donate Again
                 </Button>
               </div>
@@ -466,10 +466,10 @@ export default function SadaqahPage() {
             {/* Error Step */}
             {step === "error" && (
               <div className="text-center py-4">
-                <AlertCircle className="h-16 w-16 text-red-500 mx-auto" />
+                <AlertCircle className="h-16 w-16 text-error mx-auto" />
                 <h3 className="text-xl font-semibold mt-4">Donation Failed</h3>
                 <p className="text-muted-foreground mt-2">{error}</p>
-                <Button onClick={handleReset} className="w-full mt-6">
+                <Button round wide onClick={handleReset} className="mt-6">
                   Try Again
                 </Button>
               </div>

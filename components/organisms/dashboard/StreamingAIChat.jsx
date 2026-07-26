@@ -146,10 +146,8 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
             </Badge>
             {messages.length > 0 && (
               <Button
-                variant="ghost"
-                size="sm"
                 onClick={handleNewConversation}
-                className="text-xs"
+                className="text-xs p-1.5 h-auto"
               >
                 New Chat
               </Button>
@@ -247,7 +245,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                         onClick={() => setInputMessage(item.question)}
                         className="group relative p-5 text-left border-2 border-muted/50 rounded-2xl hover:border-accent hover:shadow-lg hover:shadow-accent/20 transition-all duration-300 hover:-translate-y-1 bg-background overflow-hidden"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-green-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                         <div className="relative flex items-start gap-3">
                           <span className="text-3xl group-hover:scale-110 transition-transform duration-300">
@@ -407,7 +405,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" disabled>
+                    <Button className="p-2 h-auto" disabled>
                       <Paperclip className="size-4" />
                       <span className="sr-only">Attach file</span>
                     </Button>
@@ -418,7 +416,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" disabled>
+                    <Button className="p-2 h-auto" disabled>
                       <ImageIcon className="size-4" />
                       <span className="sr-only">Attach Image</span>
                     </Button>
@@ -430,7 +428,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" disabled>
+                    <Button className="p-2 h-auto" disabled>
                       <Mic className="size-4" />
                       <span className="sr-only">Use Microphone</span>
                     </Button>
@@ -446,7 +444,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                     type="button"
                     onClick={stopStreaming}
                     round
-                    className="text-sm gap-1.5 text-white flex bg-red-500 hover:bg-red-600"
+                    className="text-sm gap-1.5 text-white flex bg-error hover:bg-error/90"
                   >
                     <StopCircle className="size-3.5" />
                   </Button>

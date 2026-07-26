@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import RecommendedBookCard from "./R-BooksCard";
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
+import { Inter_500 } from "@/lib/config/font.config";
 import {
   fetchAllBooks,
   fetchRecommendedBooks,
@@ -119,7 +119,7 @@ const RecommendedBooks = () => {
     return (
       <div>
         <h3
-          className={cn("text-xl font-bold mb-4 mt-10", roboto_500.className)}
+          className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}
         >
           {sectionTitle}
         </h3>
@@ -136,7 +136,7 @@ const RecommendedBooks = () => {
     return (
       <div>
         <h3
-          className={cn("text-xl font-bold mb-4 mt-10", roboto_500.className)}
+          className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}
         >
           {sectionTitle}
         </h3>
@@ -147,7 +147,7 @@ const RecommendedBooks = () => {
 
   return (
     <div>
-      <h3 className={cn("text-xl font-bold mb-4 mt-10", roboto_500.className)}>
+      <h3 className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}>
         {sectionTitle}
         {!hasInterests && (
           <span className="text-xs font-normal text-muted-foreground ml-2">

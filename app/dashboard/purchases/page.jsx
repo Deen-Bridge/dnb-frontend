@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   BookOpen,
   GraduationCap,
@@ -11,11 +10,10 @@ import {
   Library,
   CircleAlert,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Button from "@/components/atoms/form/Button";
 import {
   Dialog,
   DialogContent,
@@ -24,16 +22,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import usePurchases from "@/hooks/usePurchases";
-import useAuth from "@/hooks/useAuth";
-import { useStellar } from "@/components/stellar/StellarProvider";
 import dayjs from "dayjs";
 
 const statusColors = {
-  confirmed: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  submitted: "bg-blue-100 text-blue-800",
-  failed: "bg-red-100 text-red-800",
-  expired: "bg-gray-100 text-gray-800",
+  confirmed: "bg-success/10 text-success",
+  pending: "bg-warning/10 text-warning",
+  submitted: "bg-info/10 text-info",
+  failed: "bg-error/10 text-error",
+  expired: "bg-muted text-muted-foreground",
 };
 
 function truncateAddress(addr) {
@@ -74,9 +70,9 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
 
           {receipt ? (
             <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-green-50 border border-green-200 rounded-lg">
-                <span className="text-sm text-green-700 font-medium">Amount Paid</span>
-                <span className="text-xl font-bold text-green-700">
+              <div className="flex justify-between items-center p-3 bg-success/5 border border-success/20 rounded-lg">
+                <span className="text-sm text-success font-medium">Amount Paid</span>
+                <span className="text-xl font-bold text-success">
                   ${receipt.amount?.toFixed(2)} USDC
                 </span>
               </div>
@@ -130,11 +126,11 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
               )}
             </div>
           ) : (
-            <div className="p-4 border border-blue-200 bg-blue-50 rounded-lg text-center">
-              <p className="text-sm text-blue-700 font-medium">
+            <div className="p-4 border border-info/20 bg-info/5 rounded-lg text-center">
+              <p className="text-sm text-info font-medium">
                 Free Enrollment
               </p>
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="text-xs text-info/70 mt-1">
                 This item was free or enrolled without a Stellar payment. No on-chain
                 transaction receipt is available.
               </p>
@@ -180,11 +176,11 @@ function PurchaseCard({ item, itemType, getReceipt }) {
               {item.price > 0 ? `$${item.price} USDC` : "Free"}
             </Badge>
             {receipt ? (
-              <Badge variant="secondary" className="bg-green-600/80 text-white border-0">
+              <Badge variant="secondary" className="bg-success/80 text-white border-0">
                 Paid
               </Badge>
             ) : (
-              <Badge variant="secondary" className="bg-blue-600/80 text-white border-0">
+              <Badge variant="secondary" className="bg-info/80 text-white border-0">
                 Enrolled
               </Badge>
             )}
@@ -216,23 +212,21 @@ function PurchaseCard({ item, itemType, getReceipt }) {
 
           <div className="flex gap-2">
             <Button
-              size="sm"
+              round
+              to={actionHref}
               className="flex-1"
-              asChild
             >
-              <Link href={actionHref}>
-                {itemType === "course" ? (
-                  <GraduationCap className="h-4 w-4 mr-1" />
-                ) : (
-                  <BookOpen className="h-4 w-4 mr-1" />
-                )}
-                {actionLabel}
-              </Link>
+              {itemType === "course" ? (
+                <GraduationCap className="h-4 w-4 mr-1" />
+              ) : (
+                <BookOpen className="h-4 w-4 mr-1" />
+              )}
+              {actionLabel}
             </Button>
             {receipt && (
               <Button
-                size="sm"
-                variant="outline"
+                round
+                outlined
                 onClick={() => setReceiptOpen(true)}
               >
                 <Receipt className="h-4 w-4" />
@@ -255,7 +249,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
 
 function LoadingGrid() {
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {[...Array(6)].map((_, i) => (
         <Card key={i} className="overflow-hidden">
           <Skeleton className="h-48 w-full rounded-none" />
@@ -287,17 +281,20 @@ export default function PurchasesPage() {
     return (
       <div className="p-4 sm:p-6 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">My Purchases</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Library className="h-6 w-6 text-accent" />
+            My Purchases
+          </h1>
           <p className="text-muted-foreground text-sm">Your owned courses and books</p>
         </div>
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <CircleAlert className="h-12 w-12 text-red-500" />
+            <CircleAlert className="h-12 w-12 text-error" />
             <div>
               <h3 className="font-semibold text-lg">Failed to Load</h3>
               <p className="text-muted-foreground text-sm mt-1">{error}</p>
             </div>
-            <Button variant="outline" onClick={() => window.location.reload()}>
+            <Button round outlined onClick={() => window.location.reload()}>
               Try Again
             </Button>
           </CardContent>
@@ -311,7 +308,7 @@ export default function PurchasesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Library className="h-6 w-6" />
+            <Library className="h-6 w-6 text-accent" />
             My Purchases
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -334,39 +331,50 @@ export default function PurchasesPage() {
               </p>
             </div>
             <div className="flex gap-3">
-              <Button asChild>
-                <Link href="/dashboard/courses">Browse Courses</Link>
+              <Button round to="/dashboard/courses">
+                Browse Courses
               </Button>
-              <Button variant="outline" asChild>
-                <Link href="/dashboard/library">Browse Books</Link>
+              <Button round outlined to="/dashboard/library">
+                Browse Books
               </Button>
             </div>
           </CardContent>
         </Card>
       ) : (
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList>
-            <TabsTrigger value="courses">
+        <>
+          {/* Tab Toggle */}
+          <div className="flex gap-2">
+            <Button
+              round
+              outlined={tab !== "courses"}
+              className={tab === "courses" ? "bg-accent text-white" : ""}
+              onClick={() => setTab("courses")}
+            >
               Courses ({courses.length})
-            </TabsTrigger>
-            <TabsTrigger value="books">
+            </Button>
+            <Button
+              round
+              outlined={tab !== "books"}
+              className={tab === "books" ? "bg-accent text-white" : ""}
+              onClick={() => setTab("books")}
+            >
               Books ({books.length})
-            </TabsTrigger>
-          </TabsList>
+            </Button>
+          </div>
 
-          <TabsContent value="courses" className="mt-6">
-            {courses.length === 0 ? (
+          {tab === "courses" ? (
+            courses.length === 0 ? (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-3">
                   <GraduationCap className="h-10 w-10 text-muted-foreground" />
                   <p className="text-muted-foreground">No courses purchased yet</p>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/dashboard/courses">Browse Courses</Link>
+                  <Button round outlined to="/dashboard/courses">
+                    Browse Courses
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {courses.map((course) => (
                   <PurchaseCard
                     key={course._id}
@@ -376,34 +384,30 @@ export default function PurchasesPage() {
                   />
                 ))}
               </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="books" className="mt-6">
-            {books.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-3">
-                  <BookOpen className="h-10 w-10 text-muted-foreground" />
-                  <p className="text-muted-foreground">No books purchased yet</p>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/dashboard/library">Browse Books</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-                {books.map((book) => (
-                  <PurchaseCard
-                    key={book._id}
-                    item={book}
-                    itemType="book"
-                    getReceipt={getReceipt}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+            )
+          ) : books.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-3">
+                <BookOpen className="h-10 w-10 text-muted-foreground" />
+                <p className="text-muted-foreground">No books purchased yet</p>
+                <Button round outlined to="/dashboard/library">
+                  Browse Books
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {books.map((book) => (
+                <PurchaseCard
+                  key={book._id}
+                  item={book}
+                  itemType="book"
+                  getReceipt={getReceipt}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
