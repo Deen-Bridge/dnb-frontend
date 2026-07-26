@@ -7,6 +7,7 @@ const ReelActionButton = ({
   label,
   active = false,
   accessibleLabel,
+  pressed,
   onClick,
   disabled = false,
   className,
@@ -17,6 +18,7 @@ const ReelActionButton = ({
       onClick={onClick}
       disabled={disabled}
       aria-label={accessibleLabel}
+      aria-pressed={pressed}
       className={cn(
         "flex flex-col items-center gap-1 transition",
         disabled ? "cursor-not-allowed opacity-50" : "hover:scale-105",
