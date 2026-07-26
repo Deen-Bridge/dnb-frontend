@@ -95,7 +95,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
         )}
         <div className="flex justify-between items-center gap-3">
           <Link
-            href={`/account/profile/${course.createdBy?._id}`}
+            href={`/educators/${course.createdBy?._id}`}
             className="flex items-center gap-2"
           >
             <Avatar className="h-10 w-10 rounded-lg">
