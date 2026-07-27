@@ -53,7 +53,7 @@ export default function CoursesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-accent" />
+            <GraduationCap className="h-6 w-6 text-brand-text" />
             {showBookmarks ? "My Bookmarked Courses" : "All Courses"}
           </h1>
           <p className="text-muted-foreground text-sm mt-1">

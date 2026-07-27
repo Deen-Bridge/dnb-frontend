@@ -1,6 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
+import { useAppearance } from "@/components/providers/AppearanceProvider";
+import { ACCENT_PALETTES, FONT_SIZES } from "@/lib/config/appearance.config";
 import {
   Card,
   CardContent,
@@ -110,12 +113,10 @@ const SettingsPage = () => {
     showInterests: true,
   });
 
-  // Theme state
-  const [theme, setTheme] = useState({
-    mode: "light",
-    accent: "green",
-    fontSize: "medium",
-  });
+  // La UI ofrece "auto"; next-themes lo llama "system".
+  const { theme: themeMode, setTheme: setThemeMode } = useTheme();
+  const { accent, fontSize, setAccent, setFontSize, mounted } = useAppearance();
+  const selectedMode = themeMode === "system" ? "auto" : themeMode;
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -135,8 +136,8 @@ const SettingsPage = () => {
     setPrivacy((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleThemeChange = (key, value) => {
-    setTheme((prev) => ({ ...prev, [key]: value }));
+  const handleModeChange = (mode) => {
+    setThemeMode(mode === "auto" ? "system" : mode);
   };
 
   const showMessage = (type, text) => {
@@ -176,12 +177,10 @@ const SettingsPage = () => {
     setIsLoading(false);
   };
 
-  const handleThemeSave = async (e) => {
+  // Cada control persiste al momento de elegirlo; este submit solo confirma.
+  const handleThemeSave = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
     showMessage("success", "Theme preferences saved!");
-    setIsLoading(false);
   };
 
   const handleDeleteAccount = () => {
@@ -198,16 +197,16 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="p-3 bg-accent/10 rounded-xl">
-              <Settings className="h-8 w-8 text-accent" />
+              <Settings className="h-8 w-8 text-brand-text" />
             </div>
             <div>
-              <h1 className={cn("text-4xl font-bold text-accent")}>Settings</h1>
+              <h1 className={cn("text-4xl font-bold text-brand-text")}>Settings</h1>
               <p className="text-muted-foreground mt-1">
                 Manage your account preferences and privacy
               </p>
@@ -218,18 +217,20 @@ const SettingsPage = () => {
               className={cn(
                 "mb-4",
                 message.type === "success"
-                  ? "border-green-200 bg-green-50"
-                  : "border-red-200 bg-red-50"
+                  ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950"
+                  : "border-destructive/30 bg-destructive/10"
               )}
             >
               {message.type === "success" ? (
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
               ) : (
-                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertCircle className="h-4 w-4 text-destructive" />
               )}
               <AlertDescription
                 className={cn(
-                  message.type === "success" ? "text-green-800" : "text-red-800"
+                  message.type === "success"
+                    ? "text-green-800 dark:text-green-200"
+                    : "text-destructive"
                 )}
               >
                 {message.text}
@@ -240,7 +241,7 @@ const SettingsPage = () => {
           {installable && (
             <div className="mb-4 flex items-center justify-between rounded-xl border border-accent/20 bg-accent/5 p-4">
               <div className="flex items-center gap-3">
-                <Smartphone className="h-5 w-5 text-accent" />
+                <Smartphone className="h-5 w-5 text-brand-text" />
                 <p className="text-sm font-medium text-foreground">
                   Install DeenBridge for quick access
                 </p>
@@ -265,7 +266,7 @@ const SettingsPage = () => {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-6 bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg">
+          <TabsList className="grid w-full grid-cols-6 bg-card/70 backdrop-blur-sm border border-border shadow-lg">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" /> Profile
             </TabsTrigger>
@@ -291,7 +292,7 @@ const SettingsPage = () => {
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
+            <Card className="bg-card/70 backdrop-blur-sm border border-border shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5" /> Profile Information
@@ -329,7 +330,7 @@ const SettingsPage = () => {
                       <p className="text-muted-foreground">
                         @{profile.username || user?.username}
                       </p>
-                      <Badge variant="secondary" className="mt-2">
+                      <Badge className="mt-2 bg-accent text-white">
                         {user?.role || "Member"}
                       </Badge>
                     </div>
@@ -433,7 +434,7 @@ const SettingsPage = () => {
 
           {/* Account Tab */}
           <TabsContent value="account" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
+            <Card className="bg-card/70 backdrop-blur-sm border border-border shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="h-5 w-5" /> Account Security
@@ -555,7 +556,7 @@ const SettingsPage = () => {
 
           {/* Notifications Tab */}
           <TabsContent value="notifications" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
+            <Card className="bg-card/70 backdrop-blur-sm border border-border shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5" /> Notification Preferences
@@ -701,7 +702,7 @@ const SettingsPage = () => {
 
           {/* Privacy Tab */}
           <TabsContent value="privacy" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
+            <Card className="bg-card/70 backdrop-blur-sm border border-border shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5" /> Privacy Settings
@@ -841,7 +842,7 @@ const SettingsPage = () => {
 
           {/* Theme Tab */}
           <TabsContent value="theme" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
+            <Card className="bg-card/70 backdrop-blur-sm border border-border shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="h-5 w-5" /> Theme & Appearance
@@ -861,10 +862,13 @@ const SettingsPage = () => {
                             key={mode}
                             type="button"
                             variant={
-                              theme.mode === mode ? "default" : "outline"
+                              mounted && selectedMode === mode
+                                ? "default"
+                                : "outline"
                             }
                             className="capitalize"
-                            onClick={() => handleThemeChange("mode", mode)}
+                            aria-pressed={mounted && selectedMode === mode}
+                            onClick={() => handleModeChange(mode)}
                           >
                             {mode}
                           </Button>
@@ -874,21 +878,24 @@ const SettingsPage = () => {
                     <div className="space-y-2">
                       <Label>Accent Color</Label>
                       <div className="grid grid-cols-5 gap-3">
-                        {["green", "blue", "purple", "orange", "red"].map(
-                          (color) => (
+                        {Object.entries(ACCENT_PALETTES).map(
+                          ([color, palette]) => (
                             <Button
                               key={color}
                               type="button"
                               variant="outline"
                               className={cn(
                                 "h-12 w-12 rounded-full p-0",
-                                theme.accent === color &&
-                                  "ring-2 ring-accent ring-offset-2"
+                                mounted &&
+                                  accent === color &&
+                                  "ring-2 ring-ring ring-offset-2"
                               )}
-                              style={{ backgroundColor: color }}
-                              onClick={() => handleThemeChange("accent", color)}
+                              style={{ backgroundColor: palette.surface }}
+                              aria-label={`Accent color ${color}`}
+                              aria-pressed={mounted && accent === color}
+                              onClick={() => setAccent(color)}
                             >
-                              {theme.accent === color && (
+                              {mounted && accent === color && (
                                 <CheckCircle className="h-5 w-5 text-white mx-auto" />
                               )}
                             </Button>
@@ -899,20 +906,27 @@ const SettingsPage = () => {
                     <div className="space-y-2">
                       <Label>Font Size</Label>
                       <div className="grid grid-cols-3 gap-3">
-                        {["small", "medium", "large"].map((size) => (
+                        {Object.keys(FONT_SIZES).map((size) => (
                           <Button
                             key={size}
                             type="button"
                             variant={
-                              theme.fontSize === size ? "default" : "outline"
+                              mounted && fontSize === size
+                                ? "default"
+                                : "outline"
                             }
                             className="capitalize"
-                            onClick={() => handleThemeChange("fontSize", size)}
+                            aria-pressed={mounted && fontSize === size}
+                            onClick={() => setFontSize(size)}
                           >
                             {size}
                           </Button>
                         ))}
                       </div>
+                      <p className="text-sm text-muted-foreground">
+                        Scales most of the interface. Some elements keep a fixed
+                        size and won't change.
+                      </p>
                     </div>
                   </div>
                   <Button
@@ -938,7 +952,7 @@ const SettingsPage = () => {
 
           {/* Danger Tab */}
           <TabsContent value="danger" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border border-red-200 shadow-xl">
+            <Card className="bg-card/70 backdrop-blur-sm border border-destructive/30 shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Trash2 className="h-5 w-5" /> Danger Zone

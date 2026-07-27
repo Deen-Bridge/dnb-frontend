@@ -21,7 +21,7 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
+    <div className="bg-card rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
       {/* Image with overlay */}
       <div className="relative w-full h-64">
         <Image
@@ -57,7 +57,7 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col pt-2">
-              <span className="font-medium text-black">
+              <span className="font-medium text-foreground">
                 {book.author?.name || "Unknown Author"}
               </span>
               <span className="text-sm">

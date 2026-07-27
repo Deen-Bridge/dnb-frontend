@@ -160,7 +160,7 @@ export default function ReviewsSection({
                       <button
                         type="button"
                         onClick={() => onEditReview?.(review)}
-                        className="text-xs text-muted-foreground hover:text-accent px-2 py-1 rounded hover:bg-gray-100 transition"
+                        className="text-xs text-muted-foreground hover:text-brand-text px-2 py-1 rounded hover:bg-gray-100 transition"
                       >
                         Edit
                       </button>
@@ -205,7 +205,7 @@ export default function ReviewsSection({
                 <button
                   type="button"
                   onClick={handleShowMore}
-                  className="inline-flex items-center gap-1 text-sm text-accent hover:underline font-medium"
+                  className="inline-flex items-center gap-1 text-sm text-brand-text hover:underline font-medium"
                 >
                   Show more
                   <ChevronDown className="w-4 h-4" />
@@ -214,7 +214,7 @@ export default function ReviewsSection({
                 <button
                   type="button"
                   onClick={handleShowLess}
-                  className="inline-flex items-center gap-1 text-sm text-accent hover:underline font-medium"
+                  className="inline-flex items-center gap-1 text-sm text-brand-text hover:underline font-medium"
                 >
                   Show less
                   <ChevronUp className="w-4 h-4" />

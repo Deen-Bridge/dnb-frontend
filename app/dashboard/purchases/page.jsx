@@ -167,7 +167,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
           <div className="absolute top-3 left-3">
-            <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+            <Badge className="bg-white/80 text-brand-text font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
               {item.category || itemType}
             </Badge>
           </div>
@@ -282,7 +282,7 @@ export default function PurchasesPage() {
       <div className="p-4 sm:p-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Library className="h-6 w-6 text-accent" />
+            <Library className="h-6 w-6 text-brand-text" />
             My Purchases
           </h1>
           <p className="text-muted-foreground text-sm">Your owned courses and books</p>
@@ -308,7 +308,7 @@ export default function PurchasesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Library className="h-6 w-6 text-accent" />
+            <Library className="h-6 w-6 text-brand-text" />
             My Purchases
           </h1>
           <p className="text-muted-foreground text-sm">
