@@ -67,7 +67,7 @@ const Page = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Globe className="h-6 w-6 text-brand-text" />
+            <Globe className="h-6 w-6 text-accent" />
             Islamic Spaces
           </h1>
           <p className="text-muted-foreground text-sm mt-1">

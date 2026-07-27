@@ -155,14 +155,14 @@ const ProfileUserInfo = ({ user }) => {
         {/* Follower/Following Stats */}
         {/* <div className="flex flex-row gap-6 mb-3">
           <div className="flex text-center">
-            <span className="text-lg font-semibold text-brand-text">
+            <span className="text-lg font-semibold text-accent">
               {followersCount}
             </span>
             <p className="text-sm text-muted-foreground">Followers</p>
           </div>
 
           <div className="flex text-center">
-            <span className="text-lg font-semibold text-brand-text">
+            <span className="text-lg font-semibold text-accent">
               {followingCount}
             </span>
             <p className="text-sm text-muted-foreground">Following</p>

@@ -38,7 +38,7 @@ const typeDescription = (item) => {
 const typeBadge = (item) => {
   if (item.type === "course" || item.type === "book" || item.type === "space") {
     return (
-      <Badge className="bg-card/80 text-brand-text font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+      <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
         {item.category || typeLabels[item.type]}
       </Badge>
     );
@@ -74,14 +74,14 @@ const Page = ({ params }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-2 sm:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100/80 py-8 px-2 sm:px-6">
       <h1 className="text-3xl md:text-4xl font-bold mb-8 text-left bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">
         Search Results for "{searchparam}"
       </h1>
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <svg
-            className="animate-spin h-10 w-10 text-brand-text mb-4"
+            className="animate-spin h-10 w-10 text-accent mb-4"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -100,7 +100,7 @@ const Page = ({ params }) => {
               d="M4 12a8 8 0 018-8v8z"
             ></path>
           </svg>
-          <span className="text-brand-text text-lg font-semibold">
+          <span className="text-accent text-lg font-semibold">
             Searching...
           </span>
         </div>
@@ -122,7 +122,7 @@ const Page = ({ params }) => {
               strokeLinecap="round"
             />
           </svg>
-          <span className="text-muted-foreground text-lg font-semibold">
+          <span className="text-gray-500 text-lg font-semibold">
             No results found.
           </span>
         </div>
@@ -131,7 +131,7 @@ const Page = ({ params }) => {
           {results.map((item) => (
             <Card
               key={item.id}
-              className="flex flex-col overflow-hidden rounded-2xl bg-card shadow-lg border-0 hover:shadow-2xl transition-all group"
+              className="flex flex-col overflow-hidden rounded-2xl bg-white/90 shadow-lg border-0 hover:shadow-2xl transition-all group"
             >
               {/* Image */}
               <div className="relative h-44 w-full">
@@ -147,7 +147,7 @@ const Page = ({ params }) => {
                 </div>
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold line-clamp-1 text-brand-text drop-shadow-sm mb-1">
+                <CardTitle className="text-lg font-bold line-clamp-1 text-accent drop-shadow-sm mb-1">
                   {item.title ||
                     item.name ||
                     item.description?.slice(0, 30) + "..."}
@@ -176,7 +176,7 @@ const Page = ({ params }) => {
                     </p>
                     <div className="flex flex-wrap gap-2 items-center mb-2">
                       {item.category && (
-                        <span className="bg-card/80 text-brand-text font-bold px-2 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+                        <span className="bg-white/80 text-accent font-bold px-2 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
                           {item.category}
                         </span>
                       )}
@@ -208,7 +208,7 @@ const Page = ({ params }) => {
                           className="rounded-full object-cover"
                         />
                       )}
-                      <span className="font-semibold text-brand-text">
+                      <span className="font-semibold text-accent">
                         {item.name}
                       </span>
                     </div>

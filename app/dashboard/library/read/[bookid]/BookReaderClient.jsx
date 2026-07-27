@@ -266,7 +266,7 @@ const BookReaderClient = ({ book }) => {
           <div className="flex items-center gap-3">
             <Link
               href={`/dashboard/library/${book._id}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-brand-text transition hover:text-highlight"
+              className="inline-flex items-center gap-2 text-sm font-medium text-accent transition hover:text-highlight"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to details
@@ -322,7 +322,7 @@ const BookReaderClient = ({ book }) => {
           </div>
         ) : loadingDocument && !docRef.current ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-muted-foreground/30 bg-white text-center shadow-sm">
-            <Loader2 className="h-10 w-10 animate-spin text-brand-text" />
+            <Loader2 className="h-10 w-10 animate-spin text-accent" />
             <p className="text-sm text-muted-foreground">
               Preparing your reading experience...
             </p>
@@ -341,14 +341,14 @@ const BookReaderClient = ({ book }) => {
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/40 bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
               <div className="flex items-center gap-3 text-sm">
                 <span className="inline-flex items-center gap-2 font-medium text-muted-foreground">
-                  <Sparkles className="h-4 w-4 text-brand-text" />
+                  <Sparkles className="h-4 w-4 text-accent" />
                   Page {pageNumber}
                   {pageCount ? ` / ${pageCount}` : ""}
                 </span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                     onClick={() => goToPage(-1)}
                     disabled={pageNumber <= 1 || isTransitioning}
                     aria-label="Previous page"
@@ -357,7 +357,7 @@ const BookReaderClient = ({ book }) => {
                   </button>
                   <button
                     type="button"
-                    className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                     onClick={() => goToPage(1)}
                     disabled={
                       isTransitioning ||
@@ -372,7 +372,7 @@ const BookReaderClient = ({ book }) => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
+                  className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                   onClick={() => handleZoom(-1)}
                   disabled={fitWidth || baseScale <= MIN_SCALE}
                   aria-label="Zoom out"
@@ -384,7 +384,7 @@ const BookReaderClient = ({ book }) => {
                 </span>
                 <button
                   type="button"
-                  className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
+                  className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                   onClick={() => handleZoom(1)}
                   disabled={fitWidth || baseScale >= MAX_SCALE}
                   aria-label="Zoom in"
@@ -393,7 +393,7 @@ const BookReaderClient = ({ book }) => {
                 </button>
                 <button
                   type="button"
-                  className="ml-2 inline-flex items-center gap-1 rounded-full border border-border/70 px-3 py-2 text-xs font-medium text-muted-foreground transition hover:border-accent hover:text-brand-text"
+                  className="ml-2 inline-flex items-center gap-1 rounded-full border border-border/70 px-3 py-2 text-xs font-medium text-muted-foreground transition hover:border-accent hover:text-accent"
                   onClick={() => setFitWidth((prev) => !prev)}
                 >
                   {fitWidth ? (
@@ -426,7 +426,7 @@ const BookReaderClient = ({ book }) => {
                 />
                 {(renderingPage || isTransitioning) && (
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-3xl bg-white/40 backdrop-blur-sm">
-                    <Loader2 className="h-8 w-8 animate-spin text-brand-text" />
+                    <Loader2 className="h-8 w-8 animate-spin text-accent" />
                   </div>
                 )}
               </div>
@@ -444,7 +444,7 @@ const BookReaderClient = ({ book }) => {
                       className={`rounded-xl border px-3 py-1 text-xs font-semibold transition ${
                         pageNumber === page
                           ? "border-accent bg-accent text-white shadow"
-                          : "border-transparent bg-muted/70 text-muted-foreground hover:border-accent/30 hover:text-brand-text"
+                          : "border-transparent bg-muted/70 text-muted-foreground hover:border-accent/30 hover:text-accent"
                       }`}
                     >
                       Page {page}

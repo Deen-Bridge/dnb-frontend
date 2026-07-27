@@ -5,7 +5,7 @@ const DashTabs = ({ selectedTab, onChange, tabs }) => {
     return (
         <div className="w-full mt-6 overflow-x-auto">
             <Tabs defaultValue={selectedTab} onValueChange={onChange}>
-                <TabsList className="flex flex-nowrap min-w-max sm:w-full gap-2 bg-card rounded-full overflow-x-auto scrollbar-hide">
+                <TabsList className="flex flex-nowrap min-w-max sm:w-full gap-2 bg-white rounded-full overflow-x-auto scrollbar-hide">
                     {tabs.map((tab) => (
                         <TabsTrigger
                             key={tab.value}

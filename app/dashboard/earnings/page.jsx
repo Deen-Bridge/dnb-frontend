@@ -98,7 +98,7 @@ export default function EarningsPage() {
       <div className="p-4 sm:p-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-brand-text" />
+            <DollarSign className="h-6 w-6 text-accent" />
             Earnings Dashboard
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -125,7 +125,7 @@ export default function EarningsPage() {
     return (
       <div className="p-4 sm:p-6 space-y-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <DollarSign className="h-6 w-6 text-brand-text" />
+          <DollarSign className="h-6 w-6 text-accent" />
           Earnings Dashboard
         </h1>
         <Card>
@@ -157,7 +157,7 @@ export default function EarningsPage() {
     <div className="p-4 sm:p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <DollarSign className="h-6 w-6 text-brand-text" />
+          <DollarSign className="h-6 w-6 text-accent" />
           Earnings Dashboard
         </h1>
         <p className="text-muted-foreground text-sm">

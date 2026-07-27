@@ -8,7 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 const RecommendedCourseCard = ({ course }) => (
-    <div className="bg-card rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
         {/* Course Image */}
         <div className="relative h-40 w-full">
             <Image

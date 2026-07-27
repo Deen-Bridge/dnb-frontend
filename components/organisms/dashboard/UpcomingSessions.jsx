@@ -11,7 +11,7 @@ const sessions = [
 ];
 
 const UpcomingSessions = () => (
-    <div className="bg-card rounded-xl shadow-sm p-4">
+    <div className="bg-white rounded-xl shadow-sm p-4">
         <h3 className="text-lg font-semibold mb-3">Upcoming Sessions</h3>
         <ul className="space-y-2 text-sm">
             {sessions.map((s, i) => (
