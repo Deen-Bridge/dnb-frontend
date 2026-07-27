@@ -8,12 +8,15 @@ export async function searchQuery(query) {
   try {
     const encoded = encodeURIComponent(cleanQuery);
     const response = await axiosInstance.get(`/api/search?q=${encoded}`);
-    if (Array.isArray(response.data) && response.data.length > 0) {
+    if (Array.isArray(response.data)) {
       return response.data;
     }
   } catch (error) {
-    // API server offline or error -> fallback to local data search
+    // Only fall back to local mock data on actual network/request failure in development mode
+    if (process.env.NODE_ENV === "development") {
+      return getLocalSearchResults(cleanQuery);
+    }
   }
 
-  return getLocalSearchResults(cleanQuery);
+  return [];
 }
