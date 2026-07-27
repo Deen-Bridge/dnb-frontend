@@ -16,6 +16,7 @@ export async function searchQuery(query) {
     if (process.env.NODE_ENV === "development") {
       return getLocalSearchResults(cleanQuery);
     }
+    throw error;
   }
 
   return [];
