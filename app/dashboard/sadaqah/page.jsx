@@ -166,7 +166,7 @@ export default function SadaqahPage() {
       {/* Hero Header */}
       <div className="rounded-xl p-6 sm:p-8 shadow-sm bg-gradient-to-br from-green-50 via-white to-green-100/80 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <HeartHandshake className="h-8 w-8 text-accent" />
+          <HeartHandshake className="h-8 w-8 text-brand-text" />
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">
             Sadaqah Jariyah
           </h1>
@@ -225,7 +225,7 @@ export default function SadaqahPage() {
             <p className="text-sm bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">
               Scholarship Pool Balance
             </p>
-            <h3 className="text-2xl font-bold text-accent">
+            <h3 className="text-2xl font-bold text-brand-text">
               ${formatAmount(stats?.poolBalance)}{" "}
               <span className="text-base font-medium">USDC</span>
             </h3>
@@ -234,7 +234,7 @@ export default function SadaqahPage() {
             <p className="text-sm bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">
               Total Donated
             </p>
-            <h3 className="text-2xl font-bold text-accent">
+            <h3 className="text-2xl font-bold text-brand-text">
               ${formatAmount(stats?.totalDonated)}{" "}
               <span className="text-base font-medium">USDC</span>
             </h3>
@@ -243,7 +243,7 @@ export default function SadaqahPage() {
             <p className="text-sm bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">
               Donations
             </p>
-            <h3 className="text-2xl font-bold text-accent">
+            <h3 className="text-2xl font-bold text-brand-text">
               {stats?.donationCount ?? 0}
             </h3>
           </div>
@@ -513,7 +513,7 @@ export default function SadaqahPage() {
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
                     <div>
-                      <p className="font-semibold text-accent">
+                      <p className="font-semibold text-brand-text">
                         ${formatAmount(donation.amount)}{" "}
                         <span className="text-muted-foreground text-sm font-normal">
                           USDC
