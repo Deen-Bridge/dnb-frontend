@@ -206,22 +206,28 @@ export function CommandPalette() {
     setLoading(true);
     setError(false);
 
+    let ignore = false;
     const timer = setTimeout(() => {
       searchQuery(query.trim())
         .then((data) => {
+          if (ignore) return;
           setResults(Array.isArray(data) ? data : []);
           setError(false);
         })
         .catch(() => {
+          if (ignore) return;
           setResults([]);
           setError(true);
         })
         .finally(() => {
-          setLoading(false);
+          if (!ignore) setLoading(false);
         });
     }, 250);
 
-    return () => clearTimeout(timer);
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
   }, [query]);
 
   // Navigate and close dialog
