@@ -112,14 +112,20 @@ export function CommandPalette() {
 
   const restoreFocus = useCallback(() => {
     setTimeout(() => {
-      if (
-        lastActiveElementRef.current &&
-        typeof lastActiveElementRef.current.focus === "function"
-      ) {
-        lastActiveElementRef.current.focus();
-      } else {
-        const btn = document.getElementById("global-search-trigger");
-        if (btn) btn.focus();
+      const target = lastActiveElementRef.current;
+      const btn = document.getElementById("global-search-trigger");
+
+      const isSpecificElement =
+        target &&
+        target !== document.body &&
+        target !== document.documentElement &&
+        typeof target.focus === "function" &&
+        document.body.contains(target);
+
+      if (isSpecificElement) {
+        target.focus();
+      } else if (btn && typeof btn.focus === "function") {
+        btn.focus();
       }
     }, 50);
   }, []);
