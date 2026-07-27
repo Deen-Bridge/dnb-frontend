@@ -32,6 +32,7 @@ function CommandDialog({
   title = "Command Palette",
   description = "Search for a command to run...",
   children,
+  shouldFilter,
   ...props
 }) {
   return (
@@ -42,6 +43,7 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent className="overflow-hidden p-0">
         <Command
+          shouldFilter={shouldFilter}
           className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           {children}
         </Command>
