@@ -37,11 +37,11 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked }) => {
 
         {/* Category  */}
         <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
-          <Badge className="bg-card/80 text-brand-text font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+          <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
             {course.category || "General"}
           </Badge>
           {user?._id === course?.createdBy?._id ? (
-            <Badge className="bg-card/80 text-brand-text font-bold px-2 py-1 rounded-full shadow border-0  uppercase tracking-wider">
+            <Badge className="bg-white/80 text-accent font-bold px-2 py-1 rounded-full shadow border-0  uppercase tracking-wider">
               <Ellipsis className="size-6" />
             </Badge>
           ) : null}

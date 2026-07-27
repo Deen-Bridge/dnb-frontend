@@ -62,7 +62,7 @@ export default async function Page({ params }) {
                             <AvatarImage src={space.host?.avatar || "/images/avatar-placeholder.png"} />
                             <AvatarFallback>{space.host?.name?.slice(0, 2).toUpperCase() || "HN"}</AvatarFallback>
                         </Avatar>
-                        <div className="text-brand-text ">
+                        <div className="text-accent ">
                             <p className="font-bold ">{space.host?.name || "Host"}</p>
                             <p className="text-sm ">Host & Facilitator</p>
                         </div>
@@ -95,7 +95,7 @@ export default async function Page({ params }) {
 
 function StatRow({ icon, label, value }) {
     return (
-        <div className="flex justify-between items-center text-sm font-medium text-brand-text">
+        <div className="flex justify-between items-center text-sm font-medium text-accent">
             <div className="flex items-center gap-2">{icon} {label}</div>
             <span className="font-bold">{value}</span>
         </div>

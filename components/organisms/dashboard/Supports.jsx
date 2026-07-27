@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import Button from '@/components/atoms/form/Button'
 const SupportPalestine = () => {
     return (
-        <div className="mx-auto  text-foreground w-full">
+        <div className="mx-auto  text-black w-full">
             <Card x-chunk="dashboard-02-chunk-0">
                 <CardHeader className="mt-4 p-2 md:p-4">
                     <CardTitle className="text-3xl font-bold">Support Palestine</CardTitle>

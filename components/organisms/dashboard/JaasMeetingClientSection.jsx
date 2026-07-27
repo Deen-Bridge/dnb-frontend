@@ -351,7 +351,7 @@ export default function JaasMeetingClientButtons({ space }) {
                 </Button>
             ) : (
                 <Button outlined round disabled>
-          <CheckCircle className="w-5 h-5 mr-2 text-brand-text" /> Waitlist Joined
+          <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Waitlist Joined
         </Button>
       )}
 

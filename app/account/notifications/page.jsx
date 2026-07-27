@@ -603,8 +603,8 @@ export default function Component() {
               Showing <strong>1-10</strong> of <strong>32</strong>
             </div>
           <div className="flex text-xs text-muted-foreground gap-4">
-              <ArrowLeftToLine className="hover:text-brand-text"  size={17}/>
-              <ArrowRightToLine className="hover:text-brand-text"  size={17}/>
+              <ArrowLeftToLine className="hover:text-accent"  size={17}/>
+              <ArrowRightToLine className="hover:text-accent"  size={17}/>
             </div>
         </CardFooter>
       </Card>

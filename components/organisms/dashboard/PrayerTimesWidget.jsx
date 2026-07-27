@@ -174,7 +174,7 @@ export default function PrayerTimesWidget() {
         {/* Top Header: Dates & Location */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="bg-accent/10 text-brand-text font-semibold text-xs sm:text-sm px-3 py-1 rounded-full flex items-center gap-1.5 border border-accent/20">
+            <span className="bg-accent/10 text-accent font-semibold text-xs sm:text-sm px-3 py-1 rounded-full flex items-center gap-1.5 border border-accent/20">
               <Moon className="w-3.5 h-3.5 fill-accent" />
               {data?.hijriDate || "Hijri Date"}
             </span>
@@ -190,7 +190,7 @@ export default function PrayerTimesWidget() {
             className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground bg-muted/60 hover:bg-muted px-3 py-1 rounded-full transition-all cursor-pointer border"
             title="Change location"
           >
-            <MapPin className="w-3.5 h-3.5 text-brand-text" />
+            <MapPin className="w-3.5 h-3.5 text-accent" />
             <span className="font-medium truncate max-w-[180px]">
               {data?.locationName || "Location"}
             </span>
@@ -262,13 +262,13 @@ export default function PrayerTimesWidget() {
                     key={name}
                     className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all text-center ${
                       isNext
-                        ? "bg-accent/10 border-accent text-brand-text font-bold ring-2 ring-accent/30 shadow-sm"
+                        ? "bg-accent/10 border-accent text-accent font-bold ring-2 ring-accent/30 shadow-sm"
                         : "bg-muted/30 border-border text-foreground hover:bg-muted/60"
                     }`}
                   >
                     <IconComponent
                       className={`w-5 h-5 mb-1 ${
-                        isNext ? "text-brand-text" : "text-muted-foreground"
+                        isNext ? "text-accent" : "text-muted-foreground"
                       }`}
                     />
                     <span className="text-xs font-semibold uppercase tracking-wider">
@@ -329,7 +329,7 @@ export default function PrayerTimesWidget() {
               onClick={handleAutoDetectGPS}
               className="w-full flex items-center justify-center gap-1.5 text-xs"
             >
-              <Navigation className="w-3.5 h-3.5 text-brand-text" /> Use Auto GPS
+              <Navigation className="w-3.5 h-3.5 text-accent" /> Use Auto GPS
             </Button>
           </div>
         </form>

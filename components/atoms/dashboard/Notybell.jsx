@@ -31,7 +31,7 @@ const mockNotifications = [
 ];
 
 const iconMap = {
-    course: <CheckCircle className="w-5 h-5 text-brand-text" />,
+    course: <CheckCircle className="w-5 h-5 text-accent" />,
     message: <MessageCircle className="w-5 h-5 text-green-400" />,
     reminder: <Calendar className="w-5 h-5 text-yellow-400" />,
 };
@@ -51,7 +51,7 @@ export default function Notybell() {
                 className="relative p-2 rounded-full  transition cursor-pointer"
                 onClick={() => setOpen(true)}
             >
-                <Bell size={18} className="text-foreground" />
+                <Bell size={18} className="text-black" />
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
             </div>
 
@@ -71,7 +71,7 @@ export default function Notybell() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.3 }}
-                                    className="flex justify-center items-start gap-3 p-3 bg-muted/50 backdrop-blur-md rounded-xl hover:bg-muted transition"
+                                    className="flex justify-center items-start gap-3 p-3 bg-white/10 backdrop-blur-md rounded-xl hover:bg-white/20 transition"
                                 >
                                     <div className="flex-shrink-0 pt-4">{iconMap[n.type]}</div>
                                     <div className="flex-1">

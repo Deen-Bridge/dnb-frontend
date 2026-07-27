@@ -69,7 +69,7 @@ const LibraryPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-brand-text" />
+            <BookOpen className="h-6 w-6 text-accent" />
             {showBookmarks ? "My Bookmarked Books" : "All Books"}
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
