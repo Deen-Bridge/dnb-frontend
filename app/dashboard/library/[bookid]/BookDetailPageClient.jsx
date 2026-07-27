@@ -103,7 +103,7 @@ export default function BookDetailPage({ book }) {
       <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-10">
         {/* Book Showcase and Main Content */}
         <div className="md:col-span-8 space-y-12">
-          <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 backdrop-blur-md bg-white/5">
+          <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-border backdrop-blur-md bg-muted/50">
             <Image
               src={book.image || "/images/placeholder.jpg"}
               alt={book.title}
@@ -115,8 +115,8 @@ export default function BookDetailPage({ book }) {
           <div className="space-y-4">
             <h1 className="text-5xl font-black tracking-tight">{book.title}</h1>
             <div className="flex flex-wrap items-center gap-3">
-              <Badge className="bg-accent ">{book.category}</Badge>
-              <Badge variant="accent" className="bg-white/10 text-highlight">
+              <Badge className="bg-accent text-white">{book.category}</Badge>
+              <Badge variant="accent" className="bg-muted/50 text-brand-text">
                 {book.price ? `$${book.price}` : "Free"}
               </Badge>
             </div>
@@ -165,7 +165,7 @@ export default function BookDetailPage({ book }) {
           </div>
           {/* Review Section */}
           {user?._id !== book.author._id && (
-            <div className="pt-10 space-y-5 border-t border-white/10">
+            <div className="pt-10 space-y-5 border-t border-border">
               {userReview && (
                 <div className="text-sm text-muted-foreground">
                   You reviewed this book on{" "}
@@ -196,7 +196,7 @@ export default function BookDetailPage({ book }) {
                     />
                     <Textarea
                       placeholder="What did you think about the book?"
-                      className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
+                      className="bg-muted/50 min-h-[120px] border-accent focus:outline-none"
                       value={review}
                       onChange={(e) => setReview(e.target.value)}
                       disabled={submitting || submitted}

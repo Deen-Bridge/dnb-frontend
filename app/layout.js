@@ -1,7 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import CacheProvider from "@/components/providers/CacheProvider";
+import ThemeProvider from "@/components/providers/ThemeProvider";
+import AppearanceProvider from "@/components/providers/AppearanceProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
+import { appearanceInitScript } from "@/lib/config/appearance.config";
 import "../styles/globals.css";
 
 const geistSans = Geist({
@@ -60,14 +63,23 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: appearanceInitScript() }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CacheProvider>
-          <StellarProvider>{children}</StellarProvider>
-        </CacheProvider>
-        <Toaster position="top-right" />
+        <ThemeProvider>
+          <AppearanceProvider>
+            <CacheProvider>
+              <StellarProvider>{children}</StellarProvider>
+            </CacheProvider>
+            <Toaster position="top-right" />
+          </AppearanceProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
