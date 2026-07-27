@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { islamicCategories } from "@/lib/data";
 
-export default function CategoryCombobox({ category, setCategory }) {
+export default function CategoryCombobox({ category, setCategory, id }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(category || "");
 
@@ -32,6 +32,7 @@ export default function CategoryCombobox({ category, setCategory }) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           role="combobox"
           aria-expanded={open}

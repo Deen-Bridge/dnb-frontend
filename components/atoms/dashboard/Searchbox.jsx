@@ -60,5 +60,4 @@ const Searchbox = ({ className, placeholder }) => {
     </div>
   );
 };
-
 export default Searchbox;

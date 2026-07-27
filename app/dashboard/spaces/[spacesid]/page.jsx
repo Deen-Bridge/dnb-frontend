@@ -8,7 +8,7 @@ import JaasMeetingClientButtons from "@/components/organisms/dashboard/JaasMeeti
 import { joinSpaceWaitlist } from "@/lib/actions/spaces/joinSpaceWaitlist";
 
 export default async function Page({ params }) {
-    const { spacesid } = params;
+    const { spacesid } = await params;
     let space = null;
     try {
         space = await getSpaceById(spacesid);
