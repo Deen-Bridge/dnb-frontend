@@ -263,7 +263,7 @@ export default function Dashboard({ chatData, onChatUpdate }) {
                       >
                         {/* Gradient background on hover */}
                         <div
-                          className={`absolute inset-0 bg-gradient-to-br from-green-500/10 to-green-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                          className={`absolute inset-0 bg-gradient-to-br from-accent/10 to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                         ></div>
 
                         {/* Content */}
@@ -411,7 +411,7 @@ export default function Dashboard({ chatData, onChatUpdate }) {
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button className="p-2 h-auto">
                       <Paperclip className="size-4" />
                       <span className="sr-only">Attach file</span>
                     </Button>
@@ -420,7 +420,7 @@ export default function Dashboard({ chatData, onChatUpdate }) {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button className="p-2 h-auto">
                       <ImageIcon className="size-4" />
                       <span className="sr-only">Attach Image</span>
                     </Button>
@@ -430,7 +430,7 @@ export default function Dashboard({ chatData, onChatUpdate }) {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button className="p-2 h-auto">
                       <Mic className="size-4" />
                       <span className="sr-only">Use Microphone</span>
                     </Button>

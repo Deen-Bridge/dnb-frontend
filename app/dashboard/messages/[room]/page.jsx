@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,13 +7,15 @@ import { ArrowLeft, MessageSquare, Users, Globe } from "lucide-react";
 import { FiSend } from "react-icons/fi";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter, usePathname } from "next/navigation";
-import { isValid, format } from "date-fns";
+import { isValid, format, formatDistanceToNow } from "date-fns";
 import { listenToMessages } from "@/lib/actions/messages/fetchMessages";
 import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
 import { sendMessage } from "@/lib/actions/messages/sendMessage";
 import { getUserById } from "@/lib/actions/users/getUserById";
 import { setTyping } from "@/lib/actions/messages/typing";
 import { listenToTyping } from "@/lib/actions/messages/listen-to-typing";
+import { usePresence } from "@/hooks/usePresence";
+import { toast } from "sonner";
 import Link from "next/link";
 import Loader from "@/components/molecules/loaders/rootLoader";
 import { markMessagesAsRead } from "@/hooks/markMessageAsRead";
@@ -32,6 +34,13 @@ export default function Page({ params }) {
   const [otherParticipantInfo, setOtherParticipantInfo] = useState(null);
   const [userCache, setUserCache] = useState({});
   const [typingUsers, setTypingUsers] = useState({});
+
+  const otherUserId = useMemo(() => {
+    if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants)) return null;
+    return currentConversation.participants.find((id) => id !== user._id) || null;
+  }, [currentConversation, user?._id]);
+
+  const { online: otherOnline, lastSeen: otherLastSeen } = usePresence(otherUserId);
 
   const messagesEndRef = useRef(null);
 
@@ -129,7 +138,7 @@ export default function Page({ params }) {
       setNewMessage("");
     } catch (error) {
       console.log("Failed to send message:", error);
-      alert("Failed to send message. Please try again.");
+      toast.error("Failed to send message. Please try again.");
     }
   };
 
@@ -158,8 +167,14 @@ export default function Page({ params }) {
             <h2 className="font-semibold font-stretch-125% text-sm sm:text-base truncate">
               {otherParticipantInfo?.name}
             </h2>
-            <p className="text-xs sm:text-sm text-accent">Active now</p>
-            {/* // Show typing indicator */}
+            {otherOnline ? (
+              <p className="text-xs sm:text-sm text-green-500">Active now</p>
+            ) : otherLastSeen ? (
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Last seen {formatDistanceToNow(otherLastSeen.toDate?.() || otherLastSeen, { addSuffix: true })}
+              </p>
+            ) : null}
+            {/* Show typing indicator */}
             {Object.entries(typingUsers).map(([uid, isTyping]) =>
               uid !== user._id && isTyping ? (
                 <p key={uid} className="text-xs text-muted-foreground">
@@ -169,7 +184,9 @@ export default function Page({ params }) {
             )}
           </div>
         </Link>
-        <div className="text-xs sm:text-sm text-green-500">🟢</div>
+        {otherOnline && (
+          <div className="h-2 w-2 rounded-full bg-green-500" />
+        )}
       </div>
 
       {error && (
