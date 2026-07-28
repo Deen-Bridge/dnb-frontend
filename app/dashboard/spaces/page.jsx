@@ -1,21 +1,20 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import DashTabs from "@/components/atoms/dashboard/DashTabs";
-import { cn } from "@/lib/utils";
+import { Globe, Plus } from "lucide-react";
 import SpaceCard from "@/components/molecules/dashboard/cards/spaceCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
-import { poppins_700 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
+import { Card, CardContent } from "@/components/ui/card";
 import SpaceCreateForm from "@/components/organisms/create/space-create-form";
 import Modal from "@/components/molecules/Modal";
-import { getSpaces } from "@/lib/actions/spaces/get-spaces"; // <-- import your fetch function
-import useAuth from "@/hooks/useAuth"; // <-- import useAuth hook
+import { getSpaces } from "@/lib/actions/spaces/get-spaces";
+import useAuth from "@/hooks/useAuth";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
 const tabnames = [
   { value: "all", label: "All" },
   { value: "upcoming", label: "Upcoming" },
-  { value: "live", label: "live" },
+  { value: "live", label: "Live" },
   { value: "wishlist", label: "Wishlist" },
 ];
 
@@ -34,7 +33,6 @@ const Page = () => {
       const data = await getSpaces();
       setSpaces(data);
     } catch (err) {
-      console.error("Error fetching spaces:", err);
       setError(true);
       setSpaces([]);
     } finally {
@@ -46,13 +44,8 @@ const Page = () => {
     fetchSpaces();
   }, []);
 
-  const handleClick = () => {
-    setmodalOpen(!modalOpen);
-  };
-
   const handleSpaceCreated = () => {
     setmodalOpen(false);
-    // Refetch spaces after creating a new one
     fetchSpaces();
   };
 
@@ -65,60 +58,74 @@ const Page = () => {
     );
   }
 
+  const filteredSpaces = spaces.filter((space) =>
+    selectedTab === "all" ? true : space?.status === selectedTab
+  );
+
   return (
-    <>
-      <div className="bg-muted min-h-screen  px-4">
-        <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
-          <div className="mb-8 flex flex-row justify-between items-center gap-4">
-            <div>
-              <span className={cn("text-highlight text-xl ", poppins_700)}>
-                Explore Our Islamic Spaces
-              </span>
-            </div>
-            <div>
-              <Button
-                outlined
-                round
-                wide
-                className="text-sm text-nowrap"
-                onClick={handleClick}
-              >
-                Create Space
-              </Button>
-            </div>
-          </div>
-
-          <DashTabs
-            selectedTab={selectedTab}
-            onChange={setSelectedTab}
-            tabs={tabnames}
-          />
-
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 mt-4">
-            {loading
-              ? [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
-              : (() => {
-                  const filteredSpaces = spaces.filter((space) =>
-                    selectedTab === "all" ? true : space?.status === selectedTab
-                  );
-                  if (filteredSpaces.length === 0) {
-                    return (
-                      <div className="col-span-full text-center text-muted-foreground py-8">
-                        No{" "}
-                        {selectedTab === "all"
-                          ? "spaces"
-                          : selectedTab + " spaces"}{" "}
-                        at the moment.
-                      </div>
-                    );
-                  }
-                  return filteredSpaces.map((space, index) => (
-                    <SpaceCard key={space._id || index} space={space} />
-                  ));
-                })()}
-          </div>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Globe className="h-6 w-6 text-accent" />
+            Islamic Spaces
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Join live sessions, discussions, and community events
+          </p>
         </div>
+        <Button round outlined onClick={() => setmodalOpen(true)}>
+          <Plus className="h-4 w-4 mr-1" />
+          Create
+        </Button>
       </div>
+
+      {/* Tab Filters */}
+      <div className="flex gap-2">
+        {tabnames.map((tab) => (
+          <Button
+            key={tab.value}
+            round
+            outlined={selectedTab !== tab.value}
+            className={selectedTab === tab.value ? "bg-accent text-white" : ""}
+            onClick={() => setSelectedTab(tab.value)}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, idx) => (
+            <CourseCardSkeleton key={idx} />
+          ))}
+        </div>
+      ) : filteredSpaces.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+            <Globe className="h-12 w-12 text-muted-foreground" />
+            <div>
+              <h3 className="font-semibold text-lg">No Spaces Found</h3>
+              <p className="text-muted-foreground text-sm mt-1 max-w-md">
+                {selectedTab === "all"
+                  ? "No spaces available at the moment."
+                  : `No ${selectedTab} spaces at the moment.`}
+              </p>
+            </div>
+            <Button round outlined onClick={() => setmodalOpen(true)}>
+              Create Space
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredSpaces.map((space, index) => (
+            <SpaceCard key={space._id || index} space={space} />
+          ))}
+        </div>
+      )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setmodalOpen(false)}
@@ -126,7 +133,7 @@ const Page = () => {
       >
         <SpaceCreateForm onSpaceCreated={handleSpaceCreated} />
       </Modal>
-    </>
+    </div>
   );
 };
 

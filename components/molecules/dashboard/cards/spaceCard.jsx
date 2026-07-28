@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
+import Link from "next/link";
 import Image from "next/image";
 import {
   Avatar,
@@ -90,7 +91,10 @@ const SpaceCard = ({ space }) => {
         </div>
         {/* Host */}
         <div className="flex items-center justify-between gap-3 mb-2">
-          <div className="flex gap-2">
+          <Link
+            href={host?._id ? `/educators/${host._id}` : "#"}
+            className="flex gap-2 items-center"
+          >
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={host?.avatar || "/images/avatar-placeholder.png"}
@@ -105,7 +109,7 @@ const SpaceCard = ({ space }) => {
               <span className="font-semibold text-accent leading-tight text-base">{host?.name || "Ustadh Ahmad"}</span>
               <span className="text-muted-foreground text-xs">Host</span>
             </div>
-          </div>
+          </Link>
 
           <div>
             <CirclePlus className="w-5 sm:w-8 h-5 sm:h-8  text-accent hover:bg-accent hover:text-white rounded-full p-1 transition" />

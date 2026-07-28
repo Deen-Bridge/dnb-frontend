@@ -16,6 +16,16 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 import { BarChart3 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Inter_500 } from "@/lib/config/font.config";
+const chartData = [
+    { month: "January", course: 186, book: 80 },
+    { month: "February", course: 305, book: 200 },
+    { month: "March", course: 237, book: 120 },
+    { month: "April", course: 73, book: 190 },
+    { month: "May", course: 209, book: 130 },
+    { month: "June", course: 214, book: 140 },
+]
 
 const chartConfig = {
     course: {

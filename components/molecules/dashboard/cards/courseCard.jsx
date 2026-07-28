@@ -1,19 +1,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
-import { Ellipsis, Bookmark, BookmarkCheck } from "lucide-react";
+import { Ellipsis, CheckCircle } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useBookmark } from "@/hooks/useBookmark";
+import BookmarkButton from "@/components/atoms/BookmarkButton";
 
-const CourseCard = ({ course, onBookmarkChange }) => {
+const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress }) => {
   const { user } = useAuth();
   const { isBookmarked, loading, toggle } = useBookmark(
     course._id,
-    onBookmarkChange
+    onBookmarkChange,
+    initialIsBookmarked
   );
+
+  const hasPurchased = user?.purchasedCourses?.some(
+    (c) =>
+      c.courseId?.toString?.() === course._id?.toString?.() ||
+      c._id?.toString?.() === course._id?.toString?.()
+  ) || user?.enrolledCourses?.some(
+    (c) => c?.toString?.() === course._id?.toString?.()
+  );
+
+  const showProgress = hasPurchased && progress && progress.percent > 0;
+  const isCompleted = progress?.completed || false;
 
   const handleBookmark = async (e) => {
     e.preventDefault();
@@ -44,6 +58,22 @@ const CourseCard = ({ course, onBookmarkChange }) => {
             </Badge>
           ) : null}
         </div>
+
+        {/* Progress badge on owned courses */}
+        {showProgress && (
+          <div className="absolute bottom-3 left-3 right-3 z-20">
+            {isCompleted ? (
+              <div className="flex items-center gap-1 bg-green-500/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow w-fit">
+                <CheckCircle className="h-3 w-3" />
+                Completed
+              </div>
+            ) : (
+              <div className="bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full shadow w-fit">
+                {progress.percent}% watched
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Header */}
@@ -58,9 +88,14 @@ const CourseCard = ({ course, onBookmarkChange }) => {
 
       {/* Instructor */}
       <CardContent>
+        {showProgress && (
+          <div className="mb-3">
+            <Progress value={progress.percent} className="h-1.5" />
+          </div>
+        )}
         <div className="flex justify-between items-center gap-3">
           <Link
-            href={`/account/profile/${course.createdBy?._id}`}
+            href={`/educators/${course.createdBy?._id}`}
             className="flex items-center gap-2"
           >
             <Avatar className="h-10 w-10 rounded-lg">
@@ -78,21 +113,17 @@ const CourseCard = ({ course, onBookmarkChange }) => {
             </div>
           </Link>
           <div className="flex gap-4 justify-between items-center">
-            <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-              {course.price ? `$${course.price}` : "Free"}
-            </div>
-            <button
+            {!hasPurchased && (
+              <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                {course.price ? `$${course.price}` : "Free"}
+              </div>
+            )}
+            <BookmarkButton
+              isBookmarked={isBookmarked}
+              loading={loading}
               onClick={handleBookmark}
-              disabled={loading}
-              className="transition-all hover:scale-110 cursor-pointer"
-              title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            >
-              {isBookmarked ? (
-                <BookmarkCheck className="w-6 h-6 text-accent fill-accent" />
-              ) : (
-                <Bookmark className="w-6 h-6 text-accent hover:fill-accent/20" />
-              )}
-            </button>
+              variant="course"
+            />
           </div>
         </div>
       </CardContent>
@@ -105,7 +136,7 @@ const CourseCard = ({ course, onBookmarkChange }) => {
           className="w-full bg-accent text-white hover:bg-accent/90 text-sm font-semibold"
           to={`/dashboard/courses/${course._id}`}
         >
-          View Course
+          {isCompleted ? "Review Course" : showProgress ? "Continue Learning" : "View Course"}
         </Button>
       </div>
     </Card>

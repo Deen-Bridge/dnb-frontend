@@ -35,6 +35,19 @@ export const useAuth = () => {
     Cookies.remove("userInfo", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
+
+    if (typeof window !== "undefined" && "caches" in window) {
+      caches.keys().then((names) => {
+        const runtimeCaches = names.filter(
+          (name) =>
+            name.startsWith("serwist-") || name === "book-previews"
+        );
+        return Promise.all(
+          runtimeCaches.map((name) => caches.delete(name))
+        );
+      }).catch(() => {});
+    }
+
     toast.success("Logged out successfully");
     router.push("/");
   };
