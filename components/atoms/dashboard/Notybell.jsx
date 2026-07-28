@@ -1,3 +1,5 @@
+// LIVE: rendered by components/molecules/dashboard/nav-header.jsx.
+// Placeholder data. See components/molecules/dashboard/Notybell.jsx for the SSE-backed bell.
 // components/atoms/dashboard/Notybell.jsx
 "use client";
 
