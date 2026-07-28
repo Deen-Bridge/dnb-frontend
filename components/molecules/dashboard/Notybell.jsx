@@ -1,3 +1,6 @@
+// NOT YET WIRED UP: SSE-backed bell built on hooks/useNotificationSSE.js.
+// The bell currently rendered in the nav is components/atoms/dashboard/Notybell.jsx.
+// Retained deliberately - this is the intended replacement, not dead code.
 "use client";
 
 import React, { useState } from "react";
