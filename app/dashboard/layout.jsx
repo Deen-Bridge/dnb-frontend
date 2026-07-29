@@ -4,6 +4,8 @@ import ProtectedRoute from "@/hooks/protected-route";
 import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import NavHeader from "@/components/molecules/dashboard/nav-header";
+import PresenceProvider from "@/components/providers/PresenceProvider";
+import { CommandPalette } from "@/components/organisms/dashboard/CommandPalette";
 
 export default function Layout({ children }) {
   return (
@@ -20,13 +22,16 @@ export default function Layout({ children }) {
         shadow="0 0 10px #34AD5D,0 0 5px #34AD5D"
       />
       <ProtectedRoute>
+        <PresenceProvider>
         <SidebarProvider>
           <SidebarLeft />
           <SidebarInset>
             <NavHeader />
             {children}
           </SidebarInset>
+          <CommandPalette />
         </SidebarProvider>
+        </PresenceProvider>
       </ProtectedRoute>
     </>
   );

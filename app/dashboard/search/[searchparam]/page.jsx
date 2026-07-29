@@ -54,7 +54,7 @@ const typeBadge = (item) => {
 };
 
 const Page = ({ params }) => {
-  const searchparam = params?.searchparam || "";
+  const { searchparam = "" } = React.use(params);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 

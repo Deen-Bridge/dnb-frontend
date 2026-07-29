@@ -141,7 +141,7 @@ export const useStellarPayment = () => {
         return res.data;
       } catch (error) {
         console.error("Failed to fetch transactions:", error);
-        return { success: false, transactions: [], pagination: {} };
+        return { success: false, transactions: [], pagination: {}, error: error.response?.data?.message || error.message };
       }
     },
     []

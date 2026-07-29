@@ -7,7 +7,7 @@ const getBackendBaseUrl = () => {
 };
 
 export async function GET(_request, { params }) {
-  const { bookId } = params || {};
+  const { bookId } = await params || {};
 
   if (!bookId) {
     return NextResponse.json(
@@ -18,7 +18,8 @@ export async function GET(_request, { params }) {
 
   try {
     const backendUrl = `${getBackendBaseUrl()}/api/books/${bookId}/preview`;
-    const token = cookies().get("authToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("authToken")?.value;
 
     const headers = new Headers();
     if (token) {

@@ -15,6 +15,22 @@
 
 ---
 
+## 📸 Screenshots
+
+| Landing Page | Login / Sign Up |
+|:---:|:---:|
+| ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
+
+| Dashboard | Courses |
+|:---:|:---:|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Courses](docs/screenshots/courses.png) |
+
+| Library | Wallet & Payments |
+|:---:|:---:|
+| ![Library](docs/screenshots/library.png) | ![Wallet](docs/screenshots/wallet.png) |
+
+---
+
 ## About
 
 Deen Bridge is a modern learning platform that connects Muslims worldwide with authentic Islamic knowledge. Learners enroll in interactive courses, read from a digital library, join live community spaces, message mentors directly, and get instant answers from an Islamic-knowledge AI assistant. Courses and books are purchased with **USDC on the Stellar network** — non-custodial, with creators paid directly to their own wallets.

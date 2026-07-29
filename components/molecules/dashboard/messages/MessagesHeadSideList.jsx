@@ -1,9 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
 import { useAuth } from "@/hooks/useAuth";
 import { format, isValid } from "date-fns";
 import { ChatHeadListSkeleton } from "@/components/atoms/skeletons/ChatHeadListSkeleton";
@@ -11,36 +10,21 @@ import { getUserById } from "@/lib/actions/users/getUserById";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/config/firebase.config";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { listenToPresence } from "@/lib/actions/messages/listen-to-presence";
 
 const MessagesHeadSideList = () => {
   const unreadCounts = useUnreadMessages(); // { conversationId: count }
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userCache, setUserCache] = useState({});
-  const [fetchingUsers, setFetchingUsers] = useState(new Set());
+  const fetchingUsersRef = useRef(new Set());
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    const loadConversations = async () => {
-      if (!user?._id) return;
-      setLoading(true);
-      try {
-        const convos = await fetchUserConversations(user._id);
-        setConversations(convos);
-      } catch (err) {
-        console.log("Error loading conversations:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadConversations();
-  }, [user?._id]);
+  const [presenceMap, setPresenceMap] = useState({});
 
   useEffect(() => {
     if (!user?._id) return;
-    setLoading(true);
 
     const q = query(
       collection(db, "conversations"),
@@ -64,13 +48,13 @@ const MessagesHeadSideList = () => {
     const idsToFetch = [];
     conversations.forEach((conv) => {
       conv.participants.forEach((id) => {
-        if (id !== user?._id && !userCache[id] && !fetchingUsers.has(id)) {
+        if (id !== user?._id && !userCache[id] && !fetchingUsersRef.current.has(id)) {
           idsToFetch.push(id);
         }
       });
     });
     if (idsToFetch.length === 0) return;
-    setFetchingUsers((prev) => new Set([...prev, ...idsToFetch]));
+    idsToFetch.forEach((id) => fetchingUsersRef.current.add(id));
     Promise.all(
       idsToFetch.map(async (id) => {
         const res = await getUserById(id);
@@ -84,13 +68,20 @@ const MessagesHeadSideList = () => {
         });
         return updated;
       });
-      setFetchingUsers((prev) => {
-        const updated = new Set(prev);
-        idsToFetch.forEach((id) => updated.delete(id));
-        return updated;
-      });
+      idsToFetch.forEach((id) => fetchingUsersRef.current.delete(id));
     });
   }, [conversations]);
+
+  useEffect(() => {
+    if (!user?._id || !conversations.length) return;
+    const otherIds = [...new Set(conversations.flatMap((c) => c.participants?.filter((p) => p !== user._id) || []))];
+    const unsubs = otherIds.map((id) =>
+      listenToPresence(id, (presence) => {
+        setPresenceMap((prev) => ({ ...prev, [id]: presence }));
+      })
+    );
+    return () => unsubs.forEach((u) => u());
+  }, [user?._id, conversations]);
 
   const getOtherParticipant = (participants) => {
     const otherId = participants.find((p) => p !== user?._id);
@@ -151,7 +142,8 @@ const MessagesHeadSideList = () => {
                     : "hover:bg-muted/80"
                 )}
               >
-                <div className="flex gap-3 flex-1 min-w-0">
+                <div className="flex gap-3 flex-1 min-w-0 relative">
+                  <div className="relative">
                   <Avatar className="h-10 w-10 rounded-lg">
                     {otherParticipant?.avatar ? (
                       <AvatarImage src={otherParticipant.avatar} />
@@ -161,6 +153,10 @@ const MessagesHeadSideList = () => {
                       </AvatarFallback>
                     )}
                   </Avatar>
+                  {presenceMap[otherParticipant?._id]?.online && (
+                    <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                  )}
+                  </div>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold truncate font-stretch-125%">
