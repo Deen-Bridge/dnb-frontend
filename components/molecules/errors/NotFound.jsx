@@ -19,7 +19,7 @@ const NotFoundComp = ({
     if (window.history.length > 2) {
       router.back();
     } else {
-      router.push(isDashboard ? "/dashboard/classes" : "/login");
+      router.push(isDashboard ? "/dashboard" : "/login");
     }
   };
 
