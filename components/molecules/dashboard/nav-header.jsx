@@ -2,18 +2,10 @@ import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Notybell from "@/components/atoms/dashboard/Notybell";
 import Searchbox from "@/components/atoms/dashboard/Searchbox";
-import { useRouter } from "next/navigation";
 
-const searchParams = ["Courses", " Books", " Spaces", " Authors"];
+const searchParams = ["Courses", "Books", "Spaces", "Authors"];
 
 const NavHeader = () => {
-  const router = useRouter();
-
-  const handleSearch = (term) => {
-    if (term && term.trim()) {
-      router.push(`/dashboard/search/${encodeURIComponent(term.trim())}`);
-    }
-  };
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="flex h-14 items-center px-4 md:px-6 gap-4 justify-between">
@@ -23,7 +15,6 @@ const NavHeader = () => {
           <Searchbox
             placeholder={searchParams}
             className="max-w-[300px]"
-            onSearch={handleSearch}
           />
         </div>
 

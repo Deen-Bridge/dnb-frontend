@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import RecommendedCourseCard from "@/components/organisms/dashboard/R-CourseCard";
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
+import { Inter_500 } from "@/lib/config/font.config";
 import {
   fetchAllCourses,
   fetchRecommendedCourses,
@@ -11,19 +11,13 @@ import {
 import { toast } from "sonner";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import { getAverageRating } from "@/hooks/getAverageRating";
 
 const RecommendedCourses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasInterests, setHasInterests] = useState(true);
-
-  // Calculate average rating from reviews
-  const getAverageRating = (reviews = []) => {
-    if (!reviews || reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return sum / reviews.length;
-  };
 
   const loadCourses = async () => {
     try {
@@ -126,7 +120,7 @@ const RecommendedCourses = () => {
   if (loading) {
     return (
       <div>
-        <h3 className={cn("text-xl font-bold mb-4", roboto_500.className)}>
+        <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>
           {sectionTitle}
         </h3>
         <div className="grid sm:grid-cols-2 gap-4">
@@ -141,7 +135,7 @@ const RecommendedCourses = () => {
   if (courses.length === 0) {
     return (
       <div>
-        <h3 className={cn("text-xl font-bold mb-4", roboto_500.className)}>
+        <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>
           {sectionTitle}
         </h3>
         <p className="text-muted-foreground text-center py-8">{emptyMessage}</p>
@@ -151,7 +145,7 @@ const RecommendedCourses = () => {
 
   return (
     <div>
-      <h3 className={cn("text-xl font-bold mb-4", roboto_500.className)}>
+      <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>
         {sectionTitle}
         {!hasInterests && (
           <span className="text-xs font-normal text-muted-foreground ml-2">

@@ -6,6 +6,7 @@ import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { DownloadCloud, Wallet } from "lucide-react";
 import StarRate from "@/components/atoms/form/StarRate";
+import ReviewsSection from "@/components/organisms/dashboard/ReviewsSection";
 import { addBookReview } from "@/lib/actions/library/addReview";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
@@ -29,6 +30,14 @@ export default function BookDetailPage({ book }) {
     () => hasBook || book?.price === 0
   );
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  // Check if the current user has already reviewed
+  const userReview = useMemo(() => {
+    if (!user?._id || !book?.reviews) return null;
+    return book.reviews.find(
+      (r) => r.user?._id === user._id || r.user?.id === user._id
+    );
+  }, [user, book?.reviews]);
 
   useEffect(() => {
     if (hasBook) {
@@ -157,7 +166,18 @@ export default function BookDetailPage({ book }) {
           {/* Review Section */}
           {user?._id !== book.author._id && (
             <div className="pt-10 space-y-5 border-t border-white/10">
-              {!submitted && (
+              {userReview && (
+                <div className="text-sm text-muted-foreground">
+                  You reviewed this book on{" "}
+                  {new Date(userReview.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                  .
+                </div>
+              )}
+              {!submitted && !userReview && (
                 <>
                   <h2 className="text-3xl font-semibold">Leave a Review</h2>
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -201,6 +221,16 @@ export default function BookDetailPage({ book }) {
               )}
             </div>
           )}
+          {/* Reviews List */}
+          <div className="pt-8">
+            <h2 className="text-3xl font-semibold mb-6">Reviews</h2>
+            <ReviewsSection
+              reviews={book.reviews || []}
+              currentUserId={user?._id}
+              loading={false}
+              enableEditDelete={false}
+            />
+          </div>
         </div>
         {/* Sidebar for desktop/tablet */}
         <div className="md:col-span-4 hidden md:block space-y-8 sticky top-20 self-start">

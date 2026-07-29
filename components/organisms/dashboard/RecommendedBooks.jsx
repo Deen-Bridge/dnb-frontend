@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import RecommendedBookCard from "./R-BooksCard";
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
+import { Inter_500 } from "@/lib/config/font.config";
 import {
   fetchAllBooks,
   fetchRecommendedBooks,
@@ -11,19 +11,13 @@ import {
 import { toast } from "sonner";
 import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import { getAverageRating } from "@/hooks/getAverageRating";
 
 const RecommendedBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasInterests, setHasInterests] = useState(true);
-
-  // Calculate average rating from reviews
-  const getAverageRating = (reviews = []) => {
-    if (!reviews || reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return Math.round(sum / reviews.length);
-  };
 
   const loadBooks = async () => {
     try {
@@ -125,7 +119,7 @@ const RecommendedBooks = () => {
     return (
       <div>
         <h3
-          className={cn("text-xl font-bold mb-4 mt-10", roboto_500.className)}
+          className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}
         >
           {sectionTitle}
         </h3>
@@ -142,7 +136,7 @@ const RecommendedBooks = () => {
     return (
       <div>
         <h3
-          className={cn("text-xl font-bold mb-4 mt-10", roboto_500.className)}
+          className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}
         >
           {sectionTitle}
         </h3>
@@ -153,7 +147,7 @@ const RecommendedBooks = () => {
 
   return (
     <div>
-      <h3 className={cn("text-xl font-bold mb-4 mt-10", roboto_500.className)}>
+      <h3 className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}>
         {sectionTitle}
         {!hasInterests && (
           <span className="text-xs font-normal text-muted-foreground ml-2">
@@ -167,7 +161,7 @@ const RecommendedBooks = () => {
             key={book._id || book.id}
             book={{
               ...book,
-              rating: getAverageRating(book.reviews),
+              rating: Math.round(getAverageRating(book.reviews)),
               instructor: book.author?.name || "DeenBridge Author",
               price: book.price === 0 ? "Free" : book.price,
             }}
