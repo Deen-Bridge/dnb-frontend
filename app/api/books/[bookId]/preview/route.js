@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { config } from "@/lib/config/env";
 
 const getBackendBaseUrl = () => {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  return base.replace(/\/$/, "");
+  return config.apiUrl.replace(/\/$/, "");
 };
 
 export async function GET(_request, { params }) {
