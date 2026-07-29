@@ -85,7 +85,25 @@ export default function StellarProvider({ children }) {
     checkStoredWallet();
   }, [user?._id]);
 
-  // Connect wallet using the auth modal
+  /**
+   * Open the wallet picker and return the selected public key.
+   * No logged-in user required — used by Sign in with Stellar (SEP-10).
+   */
+  const selectWallet = useCallback(async () => {
+    if (!kitInitialized) {
+      throw new Error("Wallet kit not initialized. Please refresh the page.");
+    }
+
+    const { address } = await StellarWalletsKit.authModal();
+
+    if (!address) {
+      throw new Error("Failed to get wallet address");
+    }
+
+    return address;
+  }, [kitInitialized]);
+
+  // Connect wallet using the auth modal (requires an authenticated session)
   const connectWallet = useCallback(async () => {
     if (!kitInitialized) {
       toast.error("Wallet kit not initialized. Please refresh the page.");
@@ -99,12 +117,7 @@ export default function StellarProvider({ children }) {
 
     setIsConnecting(true);
     try {
-      // Open the authentication modal which returns the address when successful
-      const { address } = await StellarWalletsKit.authModal();
-
-      if (!address) {
-        throw new Error("Failed to get wallet address");
-      }
+      const address = await selectWallet();
 
       // Save to backend
       const res = await axiosInstance.post("/api/stellar/wallet/connect", {
@@ -134,7 +147,7 @@ export default function StellarProvider({ children }) {
     } finally {
       setIsConnecting(false);
     }
-  }, [kitInitialized, user, refreshUser]);
+  }, [kitInitialized, user, refreshUser, selectWallet]);
 
   // Disconnect wallet
   const disconnectWallet = useCallback(async () => {
@@ -195,6 +208,7 @@ export default function StellarProvider({ children }) {
     walletInfo,
     isConnecting,
     isLoading,
+    selectWallet,
     connectWallet,
     disconnectWallet,
     refreshBalance,
