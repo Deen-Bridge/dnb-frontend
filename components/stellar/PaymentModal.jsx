@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,7 @@ export default function PaymentModal({
 }) {
   const { connectedWallet, walletInfo, connectWallet, network, isConnecting } =
     useStellar();
-  const { initializePayment, executePayment, isProcessing } =
+  const { initializePayment, executePayment, cancelPayment, isProcessing } =
     useStellarPayment();
 
   const [step, setStep] = useState("preview"); // preview | confirm | processing | success | error
@@ -39,10 +39,12 @@ export default function PaymentModal({
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [showQr, setShowQr] = useState(false);
+  const closingRef = useRef(false);
 
-  // Reset state when modal opens/closes
+  // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
+      closingRef.current = false;
       setStep("preview");
       setPaymentData(null);
       setResult(null);
@@ -68,12 +70,16 @@ export default function PaymentModal({
 
   const handleConfirm = async () => {
     setStep("processing");
-    const success = await executePayment(paymentData);
+    const outcome = await executePayment(paymentData);
 
-    if (success) {
-      setResult(success);
+    if (outcome.success) {
+      setResult(outcome.data);
       setStep("success");
-      onSuccess?.(success);
+      onSuccess?.(outcome.data);
+    } else if (outcome.cancelled) {
+      await cancelPayment();
+      setPaymentData(null);
+      setStep("preview");
     } else {
       setStep("error");
       setError("Transaction failed. Please try again.");
@@ -81,12 +87,25 @@ export default function PaymentModal({
   };
 
   const handleClose = () => {
+    if (step === "processing" || closingRef.current) return;
+    closingRef.current = true;
+
+    if (paymentData && step !== "success" && step !== "error") {
+      cancelPayment();
+    }
+
     setStep("preview");
     setPaymentData(null);
     setResult(null);
     setError(null);
     setShowQr(false);
     onClose();
+  };
+
+  const handleBack = () => {
+    cancelPayment();
+    setPaymentData(null);
+    setStep("preview");
   };
 
   const sep7Uri = paymentData?.sep7Uri || paymentData?.payment?.sep7Uri;
@@ -102,7 +121,15 @@ export default function PaymentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(e) => {
+          if (step === "processing") e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          if (step === "processing") e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>
             {step === "success"
@@ -247,7 +274,7 @@ export default function PaymentModal({
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="mt-4 text-muted-foreground">
                 {isProcessing
-                  ? "Processing payment..."
+                  ? "Waiting for wallet confirmation…"
                   : "Preparing transaction..."}
               </p>
               <p className="text-xs text-muted-foreground mt-2">
@@ -319,7 +346,7 @@ export default function PaymentModal({
               <>
                 <Button
                   variant="outline"
-                  onClick={() => setStep("preview")}
+                  onClick={handleBack}
                   className="flex-1"
                 >
                   Back

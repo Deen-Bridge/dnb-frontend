@@ -57,7 +57,7 @@ export const useStellarPayment = () => {
     async (paymentData) => {
       if (!paymentData) {
         toast.error("No payment data available");
-        return false;
+        return { success: false };
       }
 
       setIsProcessing(true);
@@ -86,26 +86,26 @@ export const useStellarPayment = () => {
           await refreshBalance();
 
           setCurrentTransaction(null);
-          return res.data;
+          return { success: true, data: res.data };
         } else {
           throw new Error(res.data.message);
         }
       } catch (error) {
         const message = error.response?.data?.message || error.message;
+        const isCancelled = message.includes("rejected") || message.includes("cancelled");
 
-        // Handle specific Stellar errors
         if (message.includes("insufficient") || message.includes("underfunded")) {
           toast.error("Insufficient USDC balance");
         } else if (message.includes("op_no_trust") || message.includes("trustline")) {
           toast.error(
             "You need to add USDC trustline to your wallet first"
           );
-        } else if (message.includes("rejected") || message.includes("cancelled")) {
+        } else if (isCancelled) {
           toast.error("Transaction was cancelled");
         } else {
           toast.error(`Payment failed: ${message}`);
         }
-        return false;
+        return { success: false, cancelled: isCancelled };
       } finally {
         setIsProcessing(false);
       }
