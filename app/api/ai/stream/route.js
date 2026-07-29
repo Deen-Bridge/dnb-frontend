@@ -1,4 +1,5 @@
 
+import { config } from "@/lib/config/env";
 
 export async function POST(req) {
   try {
@@ -10,9 +11,7 @@ export async function POST(req) {
       user_id,
     });
 
-    // Use environment variable or fallback to localhost
-    const AI_API_URL =
-      process.env.NEXT_PUBLIC_AI_API_URL || "http://localhost:8000";
+    const AI_API_URL = config.aiApiUrl;
     const endpoint = `${AI_API_URL}/chat/stream`;
 
     // Make request to AI backend

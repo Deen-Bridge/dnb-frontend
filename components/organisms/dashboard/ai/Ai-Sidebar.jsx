@@ -5,13 +5,13 @@ import { Plus, Trash2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import Button from "@/components/atoms/form/Button";
+import { config } from "@/lib/config/env";
 
 export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [userId, setUserId] = useState(null);
-  const AI_API_URL =
-    process.env.NEXT_PUBLIC_AI_API_URL || "http://localhost:8000";
+  const AI_API_URL = config.aiApiUrl;
 
   useEffect(() => {
     const loadUserChats = async () => {
