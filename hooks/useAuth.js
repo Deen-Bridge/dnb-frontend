@@ -6,6 +6,25 @@ import axiosInstance from "@/lib/config/axios.config";
 
 const COOKIE_OPTIONS = { expires: 1, path: "/" };
 
+/**
+ * Persist auth session cookies and sync AuthProvider state.
+ * Shared by email/password login, signup, and Sign in with Stellar.
+ */
+export const persistSession = (token, user) => {
+  if (!token || !user) {
+    throw new Error("Missing token or user for session persistence");
+  }
+
+  if (user.id && !user._id) user._id = user.id;
+
+  Cookies.set("authToken", token, COOKIE_OPTIONS);
+  Cookies.set("userInfo", JSON.stringify(user), COOKIE_OPTIONS);
+
+  __triggerAuthUpdate(user);
+
+  return user;
+};
+
 export const useAuth = () => {
   return useAuthContext();
 };
@@ -17,12 +36,7 @@ export const login = async (email, password) => {
       password,
     });
     const { token, user } = res.data;
-    if (user.id && !user._id) user._id = user.id;
-
-    Cookies.set("authToken", token, COOKIE_OPTIONS);
-    Cookies.set("userInfo", JSON.stringify(user), COOKIE_OPTIONS);
-
-    __triggerAuthUpdate(user);
+    persistSession(token, user);
 
     toast.success("Login successful");
     return user;
@@ -49,12 +63,7 @@ export const signup = async (name, email, password, role) => {
     });
 
     const { token, user } = res.data;
-    if (user.id && !user._id) user._id = user.id;
-
-    Cookies.set("authToken", token, COOKIE_OPTIONS);
-    Cookies.set("userInfo", JSON.stringify(user), COOKIE_OPTIONS);
-
-    __triggerAuthUpdate(user);
+    persistSession(token, user);
 
     toast.success("Signup successful! Redirecting to dashboard...");
     return user;
