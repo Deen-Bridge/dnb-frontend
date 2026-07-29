@@ -16,8 +16,9 @@ import { AlbedoModule } from "@creit.tech/stellar-wallets-kit/modules/albedo";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import axiosInstance from "@/lib/config/axios.config";
+import { config } from "@/lib/config/env";
 
-const NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
+const NETWORK = config.stellarNetwork;
 
 const StellarContext = createContext(null);
 
