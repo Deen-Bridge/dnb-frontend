@@ -18,6 +18,22 @@ export const metadata = {
   title: "Deen Bridge",
   description:
     "Empowering Muslims with authentic knowledge — Learn Qur'an, Arabic, Fiqh, and more through 1-on-1 live mentorship and lots more.",
+  manifest: "/manifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "DeenBridge",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title: "Deen Bridge ",
     description:
