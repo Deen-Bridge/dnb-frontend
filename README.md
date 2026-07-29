@@ -15,6 +15,22 @@
 
 ---
 
+## 📸 Screenshots
+
+| Landing Page | Login / Sign Up |
+|:---:|:---:|
+| ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
+
+| Dashboard | Courses |
+|:---:|:---:|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Courses](docs/screenshots/courses.png) |
+
+| Library | Wallet & Payments |
+|:---:|:---:|
+| ![Library](docs/screenshots/library.png) | ![Wallet](docs/screenshots/wallet.png) |
+
+---
+
 ## About
 
 Deen Bridge is a modern learning platform that connects Muslims worldwide with authentic Islamic knowledge. Learners enroll in interactive courses, read from a digital library, join live community spaces, message mentors directly, and get instant answers from an Islamic-knowledge AI assistant. Courses and books are purchased with **USDC on the Stellar network** — non-custodial, with creators paid directly to their own wallets.
@@ -70,12 +86,17 @@ The app runs at `http://localhost:3000`.
 
 ### Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Base URL of the [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) API |
-| `NEXT_PUBLIC_STELLAR_NETWORK` | `testnet` or `public` (mainnet) |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | No (default `http://localhost:5000`) | Base URL of the [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) API |
+| `NEXT_PUBLIC_AI_API_URL` | No (default `http://localhost:8000`) | Base URL of the [dnb-ai](https://github.com/Deen-Bridge/dnb-ai) AI assistant service |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | No (default `testnet`) | Stellar network — `testnet` or `mainnet` |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | **Yes** | Cloudinary cloud name for unsigned image/video uploads |
+| `NEXT_PUBLIC_JITSI_DOMAIN` | No (default `meet.jit.si`) | Jitsi Meet domain for live video spaces |
+| `NEXT_PUBLIC_JITSI_REQUIRE_JWT` | No (default `false`) | Whether the Jitsi deployment requires a signed JWT token |
+| `NEXT_PUBLIC_FIREBASE_*` | No | Firebase Web SDK config values (apiKey, authDomain, projectId, etc.) — defaults to the project's current values |
 
-See `.env.example` for the full list.
+See `.env.example` for the full variable list with example values.
 
 ### Scripts
 

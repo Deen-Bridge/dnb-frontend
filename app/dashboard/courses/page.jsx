@@ -1,19 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
+import { GraduationCap, Bookmark, Plus } from "lucide-react";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import Button from "@/components/atoms/form/Button";
-import Modal from "@/components/molecules/Modal";
-import CreateCourseForm from "@/components/organisms/create/course-create-form";
+import { Card, CardContent } from "@/components/ui/card";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { getBookmarkedCourses } from "@/lib/actions/courses/bookmark-course";
 import useAuth from "@/hooks/useAuth";
+import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
 export default function CoursesPage() {
   const { user } = useAuth();
+  const { progressMap } = useAllCourseProgress();
   const [courses, setCourses] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
@@ -50,78 +51,92 @@ export default function CoursesPage() {
   }
 
   return (
-    <>
-      <div className="bg-muted h-full w-full">
-        <div className="flex justify-between items-center p-5">
-          <h2 className="text-2xl font-bold">
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <GraduationCap className="h-6 w-6 text-accent" />
             {showBookmarks ? "My Bookmarked Courses" : "All Courses"}
-          </h2>
-          <div className="flex gap-2">
-            <Button
-              round
-              outlined
-              className="text-normal"
-              onClick={() => setModalOpen(!modalOpen)}
-            >
-              Create Course
-            </Button>
-            <Button
-              round
-              outlined={!showBookmarks}
-              className={showBookmarks ? "bg-accent text-white" : "text-normal"}
-              onClick={() => setShowBookmarks(!showBookmarks)}
-            >
-              {showBookmarks ? "Show All" : "Bookmarks"}
-            </Button>
-          </div>
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            {showBookmarks
+              ? "Courses you've saved for later"
+              : "Browse and enroll in courses"}
+          </p>
         </div>
+        <div className="flex gap-2">
+          <Button
+            round
+            outlined
+            onClick={() => window.location.href = "/dashboard/courses/create"}
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Create
+          </Button>
+          <Button
+            round
+            outlined={!showBookmarks}
+            className={showBookmarks ? "bg-accent text-white" : ""}
+            onClick={() => setShowBookmarks(!showBookmarks)}
+          >
+            <Bookmark className="h-4 w-4 mr-1" />
+            {showBookmarks ? "Show All" : "Bookmarks"}
+          </Button>
+        </div>
+      </div>
 
-        <div className="flex flex-1 flex-col gap-4 mt-10 p-4 pt-0">
-          {loading ? (
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
-              {[...Array(6)].map((_, idx) => (
-                <CourseCardSkeleton key={`skeleton-${idx}`} />
-              ))}
-            </div>
-          ) : courses.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground text-lg">
+      {loading ? (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, idx) => (
+            <CourseCardSkeleton key={`skeleton-${idx}`} />
+          ))}
+        </div>
+      ) : courses.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+            <GraduationCap className="h-12 w-12 text-muted-foreground" />
+            <div>
+              <h3 className="font-semibold text-lg">
+                {showBookmarks ? "No Bookmarked Courses" : "No Courses Yet"}
+              </h3>
+              <p className="text-muted-foreground text-sm mt-1 max-w-md">
                 {showBookmarks
-                  ? "No bookmarked courses yet. Start bookmarking courses you're interested in!"
+                  ? "Start bookmarking courses you're interested in!"
                   : "No courses available at the moment."}
               </p>
             </div>
-          ) : (
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ">
-              {courses
-                .filter(
-                  (course) =>
-                    showBookmarks || course?.createdBy?._id !== user?._id
-                )
-                .map((course) => (
-                  <CourseCard
-                    key={course._id}
-                    course={course}
-                    onBookmarkChange={(isBookmarked) => {
-                      // If in bookmarks view and unbookmarked, remove from list
-                      if (showBookmarks && !isBookmarked) {
-                        setCourses(courses.filter((c) => c._id !== course._id));
-                      }
-                    }}
-                  />
-                ))}
-            </div>
-          )}
+            {!showBookmarks && (
+              <Button
+                round
+                outlined
+                onClick={() => window.location.href = "/dashboard/courses/create"}
+              >
+                Create Course
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {courses
+            .filter(
+              (course) =>
+                showBookmarks || course?.createdBy?._id !== user?._id
+            )
+            .map((course) => (
+              <CourseCard
+                key={course._id}
+                course={course}
+                progress={progressMap[course._id]}
+                onBookmarkChange={(isBookmarked) => {
+                  if (showBookmarks && !isBookmarked) {
+                    setCourses(courses.filter((c) => c._id !== course._id));
+                  }
+                }}
+              />
+            ))}
         </div>
-      </div>
-      <Modal
-        title="Create Course"
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        className="max-w-md w-full"
-      >
-        <CreateCourseForm />
-      </Modal>
-    </>
+      )}
+    </div>
   );
 }
