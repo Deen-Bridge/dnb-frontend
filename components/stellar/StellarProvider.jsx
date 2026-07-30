@@ -198,7 +198,7 @@ export default function StellarProvider({ children }) {
     } finally {
       setIsConnecting(false);
     }
-  }, [kitInitialized, user, refreshUser]);
+  }, [kitInitialized, user, refreshUser, selectWallet]);
 
   // Disconnect wallet
   const disconnectWallet = useCallback(async () => {

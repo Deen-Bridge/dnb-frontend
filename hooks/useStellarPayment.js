@@ -59,7 +59,7 @@ export const useStellarPayment = () => {
     async (paymentData) => {
       if (!paymentData) {
         toast.error("No payment data available");
-        return false;
+        return { success: false };
       }
 
       setIsProcessing(true);
@@ -83,7 +83,7 @@ export const useStellarPayment = () => {
 
           await refreshBalance();
           setCurrentTransaction(null);
-          return res.data;
+          return { success: true, data: res.data };
         } else {
           throw new Error(res.data.message);
         }
@@ -104,7 +104,7 @@ export const useStellarPayment = () => {
           const message = error.response?.data?.message || error.message;
           toast.error(`Payment failed: ${message}`);
         }
-        return false;
+        return { success: false, cancelled: isCancelled };
       } finally {
         setIsProcessing(false);
       }
@@ -134,7 +134,7 @@ export const useStellarPayment = () => {
         return res.data;
       } catch (error) {
         console.error("Failed to fetch transactions:", error);
-        return { success: false, transactions: [], pagination: {} };
+        return { success: false, transactions: [], pagination: {}, error: error.response?.data?.message || error.message };
       }
     },
     []
