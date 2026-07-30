@@ -1,4 +1,5 @@
 import axios from "axios";
+import { config } from "@/lib/config/env";
 
 export async function POST(req) {
   try {
@@ -6,9 +7,7 @@ export async function POST(req) {
     console.log("Sending message to AI:", message);
     console.log("Chat ID:", chat_id, "User ID:", user_id);
 
-    // Use environment variable or fallback to localhost
-    const AI_API_URL =
-      process.env.NEXT_PUBLIC_AI_API_URL || "http://localhost:8000";
+    const AI_API_URL = config.aiApiUrl;
     const endpoint = `${AI_API_URL}/chat`;
 
     console.log("Using AI API URL:", endpoint);

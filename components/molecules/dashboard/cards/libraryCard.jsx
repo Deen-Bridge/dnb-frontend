@@ -47,7 +47,7 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
         <div className="flex items-center justify-between gap-2 mb-2">
           {/* Author */}
           <Link
-            href={`/account/profile/${book.author?._id}`}
+            href={`/educators/${book.author?._id}`}
             className="flex items-center gap-2"
           >
             <Avatar className="h-10 w-10 rounded-lg">

@@ -3,7 +3,7 @@ import { getBookById } from "@/lib/actions/library/get-book";
 import BookReaderClient from "./BookReaderClient";
 
 export default async function Page({ params }) {
-  const { bookid } = params;
+  const { bookid } = await params;
 
   try {
     const book = await getBookById(bookid);
