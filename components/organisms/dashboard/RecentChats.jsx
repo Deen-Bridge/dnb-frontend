@@ -226,14 +226,14 @@ const RecentChats = () => {
   };
 
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm">
+    <div className="rounded-xl bg-card p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <h3 className={cn("text-xl font-semibold", Inter_500)}>
           Recent Conversations
         </h3>
         <Link
           href="/dashboard/messages"
-          className="text-xs font-medium text-accent hover:text-highlight"
+          className="text-xs font-medium text-brand-text hover:text-highlight"
         >
           View all
         </Link>
