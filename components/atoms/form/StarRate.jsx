@@ -26,9 +26,9 @@ const StarRate = ({ value = 0, onChange, maxStars = 5, editable = true, label })
     >
       <StarRatings
         rating={value}
-        starRatedColor="#265902"
-        starEmptyColor="lightgray"
-        starHoverColor="#008200"
+        starRatedColor="var(--brand-text)"
+        starEmptyColor="var(--muted-foreground)"
+        starHoverColor="var(--primary)"
         changeRating={handleChange}
         numberOfStars={maxStars}
         name="rating"

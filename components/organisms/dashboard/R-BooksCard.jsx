@@ -9,7 +9,7 @@ import RecommendedCourseCard from "./R-CourseCard";
 const RecommendedBookCard = ({ book }) => {
     console.log("RecommendedBookCard user id ", book.author?._id);
     return (
-        <div className="bg-white rounded-xl overflow-hidden shadow-md w-full">
+        <div className="bg-card rounded-xl overflow-hidden shadow-md w-full">
 
             {/* Image with overlay */}
             <div className="relative w-full h-64">
@@ -38,7 +38,7 @@ const RecommendedBookCard = ({ book }) => {
                         <AvatarFallback>{book.author?.name?.charAt(0) || "A"}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col  pt-2">
-                        <span className="font-sans text-md text-black">{book.instructor|| "Unknown Author"}</span>
+                        <span className="font-sans text-md text-foreground">{book.instructor|| "Unknown Author"}</span>
                     </div>
                 </Link>
                 {/* Reads & Rating */}

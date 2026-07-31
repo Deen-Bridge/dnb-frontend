@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import AppProviders from "@/components/providers/AppProviders";
+import { appearanceInitScript } from "@/lib/config/appearance.config";
 import "../styles/globals.css";
 
 const geistSans = Geist({
@@ -24,9 +25,7 @@ export const metadata = {
       { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      { url: "/icons/icon-192x192.png", sizes: "192x192" },
-    ],
+    apple: [{ url: "/icons/icon-192x192.png", sizes: "192x192" }],
   },
   appleWebApp: {
     capable: true,
@@ -59,7 +58,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: appearanceInitScript() }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

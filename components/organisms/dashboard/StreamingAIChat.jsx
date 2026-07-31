@@ -189,7 +189,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                   </h1>
                   <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
                     I'm your Islamic AI assistant powered by knowledge of the{" "}
-                    <span className="font-semibold text-accent">Quran</span> and{" "}
+                    <span className="font-semibold text-brand-text">Quran</span> and{" "}
                     <span className="font-semibold text-highlight">Hadith</span>
                     . Experience real-time streaming responses!
                   </p>
@@ -258,7 +258,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
 
                         <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
                           <svg
-                            className="w-4 h-4 text-accent"
+                            className="w-4 h-4 text-brand-text"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
