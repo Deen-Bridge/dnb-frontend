@@ -1,10 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import AuthProvider from "@/components/providers/AuthProvider";
-import CacheProvider from "@/components/providers/CacheProvider";
-import ThemeProvider from "@/components/providers/ThemeProvider";
-import AppearanceProvider from "@/components/providers/AppearanceProvider";
-import StellarProvider from "@/components/stellar/StellarProvider";
+import AppProviders from "@/components/providers/AppProviders";
 import { appearanceInitScript } from "@/lib/config/appearance.config";
 import "../styles/globals.css";
 
@@ -29,9 +25,7 @@ export const metadata = {
       { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      { url: "/icons/icon-192x192.png", sizes: "192x192" },
-    ],
+    apple: [{ url: "/icons/icon-192x192.png", sizes: "192x192" }],
   },
   appleWebApp: {
     capable: true,
@@ -73,18 +67,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-<<<<<<< HEAD
-        <ThemeProvider>
-          <AppearanceProvider>
-            <CacheProvider>
-              <AuthProvider>
-                <StellarProvider>{children}</StellarProvider>
-              </AuthProvider>
-            </CacheProvider>
-            <Toaster position="top-right" />
-          </AppearanceProvider>
-        </ThemeProvider>
->>>>>>> origin/dev
+        <AppProviders>{children}</AppProviders>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

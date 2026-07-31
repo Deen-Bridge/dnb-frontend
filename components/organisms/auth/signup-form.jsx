@@ -1,10 +1,9 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import ErrorMessage from "@/components/atoms/form/Error";
 import {
   Select,
@@ -14,13 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { signup } from "@/hooks/useAuth";
-import { sendOtp } from "@/lib/services/emails/emailVerification";
-import Modal from "@/components/molecules/Modal";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,12 +40,9 @@ const signupSchema = z
   });
 
 export function SignupForm({ className, ...props }) {
-  const router = useRouter();
-  const [otp, setOtp] = useState("");
-  const [otpLoading, setOtpLoading] = useState(false);
   const [error, setError] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const correctOtpRef = useRef(null);
+  const [registered, setRegistered] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const form = useForm({
     resolver: zodResolver(signupSchema),
@@ -65,41 +54,33 @@ export function SignupForm({ className, ...props }) {
 
     try {
       await signup(data.name, data.email, data.password, data.role);
-      toast.success("Signup successful! Redirecting to dashboard...");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+      setRegisteredEmail(data.email);
+      setRegistered(true);
     } catch (err) {
       setError(err?.message || "Signup failed. Please try again.");
       toast.error(err?.message || "Signup failed. Please try again.");
     }
   };
 
-  useEffect(() => {
-    if (otp.length === 6 && correctOtpRef.current) {
-      handleVerifyOtpAndSignup();
-    }
-  }, [otp]);
-
-  const handleResendOtp = async () => {
-    setOtpLoading(true);
-    setError("");
-    const email = form.getValues("email");
-    try {
-      const res = await sendOtp(email);
-      if (res && res.otp) {
-        correctOtpRef.current = res.otp;
-        toast.success("New OTP sent to your email!");
-      } else {
-        throw new Error("Failed to send OTP");
-      }
-    } catch (err) {
-      setError(err?.message || "Failed to send OTP. Please try again.");
-      toast.error("Failed to send OTP. Please try again.");
-    } finally {
-      setOtpLoading(false);
-    }
-  };
+  if (registered) {
+    return (
+      <div className="flex flex-col items-center gap-4 text-center py-8">
+        <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
+          <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold">Check your email</h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          We sent a verification link to <strong>{registeredEmail}</strong>.
+          Click the link to activate your account.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Didn't receive it? Check your spam folder.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -157,8 +138,7 @@ export function SignupForm({ className, ...props }) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="tutor">Tutor</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="mentor">Mentor</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

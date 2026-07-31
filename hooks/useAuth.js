@@ -62,11 +62,9 @@ export const signup = async (name, email, password, role) => {
       role,
     });
 
-    const { token, user } = res.data;
-    persistSession(token, user);
-
-    toast.success("Signup successful! Redirecting to dashboard...");
-    return user;
+    const message = res.data.message || "Verification email sent. Please check your inbox.";
+    toast.success(message);
+    return { success: true, message };
   } catch (error) {
     if (error.response) {
       const errorMessage = error.response.data?.message || "Signup failed";
