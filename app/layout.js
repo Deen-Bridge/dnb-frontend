@@ -1,8 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import AuthProvider from "@/components/providers/AuthProvider";
-import CacheProvider from "@/components/providers/CacheProvider";
-import StellarProvider from "@/components/stellar/StellarProvider";
+import AppProviders from "@/components/providers/AppProviders";
 import "../styles/globals.css";
 
 const geistSans = Geist({
@@ -65,11 +63,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CacheProvider>
-          <AuthProvider>
-            <StellarProvider>{children}</StellarProvider>
-          </AuthProvider>
-        </CacheProvider>
+        <AppProviders>{children}</AppProviders>
         <Toaster position="top-right" />
       </body>
     </html>
