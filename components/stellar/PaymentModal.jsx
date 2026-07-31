@@ -56,6 +56,7 @@ export default function PaymentModal({
   const [errorDetail, setErrorDetail] = useState(null);
   const [showQr, setShowQr] = useState(false);
   const [preCheckIssues, setPreCheckIssues] = useState([]);
+  const closingRef = useRef(false);
 
   useEffect(() => {
     if (isOpen) {

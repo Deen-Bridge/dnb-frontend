@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 export const useNotificationSSE = () => {
   const eventSourceRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
+  const connectSSERef = useRef(null);
   const { token } = useAuth();
 
   const [notifications, setNotifications] = useState([]);
@@ -15,14 +16,12 @@ export const useNotificationSSE = () => {
   const [lastEventId, setLastEventId] = useState(null);
 
   const MAX_RECONNECT_ATTEMPTS = 5;
-  const RECONNECT_DELAY = 1000; // Start with 1 second
+  const RECONNECT_DELAY = 1000;
 
-  // Calculate reconnect delay with exponential backoff
   const getReconnectDelay = (attempts) => {
-    return Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000); // Max 30seconds
+    return Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000);
   };
 
-  // Fetch initial notifications
   const fetchNotifications = useCallback(async () => {
     if (!token) return;
 
@@ -51,7 +50,6 @@ export const useNotificationSSE = () => {
     }
   }, [token]);
 
-  // Connect to SSE
   const connectSSE = useCallback(() => {
     if (!token || eventSourceRef.current) return;
 
@@ -87,13 +85,12 @@ export const useNotificationSSE = () => {
             setNotifications((prev) =>
               prev.filter((n) => n._id !== data.notificationId)
             );
-            // Recalculate unread count
             setUnreadCount((prev) => {
-              const deletedNotification = notifications.find(
+              const deletedNotification = prev.find(
                 (n) => n._id === data.notificationId
               );
               return deletedNotification && !deletedNotification.isRead
-                ? prev - 1
+                ? Math.max(0, prev - 1)
                 : prev;
             });
           } else if (data.type === "all_read") {
@@ -113,12 +110,11 @@ export const useNotificationSSE = () => {
         eventSource.close();
         eventSourceRef.current = null;
 
-        // Attempt to reconnect
         if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
           const delay = getReconnectDelay(reconnectAttempts);
           reconnectTimeoutRef.current = setTimeout(() => {
             setReconnectAttempts((prev) => prev + 1);
-            connectSSE();
+            connectSSERef.current?.();
           }, delay);
         } else {
           setError(
@@ -130,7 +126,9 @@ export const useNotificationSSE = () => {
       console.error("Error creating SSE connection:", err);
       setError(err.message);
     }
-  }, [token, reconnectAttempts, notifications, connectSSE]);
+  }, [token, reconnectAttempts]);
+
+  connectSSERef.current = connectSSE;
 
   // Disconnect from SSE
   const disconnectSSE = useCallback(() => {
@@ -246,19 +244,17 @@ export const useNotificationSSE = () => {
     [token, notifications, fetchNotifications]
   );
 
-  // Manual reconnect
   const reconnect = useCallback(() => {
     disconnectSSE();
     setReconnectAttempts(0);
     setError(null);
-    connectSSE();
-  }, [disconnectSSE, connectSSE]);
+    connectSSERef.current?.();
+  }, [disconnectSSE]);
 
-  // Initialize connection and fetch notifications
   useEffect(() => {
     if (token) {
       fetchNotifications();
-      connectSSE();
+      connectSSERef.current?.();
     } else {
       disconnectSSE();
       setNotifications([]);
@@ -269,7 +265,7 @@ export const useNotificationSSE = () => {
     return () => {
       disconnectSSE();
     };
-  }, [token, fetchNotifications, connectSSE, disconnectSSE]);
+  }, [token, fetchNotifications, disconnectSSE]);
 
   // Cleanup on unmount
   useEffect(() => {

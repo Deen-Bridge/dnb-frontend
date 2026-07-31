@@ -138,6 +138,18 @@ export default function StellarProvider({ children }) {
     checkNetwork();
   }, [connectedWallet, kitInitialized]);
 
+  // Open wallet auth modal and return address (no backend persistence)
+  const selectWallet = useCallback(async () => {
+    if (!kitInitialized) {
+      throw new Error("Wallet kit not initialized");
+    }
+    const { address } = await StellarWalletsKit.authModal();
+    if (!address) {
+      throw new Error("Failed to get wallet address");
+    }
+    return address;
+  }, [kitInitialized]);
+
   // Connect wallet using the auth modal
   const connectWallet = useCallback(async () => {
     if (!kitInitialized) {
@@ -314,6 +326,7 @@ export default function StellarProvider({ children }) {
     walletNetwork,
     networkMismatch,
     connectWallet,
+    selectWallet,
     disconnectWallet,
     refreshBalance,
     signTransaction,
