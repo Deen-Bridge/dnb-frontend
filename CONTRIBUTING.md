@@ -109,6 +109,12 @@ Maintainers periodically merge `dev` into `main` for releases. Pull requests ope
 - Follow existing color scheme and design patterns
 - Ensure responsive design (mobile-first)
 
+### Theming
+
+The app supports light and dark mode, so prefer semantic tokens over raw colors — `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`. A hardcoded `bg-white` or `#hex` keeps its value when the theme flips and usually ends up unreadable.
+
+Two brand tokens exist and they are not interchangeable. `bg-accent` is a fixed dark surface meant to carry white text. `text-brand-text` is the brand colour for text, and it has a separate value per theme — a single fixed colour cannot stay readable on both a light and a dark background. Reach for `dark:` variants only when no token expresses what you need.
+
 ### Commits
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/):

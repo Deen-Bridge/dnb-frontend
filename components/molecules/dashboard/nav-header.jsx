@@ -2,6 +2,7 @@ import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Notybell from "@/components/atoms/dashboard/Notybell";
 import Searchbox from "@/components/atoms/dashboard/Searchbox";
+import ThemeToggle from "@/components/ui/theme-toggle";
 
 const searchParams = ["Courses", "Books", "Spaces", "Authors"];
 
@@ -18,8 +19,9 @@ const NavHeader = () => {
           />
         </div>
 
-        {/* Right: Bell */}
+        {/* Right: Theme + Bell */}
         <div className="flex items-center space-x-4">
+          <ThemeToggle />
           <Notybell />
         </div>
       </div>

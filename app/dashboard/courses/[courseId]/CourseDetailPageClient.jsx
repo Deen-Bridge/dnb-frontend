@@ -205,7 +205,7 @@ export default function CourseDetailClient({ course }) {
               <p className="text-muted-foreground">
                 Purchase this course to unlock full access
               </p>
-              <div className="text-4xl font-bold text-accent">
+              <div className="text-4xl font-bold text-brand-text">
                 {course.price === 0 ? "Free" : `$${course.price}`}
               </div>
             </div>
@@ -220,7 +220,7 @@ export default function CourseDetailClient({ course }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-2 sm:px-10">
         <div className="lg:col-span-2 space-y-4">
           <h3 className="text-4xl font-semibold">{course.title}</h3>
-          <p className="text-gray-700 leading-relaxed">{course.description}</p>
+          <p className="text-muted-foreground leading-relaxed">{course.description}</p>
           <Link
             href={`/account/profile/${course.createdBy?._id}`}
             className="flex items-center gap-2"
@@ -235,14 +235,14 @@ export default function CourseDetailClient({ course }) {
             </Avatar>
             <div className="flex flex-row justify-between items-center">
               <div className="flex  justify-between   pt-2">
-                <span className="font-medium text-black">
+                <span className="font-medium text-foreground">
                   {course.createdBy?.name || "Unknown creator"}
                 </span>
-                <span className="text-sm text-muted">
+                <span className="text-sm text-muted-foreground">
                   {course.createdBy?.role || "Unknown creator"}
                 </span>
               </div>
-              <div className="border-t pt-4 text-gray-600 text-sm space-y-2">
+              <div className="border-t pt-4 text-muted-foreground text-sm space-y-2">
                 <p>
                   <strong>Duration:</strong> {course.duration || "N/A"}
                 </p>
@@ -253,7 +253,7 @@ export default function CourseDetailClient({ course }) {
             </div>
           </Link>
           {user?._id !== course.createdBy?._id && canAccess && (
-            <div className="pt-10 space-y-5 border-t border-white/10">
+            <div className="pt-10 space-y-5 border-t border-border">
               {userReview && (
                 <div className="text-sm text-muted-foreground">
                   You reviewed this course on{" "}
@@ -284,7 +284,7 @@ export default function CourseDetailClient({ course }) {
                     />
                     <Textarea
                       placeholder="What did you think about the course?"
-                      className="bg-white/10 min-h-[120px] border-accent focus:outline-none"
+                      className="bg-muted/50 min-h-[120px] border-accent focus:outline-none"
                       value={review}
                       onChange={(e) => setReview(e.target.value)}
                       disabled={submitting || submitted}
@@ -314,7 +314,7 @@ export default function CourseDetailClient({ course }) {
           <div className="border rounded-xl p-6 shadow-lg bg-card space-y-6 sticky top-4">
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">Course Price</p>
-              <div className="text-5xl font-bold text-accent">
+              <div className="text-5xl font-bold text-brand-text">
                 {course.price === 0 ? "Free" : `$${course.price}`}
               </div>
             </div>
@@ -340,8 +340,8 @@ export default function CourseDetailClient({ course }) {
                 )}
               </div>
             ) : canAccess ? (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                <p className="text-green-600 font-semibold">
+              <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-900 rounded-lg p-4 text-center">
+                <p className="text-green-800 dark:text-green-200 font-semibold">
                   ✅ You have access to this course
                 </p>
               </div>
@@ -364,7 +364,7 @@ export default function CourseDetailClient({ course }) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Category</span>
-                <span className="font-semibold text-accent capitalize">
+                <span className="font-semibold text-brand-text capitalize">
                   {course.category}
                 </span>
               </div>
