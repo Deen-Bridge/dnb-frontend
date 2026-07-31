@@ -1,13 +1,10 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import ErrorMessage from "@/components/atoms/form/Error";
-import usePasswordMatch from "@/hooks/passwordChecker";
 import {
   Select,
   SelectContent,
@@ -16,249 +13,161 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { signup } from "@/hooks/useAuth";
-import { sendOtp } from "@/lib/services/emails/emailVerification";
-import Modal from "@/components/molecules/Modal";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { toast } from "sonner";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+const signupSchema = z
+  .object({
+    name: z.string().min(1, "Full name is required").max(100, "Name is too long"),
+    email: z.string().min(1, "Email is required").email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+    role: z.string().min(1, "Please select a role"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export function SignupForm({ className, ...props }) {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "",
-  });
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
   const [error, setError] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const correctOtpRef = useRef(null);
+  const [registered, setRegistered] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
-  const { checkPasswords } = usePasswordMatch();
+  const form = useForm({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { name: "", email: "", password: "", confirmPassword: "", role: "" },
+  });
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSignup = async (data) => {
     setError("");
 
-    // Validate passwords match
-    if (!checkPasswords(formData.password, formData.confirmPassword)) {
-      setError("Passwords do not match");
-      toast.error("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
-    // Validate role is selected
-    if (!formData.role) {
-      setError("Please select a role");
-      toast.error("Please select a role");
-      setLoading(false);
-      return;
-    }
-
     try {
-      await signup(
-        formData.name,
-        formData.email,
-        formData.password,
-        formData.role
-      );
-      toast.success("Signup successful! Redirecting to dashboard...");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+      await signup(data.name, data.email, data.password, data.role);
+      setRegisteredEmail(data.email);
+      setRegistered(true);
     } catch (err) {
       setError(err?.message || "Signup failed. Please try again.");
       toast.error(err?.message || "Signup failed. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
-  // Auto-verify OTP when input is full
-  useEffect(() => {
-    if (otp.length === 6 && correctOtpRef.current) {
-      handleVerifyOtpAndSignup();
-    }
-  }, [otp]);
-
-  const handleResendOtp = async () => {
-    setOtpLoading(true);
-    setError("");
-    try {
-      const res = await sendOtp(formData.email);
-      if (res && res.otp) {
-        correctOtpRef.current = res.otp;
-        toast.success("New OTP sent to your email!");
-      } else {
-        throw new Error("Failed to send OTP");
-      }
-    } catch (err) {
-      setError(err?.message || "Failed to send OTP. Please try again.");
-      toast.error("Failed to send OTP. Please try again.");
-    } finally {
-      setOtpLoading(false);
-    }
-  };
+  if (registered) {
+    return (
+      <div className="flex flex-col items-center gap-4 text-center py-8">
+        <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
+          <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold">Check your email</h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          We sent a verification link to <strong>{registeredEmail}</strong>.
+          Click the link to activate your account.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Didn't receive it? Check your spam folder.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
-      <form
-        onSubmit={handleSignup}
-        className={cn("flex flex-col gap-6", className)}
-        {...props}
-      >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl sm:text-4xl text-nowrap font-bold font-stretch-125%">
-            Create your account
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your information below to sign up.
-          </p>
-        </div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleSignup)}
+          className={cn("flex flex-col gap-6", className)}
+          {...props}
+        >
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="text-2xl sm:text-4xl text-nowrap font-bold font-stretch-125%">
+              Create your account
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Enter your information below to sign up.
+            </p>
+          </div>
 
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="e.g. Salem Alharthi"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="********"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="********"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="role">Role</Label>
-            <Select
-              value={formData.role}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, role: value }))
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="student">Student</SelectItem>
-                <SelectItem value="tutor">Tutor</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {error && <ErrorMessage message={error} />}
-          <Button
-            className="bg-accent hover:bg-highlight animate-in-out duration-300"
-            wide
-            loading={loading}
-            loaderColor="white"
-            loaderSize={24}
-            type="submit"
-            disabled={loading}
-          >
-            Sign Up
-          </Button>
-        </div>
-        <div className="text-center text-sm">
-          Already have an account?{" "}
-          <Link href="/login" className="underline underline-offset-4">
-            Login
-          </Link>
-        </div>
-      </form>
-
-      {/* <Modal
-        title="Verify Your Email"
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        className="max-w-md w-full"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
-            Please enter the 6-digit code sent to {formData.email}
-          </p>
-
-          <InputOTP maxLength={6} value={otp} onChange={setOtp}>
-            <InputOTPGroup>
-              {[0, 1, 2, 3, 4, 5].map((idx) => (
-                <InputOTPSlot key={idx} index={idx} />
-              ))}
-            </InputOTPGroup>
-          </InputOTP>
-
-          <div className="flex flex-col gap-2">
+          <div className="grid gap-4">
+            <FormField control={form.control} name="name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl><Input placeholder="e.g. Salem Alharthi" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="email" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="password" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl><Input type="password" placeholder="********" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="confirmPassword" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl><Input type="password" placeholder="********" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <Controller control={form.control} name="role" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Role</FormLabel>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="mentor">Mentor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            {error && <ErrorMessage errMsg={error} />}
             <Button
+              className="bg-accent hover:bg-highlight animate-in-out duration-300"
               wide
-              loading={loading}
-              onClick={handleVerifyOtpAndSignup}
-              disabled={loading || otp.length !== 6}
+              loading={form.formState.isSubmitting}
+              loaderColor="white"
+              loaderSize={24}
+              type="submit"
+              disabled={form.formState.isSubmitting}
             >
-              Verify OTP & Complete Signup
-            </Button>
-
-            <Button
-              variant="outline"
-              wide
-              loading={otpLoading}
-              onClick={handleResendOtp}
-              disabled={otpLoading}
-            >
-              Resend OTP
+              Sign Up
             </Button>
           </div>
-
-          {error && <ErrorMessage message={error} />}
-        </div>
-      </Modal> */}
+          <div className="text-center text-sm">
+            Already have an account?{" "}
+            <Link href="/login" className="underline underline-offset-4">
+              Login
+            </Link>
+          </div>
+        </form>
+      </Form>
     </>
   );
 }
+
+export default SignupForm;

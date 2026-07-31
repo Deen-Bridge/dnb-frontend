@@ -5,6 +5,7 @@ import { SidebarLeft } from "@/components/organisms/dashboard/sidebar-left";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import NavHeader from "@/components/molecules/dashboard/nav-header";
 import PresenceProvider from "@/components/providers/PresenceProvider";
+import { CommandPalette } from "@/components/organisms/dashboard/CommandPalette";
 
 export default function Layout({ children }) {
   return (
@@ -28,6 +29,7 @@ export default function Layout({ children }) {
             <NavHeader />
             {children}
           </SidebarInset>
+          <CommandPalette />
         </SidebarProvider>
         </PresenceProvider>
       </ProtectedRoute>

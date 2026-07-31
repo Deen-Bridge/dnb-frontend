@@ -5,30 +5,20 @@ import { Plus, Trash2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import Button from "@/components/atoms/form/Button";
+import { config } from "@/lib/config/env";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
+  const { user } = useAuth();
   const [chatHistory, setChatHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const AI_API_URL =
-    process.env.NEXT_PUBLIC_AI_API_URL || "http://localhost:8000";
+  const AI_API_URL = config.aiApiUrl;
 
   useEffect(() => {
-    const loadUserChats = async () => {
-      try {
-        const userData = localStorage.getItem("user");
-        if (userData) {
-          const user = JSON.parse(userData);
-          setUserId(user.id);
-          await fetchUserChats(user.id);
-        }
-      } catch (error) {
-        console.error("Error loading user data:", error);
-      }
-    };
-
-    loadUserChats();
-  }, []);
+    if (user?.id) {
+      fetchUserChats(user.id);
+    }
+  }, [currentChatId, user?.id]);
 
   const fetchUserChats = async (userId) => {
     try {
@@ -84,7 +74,12 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
         `${AI_API_URL}/chat/${chatId}/history`
       );
       if (historyResponse.ok) {
-        const history = await historyResponse.json();
+        const raw = await historyResponse.json();
+        // Backend returns {role, text} — map to {role, content}
+        const history = (raw || []).map((msg) => ({
+          role: msg.role === "model" ? "assistant" : msg.role,
+          content: msg.text || msg.content || "",
+        }));
         if (onChatSelect) {
           onChatSelect(chatId, history);
         }
@@ -95,16 +90,8 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
     }
   };
 
-  const getPreviewText = (history) => {
-    if (!history || history.length === 0) return "New conversation";
-    const firstUserMessage = history.find((msg) => msg.role === "user");
-    return firstUserMessage
-      ? firstUserMessage.content.substring(0, 40) + "..."
-      : "New conversation";
-  };
-
   return (
-    <div className="grid w-full items-start gap-6 h-full">
+    <div className="grid w-fit items-start gap-6 h-full">
       <fieldset className="grid gap-4 rounded-lg border p-4 h-full overflow-y-auto">
         <legend className="-ml-1 px-1 text-md font-medium">History</legend>
 
@@ -145,16 +132,21 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {getPreviewText(chat.history)}
+                      {chat.title || "New conversation"}
                     </p>
+                    {chat.snippet && (
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        {chat.snippet}
+                      </p>
+                    )}
                     <div className="flex items-center gap-2 mt-1">
                       <p className="text-xs text-muted-foreground">
                         {chat.message_count} messages
                       </p>
-                      {chat.updated_at && (
+                      {chat.created_at && (
                         <p className="text-xs text-muted-foreground">
                           •{" "}
-                          {formatDistanceToNow(new Date(chat.updated_at), {
+                          {formatDistanceToNow(new Date(chat.created_at * 1000), {
                             addSuffix: true,
                           })}
                         </p>

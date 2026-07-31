@@ -10,8 +10,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, LogOut, RefreshCw, ExternalLink, Copy, Loader2 } from "lucide-react";
+import {
+  Wallet,
+  LogOut,
+  RefreshCw,
+  ExternalLink,
+  Copy,
+  Loader2,
+  AlertTriangle,
+  Download,
+} from "lucide-react";
 import { toast } from "sonner";
+import { WALLET_INSTALL_LINKS } from "@/lib/stellar/stellarErrors";
 
 export default function WalletConnectButton({ variant = "outline", size = "default" }) {
   const {
@@ -23,6 +33,8 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
     disconnectWallet,
     refreshBalance,
     network,
+    hasWalletExtension,
+    networkMismatch,
   } = useStellar();
 
   const truncateAddress = (addr) => {
@@ -43,7 +55,6 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
     window.open(baseUrl + connectedWallet, "_blank");
   };
 
-  // Show loading state
   if (isLoading) {
     return (
       <Button variant={variant} size={size} disabled>
@@ -53,7 +64,55 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
     );
   }
 
-  // Show connect button if not connected
+  // No wallet installed — show install prompt
+  if (!connectedWallet && !hasWalletExtension) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={variant} size={size} className="gap-2">
+            <Download className="h-4 w-4" />
+            Install Wallet
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>
+            <p className="text-xs text-muted-foreground">
+              No Stellar wallet detected. Install one to continue:
+            </p>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => window.open(WALLET_INSTALL_LINKS.freighter.url, "_blank")}
+            className="cursor-pointer"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Install Freighter
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => window.open(WALLET_INSTALL_LINKS.xbull.url, "_blank")}
+            className="cursor-pointer"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Install xBull
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => window.open(WALLET_INSTALL_LINKS.albedo.url, "_blank")}
+            className="cursor-pointer"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Use Albedo (web)
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={connectWallet} className="cursor-pointer">
+            <Wallet className="mr-2 h-4 w-4" />
+            Already installed? Connect
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  // Not connected — show connect button
   if (!connectedWallet) {
     return (
       <Button
@@ -78,18 +137,30 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
     );
   }
 
-  // Show connected wallet dropdown
+  // Connected — show dropdown
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className="gap-2">
-          <div className="h-2 w-2 bg-green-500 rounded-full" />
+          <div
+            className={`h-2 w-2 rounded-full ${
+              networkMismatch ? "bg-yellow-500" : "bg-green-500"
+            }`}
+          />
           {truncateAddress(connectedWallet)}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-2">
+            {networkMismatch && (
+              <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded text-yellow-800 text-xs">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                <span>
+                  Wrong network. Switch wallet to <strong>{network}</strong>.
+                </span>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Network</span>
               <Badge variant={network === "mainnet" ? "default" : "secondary"}>
@@ -108,6 +179,12 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
                 {parseFloat(walletInfo?.xlmBalance || 0).toFixed(4)} XLM
               </span>
             </div>
+            {walletInfo && !walletInfo.hasTrustline && (
+              <div className="flex items-center gap-2 p-2 bg-orange-50 rounded text-orange-800 text-xs">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                <span>USDC trustline not set up.</span>
+              </div>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

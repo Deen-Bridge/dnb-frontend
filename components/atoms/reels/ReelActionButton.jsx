@@ -6,6 +6,8 @@ const ReelActionButton = ({
   icon,
   label,
   active = false,
+  accessibleLabel,
+  pressed,
   onClick,
   disabled = false,
   className,
@@ -15,6 +17,8 @@ const ReelActionButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-label={accessibleLabel}
+      aria-pressed={pressed}
       className={cn(
         "flex flex-col items-center gap-1 transition",
         disabled ? "cursor-not-allowed opacity-50" : "hover:scale-105",
@@ -27,7 +31,7 @@ const ReelActionButton = ({
           active && "border-white bg-white/80 text-black"
         )}
       >
-        {icon}
+        <span aria-hidden="true">{icon}</span>
       </span>
       {label !== undefined && (
         <span className="text-xs font-medium text-white drop-shadow">

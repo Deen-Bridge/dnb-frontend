@@ -8,10 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { getBookmarkedCourses } from "@/lib/actions/courses/bookmark-course";
 import useAuth from "@/hooks/useAuth";
+import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 
 export default function CoursesPage() {
   const { user } = useAuth();
+  const { progressMap } = useAllCourseProgress();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -125,6 +127,7 @@ export default function CoursesPage() {
               <CourseCard
                 key={course._id}
                 course={course}
+                progress={progressMap[course._id]}
                 onBookmarkChange={(isBookmarked) => {
                   if (showBookmarks && !isBookmarked) {
                     setCourses(courses.filter((c) => c._id !== course._id));
