@@ -1,5 +1,5 @@
 "use client";
-import VidPlayerBox from "@/components/atoms/dashboard/vid-player-box";
+import dynamic from "next/dynamic";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import React, { useState, useMemo, useCallback } from "react";
@@ -16,6 +16,21 @@ import { toast } from "sonner";
 import { Wallet, RotateCcw, Play } from "lucide-react";
 import PaymentModal from "@/components/stellar/PaymentModal";
 import { useStellar } from "@/components/stellar/StellarProvider";
+
+// Vidstack (@vidstack/react) is a large dependency only needed once a
+// learner actually opens the player, so it's kept out of the initial
+// course-page bundle and loaded on demand instead.
+const VidPlayerBox = dynamic(
+  () => import("@/components/atoms/dashboard/vid-player-box"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center rounded-xl bg-black/90">
+        <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      </div>
+    ),
+  }
+);
 
 export default function CourseDetailClient({ course }) {
   const { user, refreshUser } = useAuth();
