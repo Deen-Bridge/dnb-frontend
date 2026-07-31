@@ -23,7 +23,7 @@ export default function Layout({ children }) {
       <div className="flex-1 flex flex-col md:flex-row gap-4 p-2 sm:p-4 h-full">
         {/* Left Side List - Always visible on desktop, conditional on mobile */}
         <div
-          className={`bg-muted/50 hidden sm:block rounded-xl p-2 sm:p-4 h-full overflow-y-auto scrollbar-hide transition-all duration-300  md:w-1/3 lg:w-1/4`}
+          className={`bg-muted/50 hidden sm:block rounded-xl p-2 sm:p-4 h-full overflow-y-auto scrollbar-hide transition-all duration-300 md:w-[300px] lg:w-[360px]`}
         >
           <AiSidebar
             onChatSelect={handleChatSelect}
