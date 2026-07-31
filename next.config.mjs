@@ -15,6 +15,7 @@ const nextConfig = {
       { protocol: "https", hostname: "i.ibb.co" },
       { protocol: "https", hostname: "media.istockphoto.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "cloudinary-marketing-res.cloudinary.com" },
       { protocol: "https", hostname: "cdn.pixabay.com" },

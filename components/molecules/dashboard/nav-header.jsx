@@ -1,6 +1,6 @@
 import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import Notybell from "@/components/atoms/dashboard/Notybell";
+import Notybell from "@/components/molecules/dashboard/Notybell";
 import Searchbox from "@/components/atoms/dashboard/Searchbox";
 
 const searchParams = ["Courses", "Books", "Spaces", "Authors"];
