@@ -281,7 +281,11 @@ function SidebarInset({
     (<main
       data-slot="sidebar-inset"
       className={cn(
-        "bg-background relative flex w-full flex-1 flex-col",
+        // min-w-0 is load-bearing: this is a flex child, and the default
+        // min-width:auto stops it shrinking below its content, so any wide
+        // child (tables, long strings, card rows) scrolls the whole page
+        // sideways on mobile.
+        "bg-background relative flex w-full min-w-0 flex-1 flex-col",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         className
       )}

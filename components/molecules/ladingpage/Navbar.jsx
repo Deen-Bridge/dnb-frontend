@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import AuthNavButtons from "./AuthNavButtons";
 import { Button } from "@/components/ui/button";
@@ -9,35 +12,66 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { AlignJustify } from 'lucide-react';
+import { AlignJustify } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Anchors match the section ids actually rendered on the landing page.
 const links = [
-  { name: "Mission", to: "/#mission" },
-  { name: "Services", to: "/#services" },
+  { name: "Explore", to: "/#explore" },
+  { name: "How It Works", to: "/#how-it-works" },
+  { name: "AI", to: "/ai" },
+  { name: "Stellar", to: "/stellar" },
+  { name: "FAQ", to: "/#faq" },
   { name: "Blog", to: "/blog" },
-  { name: "GitHub", to: "https://github.com/Deen-Bridge" },
-  { name: "Contact", to: "/#contact" },
+  { name: "Contact", to: "/contact" },
 ];
 
-const Navbar = () => {
+/**
+ * Fixed, not sticky: the bar used to live inside Hero's `overflow-hidden`
+ * h-screen main, which both disables `position: sticky` and ends the sticky
+ * container after one viewport — so it vanished on scroll.
+ *
+ * `solid` forces the background on for pages that open on a light section,
+ * where the white links would otherwise be invisible at scroll-top.
+ */
+const Navbar = ({ solid = false }) => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const filled = solid || scrolled;
+
   return (
-    <>
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        filled
+          ? "border-b border-secondary/20 bg-basic/90 shadow-lg backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      )}
+    >
       {/* Desktop Nav */}
-      <nav className="px-4 sticky top-0 z-10 bg-transparent text-secondary hidden lg:flex justify-between items-center h-20 font-stretch-125%">
-        <Link href="/">
-        <Image
-          src="/images/dnb-nobg.png"
-          width={150}
-          height={26}
-          alt="Logo"
-          className="m-6"
-        />
+      <nav className="mx-auto hidden h-20 max-w-7xl items-center justify-between px-6 font-stretch-125% lg:flex">
+        <Link href="/" aria-label="Deen Bridge home">
+          <Image
+            src="/images/dnb-nobg.png"
+            width={150}
+            height={26}
+            alt="Deen Bridge"
+            className="h-10 w-auto"
+          />
         </Link>
         <div className="flex items-center space-x-6">
           {links.map((link) => (
             <Link
               key={link.to}
               href={link.to}
-              className="text-white hover:text-secondary transition-all duration-200"
+              className="text-ink-inverse transition-colors duration-200 hover:text-secondary"
             >
               {link.name}
             </Link>
@@ -47,18 +81,19 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Nav */}
-      <nav className="lg:hidden flex items-center justify-between   sticky top-0 z-10 bg-transparent text-secondary">
-        <Link href="/">
-        <Image
-          src="/images/dnb-nobg.png"
-          width={80}
-          height={26}
-          alt="Logo"
-        />
+      <nav className="flex items-center justify-between px-4 py-3 lg:hidden">
+        <Link href="/" aria-label="Deen Bridge home">
+          <Image
+            src="/images/dnb-nobg.png"
+            width={80}
+            height={26}
+            alt="Deen Bridge"
+            className="h-9 w-auto"
+          />
         </Link>
         <MobileNav />
       </nav>
-    </>
+    </header>
   );
 };
 
@@ -68,8 +103,12 @@ function MobileNav() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button size="icon" className="focus:outline-none bg-transparent hover:bg-transparent">
-          <AlignJustify size={24} className="text-white" />
+        <Button
+          size="icon"
+          aria-label="Open menu"
+          className="focus:outline-none bg-transparent hover:bg-transparent"
+        >
+          <AlignJustify size={24} className="text-ink-inverse" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 bg-muted">

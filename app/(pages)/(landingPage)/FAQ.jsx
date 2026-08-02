@@ -31,16 +31,16 @@ export default function FAQ() {
   };
 
   return (
-    <section className="py-24 px-4 sm:px-6 bg-basic overflow-hidden relative">
+    <section id="faq" className="py-24 px-4 sm:px-6 bg-basic overflow-hidden relative">
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className={cn(
             poppins_600,
-            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text"
+            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-secondary via-highlight to-accent text-transparent bg-clip-text font-stretch-125%"
           )}>
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-ink-muted font-stretch-110%">
             Everything you need to know about DeenBridge.
           </p>
         </div>
@@ -51,16 +51,16 @@ export default function FAQ() {
             return (
               <div 
                 key={index}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
+                className="bg-surface-raised rounded-2xl border border-accent/10 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
               >
                 <button
                   onClick={() => toggleFaq(index)}
                   className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
                 >
-                  <span className="text-lg font-semibold text-gray-800">{faq.question}</span>
+                  <span className="text-lg font-semibold text-ink font-stretch-110%">{faq.question}</span>
                   <span className={cn(
-                    "ml-6 flex-shrink-0 w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-accent transition-transform duration-300",
-                    isOpen ? "rotate-180 bg-accent text-white" : ""
+                    "ml-6 flex-shrink-0 w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-accent transition-transform duration-300",
+                    isOpen ? "rotate-180 bg-accent text-ink-inverse" : ""
                   )}>
                     <FaChevronDown className="w-4 h-4" />
                   </span>
@@ -71,7 +71,7 @@ export default function FAQ() {
                     isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                   )}
                 >
-                  <div className="p-6 pt-0 text-gray-600 leading-relaxed border-t border-gray-50">
+                  <div className="p-6 pt-0 text-ink-muted leading-relaxed border-t border-accent/10 font-stretch-110%">
                     {faq.answer}
                   </div>
                 </div>

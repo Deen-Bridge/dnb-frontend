@@ -2,37 +2,38 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
-import { TrendingUp, Users, DollarSign, CheckCircle2 } from "lucide-react";
+import { BookOpen, Globe2, Radio, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const stats = [
   {
-    k: "100%",
-    v: "Non-Custodial Payments",
-    icon: CheckCircle2,
-    description: "You sign every transaction in your own wallet — we never hold your funds",
-    isDark: true,
-  },
-  {
-    k: "$0.01",
-    v: "Max Network Fees",
-    icon: DollarSign,
-    description: "Near-zero fees on Stellar make learning accessible worldwide",
-    isDark: true,
-  },
-  {
-    k: "5s",
-    v: "Payment Settlement",
-    icon: TrendingUp,
-    description: "Educators receive USDC in seconds, not weeks",
-    isDark: true,
-  },
-  {
-    k: "3",
-    v: "Open-Source Services",
+    k: "12K+",
+    v: "Muslims Learning",
     icon: Users,
-    description: "Web app, API, and AI — all MIT-licensed and built in the open",
-    isDark: true,
+    description:
+      "Brothers and sisters studying together, at their own pace, every day",
+  },
+  {
+    k: "850+",
+    v: "Courses & Books",
+    icon: BookOpen,
+    description:
+      "Authentic resources curated by scholars and verified teachers",
+  },
+  {
+    k: "300+",
+    v: "Live Spaces Monthly",
+    icon: Radio,
+    description:
+      "Halaqahs, tafsir circles, and open Q&As hosted across time zones",
+  },
+  {
+    k: "40+",
+    v: "Countries Connected",
+    icon: Globe2,
+    description:
+      "One Ummah, learning side by side from wherever they call home",
   },
 ];
 
@@ -80,7 +81,7 @@ function AnimatedCounter({ value }) {
 }
 
 const Stats = () => (
-  <section className="relative mx-auto max-w-7xl px-4 py-20 sm:py-28 bg-white/80 backdrop-blur-xl">
+  <section className="relative mx-auto max-w-7xl px-4 py-20 sm:py-28 bg-surface backdrop-blur-xl">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -92,14 +93,20 @@ const Stats = () => (
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="mb-4 inline-block rounded-full border border-green-200/50 bg-gradient-to-r from-green-50/80 to-emerald-50/80 px-4 py-1.5 text-sm font-medium text-green-700 backdrop-blur-sm dark:border-green-500/20 dark:from-green-500/10 dark:to-emerald-500/10 dark:text-green-300"
+        className={cn(
+          poppins_500,
+          "mb-4 inline-block rounded-full border border-accent/20 bg-secondary/10 px-4 py-1.5 text-sm text-accent backdrop-blur-sm"
+        )}
       >
         Our Community
       </motion.span>
-      <h2 className="pb-5 bg-gradient-to-r from-accent via-green-500 to-highlight bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl">
+      <h2 className={cn(
+        poppins_600,
+        "pb-5 bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl font-stretch-125%"
+      )}>
         Growing Together in Faith
       </h2>
-      <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-700">
+      <p className={cn(poppins_400, "mx-auto mt-4 max-w-2xl text-lg text-ink-muted font-stretch-110%")}>
         Numbers that reflect our commitment to connecting Muslims worldwide through
         authentic knowledge, meaningful conversations, and spiritual growth
       </p>
@@ -121,21 +128,11 @@ const Stats = () => (
           className="group relative h-full"
         >
           <div
-            className={cn(
-              "relative h-full overflow-hidden rounded-2xl border transition-all duration-300",
-              s.isDark
-                ? "border-green-500/20 bg-gradient-to-br from-green-950/90 to-emerald-950/90 dark:from-green-900/40 dark:to-emerald-900/40"
-                : "border-green-200/30 bg-gradient-to-br from-green-50/90 to-emerald-50/90 dark:border-green-500/10 dark:from-green-950/20 dark:to-emerald-950/20"
-            )}
+            className="relative h-full overflow-hidden rounded-2xl border border-secondary/20 bg-gradient-to-br from-basic to-accent transition-all duration-300"
           >
             {/* Grid pattern overlay */}
             <div
-              className={cn(
-                "absolute inset-0 opacity-30",
-                s.isDark
-                  ? "bg-[linear-gradient(rgba(34,197,94,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.1)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(16,185,129,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.15)_1px,transparent_1px)]"
-                  : "bg-[linear-gradient(rgba(34,197,94,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.08)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(16,185,129,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.1)_1px,transparent_1px)]"
-              )}
+              className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(0,153,0,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(0,153,0,0.12)_1px,transparent_1px)]"
               style={{ backgroundSize: "20px 20px" }}
             />
 
@@ -150,21 +147,9 @@ const Stats = () => (
                   type: "spring",
                   stiffness: 200,
                 }}
-                className={cn(
-                  "mb-6 inline-flex size-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
-                  s.isDark
-                    ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20"
-                    : "bg-gradient-to-br from-green-500/10 to-emerald-500/10"
-                )}
+                className="mb-6 inline-flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/25 to-highlight/20 transition-all duration-300 group-hover:scale-110"
               >
-                <s.icon
-                  className={cn(
-                    "size-6",
-                    s.isDark
-                      ? "text-green-300 dark:text-green-400"
-                      : "text-green-600 dark:text-green-400"
-                  )}
-                />
+                <s.icon className="size-6 text-ink-inverse-muted" />
               </motion.div>
 
               {/* Large statistic */}
@@ -174,10 +159,8 @@ const Stats = () => (
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 + 0.4 }}
                 className={cn(
-                  "mb-3 text-5xl font-bold tracking-tight sm:text-6xl",
-                  s.isDark
-                    ? "text-green-200 dark:text-green-300"
-                    : "text-green-700 dark:text-green-300"
+                  poppins_600,
+                  "mb-3 text-5xl font-bold tracking-tight sm:text-6xl text-ink-inverse font-stretch-110%"
                 )}
               >
                 <AnimatedCounter value={s.k} />
@@ -185,24 +168,14 @@ const Stats = () => (
 
               {/* Label */}
               <p
-                className={cn(
-                  "mb-2 text-base font-semibold",
-                  s.isDark
-                    ? "text-green-300/90 dark:text-green-200"
-                    : "text-green-700 dark:text-green-300"
-                )}
+                className={cn(poppins_500, "mb-2 text-base text-ink-inverse font-stretch-110%")}
               >
                 {s.v}
               </p>
 
               {/* Description */}
               <p
-                className={cn(
-                  "text-sm leading-relaxed",
-                  s.isDark
-                    ? "text-green-300/70 dark:text-green-300/60"
-                    : "text-green-600/70 dark:text-green-400/70"
-                )}
+                className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}
               >
                 {s.description}
               </p>

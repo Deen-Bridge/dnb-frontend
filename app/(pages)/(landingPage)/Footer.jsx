@@ -1,97 +1,175 @@
 import { FaTwitter, FaGithub } from "react-icons/fa";
 import { cn } from "@/lib/utils";
-import { poppins_600 } from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Link from "next/link";
+import Image from "next/image";
+
+const columns = [
+  {
+    heading: "Platform",
+    links: [
+      { name: "Courses", href: "/dashboard/courses" },
+      { name: "Library", href: "/dashboard/library" },
+      { name: "Community Spaces", href: "/dashboard/spaces" },
+      { name: "Sadaqah Fund", href: "/dashboard/sadaqah" },
+      { name: "AI Assistant", href: "/ai" },
+    ],
+  },
+  {
+    heading: "Company",
+    links: [
+      { name: "About", href: "/about" },
+      { name: "Features", href: "/features" },
+      { name: "Educators", href: "/educators" },
+      { name: "Blog", href: "/blog" },
+      { name: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    heading: "Build",
+    links: [
+      { name: "Payments on Stellar", href: "/stellar" },
+      { name: "Open Source", href: "https://github.com/Deen-Bridge" },
+      { name: "Become an Educator", href: "/signup" },
+    ],
+  },
+];
+
+const socials = [
+  {
+    icon: <FaGithub />,
+    href: "https://github.com/Deen-Bridge",
+    label: "Deen Bridge on GitHub",
+  },
+  {
+    icon: <FaTwitter />,
+    href: "https://x.com/deen_bridge",
+    label: "Deen Bridge on X",
+  },
+];
+
 export default function Footer() {
   return (
-    <footer id="contact" className="relative bg-basic text-white overflow-hidden ">
-     
+    <footer
+      id="contact"
+      className="relative bg-basic text-ink-inverse overflow-hidden"
+    >
       {/* Glowing Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-green-500 via-slate-800 to-green-500 opacity-30 blur-2xl z-0" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-secondary via-accent to-secondary opacity-30 blur-2xl z-0" />
 
-      <div className="relative z-10 m-3 sm:m-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 gap-y-6 mb-12">
-          {/* Company Info */}
-          <div>
-            <span
+      <div className="relative z-10 mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
+        <div className="mb-12 grid grid-cols-2 gap-10 gap-y-12 md:grid-cols-4 lg:grid-cols-5">
+          {/* Brand */}
+          <div className="col-span-2">
+            <Link
+              href="/"
+              className="mb-5 inline-flex items-center gap-3 transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/images/dnb-nobg.png"
+                alt="Deen Bridge"
+                width={225}
+                height={225}
+                className="size-12 w-auto"
+              />
+              <span
+                className={cn(
+                  poppins_600,
+                  "bg-gradient-to-r from-secondary via-highlight to-secondary bg-clip-text text-2xl text-transparent font-stretch-125% sm:text-3xl"
+                )}
+              >
+                Deen Bridge
+              </span>
+            </Link>
+
+            <p
               className={cn(
-                poppins_600,
-                "text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold  leading-snug bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-stretch-125%"
+                poppins_400,
+                "mb-6 max-w-sm text-sm leading-relaxed text-ink-inverse-muted"
               )}
             >
-              Deen Bridge
-            </span>
-            <p className="text-gray-200 text-sm leading-relaxed">      
-                Deen Bridge is your trusted platform for connecting learners and educators in a vibrant, supportive community. 
-                Explore a wide range of courses, resources, and events designed to help you grow in knowledge and faith. 
-                Join us on our mission to make quality Islamic education accessible to everyone, everywhere around the globe.
+              A trusted home for learners and educators across the Ummah.
+              Authentic courses, a growing library, and live spaces — built in
+              the open, and paid out on Stellar.
             </p>
-          </div>
 
-          {/* Navigation Links */}
-          <div className=" md:justify-self-center">
-            <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">
-              Explore
-            </h3>
-            <ul className="space-y-4 text-sm">
-              {[
-                { name: "Courses", href: "/dashboard/courses" },
-                { name: "Library", href: "/dashboard/library" },
-                { name: "Community Spaces", href: "/dashboard/spaces" },
-                { name: "Sadaqah Fund", href: "/dashboard/sadaqah" },
-                { name: "Blog", href: "/blog" },
-                { name: "Open Source on GitHub", href: "https://github.com/Deen-Bridge" },
-              ].map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="hover:text-secondary transition duration-300 font-light"
-                  >
-                    {link.name}
-                  </a>
-                </li>
+            <div className="flex items-center gap-3 text-xl">
+              {socials.map((s) => (
+                <Link
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="rounded-full border border-secondary/25 p-2.5 transition-all hover:border-secondary hover:bg-secondary/10 hover:text-secondary"
+                >
+                  {s.icon}
+                </Link>
               ))}
-            </ul>
-          </div>
-
-          {/* Newsletter & Socials */}
-          <div>
-            <h3 className="text-3xl sm:text-4xl  font-semibold  mb-4 font-stretch-125%">
-              Join the Community
-            </h3>
-            <p className="text-gray-200 text-sm leading-relaxed mb-6">
-              Deen Bridge is open source and built in public on the Stellar
-              network. Follow our journey, star the project, or contribute
-              on GitHub.
-            </p>
-            <div className="flex items-center gap-4 text-2xl">
-              <Link
-                href="https://github.com/Deen-Bridge"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Deen Bridge on GitHub"
-                className="hover:text-secondary rounded-full p-2 transition"
-              >
-                <FaGithub />
-              </Link>
-              <Link
-                href="https://x.com/deen_bridge"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Deen Bridge on X"
-                className="hover:text-secondary rounded-full p-2 transition"
-              >
-                <FaTwitter />
-              </Link>
             </div>
           </div>
+
+          {/* Link columns */}
+          {columns.map((col) => (
+            <div key={col.heading}>
+              <h3
+                className={cn(
+                  poppins_600,
+                  "mb-4 text-sm uppercase tracking-wider text-secondary"
+                )}
+              >
+                {col.heading}
+              </h3>
+              <ul className={cn(poppins_400, "space-y-3 text-sm")}>
+                {col.links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-ink-inverse-muted transition-colors duration-300 hover:text-secondary"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-green-900 pt-6 flex items-center justify-center text-sm text-white font-stretch-125%">
-          <p className="text-center md:text-left mt-4 md:mt-0">
+        <div
+          className={cn(
+            poppins_400,
+            "flex flex-col-reverse items-center justify-between gap-6 border-t border-accent/40 pt-6 text-sm text-ink-inverse-muted md:flex-row"
+          )}
+        >
+          <p className="text-center md:text-left">
             © {new Date().getFullYear()} Deen Bridge. All rights reserved.
           </p>
+
+          {/* Stellar attribution — shows on every page that renders the footer */}
+          <Link
+            href="/stellar"
+            aria-label="Learn how Deen Bridge uses the Stellar network"
+            className="inline-flex items-center gap-3 rounded-2xl bg-surface-raised px-4 py-2.5 shadow-lg transition-transform hover:scale-105"
+          >
+            <span
+              className={cn(
+                poppins_500,
+                "text-[10px] uppercase tracking-wider text-ink-muted"
+              )}
+            >
+              Built on
+            </span>
+            {/* Opaque-white PNG — multiply drops the background into the chip. */}
+            <Image
+              src="/images/images.png"
+              alt="Stellar"
+              width={738}
+              height={228}
+              className="h-5 w-auto mix-blend-multiply"
+            />
+          </Link>
         </div>
       </div>
     </footer>
