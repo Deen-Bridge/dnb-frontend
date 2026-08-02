@@ -134,6 +134,20 @@
   --color-secondary: #009900;
   --color-accent: #265902;
   --color-highlight: #008200;
+
+  /* Light surfaces. Pure #fff reads too bright next to the brand greens, so
+     sections and cards sit on a faint green-tinted off-white instead. */
+  --color-surface: #f3f7f1;
+  --color-surface-raised: #fafcf9;
+
+  /* Text on light surfaces — desaturated greens rather than neutral grays,
+     so the page stays strictly white-and-green. */
+  --color-ink: #14260c;
+  --color-ink-muted: #40593a;
+
+  /* Text on the dark --color-basic sections. Softer than #fff. */
+  --color-ink-inverse: #eef5ec;
+  --color-ink-inverse-muted: #b9d1b0;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -234,4 +248,42 @@
 
 .animate-marquee-reverse {
   animation: marquee-reverse 30s linear infinite;
+}
+
+/* Variable-speed marquee driven by components/ui/marquee.jsx.
+   Kept separate from the fixed-speed .animate-marquee above, which
+   Testimonials relies on. */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+/* Longhands, not the `animation:` shorthand — the shorthand resets
+   animation-direction and animation-play-state, which would override the
+   reverse / pause-on-hover utilities Tailwind emits earlier in the cascade. */
+.animate-marquee-x {
+  animation-name: marquee-x;
+  animation-duration: var(--duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-marquee-y {
+  animation-name: marquee-y;
+  animation-duration: var(--duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }

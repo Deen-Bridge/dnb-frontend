@@ -56,7 +56,7 @@ export default function WhyDeenBridge() {
         <h2
           className={cn(
             poppins_600,
-            "text-4xl sm:text-8xl font-bold text-center pb-12 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text font-stretch-125%"
+            "text-4xl sm:text-8xl font-bold text-center pb-12 bg-gradient-to-r from-secondary via-highlight to-accent text-transparent bg-clip-text font-stretch-125%"
           )}
         >
           Why Deen Bridge?
@@ -65,13 +65,13 @@ export default function WhyDeenBridge() {
           {features.map((f, i) => (
             <div
               key={f.title}
-              className="rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col items-center text-center border-0 border-accent/10 hover:scale-[1.03]"
+              className="rounded-3xl bg-surface-raised backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col items-center text-center border-0 border-accent/10 hover:scale-[1.03]"
             >
               {f.icon}
               <h3 className="text-xl font-bold mb-2 text-accent font-stretch-125%">
                 {f.title}
               </h3>
-              <p className="text-gray-700 text-base mb-2 font-stretch-110%">
+              <p className="text-ink-muted text-base mb-2 font-stretch-110%">
                 {f.desc}
               </p>
             </div>

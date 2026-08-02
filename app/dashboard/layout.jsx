@@ -11,7 +11,7 @@ export default function Layout({ children }) {
   return (
     <>
       <NextTopLoader
-        color="#34AD5D"
+        color="#009900"
         initialPosition={0.09}
         crawlSpeed={100}
         height={3}
@@ -19,7 +19,7 @@ export default function Layout({ children }) {
         showSpinner={false}
         easing="ease"
         speed={100}
-        shadow="0 0 10px #34AD5D,0 0 5px #34AD5D"
+        shadow="0 0 10px #009900,0 0 5px #009900"
       />
       <ProtectedRoute>
         <PresenceProvider>

@@ -1,117 +1,164 @@
 "use client";
-import { FaUserPlus, FaSearch, FaUsers, FaGraduationCap, FaHeart, FaStar } from "react-icons/fa";
-import { cn } from '@/lib/utils';
-import { poppins_600 } from '@/lib/config/font.config';
-import Button from '@/components/atoms/form/Button';
+import { FaHeart, FaStar } from "react-icons/fa";
+import { cn } from "@/lib/utils";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import Button from "@/components/atoms/form/Button";
 
-import { steps } from "@/lib/data";
+import { studentSteps, tutorSteps } from "@/lib/data";
+
+const StepCard = ({ step }) => (
+  <div className="group relative h-full rounded-2xl border border-accent/10 bg-surface-raised p-5 shadow-lg backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+    <div className="mb-4 flex items-center gap-3">
+      <div
+        className={cn(
+          "flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r shadow-md transition-transform group-hover:scale-110",
+          step.color
+        )}
+      >
+        {step.icon}
+      </div>
+      <span
+        className={cn(
+          poppins_600,
+          "flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs text-accent"
+        )}
+      >
+        {step.id}
+      </span>
+    </div>
+    <h4
+      className={cn(
+        poppins_600,
+        "mb-1.5 text-base text-accent font-stretch-110%"
+      )}
+    >
+      {step.title}
+    </h4>
+    <p className={cn(poppins_400, "text-sm text-ink-muted font-stretch-110%")}>
+      {step.desc}
+    </p>
+  </div>
+);
+
+const TrackCopy = ({ eyebrow, title, body, cta, href }) => (
+  <div>
+    <span
+      className={cn(
+        poppins_500,
+        "mb-4 inline-flex items-center rounded-full border border-accent/20 bg-secondary/10 px-4 py-1.5 text-sm text-accent"
+      )}
+    >
+      {eyebrow}
+    </span>
+    <h3
+      className={cn(
+        poppins_600,
+        "mb-4 text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-transparent font-stretch-125%"
+      )}
+    >
+      {title}
+    </h3>
+    <p
+      className={cn(
+        poppins_400,
+        "mb-8 text-lg leading-relaxed text-ink-muted font-stretch-110%"
+      )}
+    >
+      {body}
+    </p>
+    <Button
+      wide
+      round
+      to={href}
+      className="bg-gradient-to-r from-accent to-highlight hover:from-highlight hover:to-accent text-white px-10 py-3.5 text-base font-bold animate-in-out transition-all shadow-lg"
+    >
+      {cta}
+    </Button>
+  </div>
+);
 
 export default function HowItWorks() {
   return (
-    <section className="relative py-24 px-4 sm:px-6 bg-gradient-to-br from-green-50 via-white to-green-100/80 overflow-hidden">
+    <section id="how-it-works" className="relative py-24 px-4 sm:px-6 bg-surface overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute left-0 top-0 w-1/2 h-1/2 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute right-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-highlight/10 to-transparent rounded-full blur-2xl animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-accent/5 to-highlight/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -left-24 top-0 h-[420px] w-[420px] rounded-full bg-secondary/10 blur-3xl" />
+        <div className="absolute -right-24 bottom-0 h-[420px] w-[420px] rounded-full bg-accent/10 blur-3xl" />
       </div>
-      
+
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-20">
-          <h2 className={cn(
-            poppins_600,
-            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text font-stretch-125%"
-          )}>
+          <h2
+            className={cn(
+              poppins_600,
+              "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-secondary via-highlight to-accent text-transparent bg-clip-text font-stretch-125%"
+            )}
+          >
             How It Works
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-stretch-110%">
-            Experience the seamless path to spiritual growth and community connection
+          <p
+            className={cn(
+              poppins_400,
+              "text-xl text-ink-muted max-w-3xl mx-auto font-stretch-110%"
+            )}
+          >
+            Two paths, one Ummah — whether you came here to learn or to teach
           </p>
         </div>
 
-        {/* Desktop Layout */}
-        <div className="hidden md:block mb-16">
-          <div className="relative min-h-[600px]">
-            {steps.map((step, index) => (
-              <div
-                key={step.id}
-                className={cn(
-                  "absolute bg-white/95 backdrop-blur-xl rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 border border-white/20 group w-64",
-                  step.position
-                )}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="flex flex-col items-center text-center gap-4">
-                  <div className={cn(
-                    "w-16 h-16 rounded-2xl bg-gradient-to-r flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform",
-                    step.color
-                  )}>
-                    {step.icon}
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-accent to-highlight flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">{step.id}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-accent font-stretch-125%">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm font-stretch-110%">
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
+        {/* Students — copy on the left, steps on the right */}
+        <div className="mb-24 grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <TrackCopy
+            eyebrow="For Students"
+            title="Start learning in four steps"
+            body="Create an account, find what speaks to you, and study alongside
+              teachers and classmates from across the Ummah. Everything is
+              curated by verified scholars, so you can learn with confidence
+              from day one."
+            cta="Create a free account"
+            href="/signup"
+          />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {studentSteps.map((step) => (
+              <StepCard key={step.id} step={step} />
             ))}
           </div>
         </div>
 
-        {/* Mobile Layout */}
-        <div className="md:hidden mb-16">
-          <div className="space-y-6">
-            {steps.map((step, index) => (
-              <div
-                key={step.id}
-                className="bg-white/95 backdrop-blur-xl rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 border border-white/20 group"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={cn(
-                    "w-14 h-14 rounded-2xl bg-gradient-to-r flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform",
-                    step.color
-                  )}>
-                    {step.icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-bold text-accent font-stretch-125%">
-                        {step.title}
-                      </h3>
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-r from-accent to-highlight flex items-center justify-center">
-                        <span className="text-white font-bold text-xs">{step.id}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 text-sm font-stretch-110%">
-                      {step.desc}
-                    </p>
-                  </div>
-                </div>
-              </div>
+        {/* Educators — reversed: steps first, then copy */}
+        <div className="mb-16 grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {tutorSteps.map((step) => (
+              <StepCard key={step.id} step={step} />
             ))}
           </div>
+          <TrackCopy
+            eyebrow="For Educators"
+            title="Teach, and get paid for it"
+            body="Share what you know with learners who are looking for exactly
+              your expertise. Publish courses and books, host live spaces, and
+              receive your earnings in USDC over Stellar — settled in seconds,
+              straight to your own wallet."
+            cta="Apply to teach"
+            href="/signup"
+          />
         </div>
 
         {/* Bottom Section */}
         <div className="text-center">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-white/20 max-w-4xl mx-auto">
+          <div className="bg-surface-raised backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-accent/10 max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-4 mb-6">
               <FaHeart className="text-accent w-8 h-8 animate-pulse" />
               <FaStar className="text-highlight w-8 h-8 animate-pulse" />
               <FaHeart className="text-accent w-8 h-8 animate-pulse" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4 font-stretch-125%">
+            <h3 className="text-2xl font-bold text-ink mb-4 font-stretch-125%">
               Ready to Begin Your Journey?
             </h3>
-            <p className="text-gray-600 mb-8 font-stretch-110%">
-              Join thousands of Muslims who are already growing and learning together
+            <p className="text-ink-muted mb-8 font-stretch-110%">
+              Join thousands of Muslims who are already growing and learning
+              together
             </p>
             <Button
               wide

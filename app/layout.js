@@ -3,6 +3,12 @@ import { Toaster } from "sonner";
 import AppProviders from "@/components/providers/AppProviders";
 import { appearanceInitScript } from "@/lib/config/appearance.config";
 import "../styles/globals.css";
+import {
+  siteUrl,
+  siteName,
+  siteDescription,
+  isProduction,
+} from "@/lib/config/site.config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,10 +21,49 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Deen Bridge",
-  description:
-    "Empowering Muslims with authentic knowledge — Learn Qur'an, Arabic, Fiqh, and more through 1-on-1 live mentorship and lots more.",
-  manifest: "/manifest",
+  // Without metadataBase every relative OG/Twitter image resolved against
+  // localhost, so social cards and Google fetched a URL that does not exist.
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Deen Bridge — Authentic Islamic Education",
+    // Child pages set only their own title; this appends the brand.
+    template: "%s | Deen Bridge",
+  },
+  description: siteDescription,
+  applicationName: siteName,
+  keywords: [
+    "Islamic education",
+    "Qur'an courses",
+    "Islamic books",
+    "hadith",
+    "fiqh",
+    "tafsir",
+    "Arabic learning",
+    "Muslim community",
+    "Islamic AI assistant",
+    "halal payments",
+    "Stellar USDC",
+  ],
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  publisher: siteName,
+  alternates: {
+    canonical: "/",
+  },
+  robots: isProduction
+    ? {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
+        },
+      }
+    : { index: false, follow: false },
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -33,27 +78,75 @@ export const metadata = {
     statusBarStyle: "black-translucent",
   },
   openGraph: {
-    title: "Deen Bridge ",
-    description:
-      "Empowering Muslims with authentic knowledge — Learn Qur'an, Arabic, Fiqh, and more through 1-on-1 live mentorship and lots more.",
-    url: "https://deenbridge.com",
+    title: "Deen Bridge — Authentic Islamic Education",
+    description: siteDescription,
+    url: siteUrl,
+    siteName,
+    locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/favicon.ico",
+        // Was /favicon.ico declared as 1200x630 — a real image now exists.
+        url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Deen Bridge - Islamic Learning Platform",
+        alt: "Deen Bridge — authentic Islamic education, together.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Deen Bridge ",
-    description:
-      "Empowering Muslims with authentic knowledge — Learn Qur'an, Arabic, Fiqh, and more through 1-on-1 live mentorship and lots more.",
-    images: ["/favicon.ico"],
+    site: "@deen_bridge",
+    creator: "@deen_bridge",
+    title: "Deen Bridge — Authentic Islamic Education",
+    description: siteDescription,
+    images: ["/og.png"],
   },
+  category: "education",
+};
+
+export const viewport = {
+  themeColor: "#092601",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
+// Structured data: lets Google associate the brand, logo, and social profiles,
+// and offer a sitelinks search box.
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/icons/icon-512x512.png`,
+      description: siteDescription,
+      sameAs: [
+        "https://github.com/Deen-Bridge",
+        "https://x.com/deen_bridge",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: siteName,
+      description: siteDescription,
+      publisher: { "@id": `${siteUrl}/#organization` },
+      inLanguage: "en",
+    },
+    {
+      "@type": "EducationalOrganization",
+      "@id": `${siteUrl}/#school`,
+      name: siteName,
+      url: siteUrl,
+      description:
+        "Online Islamic education — courses, a curated library, and live community spaces taught by verified educators.",
+    },
+  ],
 };
 
 export default function RootLayout({ children }) {
@@ -62,6 +155,10 @@ export default function RootLayout({ children }) {
       <head>
         <script
           dangerouslySetInnerHTML={{ __html: appearanceInitScript() }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body

@@ -68,7 +68,7 @@ export default function Testimonials() {
         <h2
           className={cn(
             poppins_600,
-            "text-4xl sm:text-8xl font-bold text-center pb-12 bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text font-stretch-125%"
+            "text-3xl sm:text-5xl lg:text-7xl font-bold text-center pb-8 sm:pb-12 bg-gradient-to-r from-secondary via-highlight to-accent text-transparent bg-clip-text font-stretch-125%"
           )}
         >
           What Our Community Says
@@ -82,18 +82,18 @@ export default function Testimonials() {
               {row1Duplicated.map((t, i) => (
                 <div
                   key={`row1-${i}`}
-                  className="flex-shrink-0 w-[350px] mx-4 rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col border-0 border-accent/10"
+                  className="flex-shrink-0 w-[260px] sm:w-[320px] lg:w-[350px] mx-2 sm:mx-4 rounded-3xl bg-surface-raised backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-5 sm:p-7 lg:p-8 flex flex-col border-0 border-accent/10"
                 >
-                  <blockquote className="italic text-lg text-gray-700 mb-4 font-stretch-110% flex-1">
+                  <blockquote className="italic text-sm sm:text-base lg:text-lg text-ink-muted mb-3 sm:mb-4 font-stretch-110% flex-1">
                     "{t.quote}"
                   </blockquote>
                   <div className="flex items-center gap-4">
                   
                     <div>
-                      <span className="block font-bold text-accent text-lg">
+                      <span className="block font-bold text-accent text-base sm:text-lg">
                         {t.name}
                       </span>
-                      <span className="block text-sm text-muted-foreground">
+                      <span className="block text-xs sm:text-sm text-ink-muted/80">
                         {t.role}
                       </span>
                     </div>
@@ -109,18 +109,18 @@ export default function Testimonials() {
               {row2Duplicated.map((t, i) => (
                 <div
                   key={`row2-${i}`}
-                  className="flex-shrink-0 w-[350px] mx-4 rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-8 flex flex-col border-0 border-accent/10"
+                  className="flex-shrink-0 w-[260px] sm:w-[320px] lg:w-[350px] mx-2 sm:mx-4 rounded-3xl bg-surface-raised backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-5 sm:p-7 lg:p-8 flex flex-col border-0 border-accent/10"
                 >
-                  <blockquote className="italic text-lg text-gray-700 mb-4 font-stretch-110% flex-1">
+                  <blockquote className="italic text-sm sm:text-base lg:text-lg text-ink-muted mb-3 sm:mb-4 font-stretch-110% flex-1">
                     "{t.quote}"
                   </blockquote>
                   <div className="flex items-center gap-4">
               
                     <div>
-                      <span className="block font-bold text-accent text-lg">
+                      <span className="block font-bold text-accent text-base sm:text-lg">
                         {t.name}
                       </span>
-                      <span className="block text-sm text-muted-foreground">
+                      <span className="block text-xs sm:text-sm text-ink-muted/80">
                         {t.role}
                       </span>
                     </div>
