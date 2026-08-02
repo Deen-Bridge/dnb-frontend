@@ -14,8 +14,8 @@ import { FaBookOpen, FaUsers, FaWallet } from "react-icons/fa";
 
 const assurances = [
   { icon: <FaUsers className="size-4" />, text: "Free to join" },
-  { icon: <FaBookOpen className="size-4" />, text: "Free courses from day one" },
-  { icon: <FaWallet className="size-4" />, text: "No card required" },
+  { icon: <FaBookOpen className="size-4" />, text: "Browse everything before you buy" },
+  { icon: <FaWallet className="size-4" />, text: "Pay per course, no subscription" },
 ];
 
 export default function CTA() {

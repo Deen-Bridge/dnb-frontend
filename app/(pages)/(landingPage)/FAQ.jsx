@@ -7,20 +7,39 @@ import { FaChevronDown } from "react-icons/fa";
 const faqs = [
   {
     question: "Is DeenBridge free to use?",
-    answer: "Yes, DeenBridge is fundamentally free to join and use. We believe in making authentic Islamic knowledge and community connection accessible to everyone."
+    answer:
+      "Creating an account, browsing the platform, and joining the community are free. Individual courses and books are priced by the educators who publish them — some are free, others are paid. You always see the price before anything is charged.",
   },
   {
-    question: "How do I find spaces or events near me?",
-    answer: "You can use our 'Spaces' and 'Events' features to discover local meetups, study circles, and community gatherings. You can also filter by location and interests."
+    question: "How do payments work?",
+    answer:
+      "Paid courses and books are bought with USDC on the Stellar network, straight from your own wallet. You approve every payment yourself and DeenBridge never holds your funds. Settlement takes a few seconds and network fees are a fraction of a cent.",
+  },
+  {
+    question: "Do I need a crypto wallet?",
+    answer:
+      "Only for paid content. You can create an account, read free books, take free courses, and join spaces without one. When you want to buy something — or start earning as an educator — you connect a Stellar wallet such as Freighter.",
+  },
+  {
+    question: "Can I teach and earn on DeenBridge?",
+    answer:
+      "Yes. Educators publish courses and books and host live spaces, and they set their own prices. Earnings arrive as USDC in your own wallet within seconds of a sale — no payout threshold and no waiting on a bank.",
+  },
+  {
+    question: "How do I find spaces to join?",
+    answer:
+      "The Spaces section lists every halaqah, tafsir circle, and open Q&A on the platform. You can filter by what is live now, what is coming up, or the ones you have added to your wishlist.",
   },
   {
     question: "Are the resources and scholars verified?",
-    answer: "We take authenticity seriously. Our team works diligently to ensure that the scholars, resources, and book recommendations on our platform align with authentic Islamic teachings."
+    answer:
+      "We take authenticity seriously. Educators are reviewed before they can publish, and our AI assistant grades hadith, checks Qur'an citations, and sends doubtful religious answers to a scholar rather than guessing.",
   },
   {
     question: "Is my data secure?",
-    answer: "Absolutely. We employ industry-standard security measures to protect your personal information and ensure a safe environment for all our community members."
-  }
+    answer:
+      "Yes. We use industry-standard security measures, and because payments are non-custodial we never hold your funds. What the AI assistant remembers about you can be read on request and deleted in full at any time.",
+  },
 ];
 
 export default function FAQ() {

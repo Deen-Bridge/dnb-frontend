@@ -316,8 +316,8 @@ export default function FeaturesPage() {
                 "mx-auto mb-8 max-w-2xl text-ink-muted font-stretch-110%"
               )}
             >
-              Creating an account is free, and there are free courses and books
-              waiting the moment you do.
+              Creating an account is free. Browse every course, book, and space
+              on the platform, and only pay for the ones you choose to take.
             </p>
             <Button
               wide
