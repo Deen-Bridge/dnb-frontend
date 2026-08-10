@@ -113,7 +113,7 @@ This repository participates in the **[Stellar Drips Wave](https://www.drips.net
 
 - All pull requests target the **`dev`** branch (`main` is releases only)
 - CI (lint + build) must pass before review
-- One contributor per issue — comment to claim it first
+- One contributor per issue — request it through the campaign (Drips Wave / GrantFox OSS); the maintainer assigns it. Please don't open a PR for an issue you haven't been assigned.
 
 Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full workflow, coding standards, and Wave rules.
 
