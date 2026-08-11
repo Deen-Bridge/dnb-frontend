@@ -160,7 +160,7 @@ export default function ReviewsSection({
                       <button
                         type="button"
                         onClick={() => onEditReview?.(review)}
-                        className="text-xs text-muted-foreground hover:text-brand-text px-2 py-1 rounded hover:bg-gray-100 transition"
+                        className="text-xs text-muted-foreground hover:text-brand-text px-2 py-1 rounded hover:bg-muted transition"
                       >
                         Edit
                       </button>

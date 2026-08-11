@@ -34,7 +34,7 @@ const UpcomingSessions = () => {
     }, []);
 
     return (
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-card text-card-foreground rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold mb-3">Upcoming Sessions</h3>
             {loading ? (
                 <ul className="space-y-2 text-sm">
