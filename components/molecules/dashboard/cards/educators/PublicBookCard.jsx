@@ -7,7 +7,7 @@ const PublicBookCard = ({ book }) => {
   const avgRating = getAverageRating(book?.reviews);
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
+    <div className="bg-card text-card-foreground rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
       <div className="relative w-full h-64">
         <Image
           src={book.image || "/images/placeholder.jpg"}

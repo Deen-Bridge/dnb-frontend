@@ -139,7 +139,7 @@ const ReelShareDialog = ({ reel, open, onOpenChange, onShared }) => {
               >
                 <div className="flex h-full w-full flex-col justify-between rounded-2xl bg-background/95 p-5 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-foreground shadow">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-card text-card-foreground shadow">
                       {platform.icon}
                     </span>
                     <span className="text-left text-base font-semibold text-foreground">

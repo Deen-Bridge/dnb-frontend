@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LibraryBookSkeleton() {
     return (
-        <div className="bg-white rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto animate-pulse">
+        <div className="bg-card rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto animate-pulse">
             {/* Image skeleton */}
             <div className="relative w-full h-64">
                 <Skeleton className="absolute inset-0 w-full h-full bg-gradient-to-r from-secondary via-highlight to-secondary animate-gradient-x" />
