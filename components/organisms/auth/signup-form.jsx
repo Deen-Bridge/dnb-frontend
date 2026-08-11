@@ -26,11 +26,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import PasswordStrength from "@/components/atoms/form/PasswordStrength";
+import { PASSWORD_MAX, refinePassword } from "@/lib/validation/password";
+
 const signupSchema = z
   .object({
     name: z.string().min(1, "Full name is required").max(100, "Name is too long"),
     email: z.string().min(1, "Email is required").email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    // Length is bounded here so the field errors before refinePassword runs;
+    // the strength rules themselves live in lib/validation/password.js.
+    password: z.string().min(1, "Password is required").max(PASSWORD_MAX),
     confirmPassword: z.string().min(1, "Please confirm your password"),
     role: z.string().min(1, "Please select a role"),
   })
@@ -39,15 +44,23 @@ const signupSchema = z
     path: ["confirmPassword"],
   });
 
+const signupSchemaWithPolicy = refinePassword(signupSchema);
+
 export function SignupForm({ className, ...props }) {
   const [error, setError] = useState("");
   const [registered, setRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
 
   const form = useForm({
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(signupSchemaWithPolicy),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "", role: "" },
+    mode: "onChange",
   });
+
+  // The meter's "doesn't contain your name or email" check needs the live
+  // values of those fields, not the submitted ones.
+  const watchedName = form.watch("name");
+  const watchedEmail = form.watch("email");
 
   const handleSignup = async (data) => {
     setError("");
@@ -119,6 +132,11 @@ export function SignupForm({ className, ...props }) {
                 <FormLabel>Password</FormLabel>
                 <FormControl><Input type="password" placeholder="********" {...field} /></FormControl>
                 <FormMessage />
+                <PasswordStrength
+                  password={field.value}
+                  name={watchedName}
+                  email={watchedEmail}
+                />
               </FormItem>
             )} />
             <FormField control={form.control} name="confirmPassword" render={({ field }) => (
