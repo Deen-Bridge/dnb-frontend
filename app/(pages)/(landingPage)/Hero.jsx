@@ -112,6 +112,41 @@ const Hero = () => {
             <p className={cn(poppins_500, "mt-8 text-sm text-ink-inverse-muted")}>
               {trust.join("  ·  ")}
             </p>
+
+            {/* Built on Stellar — ecosystem mark; light chip so the white-bg
+                logo reads on the dark hero (matches StellarSection). */}
+            <Link
+              href="https://stellar.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Built on Stellar — visit stellar.org"
+              className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-surface-raised px-4 py-2 shadow-lg transition-transform hover:scale-105"
+            >
+              <span
+                className={cn(
+                  poppins_500,
+                  "text-[11px] uppercase tracking-wider text-ink-muted"
+                )}
+              >
+                Built on
+              </span>
+              <Image
+                src="/images/images.png"
+                alt="Stellar"
+                width={738}
+                height={228}
+                className="h-4 w-auto mix-blend-multiply"
+              />
+              <span className="text-ink-muted/40">·</span>
+              <span
+                className={cn(
+                  poppins_600,
+                  "text-[11px] uppercase tracking-wider text-secondary"
+                )}
+              >
+                USDC
+              </span>
+            </Link>
           </motion.div>
 
           {/* Right — compact product preview cards */}

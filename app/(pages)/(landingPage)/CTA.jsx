@@ -72,8 +72,8 @@ export default function CTA() {
               "mx-auto mb-10 max-w-2xl text-base leading-relaxed text-ink-inverse-muted sm:text-lg font-stretch-110%"
             )}
           >
-            Join thousands of Muslims learning, teaching, and giving together.
-            Create an account and you can be in your first halaqah tonight.
+            Learn, teach, and give together — on one platform built for the
+            Ummah. Create an account and you can be in your first halaqah tonight.
           </p>
 
           <div className="mb-10 flex flex-wrap items-center justify-center gap-4">
