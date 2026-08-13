@@ -150,6 +150,18 @@
   --color-ink-inverse-muted: #b9d1b0;
 }
 
+/* Dark-mode brand tokens. Defined AFTER @theme so they win the cascade when the
+   .dark class is present. Flips design-system surfaces dark and ink light, so
+   every bg-surface / text-ink / text-accent utility stays legible in dark mode
+   without touching individual components. */
+.dark {
+  --color-surface: #0f1f0a;
+  --color-surface-raised: #17290f;
+  --color-ink: #eaf3e6;
+  --color-ink-muted: #9fbb93;
+  --color-accent: #5aa83e;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

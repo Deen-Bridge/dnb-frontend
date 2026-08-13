@@ -38,7 +38,7 @@ export default ProfileContent;
 
 // Temporary placeholder components
 const Placeholder = ({ title }) => (
-  <div className="p-6 text-center text-muted-foreground text-lg">
+  <div className="p-6 text-center text-ink-muted text-lg">
     No {title} yet. Stay tuned!
   </div>
 );
@@ -333,14 +333,14 @@ const FollowersTab = ({ profileId }) => {
           {[...Array(6)].map((_, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg animate-pulse"
+              className="flex items-center gap-4 p-4 bg-surface/30 rounded-lg animate-pulse"
             >
-              <div className="h-12 w-12 bg-muted rounded-full"></div>
+              <div className="h-12 w-12 bg-surface rounded-full"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-muted rounded w-1/3"></div>
-                <div className="h-3 bg-muted rounded w-1/2"></div>
+                <div className="h-4 bg-surface rounded w-1/3"></div>
+                <div className="h-3 bg-surface rounded w-1/2"></div>
               </div>
-              <div className="h-8 w-20 bg-muted rounded"></div>
+              <div className="h-8 w-20 bg-surface rounded"></div>
             </div>
           ))}
         </div>
@@ -454,14 +454,14 @@ const FollowingTab = ({ profileId }) => {
           {[...Array(6)].map((_, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg animate-pulse"
+              className="flex items-center gap-4 p-4 bg-surface/30 rounded-lg animate-pulse"
             >
-              <div className="h-12 w-12 bg-muted rounded-full"></div>
+              <div className="h-12 w-12 bg-surface rounded-full"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-muted rounded w-1/3"></div>
-                <div className="h-3 bg-muted rounded w-1/2"></div>
+                <div className="h-4 bg-surface rounded w-1/3"></div>
+                <div className="h-3 bg-surface rounded w-1/2"></div>
               </div>
-              <div className="h-8 w-20 bg-muted rounded"></div>
+              <div className="h-8 w-20 bg-surface rounded"></div>
             </div>
           ))}
         </div>

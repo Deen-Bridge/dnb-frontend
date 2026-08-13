@@ -1,70 +1,86 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
-import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import { getAverageRating } from "@/hooks/getAverageRating";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const PublicCourseCard = ({ course }) => {
   const avgRating = getAverageRating(course?.reviews);
 
   return (
-    <Card className="relative flex flex-col overflow-hidden rounded-2xl bg-muted/30 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:scale-[1.015] transition-all group">
-      <div className="relative h-60 w-full">
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+      <div className="relative h-52 w-full overflow-hidden">
         <Image
           src={course.thumbnail || "/images/dnb.png"}
           alt={course.title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
-        <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
-          <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
-            {course.category || "General"}
-          </Badge>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <span
+          className={cn(
+            poppins_600,
+            "absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[11px] uppercase tracking-wider text-accent shadow"
+          )}
+        >
+          {course.category || "General"}
+        </span>
+        <span
+          className={cn(
+            poppins_600,
+            "absolute bottom-3 right-3 rounded-full bg-gradient-to-r from-secondary to-highlight px-3 py-1 text-xs text-white shadow"
+          )}
+        >
+          {course.price ? `$${course.price}` : "Free"}
+        </span>
       </div>
 
-      <CardHeader>
-        <CardTitle className="text-lg font-bold line-clamp-1">
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className={cn(poppins_600, "line-clamp-1 text-base text-ink")}>
           {course.title}
-        </CardTitle>
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        </h3>
+        <p
+          className={cn(
+            poppins_400,
+            "mt-1 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-muted"
+          )}
+        >
           {course.description}
         </p>
-      </CardHeader>
 
-      <CardContent>
-        <div className="flex justify-between items-center gap-3">
-          <div className="flex items-center gap-2">
-            {avgRating > 0 && (
-              <div className="flex items-center gap-0.5 text-yellow-500">
-                <Star size={14} fill="#FFD700" stroke="#FFD700" />
-                <span className="text-xs font-medium text-foreground">
-                  {avgRating.toFixed(1)}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-            {course.price ? `$${course.price}` : "Free"}
-          </div>
+        <div className="mt-3">
+          {avgRating > 0 ? (
+            <span className="flex items-center gap-1 text-sm">
+              <Star size={14} className="fill-yellow-400 text-yellow-400" />
+              <span className={cn(poppins_500, "text-ink")}>
+                {avgRating.toFixed(1)}
+              </span>
+            </span>
+          ) : (
+            <span className={cn(poppins_400, "text-xs text-ink-muted")}>
+              New course
+            </span>
+          )}
         </div>
-      </CardContent>
 
-      <div className="px-5 pb-5">
         <Button
           wide
           round
-          className="w-full bg-accent text-white hover:bg-accent/90 text-sm font-semibold"
+          className={cn(
+            poppins_500,
+            "mt-4 w-full bg-accent text-sm text-white hover:bg-highlight"
+          )}
           to={`/dashboard/courses/${course._id}`}
         >
           View Course
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 
