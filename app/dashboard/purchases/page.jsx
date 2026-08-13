@@ -10,8 +10,6 @@ import {
   Library,
   CircleAlert,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Button from "@/components/atoms/form/Button";
 import {
@@ -23,14 +21,33 @@ import {
 } from "@/components/ui/dialog";
 import usePurchases from "@/hooks/usePurchases";
 import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const statusColors = {
-  confirmed: "bg-success/10 text-success",
-  pending: "bg-warning/10 text-warning",
-  submitted: "bg-info/10 text-info",
-  failed: "bg-error/10 text-error",
-  expired: "bg-muted text-muted-foreground",
+  confirmed: "bg-secondary/10 text-secondary",
+  pending: "bg-amber-100 text-amber-600",
+  submitted: "bg-sky-100 text-accent",
+  failed: "bg-red-100 text-red-600",
+  expired: "bg-accent/10 text-ink-muted",
 };
+
+/* ── building blocks (design-system consistent) ── */
+
+const Panel = ({ className, children }) => (
+  <div
+    className={cn(
+      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
 
 function truncateAddress(addr) {
   if (!addr) return "";
@@ -42,72 +59,100 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="border border-accent/10 bg-surface-raised sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Receipt className="h-5 w-5" />
+          <DialogTitle
+            className={cn(poppins_600, "flex items-center gap-2 text-ink")}
+          >
+            <Receipt className="h-5 w-5 text-accent" />
             Payment Receipt
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className={cn(poppins_400, "text-ink-muted")}>
             Transaction details for your purchase
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="p-4 bg-muted rounded-lg space-y-2">
+          <div className="space-y-2 rounded-xl border border-accent/10 bg-surface p-4">
             <div className="flex items-center gap-2">
               {itemType === "book" ? (
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <BookOpen className="h-4 w-4 text-ink-muted" />
               ) : (
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                <GraduationCap className="h-4 w-4 text-ink-muted" />
               )}
-              <h4 className="font-semibold">{item?.title}</h4>
+              <h4 className={cn(poppins_600, "text-ink")}>{item?.title}</h4>
             </div>
-            <Badge variant="outline" className="capitalize">
+            <span
+              className={cn(
+                poppins_500,
+                "inline-flex items-center rounded-full border border-accent/15 bg-surface-raised px-3 py-0.5 text-xs capitalize text-accent"
+              )}
+            >
               {itemType}
-            </Badge>
+            </span>
           </div>
 
           {receipt ? (
             <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-success/5 border border-success/20 rounded-lg">
-                <span className="text-sm text-success font-medium">Amount Paid</span>
-                <span className="text-xl font-bold text-success">
+              <div className="flex items-center justify-between rounded-xl border border-secondary/20 bg-secondary/5 p-3">
+                <span className={cn(poppins_500, "text-sm text-secondary")}>
+                  Amount Paid
+                </span>
+                <span className={cn(poppins_600, "text-xl text-secondary")}>
                   ${receipt.amount?.toFixed(2)} USDC
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 border rounded-lg">
-                  <p className="text-xs text-muted-foreground">Status</p>
-                  <Badge variant="secondary" className={`mt-1 ${statusColors[receipt.status]}`}>
+                <div className="rounded-xl border border-accent/10 p-3">
+                  <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+                    Status
+                  </p>
+                  <span
+                    className={cn(
+                      poppins_500,
+                      "mt-1 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs capitalize",
+                      statusColors[receipt.status] || statusColors.expired
+                    )}
+                  >
                     {receipt.status}
-                  </Badge>
+                  </span>
                 </div>
-                <div className="p-3 border rounded-lg">
-                  <p className="text-xs text-muted-foreground">Date</p>
-                  <p className="text-sm font-medium mt-1">
+                <div className="rounded-xl border border-accent/10 p-3">
+                  <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+                    Date
+                  </p>
+                  <p className={cn(poppins_500, "mt-1 text-sm text-ink")}>
                     {dayjs(receipt.createdAt).format("MMM D, YYYY")}
                   </p>
                 </div>
               </div>
 
-              <div className="p-3 border rounded-lg">
-                <p className="text-xs text-muted-foreground">Paid To (Creator)</p>
-                <p className="text-sm font-medium mt-1">
+              <div className="rounded-xl border border-accent/10 p-3">
+                <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+                  Paid To (Creator)
+                </p>
+                <p className={cn(poppins_500, "mt-1 text-sm text-ink")}>
                   {receipt.creatorName || "Creator"}
                 </p>
                 {receipt.creatorWallet && (
-                  <p className="text-xs font-mono text-muted-foreground mt-0.5">
+                  <p
+                    className={cn(
+                      poppins_400,
+                      "mt-0.5 font-mono text-xs text-ink-muted"
+                    )}
+                  >
                     {truncateAddress(receipt.creatorWallet)}
                   </p>
                 )}
               </div>
 
-              <div className="p-3 border rounded-lg">
-                <p className="text-xs text-muted-foreground">Your Wallet</p>
+              <div className="rounded-xl border border-accent/10 p-3">
+                <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+                  Your Wallet
+                </p>
                 {receipt.buyerWallet && (
-                  <p className="text-sm font-mono mt-1">
+                  <p className={cn(poppins_500, "mt-1 font-mono text-sm text-ink")}>
                     {truncateAddress(receipt.buyerWallet)}
                   </p>
                 )}
@@ -118,7 +163,10 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
                   href={receipt.explorerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                  className={cn(
+                    poppins_500,
+                    "inline-flex items-center gap-1 text-sm text-secondary hover:text-highlight"
+                  )}
                 >
                   <ExternalLink className="h-4 w-4" />
                   View on Stellar Explorer
@@ -126,13 +174,13 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
               )}
             </div>
           ) : (
-            <div className="p-4 border border-info/20 bg-info/5 rounded-lg text-center">
-              <p className="text-sm text-info font-medium">
+            <div className="rounded-xl border border-accent/15 bg-secondary/5 p-4 text-center">
+              <p className={cn(poppins_500, "text-sm text-accent")}>
                 Free Enrollment
               </p>
-              <p className="text-xs text-info/70 mt-1">
-                This item was free or enrolled without a Stellar payment. No on-chain
-                transaction receipt is available.
+              <p className={cn(poppins_400, "mt-1 text-xs text-ink-muted")}>
+                This item was free or enrolled without a Stellar payment. No
+                on-chain transaction receipt is available.
               </p>
             </div>
           )}
@@ -157,7 +205,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
 
   return (
     <>
-      <Card className="relative flex flex-col overflow-hidden rounded-2xl bg-muted/30 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:scale-[1.015] transition-all group">
+      <Panel className="group relative flex flex-col overflow-hidden transition-all hover:-translate-y-0.5 hover:border-secondary/30 hover:shadow-md">
         <div className="relative h-48 w-full">
           <Image
             src={thumbnail}
@@ -166,37 +214,59 @@ function PurchaseCard({ item, itemType, getReceipt }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-white/80 text-brand-text font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+          <div className="absolute left-3 top-3">
+            <span
+              className={cn(
+                poppins_600,
+                "inline-flex items-center rounded-full bg-white/80 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow"
+              )}
+            >
               {item.category || itemType}
-            </Badge>
+            </span>
           </div>
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-            <Badge variant="secondary" className="bg-black/60 text-white border-0">
+            <span
+              className={cn(
+                poppins_500,
+                "inline-flex items-center rounded-full bg-black/60 px-3 py-1 text-xs text-white"
+              )}
+            >
               {item.price > 0 ? `$${item.price} USDC` : "Free"}
-            </Badge>
+            </span>
             {receipt ? (
-              <Badge variant="secondary" className="bg-success/80 text-white border-0">
+              <span
+                className={cn(
+                  poppins_500,
+                  "inline-flex items-center rounded-full bg-secondary/80 px-3 py-1 text-xs text-white"
+                )}
+              >
                 Paid
-              </Badge>
+              </span>
             ) : (
-              <Badge variant="secondary" className="bg-info/80 text-white border-0">
+              <span
+                className={cn(
+                  poppins_500,
+                  "inline-flex items-center rounded-full bg-accent/80 px-3 py-1 text-xs text-white"
+                )}
+              >
                 Enrolled
-              </Badge>
+              </span>
             )}
           </div>
         </div>
 
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-bold line-clamp-1">{title}</CardTitle>
-          <p className="text-xs text-muted-foreground line-clamp-2">
+        <div className="px-6 pb-2 pt-4">
+          <h3 className={cn(poppins_600, "line-clamp-1 text-base text-ink")}>
+            {title}
+          </h3>
+          <p className={cn(poppins_400, "line-clamp-2 text-xs text-ink-muted")}>
             {item.description || item.author?.name || ""}
           </p>
-        </CardHeader>
+        </div>
 
-        <CardContent className="pt-0 space-y-3">
+        <div className="space-y-3 px-6 pb-6 pt-0">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-muted overflow-hidden relative">
+            <div className="relative h-8 w-8 overflow-hidden rounded-full bg-surface">
               <Image
                 src={authorAvatar}
                 alt={authorName}
@@ -205,36 +275,30 @@ function PurchaseCard({ item, itemType, getReceipt }) {
               />
             </div>
             <div className="text-xs">
-              <p className="font-medium">{authorName}</p>
-              <p className="text-muted-foreground">{itemType === "course" ? "Instructor" : "Author"}</p>
+              <p className={cn(poppins_500, "text-ink")}>{authorName}</p>
+              <p className={cn(poppins_400, "text-ink-muted")}>
+                {itemType === "course" ? "Instructor" : "Author"}
+              </p>
             </div>
           </div>
 
           <div className="flex gap-2">
-            <Button
-              round
-              to={actionHref}
-              className="flex-1"
-            >
+            <Button round to={actionHref} className="flex-1">
               {itemType === "course" ? (
-                <GraduationCap className="h-4 w-4 mr-1" />
+                <GraduationCap className="mr-1 h-4 w-4" />
               ) : (
-                <BookOpen className="h-4 w-4 mr-1" />
+                <BookOpen className="mr-1 h-4 w-4" />
               )}
               {actionLabel}
             </Button>
             {receipt && (
-              <Button
-                round
-                outlined
-                onClick={() => setReceiptOpen(true)}
-              >
+              <Button round outlined onClick={() => setReceiptOpen(true)}>
                 <Receipt className="h-4 w-4" />
               </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </Panel>
 
       <ReceiptModal
         open={receiptOpen}
@@ -249,15 +313,15 @@ function PurchaseCard({ item, itemType, getReceipt }) {
 
 function LoadingGrid() {
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {[...Array(6)].map((_, i) => (
-        <Card key={i} className="overflow-hidden">
+        <Panel key={i} className="overflow-hidden">
           <Skeleton className="h-48 w-full rounded-none" />
-          <CardHeader className="pb-2">
+          <div className="px-6 pb-2 pt-4">
             <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-3 w-full mt-2" />
-          </CardHeader>
-          <CardContent className="space-y-3">
+            <Skeleton className="mt-2 h-3 w-full" />
+          </div>
+          <div className="space-y-3 px-6 pb-6 pt-0">
             <div className="flex items-center gap-2">
               <Skeleton className="h-8 w-8 rounded-full" />
               <div className="space-y-1">
@@ -266,12 +330,31 @@ function LoadingGrid() {
               </div>
             </div>
             <Skeleton className="h-9 w-full" />
-          </CardContent>
-        </Card>
+          </div>
+        </Panel>
       ))}
     </div>
   );
 }
+
+const PageHeader = ({ subtitle }) => (
+  <div className="flex items-center gap-3">
+    <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+      <Library className="h-5 w-5 text-accent" />
+    </div>
+    <div>
+      <h1
+        className={cn(
+          poppins_600,
+          "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
+        )}
+      >
+        My Purchases
+      </h1>
+      <p className={cn(poppins_400, "text-sm text-ink-muted")}>{subtitle}</p>
+    </div>
+  </div>
+);
 
 export default function PurchasesPage() {
   const { courses, books, isLoading, error, getReceipt, isEmpty } = usePurchases();
@@ -279,67 +362,62 @@ export default function PurchasesPage() {
 
   if (error) {
     return (
-      <div className="p-4 sm:p-6 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Library className="h-6 w-6 text-brand-text" />
-            My Purchases
-          </h1>
-          <p className="text-muted-foreground text-sm">Your owned courses and books</p>
-        </div>
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <CircleAlert className="h-12 w-12 text-error" />
-            <div>
-              <h3 className="font-semibold text-lg">Failed to Load</h3>
-              <p className="text-muted-foreground text-sm mt-1">{error}</p>
-            </div>
-            <Button round outlined onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="space-y-6 bg-surface p-4 sm:p-6">
+        <PageHeader subtitle="Your owned courses and books" />
+        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-red-50">
+            <CircleAlert className="h-7 w-7 text-red-600" />
+          </div>
+          <div>
+            <h3 className={cn(poppins_600, "text-lg text-ink")}>
+              Failed to Load
+            </h3>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+              {error}
+            </p>
+          </div>
+          <Button round outlined onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </Panel>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Library className="h-6 w-6 text-brand-text" />
-            My Purchases
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            All your courses and books in one place
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6 bg-surface p-4 sm:p-6">
+      <PageHeader subtitle="All your courses and books in one place" />
 
       {isLoading ? (
         <LoadingGrid />
       ) : isEmpty ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <Wallet className="h-12 w-12 text-muted-foreground" />
-            <div>
-              <h3 className="font-semibold text-lg">No Purchases Yet</h3>
-              <p className="text-muted-foreground text-sm mt-1 max-w-md">
-                You haven&apos;t purchased any courses or books yet. Browse our
-                library and enroll to get started.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button round to="/dashboard/courses">
-                Browse Courses
-              </Button>
-              <Button round outlined to="/dashboard/library">
-                Browse Books
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+            <Wallet className="h-7 w-7 text-accent" />
+          </div>
+          <div>
+            <h3 className={cn(poppins_600, "text-lg text-ink")}>
+              No Purchases Yet
+            </h3>
+            <p
+              className={cn(
+                poppins_400,
+                "mx-auto mt-1 max-w-md text-sm text-ink-muted"
+              )}
+            >
+              You haven&apos;t purchased any courses or books yet. Browse our
+              library and enroll to get started.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button round to="/dashboard/courses">
+              Browse Courses
+            </Button>
+            <Button round outlined to="/dashboard/library">
+              Browse Books
+            </Button>
+          </div>
+        </Panel>
       ) : (
         <>
           {/* Tab Toggle */}
@@ -364,17 +442,17 @@ export default function PurchasesPage() {
 
           {tab === "courses" ? (
             courses.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-3">
-                  <GraduationCap className="h-10 w-10 text-muted-foreground" />
-                  <p className="text-muted-foreground">No courses purchased yet</p>
-                  <Button round outlined to="/dashboard/courses">
-                    Browse Courses
-                  </Button>
-                </CardContent>
-              </Card>
+              <Panel className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                <GraduationCap className="h-10 w-10 text-ink-muted" />
+                <p className={cn(poppins_400, "text-ink-muted")}>
+                  No courses purchased yet
+                </p>
+                <Button round outlined to="/dashboard/courses">
+                  Browse Courses
+                </Button>
+              </Panel>
             ) : (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {courses.map((course) => (
                   <PurchaseCard
                     key={course._id}
@@ -386,17 +464,17 @@ export default function PurchasesPage() {
               </div>
             )
           ) : books.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-3">
-                <BookOpen className="h-10 w-10 text-muted-foreground" />
-                <p className="text-muted-foreground">No books purchased yet</p>
-                <Button round outlined to="/dashboard/library">
-                  Browse Books
-                </Button>
-              </CardContent>
-            </Card>
+            <Panel className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+              <BookOpen className="h-10 w-10 text-ink-muted" />
+              <p className={cn(poppins_400, "text-ink-muted")}>
+                No books purchased yet
+              </p>
+              <Button round outlined to="/dashboard/library">
+                Browse Books
+              </Button>
+            </Panel>
           ) : (
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {books.map((book) => (
                 <PurchaseCard
                   key={book._id}

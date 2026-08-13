@@ -26,6 +26,11 @@ import Navbar from "@/components/molecules/ladingpage/Navbar";
 import { Copy, Share2, Users, BookOpen, GraduationCap, Star } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
 
 export default function PublicEducatorPage({ params }) {
@@ -171,11 +176,16 @@ export default function PublicEducatorPage({ params }) {
             onShare={handleShare}
             isOwnProfile={currentUser?._id === profileid}
           />
-          <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-            <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No public content yet</h3>
-            <p className="text-muted-foreground">
-              This educator hasn&apos;t published any courses, books, or spaces yet.
+          <div className="mx-auto max-w-4xl px-4 py-20 text-center">
+            <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+              <BookOpen className="h-7 w-7 text-secondary" />
+            </div>
+            <h3 className={cn(poppins_600, "mb-2 text-lg text-ink-inverse")}>
+              No public content yet
+            </h3>
+            <p className={cn(poppins_400, "text-ink-inverse-muted")}>
+              This educator hasn&apos;t published any courses, books, or spaces
+              yet.
             </p>
           </div>
         </main>
@@ -217,22 +227,30 @@ export default function PublicEducatorPage({ params }) {
         />
 
         {tabs.length > 1 && (
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-6">
-            <div className="flex gap-2 border-b border-border pb-0">
+          <div className="mx-auto mt-8 max-w-6xl px-4 sm:px-6">
+            <div className="inline-flex flex-wrap gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur">
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors",
+                    poppins_500,
+                    "flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors",
                     activeTab === tab.key
-                      ? "border-accent text-accent"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
+                      ? "bg-white text-basic"
+                      : "text-ink-inverse-muted hover:text-ink-inverse"
                   )}
                 >
                   <tab.icon className="h-4 w-4" />
                   {tab.label}
-                  <span className="text-xs bg-muted px-1.5 py-0.5 rounded-full">
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 py-0.5 text-xs",
+                      activeTab === tab.key
+                        ? "bg-basic/10 text-basic"
+                        : "bg-white/10 text-ink-inverse-muted"
+                    )}
+                  >
                     {tab.count}
                   </span>
                 </button>

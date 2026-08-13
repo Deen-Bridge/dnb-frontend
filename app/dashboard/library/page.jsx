@@ -10,7 +10,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, Bookmark, Plus } from "lucide-react";
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
 import Button from "@/components/atoms/form/Button";
-import { Card, CardContent } from "@/components/ui/card";
 import Modal from "@/components/molecules/Modal";
 import BookCreateForm from "@/components/organisms/create/book-create-form";
 import { fetchBooks } from "@/lib/actions/library/fetch-books";
@@ -29,6 +28,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const PAGE_SIZE = 9;
 
@@ -48,6 +53,19 @@ const createdAtOf = (book) => {
 };
 
 const priceOf = (book) => Number(book?.price) || 0;
+
+/* ── building blocks (design-system consistent) ── */
+
+const Panel = ({ className, children }) => (
+  <div
+    className={cn(
+      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
 
 const BookGridSkeleton = () => (
   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -239,18 +257,27 @@ const LibraryPageContent = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-brand-text" />
-            {showBookmarks ? "My Bookmarked Books" : "All Books"}
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {showBookmarks
-              ? "Books you've saved for later"
-              : "Browse and read Islamic books"}
-          </p>
+    <div className="space-y-6 bg-surface p-4 sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+            <BookOpen className="h-5 w-5 text-accent" />
+          </div>
+          <div>
+            <h1
+              className={cn(
+                poppins_600,
+                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
+              )}
+            >
+              {showBookmarks ? "My Bookmarked Books" : "All Books"}
+            </h1>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+              {showBookmarks
+                ? "Books you've saved for later"
+                : "Browse and read Islamic books"}
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button round outlined onClick={() => setModalOpen(true)}>
@@ -289,38 +316,43 @@ const LibraryPageContent = () => {
       {loading ? (
         <BookGridSkeleton />
       ) : filteredBooks.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <BookOpen className="h-12 w-12 text-muted-foreground" />
-            <div>
-              <h3 className="font-semibold text-lg">
-                {isFiltered
-                  ? "No Matching Books"
-                  : showBookmarks
-                  ? "No Bookmarked Books"
-                  : "No Books Yet"}
-              </h3>
-              <p className="text-muted-foreground text-sm mt-1 max-w-md">
-                {isFiltered
-                  ? "No books match the current filters. Try widening your search."
-                  : showBookmarks
-                  ? "Save titles you want to revisit!"
-                  : "No books available at the moment."}
-              </p>
-            </div>
-            {isFiltered ? (
-              <Button round outlined onClick={handleClearFilters}>
-                Clear filters
+        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+            <BookOpen className="h-7 w-7 text-accent" />
+          </div>
+          <div>
+            <h3 className={cn(poppins_600, "text-lg text-ink")}>
+              {isFiltered
+                ? "No Matching Books"
+                : showBookmarks
+                ? "No Bookmarked Books"
+                : "No Books Yet"}
+            </h3>
+            <p
+              className={cn(
+                poppins_400,
+                "mt-1 max-w-md text-sm text-ink-muted"
+              )}
+            >
+              {isFiltered
+                ? "No books match the current filters. Try widening your search."
+                : showBookmarks
+                ? "Save titles you want to revisit!"
+                : "No books available at the moment."}
+            </p>
+          </div>
+          {isFiltered ? (
+            <Button round outlined onClick={handleClearFilters}>
+              Clear filters
+            </Button>
+          ) : (
+            !showBookmarks && (
+              <Button round outlined onClick={() => setModalOpen(true)}>
+                Create Book
               </Button>
-            ) : (
-              !showBookmarks && (
-                <Button round outlined onClick={() => setModalOpen(true)}>
-                  Create Book
-                </Button>
-              )
-            )}
-          </CardContent>
-        </Card>
+            )
+          )}
+        </Panel>
       ) : (
         <>
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -394,7 +426,7 @@ const LibraryPageContent = () => {
 const LibraryPage = () => (
   <Suspense
     fallback={
-      <div className="p-4 sm:p-6">
+      <div className="bg-surface p-4 sm:p-6">
         <BookGridSkeleton />
       </div>
     }
