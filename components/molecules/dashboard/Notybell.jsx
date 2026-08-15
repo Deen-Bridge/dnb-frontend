@@ -28,6 +28,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,13 +110,13 @@ const NotificationBell = () => {
       case "urgent":
         return "text-red-600 bg-red-50 border-red-200";
       case "high":
-        return "text-orange-600 bg-orange-50 border-orange-200";
+        return "text-amber-600 bg-amber-50 border-amber-200";
       case "medium":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+        return "text-amber-600 bg-amber-50 border-amber-200";
       case "low":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "text-accent bg-secondary/10 border-secondary/20";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "text-ink-muted bg-surface border-accent/15";
     }
   };
 
@@ -130,7 +135,7 @@ const NotificationBell = () => {
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
+          <Button variant="ghost" size="icon" className="relative text-accent">
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
               <Badge
@@ -148,9 +153,14 @@ const NotificationBell = () => {
 
         <DropdownMenuContent
           align="end"
-          className="w-80 max-h-96 overflow-y-auto"
+          className="w-80 max-h-96 overflow-y-auto rounded-2xl border border-accent/10 bg-surface-raised shadow-sm"
         >
-          <DropdownMenuLabel className="flex items-center justify-between">
+          <DropdownMenuLabel
+            className={cn(
+              poppins_600,
+              "flex items-center justify-between text-ink"
+            )}
+          >
             <span>Notifications</span>
             <div className="flex items-center gap-2">
               {!isConnected && (
@@ -161,7 +171,7 @@ const NotificationBell = () => {
                     e.stopPropagation();
                     reconnect();
                   }}
-                  className="h-6 w-6 p-0"
+                  className="h-6 w-6 p-0 text-accent"
                 >
                   <RefreshCw className="h-3 w-3" />
                 </Button>
@@ -174,7 +184,10 @@ const NotificationBell = () => {
                     e.stopPropagation();
                     markAllAsRead();
                   }}
-                  className="h-6 text-xs"
+                  className={cn(
+                    poppins_500,
+                    "h-6 text-xs text-secondary hover:text-highlight"
+                  )}
                 >
                   Mark all read
                 </Button>
@@ -182,15 +195,20 @@ const NotificationBell = () => {
             </div>
           </DropdownMenuLabel>
 
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-accent/10" />
 
           {isLoading ? (
-            <div className="p-4 text-center text-muted-foreground">
+            <div
+              className={cn(
+                poppins_400,
+                "p-4 text-center text-ink-muted"
+              )}
+            >
               Loading notifications...
             </div>
           ) : error ? (
             <div className="p-4 text-center text-red-600">
-              <p className="text-sm">{error}</p>
+              <p className={cn(poppins_400, "text-sm")}>{error}</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -198,15 +216,20 @@ const NotificationBell = () => {
                   e.stopPropagation();
                   reconnect();
                 }}
-                className="mt-2"
+                className="mt-2 border-accent/15"
               >
                 Retry
               </Button>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">
+            <div
+              className={cn(
+                poppins_400,
+                "p-4 text-center text-ink-muted"
+              )}
+            >
               {" "}
-              <Bell className="h-8 w-8 mx-auto mb-2" />
+              <Bell className="h-8 w-8 mx-auto mb-2 text-accent" />
               <p className="text-sm">No notifications yet</p>
             </div>
           ) : (
@@ -215,8 +238,8 @@ const NotificationBell = () => {
                 <DropdownMenuItem
                   key={notification._id}
                   className={cn(
-                    "flex items-start gap-3 p-3 cursor-pointer",
-                    !notification.isRead && "bg-muted/50"
+                    "flex items-start gap-3 p-3 cursor-pointer rounded-xl focus:bg-secondary/5",
+                    !notification.isRead && "bg-secondary/5"
                   )}
                   onClick={() => handleNotificationClick(notification)}
                 >
@@ -224,12 +247,14 @@ const NotificationBell = () => {
                     {notification.sender?.avatar ? (
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={notification.sender.avatar} />
-                        <AvatarFallback>
+                        <AvatarFallback
+                          className={cn(poppins_500, "bg-surface text-ink")}
+                        >
                           {notification.sender.name?.charAt(0) || "U"}
                         </AvatarFallback>
                       </Avatar>
                     ) : (
-                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm">
+                      <div className="h-8 w-8 rounded-full border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10 flex items-center justify-center text-sm">
                         {getNotificationIcon(notification.type)}
                       </div>
                     )}
@@ -239,8 +264,9 @@ const NotificationBell = () => {
                     <div className="flex items-start justify-between gap-2">
                       <p
                         className={cn(
-                          "text-sm font-medium line-clamp-1",
-                          !notification.isRead && "font-semibold"
+                          poppins_500,
+                          "text-sm text-ink line-clamp-1",
+                          !notification.isRead && poppins_600
                         )}
                       >
                         {notification.title}
@@ -248,6 +274,7 @@ const NotificationBell = () => {
                       <Badge
                         variant="outline"
                         className={cn(
+                          poppins_500,
                           "text-xs px-1 py-0 h-4",
                           getPriorityColor(notification.priority)
                         )}
@@ -256,12 +283,19 @@ const NotificationBell = () => {
                       </Badge>
                     </div>
 
-                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                    <p
+                      className={cn(
+                        poppins_400,
+                        "text-xs text-ink-muted line-clamp-2 mt-1"
+                      )}
+                    >
                       {notification.message}
                     </p>
 
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-muted-foreground">
+                      <span
+                        className={cn(poppins_400, "text-xs text-ink-muted")}
+                      >
                         {formatTime(notification.createdAt)}
                       </span>
 
@@ -274,7 +308,7 @@ const NotificationBell = () => {
                               e.stopPropagation();
                               markAsRead(notification._id);
                             }}
-                            className="h-6 w-6 p-0"
+                            className="h-6 w-6 p-0 text-secondary hover:text-highlight"
                           >
                             <Check className="h-3 w-3" />
                           </Button>
@@ -289,7 +323,7 @@ const NotificationBell = () => {
                               notificationId: notification._id,
                             });
                           }}
-                          className="h-6 text-red-50 hover:text-red-700"
+                          className="h-6 text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -301,9 +335,12 @@ const NotificationBell = () => {
 
               {notifications.length > 10 && (
                 <>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-accent/10" />
                   <DropdownMenuItem
-                    className="text-center text-sm text-muted-foreground cursor-pointer"
+                    className={cn(
+                      poppins_500,
+                      "text-center text-sm text-secondary hover:text-highlight cursor-pointer"
+                    )}
                     onClick={() => {
                       setIsOpen(false);
                       window.location.href = "/account/notifications";
@@ -325,17 +362,26 @@ const NotificationBell = () => {
           setDeleteDialog({ show: open, notificationId: null })
         }
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Notification</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className={cn(poppins_600, "text-ink")}>
+              Delete Notification
+            </AlertDialogTitle>
+            <AlertDialogDescription
+              className={cn(poppins_400, "text-ink-muted")}
+            >
               Are you sure you want to delete this notification? This action
               cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteNotification}>
+            <AlertDialogCancel className={cn(poppins_500, "border-accent/15")}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteNotification}
+              className={cn(poppins_500, "bg-red-600 text-white hover:bg-red-700")}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

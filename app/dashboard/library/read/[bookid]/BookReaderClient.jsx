@@ -13,8 +13,17 @@ import {
   ZoomIn,
   ZoomOut,
   Loader2,
-  Sparkles,
+  Lock,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import workerSrc from "pdfjs-dist/build/pdf.worker.min.js?url";
 
@@ -24,6 +33,21 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 3;
 const INITIAL_SCALE = 1.2;
+
+/* ── chrome building blocks (design-system consistent) ── */
+
+const IconButton = ({ className, children, ...props }) => (
+  <button
+    type="button"
+    className={cn(
+      "inline-flex size-9 items-center justify-center rounded-xl border border-accent/10 bg-surface-raised text-ink-muted transition-colors hover:border-secondary/40 hover:text-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-accent/10 disabled:hover:text-ink-muted",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </button>
+);
 
 const BookReaderClient = ({ book }) => {
   const { user } = useAuth();
@@ -213,89 +237,165 @@ const BookReaderClient = ({ book }) => {
 
   if (!book) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-muted px-4 text-center">
-        <p className="text-lg font-semibold text-muted-foreground">
-          Book not found.
-        </p>
-        <Button
-          to="/dashboard/library"
-          round
-          className="mt-6 bg-accent text-white"
-        >
-          Back to Library
-        </Button>
-      </div>
-    );
-  }
-
-  if (!canAccess) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-muted px-4 text-center">
-        <h1 className="text-2xl font-semibold text-foreground">
-          You don&apos;t have access to this book yet.
-        </h1>
-        <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-          Please purchase this title first or return to the book page to learn
-          more.
-        </p>
-        <div className="mt-6 flex gap-3">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4 text-center">
+        <div className="w-full max-w-md rounded-2xl border border-accent/10 bg-surface-raised p-8 shadow-sm">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+            <BookOpen className="h-6 w-6 text-accent" />
+          </div>
+          <p className={cn(poppins_600, "mt-4 text-lg text-ink")}>
+            Book not found.
+          </p>
           <Button
-            round
-            outlined
             to="/dashboard/library"
-            className="text-normal"
+            round
+            className="mt-6 bg-accent text-white"
           >
             Back to Library
-          </Button>
-          <Button
-            round
-            className="bg-accent text-white"
-            to={`/dashboard/library/${book._id}`}
-          >
-            View Book Details
           </Button>
         </div>
       </div>
     );
   }
 
+  if (!canAccess) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4 py-10 text-center">
+        <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
+          <div className="relative bg-gradient-to-br from-secondary/10 via-surface-raised to-highlight/10 px-6 py-10 sm:px-10">
+            <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-secondary/10 blur-3xl" />
+            <div className="relative">
+              <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+                <Lock className="h-7 w-7 text-accent" />
+              </div>
+              <h1 className={cn(poppins_600, "mt-5 text-2xl text-ink")}>
+                Unlock the full book
+              </h1>
+              <p
+                className={cn(
+                  poppins_400,
+                  "mx-auto mt-3 max-w-md text-sm leading-relaxed text-ink-muted"
+                )}
+              >
+                {book.title
+                  ? `Purchase “${book.title}” to read the full book, or head back to the book page to learn more.`
+                  : "Purchase this title to read the full book, or head back to the book page to learn more."}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center gap-3 px-6 py-6 sm:flex-row sm:px-10">
+            <Button
+              round
+              outlined
+              to="/dashboard/library"
+              className="text-normal"
+            >
+              Back to Library
+            </Button>
+            <Button
+              round
+              className="bg-accent text-white"
+              to={`/dashboard/library/${book._id}`}
+            >
+              Buy to read the full book
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-muted via-white to-muted">
-      <header className="sticky top-0 z-10 border-b border-border/80 bg-white/80 px-4 py-3 backdrop-blur md:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+    <div className="flex min-h-screen flex-col bg-surface">
+      {/* ── Slim sticky reader toolbar ── */}
+      <header className="sticky top-0 z-20 border-b border-accent/10 bg-surface-raised/85 px-4 py-2.5 backdrop-blur md:px-6">
+        <div className="flex items-center justify-between gap-3">
+          {/* left: back + title */}
+          <div className="flex min-w-0 items-center gap-3">
             <Link
               href={`/dashboard/library/${book._id}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-brand-text transition hover:text-highlight"
+              aria-label="Back to book details"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-accent/10 bg-surface-raised text-ink-muted transition-colors hover:border-secondary/40 hover:text-accent"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to details
             </Link>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">
+            <div className="min-w-0">
+              <h1
+                className={cn(
+                  poppins_600,
+                  "truncate text-sm text-ink sm:text-base"
+                )}
+              >
                 {book.title}
               </h1>
               {book.author?.name && (
-                <p className="text-xs text-muted-foreground">
+                <p
+                  className={cn(
+                    poppins_400,
+                    "truncate text-xs text-ink-muted"
+                  )}
+                >
                   by {book.author.name}
                 </p>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              round
-              outlined
-              className="text-normal"
-              to={`/dashboard/library/${book._id}`}
+
+          {/* right: page indicator + zoom + fit-width */}
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <span
+              className={cn(
+                poppins_500,
+                "hidden rounded-lg border border-accent/10 bg-surface px-3 py-1.5 text-xs text-ink-muted sm:inline-flex"
+              )}
             >
-              Book Details
-            </Button>
+              Page {pageNumber}
+              {pageCount ? ` / ${pageCount}` : ""}
+            </span>
+
+            <div className="hidden items-center gap-1.5 sm:flex">
+              <IconButton
+                onClick={() => handleZoom(-1)}
+                disabled={fitWidth || baseScale <= MIN_SCALE}
+                aria-label="Zoom out"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </IconButton>
+              <span
+                className={cn(
+                  poppins_600,
+                  "w-12 text-center text-xs text-ink-muted"
+                )}
+              >
+                {(effectiveScale * 100).toFixed(0)}%
+              </span>
+              <IconButton
+                onClick={() => handleZoom(1)}
+                disabled={fitWidth || baseScale >= MAX_SCALE}
+                aria-label="Zoom in"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </IconButton>
+            </div>
+
+            <IconButton
+              onClick={() => setFitWidth((prev) => !prev)}
+              aria-label={fitWidth ? "Switch to free zoom" : "Fit width"}
+              className={cn(
+                fitWidth && "border-secondary/40 text-accent"
+              )}
+            >
+              {fitWidth ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </IconButton>
+
             {book.fileUrl && (
               <Button
                 round
                 outlined
-                className="flex items-center gap-2 text-normal"
+                className="hidden items-center gap-2 text-normal sm:inline-flex"
                 to={book.fileUrl}
                 download
                 target="_blank"
@@ -308,56 +408,133 @@ const BookReaderClient = ({ book }) => {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-8">
+      {/* ── Reading stage ── */}
+      <main className="relative flex flex-1 flex-col">
         {!book.fileUrl ? (
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-muted-foreground/30 bg-white text-center shadow-sm">
-            <div>
-              <p className="text-lg font-semibold text-muted-foreground">
+          <div className="flex flex-1 items-center justify-center px-4 py-16">
+            <div className="w-full max-w-md rounded-2xl border border-dashed border-accent/20 bg-surface-raised p-10 text-center shadow-sm">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+                <BookOpen className="h-6 w-6 text-accent" />
+              </div>
+              <p className={cn(poppins_600, "mt-4 text-lg text-ink")}>
                 This book file is not available yet.
               </p>
-              <p className="mt-2 text-sm text-muted-foreground/80">
+              <p
+                className={cn(poppins_400, "mt-2 text-sm text-ink-muted")}
+              >
                 Please contact support if you believe this is a mistake.
               </p>
             </div>
           </div>
         ) : loadingDocument && !docRef.current ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-muted-foreground/30 bg-white text-center shadow-sm">
-            <Loader2 className="h-10 w-10 animate-spin text-brand-text" />
-            <p className="text-sm text-muted-foreground">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+              <Loader2 className="h-7 w-7 animate-spin text-accent" />
+            </div>
+            <p className={cn(poppins_500, "text-sm text-ink-muted")}>
               Preparing your reading experience...
             </p>
           </div>
         ) : pdfError ? (
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-rose-300/60 bg-rose-50 text-center shadow-sm">
-            <div>
-              <p className="text-lg font-semibold text-rose-700">{pdfError}</p>
-              <p className="mt-2 text-sm text-rose-600">
-                Try reloading the page or download the book to continue reading.
+          <div className="flex flex-1 items-center justify-center px-4 py-16">
+            <div className="w-full max-w-md rounded-2xl border border-accent/10 bg-surface-raised p-10 text-center shadow-sm">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-red-50">
+                <Lock className="h-6 w-6 text-red-600" />
+              </div>
+              <p className={cn(poppins_600, "mt-4 text-lg text-red-600")}>
+                {pdfError}
               </p>
+              <p className={cn(poppins_400, "mt-2 text-sm text-ink-muted")}>
+                Try reloading the page or download the book to continue
+                reading.
+              </p>
+              {book.fileUrl && (
+                <Button
+                  round
+                  outlined
+                  className="mt-5 inline-flex items-center gap-2 text-normal"
+                  to={book.fileUrl}
+                  download
+                  target="_blank"
+                >
+                  <DownloadCloud className="h-4 w-4" />
+                  Download book
+                </Button>
+              )}
             </div>
           </div>
         ) : (
           <>
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/40 bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
-              <div className="flex items-center gap-3 text-sm">
-                <span className="inline-flex items-center gap-2 font-medium text-muted-foreground">
-                  <Sparkles className="h-4 w-4 text-brand-text" />
-                  Page {pageNumber}
-                  {pageCount ? ` / ${pageCount}` : ""}
-                </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
+            {/* Scrollable stage with centered PDF sheet */}
+            <div
+              ref={containerRef}
+              className="relative flex-1 overflow-auto bg-surface"
+            >
+              <div className="flex min-h-full w-full items-start justify-center px-4 py-8 md:px-10">
+                <canvas
+                  ref={canvasRef}
+                  className="transition-transform duration-300"
+                  style={{
+                    backgroundColor: "#fafafa",
+                    borderRadius: "0.75rem",
+                    boxShadow:
+                      "0 10px 40px -12px rgba(0,0,0,0.28), 0 2px 8px -2px rgba(0,0,0,0.12)",
+                  }}
+                />
+                {(renderingPage || isTransitioning) && (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface/40 backdrop-blur-sm">
+                    <div className="flex size-12 items-center justify-center rounded-2xl border border-accent/5 bg-surface-raised/90 shadow-sm">
+                      <Loader2 className="h-6 w-6 animate-spin text-accent" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Floating prev / next controls */}
+              <button
+                type="button"
+                onClick={() => goToPage(-1)}
+                disabled={pageNumber <= 1 || isTransitioning}
+                aria-label="Previous page"
+                className="fixed left-3 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-accent/10 bg-surface-raised/90 text-ink-muted shadow-md backdrop-blur transition-colors hover:border-secondary/40 hover:text-accent disabled:cursor-not-allowed disabled:opacity-0 md:left-6"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => goToPage(1)}
+                disabled={
+                  isTransitioning ||
+                  (pageCount ? pageNumber >= pageCount : true)
+                }
+                aria-label="Next page"
+                className="fixed right-3 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-accent/10 bg-surface-raised/90 text-ink-muted shadow-md backdrop-blur transition-colors hover:border-secondary/40 hover:text-accent disabled:cursor-not-allowed disabled:opacity-0 md:right-6"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Bottom bar: page nav + thumbnails */}
+            <div className="sticky bottom-0 z-20 border-t border-accent/10 bg-surface-raised/85 px-4 py-2.5 backdrop-blur md:px-6">
+              <div className="flex items-center gap-3">
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <IconButton
                     onClick={() => goToPage(-1)}
                     disabled={pageNumber <= 1 || isTransitioning}
                     aria-label="Previous page"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
+                    <ChevronLeft className="h-4 w-4" />
+                  </IconButton>
+                  <span
+                    className={cn(
+                      poppins_500,
+                      "min-w-[4.5rem] text-center text-xs text-ink-muted"
+                    )}
+                  >
+                    {pageNumber}
+                    {pageCount ? ` / ${pageCount}` : ""}
+                  </span>
+                  <IconButton
                     onClick={() => goToPage(1)}
                     disabled={
                       isTransitioning ||
@@ -365,94 +542,35 @@ const BookReaderClient = ({ book }) => {
                     }
                     aria-label="Next page"
                   >
-                    <ArrowLeft className="h-4 w-4 rotate-180" />
-                  </button>
+                    <ChevronRight className="h-4 w-4" />
+                  </IconButton>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
-                  onClick={() => handleZoom(-1)}
-                  disabled={fitWidth || baseScale <= MIN_SCALE}
-                  aria-label="Zoom out"
-                >
-                  <ZoomOut className="h-4 w-4" />
-                </button>
-                <span className="w-16 text-center text-sm font-semibold text-muted-foreground">
-                  {(effectiveScale * 100).toFixed(0)}%
-                </span>
-                <button
-                  type="button"
-                  className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:border-accent hover:text-brand-text disabled:cursor-not-allowed disabled:opacity-40"
-                  onClick={() => handleZoom(1)}
-                  disabled={fitWidth || baseScale >= MAX_SCALE}
-                  aria-label="Zoom in"
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  className="ml-2 inline-flex items-center gap-1 rounded-full border border-border/70 px-3 py-2 text-xs font-medium text-muted-foreground transition hover:border-accent hover:text-brand-text"
-                  onClick={() => setFitWidth((prev) => !prev)}
-                >
-                  {fitWidth ? (
-                    <>
-                      <Minimize2 className="h-3.5 w-3.5" />
-                      Fit Width
-                    </>
-                  ) : (
-                    <>
-                      <Maximize2 className="h-3.5 w-3.5" />
-                      Free Zoom
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
 
-            <div
-              ref={containerRef}
-              className="relative flex-1 overflow-auto rounded-3xl border border-border/40 bg-white shadow-lg"
-            >
-              <div className="relative flex h-full w-full items-start justify-center px-6 py-8">
-                <canvas
-                  ref={canvasRef}
-                  className="shadow-2xl transition-transform duration-300"
-                  style={{
-                    backgroundColor: "#fafafa",
-                    borderRadius: "1.25rem",
-                  }}
-                />
-                {(renderingPage || isTransitioning) && (
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-3xl bg-white/40 backdrop-blur-sm">
-                    <Loader2 className="h-8 w-8 animate-spin text-brand-text" />
+                {pageCount > 1 && (
+                  <div className="flex flex-1 items-center gap-1.5 overflow-x-auto">
+                    {Array.from({ length: pageCount }).map((_, index) => {
+                      const page = index + 1;
+                      return (
+                        <button
+                          key={`page-thumb-${page}`}
+                          type="button"
+                          onClick={() => setPageNumber(page)}
+                          className={cn(
+                            poppins_500,
+                            "shrink-0 rounded-lg border px-3 py-1 text-xs transition-colors",
+                            pageNumber === page
+                              ? "border-accent bg-accent text-white shadow-sm"
+                              : "border-accent/10 bg-surface text-ink-muted hover:border-secondary/40 hover:text-accent"
+                          )}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
             </div>
-
-            {pageCount > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto rounded-2xl border border-border/40 bg-white px-4 py-3 shadow-sm">
-                {Array.from({ length: pageCount }).map((_, index) => {
-                  const page = index + 1;
-                  return (
-                    <button
-                      key={`page-thumb-${page}`}
-                      type="button"
-                      onClick={() => setPageNumber(page)}
-                      className={`rounded-xl border px-3 py-1 text-xs font-semibold transition ${
-                        pageNumber === page
-                          ? "border-accent bg-accent text-white shadow"
-                          : "border-transparent bg-muted/70 text-muted-foreground hover:border-accent/30 hover:text-brand-text"
-                      }`}
-                    >
-                      Page {page}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </>
         )}
       </main>
