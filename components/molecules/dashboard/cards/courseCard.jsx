@@ -1,5 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
@@ -9,6 +7,12 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useBookmark } from "@/hooks/useBookmark";
 import BookmarkButton from "@/components/atoms/BookmarkButton";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress }) => {
   const { user } = useAuth();
@@ -35,7 +39,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
     await toggle();
   };
   return (
-    <Card className="relative flex flex-col overflow-hidden rounded-2xl  bg-muted/30 backdrop-blur-xl shadow-lg hover:shadow-2xl hover:scale-[1.015] transition-all group">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm transition-all hover:-translate-y-0.5 hover:border-secondary/30 hover:shadow-md">
       {/* Image */}
       <div className="relative h-60 w-full">
         <Image
@@ -45,17 +49,27 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 to-transparent" />
 
         {/* Category  */}
-        <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
-          <Badge className="bg-card/80 text-brand-text font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+        <div className="absolute left-3 right-3 top-3 z-20 flex justify-between">
+          <span
+            className={cn(
+              poppins_600,
+              "rounded-full border border-accent/15 bg-surface-raised/90 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow"
+            )}
+          >
             {course.category || "General"}
-          </Badge>
+          </span>
           {user?._id === course?.createdBy?._id ? (
-            <Badge className="bg-card/80 text-brand-text font-bold px-2 py-1 rounded-full shadow border-0  uppercase tracking-wider">
+            <span
+              className={cn(
+                poppins_600,
+                "flex items-center rounded-full border border-accent/15 bg-surface-raised/90 px-2 py-1 uppercase tracking-wider text-ink shadow"
+              )}
+            >
               <Ellipsis className="size-6" />
-            </Badge>
+            </span>
           ) : null}
         </div>
 
@@ -63,12 +77,22 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
         {showProgress && (
           <div className="absolute bottom-3 left-3 right-3 z-20">
             {isCompleted ? (
-              <div className="flex items-center gap-1 bg-green-500/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow w-fit">
+              <div
+                className={cn(
+                  poppins_600,
+                  "flex w-fit items-center gap-1 rounded-full bg-secondary/90 px-3 py-1 text-xs text-white shadow"
+                )}
+              >
                 <CheckCircle className="h-3 w-3" />
                 Completed
               </div>
             ) : (
-              <div className="bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full shadow w-fit">
+              <div
+                className={cn(
+                  poppins_500,
+                  "w-fit rounded-full bg-black/60 px-3 py-1 text-xs text-white shadow backdrop-blur-sm"
+                )}
+              >
                 {progress.percent}% watched
               </div>
             )}
@@ -77,23 +101,23 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
       </div>
 
       {/* Header */}
-      <CardHeader>
-        <CardTitle className="text-lg font-bold  line-clamp-1">
+      <div className="space-y-1.5 p-6 pb-3">
+        <h3 className={cn(poppins_600, "line-clamp-1 text-lg text-ink")}>
           {course.title}
-        </CardTitle>
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        </h3>
+        <p className={cn(poppins_400, "line-clamp-2 text-sm text-ink-muted")}>
           {course.description}
         </p>
-      </CardHeader>
+      </div>
 
       {/* Instructor */}
-      <CardContent>
+      <div className="px-6 pb-4">
         {showProgress && (
           <div className="mb-3">
             <Progress value={progress.percent} className="h-1.5" />
           </div>
         )}
-        <div className="flex justify-between items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
           <Link
             href={`/educators/${course.createdBy?._id}`}
             className="flex items-center gap-2"
@@ -106,15 +130,22 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
             <div className="text-sm">
-              <p className="font-medium">
+              <p className={cn(poppins_500, "text-ink")}>
                 {course.createdBy?.name || "Ali Jamal"}
               </p>
-              <p className="text-muted-foreground text-xs">Instructor</p>
+              <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+                Instructor
+              </p>
             </div>
           </Link>
-          <div className="flex gap-4 justify-between items-center">
+          <div className="flex items-center justify-between gap-4">
             {!hasPurchased && (
-              <div className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+              <div
+                className={cn(
+                  poppins_600,
+                  "rounded-full bg-gradient-to-r from-highlight to-accent px-3 py-1 text-xs text-white shadow"
+                )}
+              >
                 {course.price ? `$${course.price}` : "Free"}
               </div>
             )}
@@ -126,20 +157,23 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
             />
           </div>
         </div>
-      </CardContent>
+      </div>
 
       {/* Full-width Button */}
-      <div className="px-5">
+      <div className="px-5 pb-5">
         <Button
           wide
           round
-          className="w-full bg-accent text-white hover:bg-accent/90 text-sm font-semibold"
+          className={cn(
+            poppins_600,
+            "w-full bg-accent text-sm text-white hover:bg-accent/90"
+          )}
           to={`/dashboard/courses/${course._id}`}
         >
           {isCompleted ? "Review Course" : showProgress ? "Continue Learning" : "View Course"}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 

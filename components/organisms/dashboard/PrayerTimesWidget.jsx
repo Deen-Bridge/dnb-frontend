@@ -23,6 +23,12 @@ import {
 } from "lucide-react";
 import Button from "@/components/atoms/form/Button";
 import Modal from "@/components/molecules/Modal";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const PRAYER_ICONS = {
   Fajr: Sunrise,
@@ -170,15 +176,20 @@ export default function PrayerTimesWidget() {
 
   return (
     <>
-      <div className="bg-card text-card-foreground border rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 w-full">
+      <div className="w-full space-y-4 rounded-2xl border border-accent/10 bg-surface-raised p-4 text-ink shadow-sm sm:p-6">
         {/* Top Header: Dates & Location */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="bg-accent/10 text-brand-text font-semibold text-xs sm:text-sm px-3 py-1 rounded-full flex items-center gap-1.5 border border-accent/20">
-              <Moon className="w-3.5 h-3.5 fill-accent" />
+        <div className="flex flex-col items-start justify-between gap-3 border-b border-accent/10 pb-4 sm:flex-row sm:items-center">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={cn(
+                poppins_600,
+                "flex items-center gap-1.5 rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 text-xs text-accent sm:text-sm"
+              )}
+            >
+              <Moon className="h-3.5 w-3.5 fill-accent" />
               {data?.hijriDate || "Hijri Date"}
             </span>
-            <span className="text-xs sm:text-sm text-muted-foreground">
+            <span className={cn(poppins_400, "text-xs text-ink-muted sm:text-sm")}>
               {data?.gregorianDate}
             </span>
           </div>
@@ -187,31 +198,34 @@ export default function PrayerTimesWidget() {
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground bg-muted/60 hover:bg-muted px-3 py-1 rounded-full transition-all cursor-pointer border"
+            className={cn(
+              poppins_500,
+              "flex cursor-pointer items-center gap-1.5 rounded-full border border-accent/15 bg-surface px-3 py-1 text-xs text-ink-muted transition-all hover:bg-accent/10 hover:text-ink sm:text-sm"
+            )}
             title="Change location"
           >
-            <MapPin className="w-3.5 h-3.5 text-brand-text" />
-            <span className="font-medium truncate max-w-[180px]">
+            <MapPin className="h-3.5 w-3.5 text-accent" />
+            <span className="max-w-[180px] truncate">
               {data?.locationName || "Location"}
             </span>
-            <Search className="w-3 h-3 ml-1 opacity-60" />
+            <Search className="ml-1 h-3 w-3 opacity-60" />
           </button>
         </div>
 
         {/* Loading State */}
         {loading ? (
           <div className="animate-pulse space-y-3 py-4">
-            <div className="h-16 bg-muted rounded-xl w-full" />
+            <div className="h-16 w-full rounded-xl bg-accent/10" />
             <div className="grid grid-cols-5 gap-2">
               {[...Array(5)].map((_, i) => (
-                <div key={`skel-pr-${i}`} className="h-20 bg-muted rounded-xl" />
+                <div key={`skel-pr-${i}`} className="h-20 rounded-xl bg-accent/10" />
               ))}
             </div>
           </div>
         ) : error ? (
           /* Error State */
-          <div className="text-center py-6 space-y-2">
-            <p className="text-sm text-destructive font-medium">
+          <div className="space-y-2 py-6 text-center">
+            <p className={cn(poppins_500, "text-sm text-red-600")}>
               Unable to load prayer times.
             </p>
             <Button
@@ -220,37 +234,47 @@ export default function PrayerTimesWidget() {
               className="text-xs"
               onClick={() => loadData(location)}
             >
-              <RefreshCw className="w-3.5 h-3.5 mr-1" /> Retry
+              <RefreshCw className="mr-1 h-3.5 w-3.5" /> Retry
             </Button>
           </div>
         ) : (
           <>
             {/* Next Prayer Live Banner */}
             {nextPrayerInfo && (
-              <div className="bg-gradient-to-r from-accent via-accent/90 to-highlight text-white rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm">
+              <div className="flex flex-col items-start justify-between gap-2 rounded-xl bg-gradient-to-r from-accent via-accent/90 to-highlight p-3.5 text-white shadow-sm sm:flex-row sm:items-center sm:p-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="bg-white/20 p-2 rounded-lg backdrop-blur-md">
-                    <Clock className="w-5 h-5" />
+                  <div className="rounded-lg bg-white/20 p-2 backdrop-blur-md">
+                    <Clock className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-white/80 uppercase tracking-wider font-semibold">
+                    <p
+                      className={cn(
+                        poppins_600,
+                        "text-xs uppercase tracking-wider text-white/80"
+                      )}
+                    >
                       {nextPrayerInfo.isTomorrow ? "Tomorrow's Next Prayer" : "Upcoming Prayer"}
                     </p>
-                    <h4 className="text-base sm:text-lg font-bold">
+                    <h4 className={cn(poppins_600, "text-base sm:text-lg")}>
                       {nextPrayerInfo.nextPrayerName} at {nextPrayerInfo.nextPrayerTimeFormatted}
                     </h4>
                   </div>
                 </div>
 
                 {/* Countdown Badge */}
-                <div className="bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5 self-end sm:self-center">
+                <div
+                  className={cn(
+                    poppins_600,
+                    "flex items-center gap-1.5 self-end rounded-full bg-white/20 px-3.5 py-1.5 text-xs tracking-wide backdrop-blur-md sm:self-center sm:text-sm"
+                  )}
+                >
                   <span>In {countdownText}</span>
                 </div>
               </div>
             )}
 
             {/* 5 Daily Prayer Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 pt-1">
+            <div className="grid grid-cols-2 gap-2.5 pt-1 sm:grid-cols-3 md:grid-cols-5">
               {["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].map((name) => {
                 const IconComponent = PRAYER_ICONS[name] || Sun;
                 const rawTime = data?.timings?.[name];
@@ -260,21 +284,23 @@ export default function PrayerTimesWidget() {
                 return (
                   <div
                     key={name}
-                    className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all text-center ${
+                    className={cn(
+                      "flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all",
                       isNext
-                        ? "bg-accent/10 border-accent text-brand-text font-bold ring-2 ring-accent/30 shadow-sm"
-                        : "bg-muted/30 border-border text-foreground hover:bg-muted/60"
-                    }`}
+                        ? "border-accent bg-accent/10 text-ink shadow-sm ring-2 ring-accent/30"
+                        : "border-accent/10 bg-surface text-ink hover:bg-accent/5"
+                    )}
                   >
                     <IconComponent
-                      className={`w-5 h-5 mb-1 ${
-                        isNext ? "text-brand-text" : "text-muted-foreground"
-                      }`}
+                      className={cn(
+                        "mb-1 h-5 w-5",
+                        isNext ? "text-accent" : "text-ink-muted"
+                      )}
                     />
-                    <span className="text-xs font-semibold uppercase tracking-wider">
+                    <span className={cn(poppins_600, "text-xs uppercase tracking-wider")}>
                       {name}
                     </span>
-                    <span className="text-xs sm:text-sm font-medium mt-0.5">
+                    <span className={cn(poppins_500, "mt-0.5 text-xs sm:text-sm")}>
                       {formattedTime}
                     </span>
                   </div>
@@ -294,27 +320,33 @@ export default function PrayerTimesWidget() {
       >
         <form onSubmit={handleLocationSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <label htmlFor="prayer-city" className="text-xs font-medium text-muted-foreground">City</label>
+            <label htmlFor="prayer-city" className={cn(poppins_500, "text-xs text-ink-muted")}>City</label>
             <input
               id="prayer-city"
               type="text"
               placeholder="e.g. London, Dallas, Cairo"
               value={cityInput}
               onChange={(e) => setCityInput(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+              className={cn(
+                poppins_400,
+                "w-full rounded-lg border border-accent/15 bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+              )}
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="prayer-country" className="text-xs font-medium text-muted-foreground">Country (Optional)</label>
+            <label htmlFor="prayer-country" className={cn(poppins_500, "text-xs text-ink-muted")}>Country (Optional)</label>
             <input
               id="prayer-country"
               type="text"
               placeholder="e.g. UK, USA, Egypt"
               value={countryInput}
               onChange={(e) => setCountryInput(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+              className={cn(
+                poppins_400,
+                "w-full rounded-lg border border-accent/15 bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+              )}
             />
           </div>
 
@@ -329,7 +361,7 @@ export default function PrayerTimesWidget() {
               onClick={handleAutoDetectGPS}
               className="w-full flex items-center justify-center gap-1.5 text-xs"
             >
-              <Navigation className="w-3.5 h-3.5 text-brand-text" /> Use Auto GPS
+              <Navigation className="h-3.5 w-3.5 text-accent" /> Use Auto GPS
             </Button>
           </div>
         </form>

@@ -2,9 +2,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { searchQuery } from "@/hooks/useSearch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const typeLabels = {
   course: "Course",
@@ -38,16 +42,26 @@ const typeDescription = (item) => {
 const typeBadge = (item) => {
   if (item.type === "course" || item.type === "book" || item.type === "space") {
     return (
-      <Badge className="bg-card/80 text-brand-text font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+      <span
+        className={cn(
+          poppins_600,
+          "rounded-full border border-accent/15 bg-surface-raised/90 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow-sm"
+        )}
+      >
         {item.category || typeLabels[item.type]}
-      </Badge>
+      </span>
     );
   }
   if (item.type === "user") {
     return (
-      <Badge className="bg-accent text-white font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+      <span
+        className={cn(
+          poppins_600,
+          "rounded-full bg-accent px-3 py-1 text-xs uppercase tracking-wider text-white shadow-sm"
+        )}
+      >
         User
-      </Badge>
+      </span>
     );
   }
   return null;
@@ -74,14 +88,19 @@ const Page = ({ params }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-2 sm:px-6">
-      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-left bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">
+    <div className="min-h-screen bg-surface px-2 py-8 sm:px-6">
+      <h1
+        className={cn(
+          poppins_600,
+          "mb-8 bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-left text-3xl text-transparent md:text-4xl"
+        )}
+      >
         Search Results for "{searchparam}"
       </h1>
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <svg
-            className="animate-spin h-10 w-10 text-brand-text mb-4"
+            className="mb-4 h-10 w-10 animate-spin text-secondary"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -100,38 +119,32 @@ const Page = ({ params }) => {
               d="M4 12a8 8 0 018-8v8z"
             ></path>
           </svg>
-          <span className="text-brand-text text-lg font-semibold">
+          <span className={cn(poppins_500, "text-lg text-ink")}>
             Searching...
           </span>
         </div>
       ) : results.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <svg width="80" height="80" fill="none" className="mb-4">
-            <circle
-              cx="40"
-              cy="40"
-              r="38"
-              stroke="#22c55e"
-              strokeWidth="4"
-              fill="#F7F7F7"
-            />
-            <path
-              d="M28 40h24M40 28v24"
-              stroke="#22c55e"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-          </svg>
-          <span className="text-muted-foreground text-lg font-semibold">
+          <div className="mb-4 flex size-20 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+            <svg width="40" height="40" fill="none" className="text-accent">
+              <path
+                d="M8 20h24M20 8v24"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          <span className={cn(poppins_500, "text-lg text-ink-muted")}>
             No results found.
           </span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((item) => (
-            <Card
+            <div
               key={item.id}
-              className="flex flex-col overflow-hidden rounded-2xl bg-card shadow-lg border-0 hover:shadow-2xl transition-all group"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm transition-all hover:-translate-y-0.5 hover:border-secondary/30 hover:shadow-md"
             >
               {/* Image */}
               <div className="relative h-44 w-full">
@@ -142,27 +155,42 @@ const Page = ({ params }) => {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   priority
                 />
-                <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
+                <div className="absolute left-3 right-3 top-3 z-20 flex justify-between">
                   {typeBadge(item)}
                 </div>
               </div>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold line-clamp-1 text-brand-text drop-shadow-sm mb-1">
+              <div className="px-6 pb-2 pt-4">
+                <h3
+                  className={cn(
+                    poppins_600,
+                    "mb-1 line-clamp-1 text-lg text-ink"
+                  )}
+                >
                   {item.title ||
                     item.name ||
                     item.description?.slice(0, 30) + "..."}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </h3>
+              </div>
+              <div className="px-6 pb-6">
                 {/* Detailed rendering by type */}
                 {item.type === "course" && (
                   <>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                    <p
+                      className={cn(
+                        poppins_400,
+                        "mb-2 line-clamp-2 text-sm text-ink-muted"
+                      )}
+                    >
                       {item.description}
                     </p>
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                       {item.price !== undefined && (
-                        <span className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                        <span
+                          className={cn(
+                            poppins_600,
+                            "rounded-full bg-gradient-to-r from-highlight to-accent px-3 py-1 text-xs text-white shadow-sm"
+                          )}
+                        >
                           {item.price ? `$${item.price}` : "Free"}
                         </span>
                       )}
@@ -171,22 +199,39 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "book" && (
                   <>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                    <p
+                      className={cn(
+                        poppins_400,
+                        "mb-2 line-clamp-2 text-sm text-ink-muted"
+                      )}
+                    >
                       {item.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 items-center mb-2">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
                       {item.category && (
-                        <span className="bg-card/80 text-brand-text font-bold px-2 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+                        <span
+                          className={cn(
+                            poppins_600,
+                            "rounded-full border border-accent/15 bg-surface px-2 py-1 text-xs uppercase tracking-wider text-ink"
+                          )}
+                        >
                           {item.category}
                         </span>
                       )}
                       {item.price !== undefined && (
-                        <span className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                        <span
+                          className={cn(
+                            poppins_600,
+                            "rounded-full bg-gradient-to-r from-highlight to-accent px-3 py-1 text-xs text-white shadow-sm"
+                          )}
+                        >
                           {item.price ? `$${item.price}` : "Free"}
                         </span>
                       )}
                       {item.author && (
-                        <span className="text-xs text-muted-foreground">
+                        <span
+                          className={cn(poppins_400, "text-xs text-ink-muted")}
+                        >
                           By{" "}
                           {typeof item.author === "object"
                             ? item.author.name
@@ -198,7 +243,7 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "user" && (
                   <>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       {item.avatar && (
                         <Image
                           src={item.avatar}
@@ -208,12 +253,14 @@ const Page = ({ params }) => {
                           className="rounded-full object-cover"
                         />
                       )}
-                      <span className="font-semibold text-brand-text">
+                      <span className={cn(poppins_600, "text-ink")}>
                         {item.name}
                       </span>
                     </div>
                     {item.role && (
-                      <span className="text-xs text-muted-foreground">
+                      <span
+                        className={cn(poppins_400, "text-xs text-ink-muted")}
+                      >
                         Role: {item.role}
                       </span>
                     )}
@@ -221,32 +268,53 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "space" && (
                   <>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                    <p
+                      className={cn(
+                        poppins_400,
+                        "mb-2 line-clamp-2 text-sm text-ink-muted"
+                      )}
+                    >
                       {item.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 items-center mb-2">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
                       {item.status && (
-                        <span className="bg-gradient-to-r from-green-500 to-accent text-white text-xs rounded-full font-semibold shadow-md border-0 px-2 py-1">
+                        <span
+                          className={cn(
+                            poppins_600,
+                            "rounded-full bg-gradient-to-r from-secondary to-accent px-2 py-1 text-xs text-white shadow-sm"
+                          )}
+                        >
                           {item.status.toUpperCase()}
                         </span>
                       )}
                       {item.price !== undefined && (
-                        <span className="bg-gradient-to-r from-highlight to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                        <span
+                          className={cn(
+                            poppins_600,
+                            "rounded-full bg-gradient-to-r from-highlight to-accent px-3 py-1 text-xs text-white shadow-sm"
+                          )}
+                        >
                           {item.price ? `$${item.price}` : "Free"}
                         </span>
                       )}
                       {item.eventDate && (
-                        <span className="text-xs text-muted-foreground">
+                        <span
+                          className={cn(poppins_400, "text-xs text-ink-muted")}
+                        >
                           Event: {formatDate(item.eventDate)}
                         </span>
                       )}
                       {item.duration && (
-                        <span className="text-xs text-muted-foreground">
+                        <span
+                          className={cn(poppins_400, "text-xs text-ink-muted")}
+                        >
                           Duration: {item.duration} min
                         </span>
                       )}
                       {item.host && (
-                        <span className="text-xs text-muted-foreground">
+                        <span
+                          className={cn(poppins_400, "text-xs text-ink-muted")}
+                        >
                           Host:{" "}
                           {typeof item.host === "object"
                             ? item.host.name
@@ -258,19 +326,27 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "reel" && (
                   <>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                    <p
+                      className={cn(
+                        poppins_400,
+                        "mb-2 line-clamp-2 text-sm text-ink-muted"
+                      )}
+                    >
                       {item.description}
                     </p>
                   </>
                 )}
                 <Link
                   href={typeLinks[item.type](item.id)}
-                  className="block w-full text-center px-4 py-2 rounded-full bg-accent text-white text-sm font-semibold shadow hover:bg-highlight transition-colors mt-2"
+                  className={cn(
+                    poppins_500,
+                    "mt-2 block w-full rounded-full bg-accent px-4 py-2 text-center text-sm text-white shadow-sm transition-colors hover:bg-highlight"
+                  )}
                 >
                   View {typeLabels[item.type]}
                 </Link>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

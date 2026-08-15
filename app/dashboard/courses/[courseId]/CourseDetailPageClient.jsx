@@ -13,9 +13,29 @@ import { useHasCourse, usePurchaseCourse } from "@/hooks/usePurchase";
 import { useCourseProgress, formatTime } from "@/hooks/useCourseProgress";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Wallet, RotateCcw, Play } from "lucide-react";
+import {
+  Wallet,
+  RotateCcw,
+  Play,
+  Star,
+  BookOpen,
+  Tag,
+  Users,
+  MessageSquare,
+  Lock,
+  CheckCircle2,
+  GraduationCap,
+  Clock,
+  BarChart3,
+} from "lucide-react";
 import PaymentModal from "@/components/stellar/PaymentModal";
 import { useStellar } from "@/components/stellar/StellarProvider";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 // Vidstack (@vidstack/react) is a large dependency only needed once a
 // learner actually opens the player, so it's kept out of the initial
@@ -30,6 +50,35 @@ const VidPlayerBox = dynamic(
       </div>
     ),
   }
+);
+
+/* ── building blocks (design-system consistent) ── */
+
+const Panel = ({ className, children }) => (
+  <div
+    className={cn(
+      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+const SectionHeading = ({ icon: Icon, title, subtitle }) => (
+  <div className="mb-5 flex items-start gap-3">
+    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+      <Icon className="h-5 w-5 text-accent" />
+    </div>
+    <div className="pt-0.5">
+      <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
+      {subtitle && (
+        <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>
+          {subtitle}
+        </p>
+      )}
+    </div>
+  </div>
 );
 
 export default function CourseDetailClient({ course }) {
@@ -136,266 +185,443 @@ export default function CourseDetailClient({ course }) {
   const canAccess =
     hasCourse || purchased || user?._id === course.createdBy?._id;
 
+  const isCreator = user?._id === course.createdBy?._id;
+  const reviewCount = course.reviews?.length || 0;
+  const avgRating = reviewCount
+    ? course.reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviewCount
+    : 0;
+  const priceLabel = course.price === 0 ? "Free" : `$${course.price}`;
+
   return (
-    <div className="max-w-full px-2 sm:px-4 py-4">
-      <h2 className="text-3xl font-extrabold mb-6">
-        {canAccess ? "Watch Course" : "Course Preview"}
-      </h2>
-
-      {canAccess ? (
-        <div className="w-full mb-8 rounded-xl">
-          {progress.percent > 0 && !progress.completed && resumeLabel && !useResume && (
-            <div className="mb-4 p-4 bg-accent/10 border border-accent/30 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <Play className="h-5 w-5 text-accent" />
-                <div>
-                  <p className="font-semibold text-sm">{resumeLabel}</p>
-                  <Progress value={progress.percent} className="w-48 h-1.5 mt-1" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  round
-                  className="bg-accent hover:bg-accent/90 text-white text-sm font-semibold px-4"
-                  onClick={handleResume}
+    <div className="min-h-screen bg-surface px-3 py-5 sm:px-6 sm:py-6">
+      <div className="mx-auto max-w-6xl space-y-6">
+        {/* ── Course header ── */}
+        <Panel className="relative overflow-hidden bg-gradient-to-br from-secondary/10 via-surface-raised to-highlight/10 p-5 sm:p-7">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="relative space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {course.category && (
+                <span
+                  className={cn(
+                    poppins_500,
+                    "inline-flex items-center gap-1.5 rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 text-xs capitalize text-accent"
+                  )}
                 >
-                  <Play className="h-4 w-4 mr-1" />
-                  Resume
-                </Button>
-                <Button
-                  round
-                  outlined
-                  className="text-sm px-4"
-                  onClick={handleStartOver}
-                >
-                  <RotateCcw className="h-4 w-4 mr-1" />
-                  Start Over
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {progress.completed && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
-              <span className="text-green-600 font-semibold text-sm">
-                ✅ Course Completed
-              </span>
-              <Button
-                round
-                outlined
-                className="text-xs ml-auto px-3 py-1"
-                onClick={handleStartOver}
-              >
-                <RotateCcw className="h-3 w-3 mr-1" />
-                Watch Again
-              </Button>
-            </div>
-          )}
-
-          <div className="w-full aspect-video rounded-xl overflow-hidden">
-            <VidPlayerBox
-              key={playerKey}
-              data={course}
-              startTime={effectiveStartTime}
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={handleEnded}
-            />
-          </div>
-
-          {progress.percent > 0 && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>{progress.percent}% complete</span>
-                <span>{formatTime(progress.positionSeconds)} / {formatTime(progress.durationSeconds)}</span>
-              </div>
-              <Progress value={progress.percent} className="h-1.5" />
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="w-full aspect-video mb-8 relative rounded-xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-highlight/20 backdrop-blur-sm z-10 flex items-center justify-center">
-            <div className="text-center space-y-4 p-8 bg-background/90 rounded-xl shadow-2xl">
-              <h3 className="text-2xl font-bold">🔒 Course Locked</h3>
-              <p className="text-muted-foreground">
-                Purchase this course to unlock full access
-              </p>
-              <div className="text-4xl font-bold text-brand-text">
-                {course.price === 0 ? "Free" : `$${course.price}`}
-              </div>
-            </div>
-          </div>
-          <img
-            src={course.thumbnail || "/images/dnb.png"}
-            alt={course.title}
-            className="w-full h-full object-cover blur-sm"
-          />
-        </div>
-      )}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-2 sm:px-10">
-        <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-4xl font-semibold">{course.title}</h3>
-          <p className="text-muted-foreground leading-relaxed">{course.description}</p>
-          <Link
-            href={`/account/profile/${course.createdBy?._id}`}
-            className="flex items-center gap-2"
-          >
-            <Avatar className="h-10 w-10 rounded-lg">
-              <AvatarImage
-                src={course.createdBy?.avatar || "/images/img1.jpeg"}
-              />
-              <AvatarFallback>
-                {course.createdBy?.name?.charAt(0) || "A"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex  justify-between   pt-2">
-                <span className="font-medium text-foreground">
-                  {course.createdBy?.name || "Unknown creator"}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {course.createdBy?.role || "Unknown creator"}
-                </span>
-              </div>
-              <div className="border-t pt-4 text-muted-foreground text-sm space-y-2">
-                <p>
-                  <strong>Duration:</strong> {course.duration || "N/A"}
-                </p>
-                <p>
-                  <strong>Level:</strong> {course.level || "Beginner"}
-                </p>
-              </div>
-            </div>
-          </Link>
-          {user?._id !== course.createdBy?._id && canAccess && (
-            <div className="pt-10 space-y-5 border-t border-border">
-              {userReview && (
-                <div className="text-sm text-muted-foreground">
-                  You reviewed this course on{" "}
-                  {new Date(userReview.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                  .
-                </div>
-              )}
-              {!submitted && !userReview && (
-                <>
-                  <h2 className="text-3xl font-semibold">Leave a Review</h2>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <StarRate
-                      value={rating}
-                      onChange={setRating}
-                      maxStars={5}
-                      editable={!submitting && !submitted}
-                      label={
-                        rating > 0
-                          ? `Your rating: ${rating} star${
-                              rating > 1 ? "s" : ""
-                            }`
-                          : undefined
-                      }
-                    />
-                    <Textarea
-                      placeholder="What did you think about the course?"
-                      className="bg-muted/50 min-h-[120px] border-accent focus:outline-none"
-                      value={review}
-                      onChange={(e) => setReview(e.target.value)}
-                      disabled={submitting || submitted}
-                    />
-                    {error && (
-                      <div className="text-red-500 text-sm">{error}</div>
-                    )}
-                    <Button
-                      wide
-                      round
-                      className="bg-accent hover:bg-highlight font-semibold mt-2 transition"
-                      type="submit"
-                      disabled={
-                        submitting || rating === 0 || review.trim() === ""
-                      }
-                      loading={submitting}
-                    >
-                      Submit Review
-                    </Button>
-                  </form>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-        <aside className="space-y-4">
-          <div className="border rounded-xl p-6 shadow-lg bg-card space-y-6 sticky top-4">
-            <div className="text-center space-y-2">
-              <p className="text-sm text-muted-foreground">Course Price</p>
-              <div className="text-5xl font-bold text-brand-text">
-                {course.price === 0 ? "Free" : `$${course.price}`}
-              </div>
-            </div>
-
-            {!hasCourse && !purchased && user?._id !== course.createdBy?._id ? (
-              <div className="space-y-2">
-                <Button
-                  wide
-                  round
-                  onClick={handlePurchaseCourse}
-                  loading={loading}
-                  className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-6 text-lg"
-                >
-                  <Wallet className="w-5 h-5 mr-2" />
-                  {course.price === 0
-                    ? "Enroll Now - Free!"
-                    : `Pay $${course.price} with Stellar`}
-                </Button>
-                {!creatorHasWallet && course.price > 0 && (
-                  <p className="text-sm text-orange-500 text-center">
-                    Note: Creator has not connected their Stellar wallet yet
-                  </p>
-                )}
-              </div>
-            ) : canAccess ? (
-              <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-900 rounded-lg p-4 text-center">
-                <p className="text-green-800 dark:text-green-200 font-semibold">
-                  ✅ You have access to this course
-                </p>
-              </div>
-            ) : null}
-
-            <div className="space-y-3 pt-4 border-t">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Students Enrolled
-                </span>
-                <span className="font-semibold">
-                  {course.enrolledUsers?.length || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Reviews</span>
-                <span className="font-semibold">
-                  {course.reviews?.length || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Category</span>
-                <span className="font-semibold text-brand-text capitalize">
+                  <Tag className="h-3.5 w-3.5" />
                   {course.category}
                 </span>
+              )}
+              <span
+                className={cn(
+                  poppins_500,
+                  "inline-flex items-center gap-1.5 rounded-full border border-accent/10 bg-surface px-3 py-1 text-xs text-ink-muted"
+                )}
+              >
+                <BarChart3 className="h-3.5 w-3.5 text-accent" />
+                {course.level || "Beginner"}
+              </span>
+              {course.duration && (
+                <span
+                  className={cn(
+                    poppins_500,
+                    "inline-flex items-center gap-1.5 rounded-full border border-accent/10 bg-surface px-3 py-1 text-xs text-ink-muted"
+                  )}
+                >
+                  <Clock className="h-3.5 w-3.5 text-accent" />
+                  {course.duration}
+                </span>
+              )}
+            </div>
+
+            <h1 className={cn(poppins_600, "text-2xl leading-tight text-ink sm:text-3xl")}>
+              {course.title}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Link
+                href={`/account/profile/${course.createdBy?._id}`}
+                className="group flex items-center gap-2.5"
+              >
+                <Avatar className="h-9 w-9 rounded-lg">
+                  <AvatarImage src={course.createdBy?.avatar || "/images/img1.jpeg"} />
+                  <AvatarFallback>
+                    {course.createdBy?.name?.charAt(0) || "A"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="leading-tight">
+                  <p className={cn(poppins_500, "text-sm text-ink group-hover:text-secondary")}>
+                    {course.createdBy?.name || "Unknown creator"}
+                  </p>
+                  <p className={cn(poppins_400, "text-xs capitalize text-ink-muted")}>
+                    {course.createdBy?.role || "Educator"}
+                  </p>
+                </div>
+              </Link>
+
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      className={cn(
+                        "h-4 w-4",
+                        s <= Math.round(avgRating)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-ink-muted/30"
+                      )}
+                    />
+                  ))}
+                </div>
+                <span className={cn(poppins_600, "text-sm text-ink")}>
+                  {avgRating > 0 ? avgRating.toFixed(1) : "New"}
+                </span>
+                <span className={cn(poppins_400, "text-xs text-ink-muted")}>
+                  ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+                </span>
               </div>
             </div>
           </div>
-        </aside>
-      </div>
+        </Panel>
 
-      <div className="px-2 sm:px-10 mt-12">
-        <h2 className="text-3xl font-semibold mb-6">Reviews</h2>
-        <ReviewsSection
-          reviews={course.reviews || []}
-          currentUserId={user?._id}
-          loading={false}
-          enableEditDelete={false}
-        />
+        {/* ── Main + sidebar ── */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Main column */}
+          <div className="space-y-6 lg:col-span-2">
+            {/* Player / preview */}
+            {canAccess ? (
+              <div className="space-y-4">
+                <Panel className="overflow-hidden p-2 sm:p-3">
+                  <div className="w-full aspect-video overflow-hidden rounded-xl">
+                    <VidPlayerBox
+                      key={playerKey}
+                      data={course}
+                      startTime={effectiveStartTime}
+                      onTimeUpdate={handleTimeUpdate}
+                      onEnded={handleEnded}
+                    />
+                  </div>
+                </Panel>
+
+                {progress.percent > 0 &&
+                  !progress.completed &&
+                  resumeLabel &&
+                  !useResume && (
+                    <Panel className="flex flex-col items-center justify-between gap-3 border-accent/20 bg-accent/5 p-4 sm:flex-row">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+                          <Play className="h-5 w-5 text-accent" />
+                        </div>
+                        <div>
+                          <p className={cn(poppins_500, "text-sm text-ink")}>
+                            {resumeLabel}
+                          </p>
+                          <Progress
+                            value={progress.percent}
+                            className="mt-1.5 h-1.5 w-48"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          round
+                          className="bg-accent px-4 text-sm font-semibold text-white hover:bg-accent/90"
+                          onClick={handleResume}
+                        >
+                          <Play className="mr-1 h-4 w-4" />
+                          Resume
+                        </Button>
+                        <Button
+                          round
+                          outlined
+                          className="px-4 text-sm"
+                          onClick={handleStartOver}
+                        >
+                          <RotateCcw className="mr-1 h-4 w-4" />
+                          Start Over
+                        </Button>
+                      </div>
+                    </Panel>
+                  )}
+
+                {progress.completed && (
+                  <Panel className="flex items-center gap-2 border-secondary/20 bg-secondary/5 p-4">
+                    <CheckCircle2 className="h-5 w-5 text-secondary" />
+                    <span className={cn(poppins_500, "text-sm text-ink")}>
+                      Course Completed
+                    </span>
+                    <Button
+                      round
+                      outlined
+                      className="ml-auto px-3 py-1 text-xs"
+                      onClick={handleStartOver}
+                    >
+                      <RotateCcw className="mr-1 h-3 w-3" />
+                      Watch Again
+                    </Button>
+                  </Panel>
+                )}
+
+                {progress.percent > 0 && (
+                  <Panel className="p-4">
+                    <div
+                      className={cn(
+                        poppins_500,
+                        "mb-1.5 flex justify-between text-xs text-ink-muted"
+                      )}
+                    >
+                      <span className="text-ink">{progress.percent}% complete</span>
+                      <span>
+                        {formatTime(progress.positionSeconds)} /{" "}
+                        {formatTime(progress.durationSeconds)}
+                      </span>
+                    </div>
+                    <Progress value={progress.percent} className="h-1.5" />
+                  </Panel>
+                )}
+              </div>
+            ) : (
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-accent/10 shadow-sm">
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-gradient-to-br from-accent/20 to-highlight/20 backdrop-blur-sm">
+                  <div className="space-y-4 rounded-2xl border border-accent/10 bg-surface-raised/95 p-8 text-center shadow-xl">
+                    <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+                      <Lock className="h-7 w-7 text-accent" />
+                    </div>
+                    <h3 className={cn(poppins_600, "text-xl text-ink")}>
+                      Course Locked
+                    </h3>
+                    <p className={cn(poppins_400, "text-sm text-ink-muted")}>
+                      Purchase this course to unlock full access
+                    </p>
+                    <div className={cn(poppins_600, "text-3xl text-accent")}>
+                      {priceLabel}
+                    </div>
+                  </div>
+                </div>
+                <img
+                  src={course.thumbnail || "/images/dnb.png"}
+                  alt={course.title}
+                  className="h-full w-full object-cover blur-sm"
+                />
+              </div>
+            )}
+
+            {/* About this course */}
+            <Panel className="p-5 sm:p-6">
+              <SectionHeading
+                icon={BookOpen}
+                title="About this course"
+                subtitle="What you'll be learning"
+              />
+              <p className={cn(poppins_400, "leading-relaxed text-ink-muted")}>
+                {course.description}
+              </p>
+
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-accent/10 pt-5 sm:grid-cols-3">
+                <div>
+                  <p className={cn(poppins_400, "text-xs text-ink-muted")}>Duration</p>
+                  <p className={cn(poppins_500, "text-sm text-ink")}>
+                    {course.duration || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className={cn(poppins_400, "text-xs text-ink-muted")}>Level</p>
+                  <p className={cn(poppins_500, "text-sm capitalize text-ink")}>
+                    {course.level || "Beginner"}
+                  </p>
+                </div>
+                <div>
+                  <p className={cn(poppins_400, "text-xs text-ink-muted")}>Category</p>
+                  <p className={cn(poppins_500, "text-sm capitalize text-ink")}>
+                    {course.category || "General"}
+                  </p>
+                </div>
+              </div>
+            </Panel>
+
+            {/* Reviews */}
+            <Panel className="p-5 sm:p-6">
+              <SectionHeading
+                icon={MessageSquare}
+                title="Reviews"
+                subtitle={`${reviewCount} learner ${
+                  reviewCount === 1 ? "review" : "reviews"
+                }`}
+              />
+
+              {!isCreator && canAccess && (
+                <div className="mb-6 space-y-5">
+                  {userReview && (
+                    <div
+                      className={cn(
+                        poppins_400,
+                        "rounded-xl border border-accent/10 bg-surface p-4 text-sm text-ink-muted"
+                      )}
+                    >
+                      You reviewed this course on{" "}
+                      {new Date(userReview.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                      .
+                    </div>
+                  )}
+                  {!submitted && !userReview && (
+                    <div className="rounded-xl border border-accent/10 bg-surface p-4 sm:p-5">
+                      <h3 className={cn(poppins_600, "text-base text-ink")}>
+                        Leave a Review
+                      </h3>
+                      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                        <StarRate
+                          value={rating}
+                          onChange={setRating}
+                          maxStars={5}
+                          editable={!submitting && !submitted}
+                          label={
+                            rating > 0
+                              ? `Your rating: ${rating} star${
+                                  rating > 1 ? "s" : ""
+                                }`
+                              : undefined
+                          }
+                        />
+                        <Textarea
+                          placeholder="What did you think about the course?"
+                          className="min-h-[120px] border-accent/20 bg-surface-raised focus:outline-none"
+                          value={review}
+                          onChange={(e) => setReview(e.target.value)}
+                          disabled={submitting || submitted}
+                        />
+                        {error && (
+                          <div className={cn(poppins_400, "text-sm text-red-600")}>
+                            {error}
+                          </div>
+                        )}
+                        <Button
+                          wide
+                          round
+                          className="mt-1 bg-accent font-semibold text-white transition hover:bg-highlight"
+                          type="submit"
+                          disabled={
+                            submitting || rating === 0 || review.trim() === ""
+                          }
+                          loading={submitting}
+                        >
+                          Submit Review
+                        </Button>
+                      </form>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <ReviewsSection
+                reviews={course.reviews || []}
+                currentUserId={user?._id}
+                loading={false}
+                enableEditDelete={false}
+              />
+            </Panel>
+          </div>
+
+          {/* Right sidebar */}
+          <aside className="lg:col-span-1">
+            <Panel className="sticky top-4 space-y-5 p-6">
+              {canAccess && !isCreator && (
+                <div className="flex items-center gap-2 rounded-xl border border-secondary/20 bg-secondary/5 px-3 py-2">
+                  <GraduationCap className="h-4 w-4 text-secondary" />
+                  <span className={cn(poppins_500, "text-xs text-ink")}>
+                    Enrolled
+                  </span>
+                </div>
+              )}
+
+              <div className="text-center">
+                <p className={cn(poppins_400, "text-xs uppercase tracking-wider text-ink-muted")}>
+                  Course Price
+                </p>
+                <div className={cn(poppins_600, "mt-1 text-4xl text-accent")}>
+                  {priceLabel}
+                </div>
+              </div>
+
+              {!hasCourse && !purchased && !isCreator ? (
+                <div className="space-y-2">
+                  <Button
+                    wide
+                    round
+                    onClick={handlePurchaseCourse}
+                    loading={loading}
+                    className="w-full bg-accent py-6 text-lg font-semibold text-white hover:bg-accent/90"
+                  >
+                    <Wallet className="mr-2 h-5 w-5" />
+                    {course.price === 0
+                      ? "Enroll Now - Free!"
+                      : `Pay $${course.price} with Stellar`}
+                  </Button>
+                  {!creatorHasWallet && course.price > 0 && (
+                    <p className={cn(poppins_400, "text-center text-xs text-ink-muted")}>
+                      Note: Creator has not connected their Stellar wallet yet
+                    </p>
+                  )}
+                </div>
+              ) : canAccess ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center gap-2 rounded-xl border border-secondary/20 bg-secondary/5 p-4 text-center">
+                    <CheckCircle2 className="h-5 w-5 text-secondary" />
+                    <p className={cn(poppins_500, "text-sm text-ink")}>
+                      You own this course
+                    </p>
+                  </div>
+                  {progress.percent > 0 && (
+                    <div className="rounded-xl border border-accent/10 bg-surface p-4">
+                      <div
+                        className={cn(
+                          poppins_500,
+                          "mb-1.5 flex items-center justify-between text-xs"
+                        )}
+                      >
+                        <span className="text-ink-muted">Your progress</span>
+                        <span className="text-accent">{progress.percent}%</span>
+                      </div>
+                      <Progress value={progress.percent} className="h-1.5" />
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              <div className="space-y-3 border-t border-accent/10 pt-5">
+                <div className="flex items-center justify-between">
+                  <span className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}>
+                    <Users className="h-4 w-4 text-accent" />
+                    Students Enrolled
+                  </span>
+                  <span className={cn(poppins_600, "text-sm text-ink")}>
+                    {course.enrolledUsers?.length || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}>
+                    <MessageSquare className="h-4 w-4 text-accent" />
+                    Reviews
+                  </span>
+                  <span className={cn(poppins_600, "text-sm text-ink")}>
+                    {reviewCount}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}>
+                    <Tag className="h-4 w-4 text-accent" />
+                    Category
+                  </span>
+                  <span className={cn(poppins_600, "text-sm capitalize text-ink")}>
+                    {course.category}
+                  </span>
+                </div>
+              </div>
+            </Panel>
+          </aside>
+        </div>
       </div>
 
       <PaymentModal
