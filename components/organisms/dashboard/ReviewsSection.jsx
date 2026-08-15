@@ -5,6 +5,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import StarRate from "@/components/atoms/form/StarRate";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const REVIEWS_PER_PAGE = 5;
 
@@ -45,15 +51,15 @@ export default function ReviewsSection({
   if (loading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-6 w-48 bg-gray-200 rounded" />
-        <div className="h-4 w-32 bg-gray-200 rounded" />
+        <div className="h-6 w-48 rounded bg-accent/10" />
+        <div className="h-4 w-32 rounded bg-accent/10" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-full bg-gray-200" />
+              <div className="h-10 w-10 rounded-full bg-accent/10" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-24 bg-gray-200 rounded" />
-                <div className="h-3 w-full bg-gray-200 rounded" />
+                <div className="h-4 w-24 rounded bg-accent/10" />
+                <div className="h-3 w-full rounded bg-accent/10" />
               </div>
             </div>
           ))}
@@ -67,16 +73,12 @@ export default function ReviewsSection({
       {/* Summary Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <span className="text-3xl font-bold">
+          <span className={cn(poppins_600, "text-3xl text-ink")}>
             {totalReviews > 0 ? averageRating.toFixed(1) : "—"}
           </span>
           <div>
-            <StarRate
-              value={averageRating}
-              maxStars={5}
-              editable={false}
-            />
-            <span className="text-sm text-muted-foreground">
+            <StarRate value={averageRating} maxStars={5} editable={false} />
+            <span className={cn(poppins_400, "text-sm text-ink-muted")}>
               {totalReviews} review{totalReviews !== 1 ? "s" : ""}
             </span>
           </div>
@@ -87,18 +89,19 @@ export default function ReviewsSection({
       {totalReviews > 0 && (
         <div className="space-y-1.5 max-w-sm">
           {distribution.map(({ star, count, percentage }) => (
-            <div key={star} className="flex items-center gap-2 text-sm">
-              <span className="w-6 text-right text-muted-foreground">
-                {star}
-              </span>
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <div className="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              key={star}
+              className={cn(poppins_400, "flex items-center gap-2 text-sm")}
+            >
+              <span className="w-6 text-right text-ink-muted">{star}</span>
+              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <div className="flex-1 h-2.5 overflow-hidden rounded-full bg-accent/10">
                 <div
-                  className="h-full bg-yellow-500 rounded-full transition-all"
+                  className="h-full rounded-full bg-amber-500 transition-all"
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <span className="w-6 text-right text-muted-foreground tabular-nums">
+              <span className="w-6 text-right tabular-nums text-ink-muted">
                 {count}
               </span>
             </div>
@@ -107,11 +110,16 @@ export default function ReviewsSection({
       )}
 
       {/* Divider */}
-      <hr className="border-gray-200" />
+      <hr className="border-accent/10" />
 
       {/* Review List */}
       {totalReviews === 0 ? (
-        <p className="text-muted-foreground text-center py-8">
+        <p
+          className={cn(
+            poppins_400,
+            "py-8 text-center text-ink-muted"
+          )}
+        >
           No reviews yet — be the first!
         </p>
       ) : (
@@ -137,10 +145,15 @@ export default function ReviewsSection({
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold text-sm group-hover:underline">
+                      <p
+                        className={cn(
+                          poppins_600,
+                          "text-sm text-ink group-hover:underline"
+                        )}
+                      >
                         {review.user?.name || "Anonymous"}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className={cn(poppins_400, "text-xs text-ink-muted")}>
                         {review.createdAt
                           ? new Date(review.createdAt).toLocaleDateString(
                               "en-US",
@@ -160,14 +173,20 @@ export default function ReviewsSection({
                       <button
                         type="button"
                         onClick={() => onEditReview?.(review)}
-                        className="text-xs text-muted-foreground hover:text-brand-text px-2 py-1 rounded hover:bg-muted transition"
+                        className={cn(
+                          poppins_500,
+                          "rounded px-2 py-1 text-xs text-ink-muted transition hover:bg-surface hover:text-ink"
+                        )}
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => onDeleteReview?.(review._id)}
-                        className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition"
+                        className={cn(
+                          poppins_500,
+                          "rounded px-2 py-1 text-xs text-red-600 transition hover:bg-red-50 hover:text-red-700"
+                        )}
                       >
                         Delete
                       </button>
@@ -182,15 +201,20 @@ export default function ReviewsSection({
                       size={14}
                       className={
                         i <= review.rating
-                          ? "fill-yellow-500 text-yellow-500"
-                          : "text-gray-300"
+                          ? "fill-amber-500 text-amber-500"
+                          : "text-accent/20"
                       }
                     />
                   ))}
                 </div>
 
                 {review.comment && (
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p
+                    className={cn(
+                      poppins_400,
+                      "text-sm leading-relaxed text-ink-muted"
+                    )}
+                  >
                     {review.comment}
                   </p>
                 )}
@@ -205,7 +229,10 @@ export default function ReviewsSection({
                 <button
                   type="button"
                   onClick={handleShowMore}
-                  className="inline-flex items-center gap-1 text-sm text-brand-text hover:underline font-medium"
+                  className={cn(
+                    poppins_500,
+                    "inline-flex items-center gap-1 text-sm text-secondary hover:text-highlight"
+                  )}
                 >
                   Show more
                   <ChevronDown className="w-4 h-4" />
@@ -214,7 +241,10 @@ export default function ReviewsSection({
                 <button
                   type="button"
                   onClick={handleShowLess}
-                  className="inline-flex items-center gap-1 text-sm text-brand-text hover:underline font-medium"
+                  className={cn(
+                    poppins_500,
+                    "inline-flex items-center gap-1 text-sm text-secondary hover:text-highlight"
+                  )}
                 >
                   Show less
                   <ChevronUp className="w-4 h-4" />

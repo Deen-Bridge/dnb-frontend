@@ -1,7 +1,5 @@
 "use client";
-import { Bot, CornerDownLeft, Mic, Paperclip, ImageIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import Button from "@/components/atoms/form/Button";
+import { Bot, CornerDownLeft, Mic, Paperclip, ImageIcon, Menu } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,8 +18,84 @@ import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
-export default function Dashboard({ chatData, onChatUpdate }) {
+const markdownComponents = {
+  p: ({ children }) => (
+    <p className={cn(poppins_400, "mb-2 text-sm leading-relaxed text-ink")}>
+      {children}
+    </p>
+  ),
+  h1: ({ children }) => (
+    <h1 className={cn(poppins_600, "mb-2 text-xl text-ink")}>{children}</h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className={cn(poppins_600, "mb-2 text-lg text-ink")}>{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className={cn(poppins_600, "mb-2 text-base text-ink")}>{children}</h3>
+  ),
+  ul: ({ children }) => (
+    <ul className={cn(poppins_400, "mb-2 list-disc pl-4 text-ink")}>
+      {children}
+    </ul>
+  ),
+  ol: ({ children }) => (
+    <ol className={cn(poppins_400, "mb-2 list-decimal pl-4 text-ink")}>
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => <li className="mb-1">{children}</li>,
+  code: ({ children }) => (
+    <code
+      className={cn(
+        poppins_400,
+        "rounded bg-accent/10 px-1 py-0.5 text-xs text-ink"
+      )}
+    >
+      {children}
+    </code>
+  ),
+  pre: ({ children }) => (
+    <pre
+      className={cn(
+        poppins_400,
+        "mb-2 overflow-x-auto rounded-lg bg-accent/10 p-3 text-xs text-ink"
+      )}
+    >
+      {children}
+    </pre>
+  ),
+};
+
+const SUGGESTIONS = [
+  { emoji: "🕌", question: "What are the 5 pillars of Islam?" },
+  { emoji: "🤲", question: "Explain the importance of Salah" },
+  { emoji: "✨", question: "Tell me about Prophet Muhammad ﷺ" },
+  { emoji: "📖", question: "How do I perform Wudu correctly?" },
+];
+
+const AiAvatar = ({ size = 32 }) => (
+  <span
+    className="flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+    style={{ width: size, height: size }}
+  >
+    <Image
+      src="/images/ai.png"
+      alt="DeenBridge AI"
+      width={size}
+      height={size}
+      className="h-full w-full object-cover"
+    />
+  </span>
+);
+
+export default function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -127,338 +201,216 @@ export default function Dashboard({ chatData, onChatUpdate }) {
     }
   };
 
+  const isEmpty = messages.length === 0 && !isLoading;
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="relative flex-1 flex flex-col rounded-xl bg-muted/50 p-4 overflow-hidden">
-        <Badge
-          variant="outline"
-          className="absolute right-3 top-3 border-accent"
-        >
-          Output
-        </Badge>
-        <div className="flex-1 overflow-y-auto overscroll-auto mt-6">
-          {/* Welcome Screen - Show when no messages */}
-          {messages.length === 0 && !isLoading && (
-            <div className="flex flex-col items-center justify-center h-full text-center px-4 py-8">
-              {/* AI Image with stunning effects */}
-              <div className="relative mb-8 group">
-                {/* AI Image container */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-highlight/20 rounded-full blur-2xl"></div>
-                  <div className="relative bg-gradient-to-br from-background to-muted p-2 rounded-full border-4 border-accent/30 shadow-2xl group-hover:scale-105 transition-transform duration-300">
-                    <Image
-                      src="/images/ai.png"
-                      alt="DeenBridge AI Assistant"
-                      width={140}
-                      height={140}
-                      className="rounded-full"
-                      priority
-                    />
-                  </div>
-                  {/* Floating particles */}
-                  <div className="absolute top-0 right-0 w-3 h-3 bg-accent rounded-full animate-ping"></div>
-                  <div
-                    className="absolute bottom-0 left-0 w-2 h-2 bg-highlight rounded-full animate-ping"
-                    style={{ animationDelay: "0.5s" }}
-                  ></div>
-                </div>
-              </div>
+    <div className="flex h-full flex-col bg-surface">
+      {/* Top bar */}
+      <div className="flex items-center gap-3 border-b border-accent/10 px-3 py-2.5 sm:px-4">
+        {onOpenSidebar && (
+          <button
+            onClick={onOpenSidebar}
+            className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-accent/10 hover:text-accent md:hidden"
+            aria-label="Open chat history"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <div className="flex items-center gap-2">
+          <AiAvatar size={28} />
+          <div className="leading-tight">
+            <p className={cn(poppins_600, "text-sm text-ink")}>DeenBridge AI</p>
+            <p className={cn(poppins_400, "text-[11px] text-ink-muted")}>
+              Qur&apos;an &amp; Hadith assistant
+            </p>
+          </div>
+        </div>
+      </div>
 
-              {/* Welcome Text with gradient */}
-              <div className="mb-10 space-y-4 max-w-2xl">
-                <h1 className="text-2xl md:text-3xl font-bold mb-3">
-                  <span className="bg-gradient-to-r from-accent via-highlight to-accent bg-clip-text text-transparent ">
-                    Assalamu Alaikum!
-                  </span>
-                </h1>
-                <p className="text-md md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                  I'm your Islamic AI assistant powered by knowledge of the{" "}
-                  <span className="font-semibold text-accent">Quran</span> and{" "}
-                  <span className="font-semibold text-highlight">Hadith</span>.
-                  How can I help you today?
-                </p>
-
-                {/* AI Features badges */}
-                <div className="flex flex-wrap gap-1 justify-center mt-4">
-                  <span className="px-3 py-1 bg-accent/10 text-highlight text-xs font-medium rounded-full border border-highlight/20">
-                    ✨ AI Powered
-                  </span>
-                  <span className="px-3 py-1 bg-accent/10 text-highlight text-xs font-medium rounded-full border border-highlight/20">
-                    📖 Islamic Knowledge
-                  </span>
-                  <span className="px-3 py-1 bg-accent/10 text-highlight text-xs font-medium rounded-full border border-highlight/20">
-                    🤝 24/7 Available
-                  </span>
-                </div>
-              </div>
-
-              {/* Quick Questions with stunning cards */}
-              <div className="w-full max-w-4xl">
-                <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
-                  Popular Questions
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[
-                    {
-                      emoji: "🕌",
-                      question: "What are the 5 pillars of Islam?",
-                    },
-                    {
-                      emoji: "🤲",
-                      question: "Explain the importance of Salah",
-                    },
-                    {
-                      emoji: "✨",
-                      question: "Tell me about Prophet Muhammad ﷺ",
-                    }
-                  ].map((item, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setInputMessage(item.question)}
-                      className="group relative p-5 text-left border-2 border-muted/50 rounded-2xl hover:border-accent hover:shadow-lg hover:shadow-accent/20 transition-all duration-300 hover:-translate-y-1 bg-background overflow-hidden"
-                    >
-                      {/* Gradient background on hover */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br from-accent/10 to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                      ></div>
-
-                      {/* Content */}
-                      <div className="relative flex items-start gap-3">
-                        <span className="text-3xl group-hover:scale-110 transition-transform duration-300">
-                          {item.emoji}
-                        </span>
-                        <span className="text-sm font-medium leading-relaxed flex-1">
-                          {item.question}
-                        </span>
-                      </div>
-
-                      {/* Hover arrow */}
-                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg
-                          className="w-4 h-4 text-accent"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 7l5 5m0 0l-5 5m5-5H6"
-                          />
-                        </svg>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto">
+        {isEmpty ? (
+          <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-4 py-8 text-center">
+            <div className="relative mb-6">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-secondary/20 to-highlight/20 blur-2xl" />
+              <div className="relative rounded-full border-4 border-accent/20 bg-surface-raised p-2 shadow-xl">
+                <Image
+                  src="/images/ai.png"
+                  alt="DeenBridge AI Assistant"
+                  width={96}
+                  height={96}
+                  className="rounded-full"
+                  priority
+                />
               </div>
             </div>
-          )}
-
-          {/* Messages */}
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`mb-4 flex gap-3 items-start ${
-                message.role === "user" ? "flex-row-reverse" : ""
-              }`}
+            <h1
+              className={cn(
+                poppins_600,
+                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent sm:text-3xl"
+              )}
             >
-              {/* Avatar */}
-              <div className="flex-shrink-0">
-                {message.role === "user" ? (
-                  <Avatar className="h-10 w-10 rounded-lg mt-2">
+              Assalamu Alaikum!
+            </h1>
+            <p
+              className={cn(
+                poppins_400,
+                "mt-3 max-w-md leading-relaxed text-ink-muted"
+              )}
+            >
+              I&apos;m your Islamic AI assistant, grounded in the{" "}
+              <span className={cn(poppins_600, "text-secondary")}>Qur&apos;an</span>{" "}
+              and{" "}
+              <span className={cn(poppins_600, "text-highlight")}>Hadith</span>.
+              How can I help you today?
+            </p>
+
+            <div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-3 sm:grid-cols-2">
+              {SUGGESTIONS.map((item, i) => (
+                <button
+                  key={i}
+                  onClick={() => setInputMessage(item.question)}
+                  className="group flex items-center gap-3 rounded-xl border border-accent/15 bg-surface-raised p-4 text-left transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-sm"
+                >
+                  <span className="text-2xl transition-transform group-hover:scale-110">
+                    {item.emoji}
+                  </span>
+                  <span className={cn(poppins_500, "text-sm text-ink")}>
+                    {item.question}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="mx-auto max-w-3xl space-y-6 px-3 py-6 sm:px-4">
+            {messages.map((message, index) =>
+              message.role === "user" ? (
+                <div key={index} className="flex justify-end gap-3">
+                  <div
+                    className={cn(
+                      poppins_400,
+                      "max-w-[85%] whitespace-pre-line rounded-2xl rounded-tr-sm bg-accent/10 px-4 py-2.5 text-sm text-ink"
+                    )}
+                  >
+                    {message.content}
+                  </div>
+                  <Avatar className="mt-0.5 h-8 w-8 shrink-0 rounded-full">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
-                    <AvatarFallback className="bg-accent text-white text-sm">
+                    <AvatarFallback
+                      className={cn(poppins_500, "bg-accent text-xs text-white")}
+                    >
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
-                ) : (
-                  <div className="w-10 h-10 rounded-full mt-2 overflow-hidden">
-                    <Image
-                      src="/images/ai.png"
-                      alt="AI Assistant"
-                      width={32}
-                      height={32}
-                      className="w-full h-full object-cover"
-                    />
+                </div>
+              ) : (
+                <div key={index} className="flex gap-3">
+                  <AiAvatar size={32} />
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <ReactMarkdown components={markdownComponents}>
+                      {message.content}
+                    </ReactMarkdown>
                   </div>
-                )}
-              </div>
+                </div>
+              )
+            )}
 
-              {/* Message Content */}
-              <div
-                className={`p-4 rounded-lg max-w-[80%] ${
-                  message.role === "user" ? "bg-accent/10" : "bg-background"
-                }`}
-              >
-                {message.role === "assistant" ? (
-                  <ReactMarkdown
-                    components={{
-                      p: ({ children }) => (
-                        <p className="text-sm mb-2">{children}</p>
-                      ),
-                      h1: ({ children }) => (
-                        <h1 className="text-xl font-bold mb-2">{children}</h1>
-                      ),
-                      h2: ({ children }) => (
-                        <h2 className="text-lg font-bold mb-2">{children}</h2>
-                      ),
-                      h3: ({ children }) => (
-                        <h3 className="text-base font-bold mb-2">
-                          {children}
-                        </h3>
-                      ),
-                      ul: ({ children }) => (
-                        <ul className="list-disc pl-4 mb-2">{children}</ul>
-                      ),
-                      ol: ({ children }) => (
-                        <ol className="list-decimal pl-4 mb-2">{children}</ol>
-                      ),
-                      li: ({ children }) => (
-                        <li className="mb-1">{children}</li>
-                      ),
-                      code: ({ children }) => (
-                        <code className="bg-muted px-1 py-0.5 rounded text-xs">
-                          {children}
-                        </code>
-                      ),
-                      pre: ({ children }) => (
-                        <pre className="bg-muted p-2 rounded text-xs overflow-x-auto mb-2">
-                          {children}
-                        </pre>
-                      ),
-                    }}
-                  >
-                    {message.content}
-                  </ReactMarkdown>
-                ) : (
-                  <p className="text-sm whitespace-pre-line">
-                    {message.content}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-          {isLoading && !streamingContent && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-accent/10 p-4 rounded-lg w-fit">
-              <Bot className="size-4 animate-bounce" />
-              AI is thinking...
-            </div>
-          )}
-          {isLoading && streamingContent && (
-            <div className="mb-4 flex gap-3 items-start">
-              <div className="w-10 h-10 rounded-full mt-2 overflow-hidden flex-shrink-0">
-                <Image
-                  src="/images/ai.png"
-                  alt="AI Assistant"
-                  width={32}
-                  height={32}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-4 rounded-lg max-w-[80%] bg-background">
-                <ReactMarkdown
-                  components={{
-                    p: ({ children }) => (
-                      <p className="text-sm mb-2">{children}</p>
-                    ),
-                    h1: ({ children }) => (
-                      <h1 className="text-xl font-bold mb-2">{children}</h1>
-                    ),
-                    h2: ({ children }) => (
-                      <h2 className="text-lg font-bold mb-2">{children}</h2>
-                    ),
-                    h3: ({ children }) => (
-                      <h3 className="text-base font-bold mb-2">{children}</h3>
-                    ),
-                    ul: ({ children }) => (
-                      <ul className="list-disc pl-4 mb-2">{children}</ul>
-                    ),
-                    ol: ({ children }) => (
-                      <ol className="list-decimal pl-4 mb-2">{children}</ol>
-                    ),
-                    li: ({ children }) => (
-                      <li className="mb-1">{children}</li>
-                    ),
-                    code: ({ children }) => (
-                      <code className="bg-muted px-1 py-0.5 rounded text-xs">
-                        {children}
-                      </code>
-                    ),
-                    pre: ({ children }) => (
-                      <pre className="bg-muted p-2 rounded text-xs overflow-x-auto mb-2">
-                        {children}
-                      </pre>
-                    ),
-                  }}
+            {isLoading && !streamingContent && (
+              <div className="flex gap-3">
+                <AiAvatar size={32} />
+                <div
+                  className={cn(
+                    poppins_400,
+                    "flex items-center gap-2 pt-1.5 text-sm text-ink-muted"
+                  )}
                 >
-                  {streamingContent}
-                </ReactMarkdown>
-                <span className="inline-block w-2 h-4 bg-accent animate-pulse" />
+                  <Bot className="size-4 animate-bounce text-accent" />
+                  Thinking…
+                </div>
               </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            )}
+
+            {isLoading && streamingContent && (
+              <div className="flex gap-3">
+                <AiAvatar size={32} />
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <ReactMarkdown components={markdownComponents}>
+                    {streamingContent}
+                  </ReactMarkdown>
+                  <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-accent align-middle" />
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+      </div>
+
+      {/* Composer */}
+      <div className="border-t border-accent/10 bg-surface px-3 py-3 sm:px-4">
         <form
           onSubmit={handleSubmit}
-          className="mt-4 overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-accent"
+          className="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-accent/15 bg-surface-raised shadow-sm transition-shadow focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20"
         >
           <Label htmlFor="message" className="sr-only">
             Message
           </Label>
           <Textarea
             id="message"
-            placeholder="Type your message here... (Press Enter to send)"
-            className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+            placeholder="Message DeenBridge AI…  (Enter to send, Shift+Enter for newline)"
+            className={cn(
+              poppins_400,
+              "min-h-12 resize-none border-0 bg-transparent p-3 text-ink shadow-none focus-visible:ring-0"
+            )}
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
           />
-          <div className="flex justify-between items-center p-3 pt-0">
-            <div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button className="p-2 h-auto">
-                    <Paperclip className="size-4" />
-                    <span className="sr-only">Attach file</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Attach File</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button className="p-2 h-auto">
-                    <ImageIcon className="size-4" />
-                    <span className="sr-only">Attach Image</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Attach Image</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button className="p-2 h-auto">
-                    <Mic className="size-4" />
-                    <span className="sr-only">Use Microphone</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Use Microphone</TooltipContent>
-              </Tooltip>
+          <div className="flex items-center justify-between px-3 pb-2.5 pt-0">
+            <div className="flex items-center gap-1">
+              {[
+                { icon: Paperclip, label: "Attach File" },
+                { icon: ImageIcon, label: "Attach Image" },
+                { icon: Mic, label: "Use Microphone" },
+              ].map(({ icon: Icon, label }) => (
+                <Tooltip key={label}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-accent/10 hover:text-accent"
+                    >
+                      <Icon className="size-4" />
+                      <span className="sr-only">{label}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">{label}</TooltipContent>
+                </Tooltip>
+              ))}
             </div>
-            <div>
-              <Button
-                round
-                type="submit"
-                className="text-sm ml-auto gap-1.5 text-white flex justify-end bg-accent hover:bg-highlight"
-                disabled={isLoading || !inputMessage.trim()}
-              >
-                <CornerDownLeft className="size-3.5" />
-              </Button>
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading || !inputMessage.trim()}
+              className={cn(
+                poppins_500,
+                "flex size-9 items-center justify-center rounded-xl bg-accent text-white transition-colors hover:bg-highlight disabled:cursor-not-allowed disabled:opacity-40"
+              )}
+              aria-label="Send message"
+            >
+              <CornerDownLeft className="size-4" />
+            </button>
           </div>
         </form>
+        <p
+          className={cn(
+            poppins_400,
+            "mx-auto mt-2 max-w-3xl text-center text-[11px] text-ink-muted"
+          )}
+        >
+          DeenBridge AI can make mistakes — verify important rulings with a
+          qualified scholar.
+        </p>
       </div>
     </div>
   );

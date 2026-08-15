@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Heart,
@@ -11,6 +10,7 @@ import {
   VolumeX,
   ArrowUp,
   ArrowDown,
+  Play,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ReelActionButton from "@/components/atoms/reels/ReelActionButton";
@@ -39,6 +39,8 @@ const ReelCard = ({
   const [likeCount, setLikeCount] = useState(reel.stats?.likes || 0);
   const [loveCount, setLoveCount] = useState(reel.stats?.loves || 0);
   const [muted, setMuted] = useState(true);
+
+  const isPaused = playing !== reel.id;
 
   useEffect(() => {
     setViewerLiked(reel.viewerState?.liked);
@@ -131,188 +133,157 @@ const ReelCard = ({
     ? dayjs(reel.createdAt).fromNow()
     : "Just now";
 
-  const actionStack = (
-    <div className="hidden flex-col items-center gap-4 md:flex">
-      <ReelActionButton
-        icon={
-          <Heart
-            className={cn(
-              "h-6 w-6",
-              viewerLiked && "fill-red-500 text-red-500"
-            )}
-          />
-        }
-        label={likeCount.toLocaleString()}
-        accessibleLabel={`Like, ${likeCount.toLocaleString()}`}
-        active={viewerLiked}
-        pressed={viewerLiked}
-        onClick={() => handleReact("like")}
-      />
-      <ReelActionButton
-        icon={
-          <ThumbsUp
-            className={cn(
-              "h-6 w-6",
-              viewerLoved && "fill-sky-400 text-sky-400"
-            )}
-          />
-        }
-        label={loveCount.toLocaleString()}
-        accessibleLabel={`Love, ${loveCount.toLocaleString()}`}
-        active={viewerLoved}
-        pressed={viewerLoved}
-        onClick={() => handleReact("love")}
-      />
-      <ReelActionButton
-        icon={<MessageCircle className="h-6 w-6" />}
-        label={reel.stats?.comments?.toLocaleString?.() || 0}
-        accessibleLabel={`Comments, ${reel.stats?.comments?.toLocaleString?.() || 0}`}
-        onClick={onOpenComments}
-      />
-      <ReelActionButton
-        icon={<Share2 className="h-6 w-6" />}
-        label={reel.stats?.shares?.toLocaleString?.() || 0}
-        accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
-        onClick={onShare}
-      />
-    </div>
-  );
-
   return (
     <div
       id={`reel-${reel.id}`}
-      className="relative flex h-full w-full items-center justify-center"
+      className="relative flex h-full w-full items-center justify-center bg-black"
     >
-      <div className="relative flex h-[78vh] w-full max-w-[440px] items-center justify-center md:h-[82vh]">
-        <div className="relative h-full w-full overflow-hidden rounded-[32px] bg-black shadow-2xl">
-          <video
-            ref={videoRef}
-            src={reel.video}
-            className="h-full w-full object-cover"
-            playsInline
-            loop
-            preload="metadata"
-            controls={false}
-            onClick={() => setPlaying(playing === reel.id ? null : reel.id)}
-          />
+      {/* Full-bleed 9:16 video column (letterboxed on wide screens) */}
+      <div className="relative h-full w-full overflow-hidden bg-black sm:max-w-[460px]">
+        <video
+          ref={videoRef}
+          src={reel.video}
+          className="h-full w-full object-cover"
+          playsInline
+          loop
+          preload="metadata"
+          controls={false}
+          onClick={() => setPlaying(playing === reel.id ? null : reel.id)}
+        />
 
+        {/* Paused overlay */}
+        {isPaused && (
           <button
             type="button"
-            className="absolute right-4 top-4 z-30 rounded-full bg-black/60 p-2 text-white shadow-lg backdrop-blur transition hover:bg-black/80"
-            onClick={() => setMuted((prev) => !prev)}
-            aria-label={muted ? "Unmute" : "Mute"}
+            onClick={() => setPlaying(reel.id)}
+            className="absolute inset-0 z-10 flex items-center justify-center bg-black/10"
+            aria-label="Play"
           >
-            {muted ? (
-              <VolumeX className="h-5 w-5" />
-            ) : (
-              <Volume2 className="h-5 w-5" />
-            )}
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/40 backdrop-blur">
+              <Play className="h-7 w-7 fill-white text-white" />
+            </span>
           </button>
+        )}
 
-          <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/30 to-transparent px-5 pb-6 pt-16 text-white">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-11 w-11">
-                <AvatarImage src={reel.createdBy?.avatar} />
-                <AvatarFallback>{viewerAvatarFallback}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-1 flex-col">
-                <span className="text-sm font-semibold">
-                  {reel.createdBy?.name || "Anonymous"}
-                </span>
-                <span className="text-[11px] uppercase tracking-wide text-white/70">
-                  {formattedDate}
-                </span>
-              </div>
-              <button
-                type="button"
-                className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/30"
-              >
-                Follow
-              </button>
-            </div>
+        {/* Mute toggle */}
+        <button
+          type="button"
+          className="absolute right-3 top-3 z-30 rounded-full bg-black/50 p-2 text-white backdrop-blur transition hover:bg-black/70"
+          onClick={() => setMuted((prev) => !prev)}
+          aria-label={muted ? "Unmute" : "Mute"}
+        >
+          {muted ? (
+            <VolumeX className="h-5 w-5" />
+          ) : (
+            <Volume2 className="h-5 w-5" />
+          )}
+        </button>
 
-            <p className="mt-3 text-sm leading-relaxed text-white/90">
-              {reel.description}
-            </p>
-            {reel.tags?.length ? (
-              <p className="mt-2 text-xs text-white/70">
-                {reel.tags.map((tag) => `#${tag}`).join(" ")}
-              </p>
-            ) : null}
+        {/* Right action rail — overlaid inside, all breakpoints (TikTok-style) */}
+        <div className="absolute bottom-24 right-2.5 z-30 flex flex-col items-center gap-5">
+          <div className="mb-1 flex flex-col items-center">
+            <Avatar className="h-11 w-11 border-2 border-white">
+              <AvatarImage src={reel.createdBy?.avatar} />
+              <AvatarFallback className="bg-accent text-sm text-white">
+                {viewerAvatarFallback}
+              </AvatarFallback>
+            </Avatar>
           </div>
-
-          <div className="absolute bottom-28 right-4 z-20 flex flex-col items-center gap-4 md:hidden">
-            <ReelActionButton
-              icon={
-                <Heart
-                  className={cn(
-                    "h-6 w-6",
-                    viewerLiked && "fill-red-500 text-red-500"
-                  )}
-                />
-              }
-              label={likeCount.toLocaleString()}
-              accessibleLabel={`Like, ${likeCount.toLocaleString()}`}
-              active={viewerLiked}
-              pressed={viewerLiked}
-              onClick={() => handleReact("like")}
-            />
-            <ReelActionButton
-              icon={
-                <ThumbsUp
-                  className={cn(
-                    "h-6 w-6",
-                    viewerLoved && "fill-sky-400 text-sky-400"
-                  )}
-                />
-              }
-              label={loveCount.toLocaleString()}
-              accessibleLabel={`Love, ${loveCount.toLocaleString()}`}
-              active={viewerLoved}
-              pressed={viewerLoved}
-              onClick={() => handleReact("love")}
-            />
-            <ReelActionButton
-              icon={<MessageCircle className="h-6 w-6" />}
-              label={reel.stats?.comments?.toLocaleString?.() || 0}
-              accessibleLabel={`Comments, ${reel.stats?.comments?.toLocaleString?.() || 0}`}
-              onClick={onOpenComments}
-            />
-            <ReelActionButton
-              icon={<Share2 className="h-6 w-6" />}
-              label={reel.stats?.shares?.toLocaleString?.() || 0}
-              accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
-              onClick={onShare}
-            />
-          </div>
+          <ReelActionButton
+            icon={
+              <Heart
+                className={cn(
+                  "h-7 w-7",
+                  viewerLiked && "fill-red-500 text-red-500"
+                )}
+              />
+            }
+            label={likeCount.toLocaleString()}
+            accessibleLabel={`Like, ${likeCount.toLocaleString()}`}
+            active={viewerLiked}
+            pressed={viewerLiked}
+            onClick={() => handleReact("like")}
+          />
+          <ReelActionButton
+            icon={
+              <ThumbsUp
+                className={cn(
+                  "h-7 w-7",
+                  viewerLoved && "fill-sky-400 text-sky-400"
+                )}
+              />
+            }
+            label={loveCount.toLocaleString()}
+            accessibleLabel={`Love, ${loveCount.toLocaleString()}`}
+            active={viewerLoved}
+            pressed={viewerLoved}
+            onClick={() => handleReact("love")}
+          />
+          <ReelActionButton
+            icon={<MessageCircle className="h-7 w-7" />}
+            label={reel.stats?.comments?.toLocaleString?.() || 0}
+            accessibleLabel={`Comments, ${reel.stats?.comments?.toLocaleString?.() || 0}`}
+            onClick={onOpenComments}
+          />
+          <ReelActionButton
+            icon={<Share2 className="h-7 w-7" />}
+            label={reel.stats?.shares?.toLocaleString?.() || 0}
+            accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
+            onClick={onShare}
+          />
         </div>
 
-        <div className="absolute -right-20 top-1/2 hidden -translate-y-1/2 md:block">
-          {actionStack}
+        {/* Caption overlay (bottom-left) */}
+        <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/30 to-transparent px-4 pb-6 pr-16 pt-16 text-white">
+          <div className="flex items-center gap-2.5">
+            <span className="text-sm font-semibold">
+              @{reel.createdBy?.name || "Anonymous"}
+            </span>
+            <span className="text-[11px] text-white/60">·</span>
+            <span className="text-[11px] text-white/70">{formattedDate}</span>
+            <button
+              type="button"
+              className="ml-1 rounded-full border border-white/40 px-3 py-0.5 text-xs font-semibold text-white transition hover:bg-white/15"
+            >
+              Follow
+            </button>
+          </div>
+          {reel.description && (
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-white/90">
+              {reel.description}
+            </p>
+          )}
+          {reel.tags?.length ? (
+            <p className="mt-1.5 text-xs font-medium text-white/80">
+              {reel.tags.map((tag) => `#${tag}`).join(" ")}
+            </p>
+          ) : null}
         </div>
       </div>
 
-      {hasPrev && (
-        <button
-          type="button"
-          className="absolute left-4 top-1/2 flex -translate-y-1/2 rounded-full bg-black/45 p-2 text-white shadow-lg backdrop-blur transition hover:bg-black/70 md:hidden"
-          onClick={onPrev}
-          aria-label="Previous reel"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </button>
-      )}
-
-      {hasNext && (
-        <button
-          type="button"
-          className="absolute right-4 top-1/2 flex -translate-y-1/2 rounded-full bg-black/45 p-2 text-white shadow-lg backdrop-blur transition hover:bg-black/70 md:hidden"
-          onClick={onNext}
-          aria-label="Next reel"
-        >
-          <ArrowDown className="h-5 w-5" />
-        </button>
-      )}
+      {/* Up / down navigation (right edge, all breakpoints) */}
+      <div className="absolute right-3 top-1/2 z-30 flex -translate-y-1/2 flex-col gap-3 sm:right-4">
+        {hasPrev && (
+          <button
+            type="button"
+            className="rounded-full bg-white/10 p-2.5 text-white backdrop-blur transition hover:bg-white/25"
+            onClick={onPrev}
+            aria-label="Previous reel"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </button>
+        )}
+        {hasNext && (
+          <button
+            type="button"
+            className="rounded-full bg-white/10 p-2.5 text-white backdrop-blur transition hover:bg-white/25"
+            onClick={onNext}
+            aria-label="Next reel"
+          >
+            <ArrowDown className="h-5 w-5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
