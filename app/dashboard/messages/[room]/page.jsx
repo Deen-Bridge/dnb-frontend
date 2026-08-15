@@ -19,6 +19,12 @@ import { toast } from "sonner";
 import Link from "next/link";
 import Loader from "@/components/molecules/loaders/rootLoader";
 import { markMessagesAsRead } from "@/hooks/markMessageAsRead";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -143,8 +149,8 @@ export default function Page({ params }) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden overscroll-none">
-      <div className="flex items-center gap-2 p-2 sm:p-4 border-t border-b bg-accent/10 border-b-accent/20 rounded-t-2xl">
+    <div className="flex h-full w-full flex-col overflow-hidden overscroll-none bg-surface">
+      <div className="flex items-center gap-2 rounded-t-2xl border-b border-accent/20 bg-surface-raised p-2 shadow-sm sm:p-4">
         <Button
           variant="ghost"
           size="icon"
@@ -152,7 +158,7 @@ export default function Page({ params }) {
           onClick={() => router.push("/dashboard/messages")}
           aria-label="Back to messages list"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-5 w-5 text-accent" />
         </Button>
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
@@ -164,20 +170,40 @@ export default function Page({ params }) {
         </Link>
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold font-stretch-125% text-sm sm:text-base truncate">
+            <h2
+              className={cn(
+                poppins_600,
+                "truncate text-sm text-ink sm:text-base"
+              )}
+            >
               {otherParticipantInfo?.name}
             </h2>
             {otherOnline ? (
-              <p className="text-xs sm:text-sm text-green-500">Active now</p>
+              <p
+                className={cn(
+                  poppins_500,
+                  "text-xs text-secondary sm:text-sm"
+                )}
+              >
+                Active now
+              </p>
             ) : otherLastSeen ? (
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <p
+                className={cn(
+                  poppins_400,
+                  "text-xs text-ink-muted sm:text-sm"
+                )}
+              >
                 Last seen {formatDistanceToNow(otherLastSeen.toDate?.() || otherLastSeen, { addSuffix: true })}
               </p>
             ) : null}
             {/* Show typing indicator */}
             {Object.entries(typingUsers).map(([uid, isTyping]) =>
               uid !== user._id && isTyping ? (
-                <p key={uid} className="text-xs text-muted-foreground">
+                <p
+                  key={uid}
+                  className={cn(poppins_400, "text-xs text-ink-muted")}
+                >
                   typing...
                 </p>
               ) : null
@@ -185,12 +211,17 @@ export default function Page({ params }) {
           </div>
         </Link>
         {otherOnline && (
-          <div className="h-2 w-2 rounded-full bg-green-500" />
+          <div className="h-2 w-2 rounded-full bg-secondary" />
         )}
       </div>
 
       {error && (
-        <div className="bg-destructive/15 text-destructive px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
+        <div
+          className={cn(
+            poppins_400,
+            "bg-red-50 px-3 py-1.5 text-xs text-red-600 sm:px-4 sm:py-2 sm:text-sm"
+          )}
+        >
           {error}
         </div>
       )}
@@ -199,7 +230,12 @@ export default function Page({ params }) {
         {isLoading ? (
           <Loader />
         ) : messages.length === 0 ? (
-          <div className="flex justify-center items-center h-full text-muted-foreground text-sm sm:text-base">
+          <div
+            className={cn(
+              poppins_400,
+              "flex h-full items-center justify-center text-sm text-ink-muted sm:text-base"
+            )}
+          >
             No messages yet. Start the conversation!
           </div>
         ) : (
@@ -256,15 +292,17 @@ export default function Page({ params }) {
                   } max-w-[85%] sm:max-w-[70%]`}
                 >
                   <div
-                    className={`rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm ${
+                    className={cn(
+                      poppins_400,
+                      "rounded-2xl px-3 py-2 text-sm shadow-sm sm:px-4 sm:py-2.5",
                       isOwnMessage
-                        ? "bg-accent text-white rounded-tr-none"
-                        : "bg-muted rounded-tl-none"
-                    } shadow-sm`}
+                        ? "rounded-tr-none bg-accent text-white"
+                        : "rounded-tl-none border border-accent/10 bg-surface-raised text-ink"
+                    )}
                   >
                     {msg.text || msg.content}
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className={cn(poppins_400, "text-xs text-ink-muted")}>
                     {showTime &&
                       (() => {
                         try {
@@ -287,7 +325,7 @@ export default function Page({ params }) {
       </div>
 
       <form
-        className="border-b-4 rounded-b-2xl p-2 sm:p-4 bg-accent/10 "
+        className="rounded-b-2xl border-t border-accent/20 bg-surface-raised p-2 sm:p-4"
         onSubmit={handleSendMessage}
       >
         <div className="flex relative max-w-4xl mx-auto gap-4">
@@ -300,7 +338,10 @@ export default function Page({ params }) {
               // Optionally, debounce and set to false after user stops typing
             }}
             onBlur={() => setTyping(room, user._id, false)}
-            className="min-h-[40px] sm:min-h-[44px] resize-none pr-10 sm:pr-12 rounded-full border-none shadow-none focus:outline-none bg-muted/50 text-sm sm:text-base"
+            className={cn(
+              poppins_400,
+              "min-h-[40px] resize-none rounded-full border border-accent/15 bg-surface pr-10 text-sm shadow-none focus:outline-none sm:min-h-[44px] sm:pr-12 sm:text-base"
+            )}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();

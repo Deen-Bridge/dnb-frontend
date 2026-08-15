@@ -10,6 +10,8 @@ import NotFoundComp from "@/components/molecules/errors/NotFound";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import Loader from "@/components/molecules/loaders/rootLoader";
 import { ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { poppins_500 } from "@/lib/config/font.config";
 const page = ({ params }) => {
   const { profileid } = use(params);
   const [selectedTab, setSelectedTab] = useState("courses");
@@ -54,21 +56,28 @@ const page = ({ params }) => {
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-muted p-2 sm:p-4">
-        <ProfileHeader avatar={user?.avatar} />
-        <ProfileUserInfo user={user} />
-        <Link
-          href={`/educators/${profileid}`}
-          className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline mb-4 mx-2 sm:mx-4"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-          View public page
-        </Link>
+    <div className="min-h-full bg-surface p-3 sm:p-6">
+      <div className="mx-auto max-w-5xl space-y-4">
+        <div className="overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
+          <ProfileHeader avatar={user?.avatar} />
+          <ProfileUserInfo user={user} />
+          <div className="px-4 pb-5 sm:px-6">
+            <Link
+              href={`/educators/${profileid}`}
+              className={cn(
+                poppins_500,
+                "inline-flex items-center gap-1.5 text-sm text-secondary transition-colors hover:text-highlight hover:underline"
+              )}
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              View public page
+            </Link>
+          </div>
+        </div>
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
         <ProfileContent selectedTab={selectedTab} profileId={user?._id} />
       </div>
-    </>
+    </div>
   );
 };
 export default page;

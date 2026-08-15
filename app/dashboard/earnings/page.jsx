@@ -1,8 +1,12 @@
 "use client";
 import { useState } from "react";
-import { DollarSign, ShoppingCart, TrendingUp, TrendingDown, Wallet } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+  DollarSign,
+  ShoppingCart,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Button from "@/components/atoms/form/Button";
 import {
@@ -14,60 +18,134 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import WalletConnectButton from "@/components/stellar/WalletConnectButton";
 import useEarnings from "@/hooks/useEarnings";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
-const statusColors = {
-  confirmed: "bg-success/10 text-success",
-  pending: "bg-warning/10 text-warning",
-  submitted: "bg-info/10 text-info",
-  failed: "bg-error/10 text-error",
-  expired: "bg-muted text-muted-foreground",
+const statusStyles = {
+  confirmed: "bg-secondary/10 text-secondary border-secondary/20",
+  pending: "bg-amber-100 text-amber-700 border-amber-200",
+  submitted: "bg-sky-100 text-sky-700 border-sky-200",
+  failed: "bg-red-100 text-red-600 border-red-200",
+  expired: "bg-ink/5 text-ink-muted border-accent/10",
 };
+
+/* ── building blocks (design-system consistent) ── */
+
+const Panel = ({ className, children }) => (
+  <div
+    className={cn(
+      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+const PageHeader = () => (
+  <div className="flex items-center gap-3">
+    <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+      <DollarSign className="h-5 w-5 text-accent" />
+    </div>
+    <div>
+      <h1
+        className={cn(
+          poppins_600,
+          "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
+        )}
+      >
+        Earnings Dashboard
+      </h1>
+      <p className={cn(poppins_400, "text-sm text-ink-muted")}>
+        Track your sales, revenue, and payout analytics
+      </p>
+    </div>
+  </div>
+);
+
+const SectionHeading = ({ title, subtitle, right }) => (
+  <div className="mb-5 flex items-start justify-between gap-3">
+    <div>
+      <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
+      {subtitle && (
+        <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+          {subtitle}
+        </p>
+      )}
+    </div>
+    {right}
+  </div>
+);
+
+const StatusBadge = ({ status, small }) => (
+  <span
+    className={cn(
+      poppins_500,
+      "inline-flex items-center rounded-full border capitalize",
+      small ? "px-2 py-0.5 text-[11px]" : "px-3 py-1 text-xs",
+      statusStyles[status] || statusStyles.expired
+    )}
+  >
+    {status}
+  </span>
+);
 
 function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="text-3xl font-bold">{value}</p>
-            {subtext && (
-              <p className="text-xs text-muted-foreground">{subtext}</p>
+    <Panel className="p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-secondary/30">
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <p
+            className={cn(
+              poppins_500,
+              "text-xs uppercase tracking-wider text-ink-muted"
             )}
-          </div>
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Icon className="h-5 w-5 text-primary" />
-          </div>
+          >
+            {label}
+          </p>
+          <p className={cn(poppins_600, "text-3xl text-ink")}>{value}</p>
+          {subtext && (
+            <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+              {subtext}
+            </p>
+          )}
         </div>
-        {trend !== undefined && (
-          <div className="mt-4 flex items-center gap-1 text-sm">
-            {trend >= 0 ? (
-              <TrendingUp className="h-4 w-4 text-success" />
-            ) : (
-              <TrendingDown className="h-4 w-4 text-error" />
-            )}
-            <span className={trend >= 0 ? "text-success" : "text-error"}>
-              {Math.abs(trend)}%
-            </span>
-            <span className="text-muted-foreground ml-1">{trendLabel}</span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        <div className="flex size-10 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+          <Icon className="h-5 w-5 text-accent" />
+        </div>
+      </div>
+      {trend !== undefined && (
+        <div className={cn(poppins_500, "mt-4 flex items-center gap-1 text-sm")}>
+          {trend >= 0 ? (
+            <TrendingUp className="h-4 w-4 text-secondary" />
+          ) : (
+            <TrendingDown className="h-4 w-4 text-red-600" />
+          )}
+          <span className={trend >= 0 ? "text-secondary" : "text-red-600"}>
+            {Math.abs(trend)}%
+          </span>
+          <span className={cn(poppins_400, "ml-1 text-ink-muted")}>
+            {trendLabel}
+          </span>
+        </div>
+      )}
+    </Panel>
   );
 }
 
 function SummarySkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {[...Array(4)].map((_, i) => (
-        <Card key={i}>
-          <CardContent className="pt-6 space-y-3">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-8 w-32" />
-            <Skeleton className="h-3 w-20" />
-          </CardContent>
-        </Card>
+        <Panel key={i} className="space-y-3 p-5">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-3 w-20" />
+        </Panel>
       ))}
     </div>
   );
@@ -90,134 +168,103 @@ export default function EarningsPage() {
   } = useEarnings();
 
   const [chartRange, setChartRange] = useState("30d");
-
   const chartData = revenueChartData(chartRange);
 
   if (!hasWallet && !isLoading) {
     return (
-      <div className="p-4 sm:p-6 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-brand-text" />
-            Earnings Dashboard
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Track your sales, revenue, and payout analytics
-          </p>
-        </div>
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <Wallet className="h-12 w-12 text-muted-foreground" />
-            <div>
-              <h3 className="font-semibold text-lg">Connect Your Wallet</h3>
-              <p className="text-muted-foreground text-sm mt-1">
-                Connect your Stellar wallet to view your earnings and sales analytics
-              </p>
-            </div>
-            <WalletConnectButton />
-          </CardContent>
-        </Card>
+      <div className="space-y-6 bg-surface p-4 sm:p-6">
+        <PageHeader />
+        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+            <Wallet className="h-7 w-7 text-accent" />
+          </div>
+          <div>
+            <h3 className={cn(poppins_600, "text-lg text-ink")}>
+              Connect Your Wallet
+            </h3>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+              Connect your Stellar wallet to view your earnings and sales
+              analytics
+            </p>
+          </div>
+          <WalletConnectButton />
+        </Panel>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 sm:p-6 space-y-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <DollarSign className="h-6 w-6 text-brand-text" />
-          Earnings Dashboard
-        </h1>
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <div className="rounded-full bg-error/10 p-3">
-              <TrendingDown className="h-8 w-8 text-error" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg">Failed to Load Data</h3>
-              <p className="text-muted-foreground text-sm mt-1">{error}</p>
-            </div>
-            <Button round outlined onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="space-y-6 bg-surface p-4 sm:p-6">
+        <PageHeader />
+        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-red-50">
+            <TrendingDown className="h-7 w-7 text-red-600" />
+          </div>
+          <div>
+            <h3 className={cn(poppins_600, "text-lg text-ink")}>
+              Failed to Load Data
+            </h3>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+              {error}
+            </p>
+          </div>
+          <Button round outlined onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </Panel>
       </div>
     );
   }
 
   const chartConfig = {
-    revenue: {
-      label: "Revenue",
-      color: "hsl(var(--primary))",
-    },
+    revenue: { label: "Revenue", color: "#009900" },
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <DollarSign className="h-6 w-6 text-brand-text" />
-          Earnings Dashboard
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Track your sales, revenue, and payout analytics
-        </p>
-      </div>
+    <div className="space-y-6 bg-surface p-4 sm:p-6">
+      <PageHeader />
 
       {isLoading ? (
         <>
           <SummarySkeleton />
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-48" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-64 w-full" />
-            </CardContent>
-          </Card>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
+          <Panel className="p-6">
+            <Skeleton className="mb-4 h-6 w-48" />
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </Panel>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {[...Array(2)].map((_, i) => (
+              <Panel key={i} className="space-y-4 p-6">
                 <Skeleton className="h-6 w-32" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
+                {[...Array(4)].map((_, j) => (
+                  <Skeleton key={j} className="h-10 w-full rounded-lg" />
                 ))}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-6 w-36" />
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[...Array(4)].map((_, i) => (
-                  <Skeleton key={i} className="h-8 w-full" />
-                ))}
-              </CardContent>
-            </Card>
+              </Panel>
+            ))}
           </div>
         </>
       ) : totalEarned === 0 && salesCount === 0 ? (
         <>
           <SummarySkeleton />
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-              <DollarSign className="h-12 w-12 text-muted-foreground" />
-              <div>
-                <h3 className="font-semibold text-lg">No Sales Yet</h3>
-                <p className="text-muted-foreground text-sm mt-1">
-                  Your earnings will appear here once students purchase your courses or books
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+              <DollarSign className="h-7 w-7 text-accent" />
+            </div>
+            <div>
+              <h3 className={cn(poppins_600, "text-lg text-ink")}>
+                No Sales Yet
+              </h3>
+              <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+                Your earnings will appear here once students purchase your
+                courses or books
+              </p>
+            </div>
+          </Panel>
         </>
       ) : (
         <>
-          {/* Summary Tiles */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Summary tiles */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <SummaryTile
               icon={DollarSign}
               label="Total Earned (USDC)"
@@ -245,196 +292,222 @@ export default function EarningsPage() {
             />
           </div>
 
-          {/* Revenue Chart */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Revenue Over Time</CardTitle>
-                  <CardDescription>
-                    Confirmed sales revenue aggregated over time
-                  </CardDescription>
-                </div>
-                <div className="flex gap-1">
+          {/* Revenue chart */}
+          <Panel className="p-6">
+            <SectionHeading
+              title="Revenue Over Time"
+              subtitle="Confirmed sales revenue aggregated over time"
+              right={
+                <div className="flex gap-1.5">
                   {["7d", "30d", "all"].map((range) => (
-                    <Button
+                    <button
                       key={range}
-                      round
-                      outlined={chartRange !== range}
-                      className={chartRange === range ? "bg-accent text-white" : ""}
                       onClick={() => setChartRange(range)}
+                      className={cn(
+                        poppins_500,
+                        "rounded-lg px-3 py-1.5 text-sm transition-all",
+                        chartRange === range
+                          ? "bg-accent text-white shadow-sm"
+                          : "border border-accent/15 bg-surface text-ink-muted hover:border-secondary/40 hover:text-ink"
+                      )}
                     >
                       {range === "all" ? "All" : range}
-                    </Button>
+                    </button>
                   ))}
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {chartData.length === 0 ? (
-                <div className="flex items-center justify-center h-64 text-muted-foreground">
-                  No revenue data for this period
-                </div>
-              ) : (
-                <ChartContainer config={chartConfig} className="h-72">
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      tickFormatter={(val) => {
-                        const d = new Date(val + "T00:00:00");
-                        return d.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        });
-                      }}
-                    />
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      tickFormatter={(val) => `$${val}`}
-                    />
-                    <ChartTooltip
-                      cursor={{ fill: "hsl(var(--muted))" }}
-                      content={
-                        <ChartTooltipContent
-                          formatter={(value) => `$${value.toFixed(2)}`}
-                        />
-                      }
-                    />
-                    <Bar
-                      dataKey="revenue"
-                      fill="var(--color-revenue)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ChartContainer>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Bottom Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Top Items */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Top Items</CardTitle>
-                <CardDescription>
-                  Revenue and units sold per course or book
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {topItems.length === 0 ? (
-                  <p className="text-muted-foreground text-sm py-8 text-center">
-                    No items sold yet
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {topItems.slice(0, 10).map((item, index) => {
-                      const link = findItemLink(item.itemTitle, item.itemType);
-                      const maxRevenue = topItems[0]?.revenue || 1;
-                      const barWidth = (item.revenue / maxRevenue) * 100;
-                      return (
-                        <div key={`${item.itemType}:${item.itemTitle}`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <span className="text-sm text-muted-foreground font-medium">
-                                #{index + 1}
-                              </span>
-                              <div className="min-w-0 flex-1">
-                                {link ? (
-                                  <Link
-                                    href={link}
-                                    className="text-sm font-medium truncate block hover:underline"
-                                  >
-                                    {item.itemTitle}
-                                  </Link>
-                                ) : (
-                                  <p className="text-sm font-medium truncate">
-                                    {item.itemTitle}
-                                  </p>
-                                )}
-                                <span className="text-xs text-muted-foreground capitalize">
-                                  {item.itemType}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="text-right flex-shrink-0 ml-4">
-                              <p className="text-sm font-semibold">
-                                ${item.revenue.toFixed(2)}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {item.units} sold
-                              </p>
-                            </div>
-                          </div>
-                          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-primary rounded-full transition-all"
-                              style={{ width: `${barWidth}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              }
+            />
+            {chartData.length === 0 ? (
+              <div
+                className={cn(
+                  poppins_400,
+                  "flex h-64 items-center justify-center text-ink-muted"
                 )}
-              </CardContent>
-            </Card>
+              >
+                No revenue data for this period
+              </div>
+            ) : (
+              <ChartContainer config={chartConfig} className="h-72 w-full">
+                <BarChart data={chartData}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#265902"
+                    strokeOpacity={0.12}
+                  />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(val) => {
+                      const d = new Date(val + "T00:00:00");
+                      return d.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      });
+                    }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(val) => `$${val}`}
+                  />
+                  <ChartTooltip
+                    cursor={{ fill: "rgba(0,153,0,0.06)" }}
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value) => `$${value.toFixed(2)}`}
+                      />
+                    }
+                  />
+                  <Bar
+                    dataKey="revenue"
+                    fill="var(--color-revenue)"
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            )}
+          </Panel>
 
-            {/* Status Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Transaction Status</CardTitle>
-                <CardDescription>
-                  Overview of all your creator transactions by status
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {Object.entries(statusBreakdown)
-                    .filter(([_, count]) => count > 0)
-                    .sort(([, a], [, b]) => b - a)
-                    .map(([status, count]) => (
-                      <div
-                        key={status}
-                        className="flex items-center justify-between p-3 rounded-lg border"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Badge
-                            variant="secondary"
-                            className={statusColors[status]}
-                          >
-                            {status}
-                          </Badge>
-                        </div>
-                        <span className="font-semibold">{count}</span>
-                      </div>
-                    ))}
-                  {Object.values(statusBreakdown).every((c) => c === 0) && (
-                    <p className="text-muted-foreground text-sm py-8 text-center">
-                      No transactions yet
-                    </p>
+          {/* Bottom grid */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Top items */}
+            <Panel className="p-6">
+              <SectionHeading
+                title="Top Items"
+                subtitle="Revenue and units sold per course or book"
+              />
+              {topItems.length === 0 ? (
+                <p
+                  className={cn(
+                    poppins_400,
+                    "py-8 text-center text-sm text-ink-muted"
                   )}
+                >
+                  No items sold yet
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {topItems.slice(0, 10).map((item, index) => {
+                    const link = findItemLink(item.itemTitle, item.itemType);
+                    const maxRevenue = topItems[0]?.revenue || 1;
+                    const barWidth = (item.revenue / maxRevenue) * 100;
+                    return (
+                      <div key={`${item.itemType}:${item.itemTitle}`}>
+                        <div className="mb-1.5 flex items-center justify-between">
+                          <div className="flex min-w-0 flex-1 items-center gap-2">
+                            <span
+                              className={cn(
+                                poppins_600,
+                                "text-sm text-ink-muted"
+                              )}
+                            >
+                              #{index + 1}
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              {link ? (
+                                <Link
+                                  href={link}
+                                  className={cn(
+                                    poppins_500,
+                                    "block truncate text-sm text-ink hover:text-secondary hover:underline"
+                                  )}
+                                >
+                                  {item.itemTitle}
+                                </Link>
+                              ) : (
+                                <p
+                                  className={cn(
+                                    poppins_500,
+                                    "truncate text-sm text-ink"
+                                  )}
+                                >
+                                  {item.itemTitle}
+                                </p>
+                              )}
+                              <span
+                                className={cn(
+                                  poppins_400,
+                                  "text-xs capitalize text-ink-muted"
+                                )}
+                              >
+                                {item.itemType}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4 flex-shrink-0 text-right">
+                            <p className={cn(poppins_600, "text-sm text-ink")}>
+                              ${item.revenue.toFixed(2)}
+                            </p>
+                            <p
+                              className={cn(
+                                poppins_400,
+                                "text-xs text-ink-muted"
+                              )}
+                            >
+                              {item.units} sold
+                            </p>
+                          </div>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-accent/10">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-secondary to-highlight transition-all"
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="mt-4 p-3 bg-muted rounded-lg">
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Note:</strong> Only{" "}
-                    <Badge
-                      variant="secondary"
-                      className={`${statusColors.confirmed} text-xs`}
+              )}
+            </Panel>
+
+            {/* Status breakdown */}
+            <Panel className="p-6">
+              <SectionHeading
+                title="Transaction Status"
+                subtitle="Overview of all your creator transactions by status"
+              />
+              <div className="space-y-2.5">
+                {Object.entries(statusBreakdown)
+                  .filter(([, count]) => count > 0)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([status, count]) => (
+                    <div
+                      key={status}
+                      className="flex items-center justify-between rounded-xl border border-accent/10 bg-surface p-3"
                     >
-                      confirmed
-                    </Badge>{" "}
-                    transactions count toward your earnings totals.
+                      <StatusBadge status={status} />
+                      <span className={cn(poppins_600, "text-ink")}>{count}</span>
+                    </div>
+                  ))}
+                {Object.values(statusBreakdown).every((c) => c === 0) && (
+                  <p
+                    className={cn(
+                      poppins_400,
+                      "py-8 text-center text-sm text-ink-muted"
+                    )}
+                  >
+                    No transactions yet
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                )}
+              </div>
+              <div className="mt-4 rounded-xl border border-accent/10 bg-surface p-3">
+                <p
+                  className={cn(
+                    poppins_400,
+                    "flex flex-wrap items-center gap-1 text-xs text-ink-muted"
+                  )}
+                >
+                  <strong className={cn(poppins_500, "text-ink")}>Note:</strong>{" "}
+                  Only <StatusBadge status="confirmed" small /> transactions
+                  count toward your earnings totals.
+                </p>
+              </div>
+            </Panel>
           </div>
         </>
       )}

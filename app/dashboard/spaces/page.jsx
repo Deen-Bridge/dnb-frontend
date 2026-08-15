@@ -4,12 +4,17 @@ import { Globe, Plus } from "lucide-react";
 import SpaceCard from "@/components/molecules/dashboard/cards/spaceCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import Button from "@/components/atoms/form/Button";
-import { Card, CardContent } from "@/components/ui/card";
 import SpaceCreateForm from "@/components/organisms/create/space-create-form";
 import Modal from "@/components/molecules/Modal";
 import { getSpaces } from "@/lib/actions/spaces/get-spaces";
 import useAuth from "@/hooks/useAuth";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const tabnames = [
   { value: "all", label: "All" },
@@ -63,19 +68,28 @@ const Page = () => {
   );
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="space-y-6 bg-surface p-4 sm:p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Globe className="h-6 w-6 text-brand-text" />
-            Islamic Spaces
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Join live sessions, discussions, and community events
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+            <Globe className="h-5 w-5 text-accent" />
+          </div>
+          <div>
+            <h1
+              className={cn(
+                poppins_600,
+                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
+              )}
+            >
+              Islamic Spaces
+            </h1>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+              Join live sessions, discussions, and community events
+            </p>
+          </div>
         </div>
         <Button round outlined onClick={() => setmodalOpen(true)}>
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="mr-1 h-4 w-4" />
           Create
         </Button>
       </div>
@@ -96,18 +110,22 @@ const Page = () => {
       </div>
 
       {loading ? (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, idx) => (
             <CourseCardSkeleton key={idx} />
           ))}
         </div>
       ) : filteredSpaces.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <Globe className="h-12 w-12 text-muted-foreground" />
+        <div className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
+          <div className="flex flex-col items-center justify-center space-y-4 py-16 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+              <Globe className="h-7 w-7 text-accent" />
+            </div>
             <div>
-              <h3 className="font-semibold text-lg">No Spaces Found</h3>
-              <p className="text-muted-foreground text-sm mt-1 max-w-md">
+              <h3 className={cn(poppins_600, "text-lg text-ink")}>
+                No Spaces Found
+              </h3>
+              <p className={cn(poppins_400, "mt-1 max-w-md text-sm text-ink-muted")}>
                 {selectedTab === "all"
                   ? "No spaces available at the moment."
                   : `No ${selectedTab} spaces at the moment.`}
@@ -116,10 +134,10 @@ const Page = () => {
             <Button round outlined onClick={() => setmodalOpen(true)}>
               Create Space
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredSpaces.map((space, index) => (
             <SpaceCard key={space._id || index} space={space} />
           ))}

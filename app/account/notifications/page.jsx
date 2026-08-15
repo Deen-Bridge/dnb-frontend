@@ -1,613 +1,299 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { MoreHorizontal } from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect, useCallback } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+  MoreHorizontal,
+  Bell,
+  ArrowRightToLine,
+  ArrowLeftToLine,
+  CheckCheck,
+  Loader2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { ArrowRightToLine } from "lucide-react"
-import { ArrowLeftToLine } from "lucide-react"
-export default function Component() {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
+import {
+  fetchNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
+} from "@/lib/actions/notifications";
+
+const Panel = ({ className, children }) => (
+  <div
+    className={cn(
+      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+const PAGE_SIZE = 10;
+
+const notifTitle = (n) => n.title || n.message || n.body || "Notification";
+const notifBody = (n) =>
+  n.title ? n.message || n.body || "" : n.title ? "" : n.body || "";
+const isUnread = (n) => !(n.read ?? n.isRead ?? false);
+const notifTime = (n) => {
+  const d = n.createdAt || n.created_at;
+  if (!d) return "";
+  try {
+    return formatDistanceToNow(new Date(d), { addSuffix: true });
+  } catch {
+    return "";
+  }
+};
+
+export default function NotificationsPage() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [unread, setUnread] = useState(0);
+
+  const load = useCallback(async (targetPage) => {
+    setLoading(true);
+    const res = await fetchNotifications(targetPage, PAGE_SIZE);
+    if (res.success) {
+      setItems(res.notifications);
+      setTotalPages(res.totalPages || 1);
+      setTotal(res.total || res.notifications.length);
+      setUnread(res.unread || 0);
+      setPage(res.page || targetPage);
+    } else {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    load(1);
+  }, [load]);
+
+  const handleMarkRead = async (id) => {
+    setItems((prev) =>
+      prev.map((n) => ((n._id || n.id) === id ? { ...n, read: true } : n))
+    );
+    setUnread((u) => Math.max(0, u - 1));
+    const res = await markNotificationAsRead(id);
+    if (!res.success) toast.error("Couldn't mark as read");
+  };
+
+  const handleMarkAll = async () => {
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+    setUnread(0);
+    const res = await markAllNotificationsAsRead();
+    if (res.success) toast.success("All marked as read");
+    else toast.error("Couldn't mark all as read");
+  };
+
+  const handleDelete = async (id) => {
+    const prev = items;
+    setItems((p) => p.filter((n) => (n._id || n.id) !== id));
+    const res = await deleteNotification(id);
+    if (!res.success) {
+      setItems(prev);
+      toast.error("Couldn't delete notification");
+    }
+  };
+
+  const rangeStart = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(page * PAGE_SIZE, total);
+
   return (
-    <div className="m-5 p-5">
-
-
-      <Card className="p-5">
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>
-            View notifications to stay updated
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">
-                  <span className="sr-only">Image</span>
-                </TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden md:table-cell">Price</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Total Sales
-                </TableHead>
-                <TableHead className="hidden md:table-cell">Created at</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">
-                  Laser Lemonade Machine
-                </TableCell>
-                <TableCell className="hidden md:table-cell">$499.99</TableCell>
-                <TableCell className="hidden md:table-cell">25</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2023-07-12 10:42 AM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">
-                  Hypernova Headphones
-                </TableCell>
-
-                <TableCell className="hidden md:table-cell">$129.99</TableCell>
-                <TableCell className="hidden md:table-cell">100</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2023-10-18 03:21 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">AeroGlow Desk Lamp</TableCell>
-
-                <TableCell className="hidden md:table-cell">$39.99</TableCell>
-                <TableCell className="hidden md:table-cell">50</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2023-11-29 08:15 AM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">
-                  TechTonic Energy Drink
-                </TableCell>
-                <TableCell className="hidden md:table-cell">$2.99</TableCell>
-                <TableCell className="hidden md:table-cell">0</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2023-12-25 11:59 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">
-                  Gamer Gear Pro Controller
-                </TableCell>
-
-                <TableCell className="hidden md:table-cell">$59.99</TableCell>
-                <TableCell className="hidden md:table-cell">75</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-01-01 12:00 AM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="64"
-                    src="/images/mosque.png"
-                    width="64"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">Luminous VR Headset</TableCell>
-
-                <TableCell className="hidden md:table-cell">$199.99</TableCell>
-                <TableCell className="hidden md:table-cell">30</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  2024-02-14 02:14 PM
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-        <CardFooter className="flex justify-between items-center">
-            <div className="text-xs text-muted-foreground">
-              Showing <strong>1-10</strong> of <strong>32</strong>
+    <div className="min-h-full bg-surface p-3 sm:p-6">
+      <div className="mx-auto max-w-5xl space-y-6">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+              <Bell className="h-5 w-5 text-accent" />
             </div>
-          <div className="flex text-xs text-muted-foreground gap-4">
-              <ArrowLeftToLine className="hover:text-brand-text"  size={17}/>
-              <ArrowRightToLine className="hover:text-brand-text"  size={17}/>
+            <div>
+              <h1
+                className={cn(
+                  poppins_600,
+                  "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
+                )}
+              >
+                Notifications
+              </h1>
+              <p className={cn(poppins_400, "text-sm text-ink-muted")}>
+                {unread > 0
+                  ? `${unread} unread`
+                  : "You're all caught up"}
+              </p>
             </div>
-        </CardFooter>
-      </Card>
+          </div>
+          {unread > 0 && (
+            <button
+              onClick={handleMarkAll}
+              className={cn(
+                poppins_500,
+                "inline-flex items-center gap-1.5 rounded-full border border-accent/15 bg-surface px-4 py-2 text-sm text-ink transition-colors hover:border-secondary/40 hover:text-accent"
+              )}
+            >
+              <CheckCheck className="h-4 w-4 text-accent" />
+              Mark all read
+            </button>
+          )}
+        </div>
+
+        {/* List */}
+        <Panel className="overflow-hidden">
+          <div className="border-b border-accent/10 p-5 sm:p-6">
+            <h2 className={cn(poppins_600, "text-lg text-ink")}>
+              Recent activity
+            </h2>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+              Your latest updates from across DeenBridge
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-6 w-6 animate-spin text-accent" />
+            </div>
+          ) : items.length === 0 ? (
+            <div className="px-6 py-16 text-center">
+              <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+                <Bell className="h-6 w-6 text-accent" />
+              </div>
+              <p className={cn(poppins_500, "text-ink")}>No notifications yet</p>
+              <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+                Updates about courses, messages, and spaces will show up here.
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-accent/10">
+              {items.map((n) => {
+                const id = n._id || n.id;
+                const unreadRow = isUnread(n);
+                return (
+                  <li
+                    key={id}
+                    className={cn(
+                      "flex items-start gap-3 p-4 transition-colors hover:bg-secondary/5 sm:px-6",
+                      unreadRow && "bg-secondary/[0.04]"
+                    )}
+                  >
+                    <div className="relative mt-0.5">
+                      <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+                        <Bell className="h-4 w-4 text-accent" />
+                      </div>
+                      {unreadRow && (
+                        <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-surface-raised bg-secondary" />
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className={cn(
+                          unreadRow ? poppins_600 : poppins_500,
+                          "text-sm text-ink"
+                        )}
+                      >
+                        {notifTitle(n)}
+                      </p>
+                      {notifBody(n) && (
+                        <p
+                          className={cn(
+                            poppins_400,
+                            "mt-0.5 line-clamp-2 text-sm text-ink-muted"
+                          )}
+                        >
+                          {notifBody(n)}
+                        </p>
+                      )}
+                      <p
+                        className={cn(
+                          poppins_400,
+                          "mt-1 text-xs text-ink-muted/80"
+                        )}
+                      >
+                        {notifTime(n)}
+                      </p>
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          aria-haspopup="true"
+                          className="rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-accent/10 hover:text-ink"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Actions</span>
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        {unreadRow && (
+                          <DropdownMenuItem onClick={() => handleMarkRead(id)}>
+                            Mark as read
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDelete(id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          {!loading && items.length > 0 && (
+            <div className="flex items-center justify-between gap-3 border-t border-accent/10 p-4 sm:px-6">
+              <div className={cn(poppins_400, "text-xs text-ink-muted")}>
+                Showing{" "}
+                <strong className={cn(poppins_600, "text-ink")}>
+                  {rangeStart}-{rangeEnd}
+                </strong>{" "}
+                of <strong className={cn(poppins_600, "text-ink")}>{total}</strong>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Previous page"
+                  disabled={page <= 1}
+                  onClick={() => load(page - 1)}
+                  className="flex size-8 items-center justify-center rounded-lg border border-accent/15 bg-surface text-ink-muted transition-colors hover:border-secondary/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowLeftToLine size={16} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next page"
+                  disabled={page >= totalPages}
+                  onClick={() => load(page + 1)}
+                  className="flex size-8 items-center justify-center rounded-lg border border-accent/15 bg-surface text-ink-muted transition-colors hover:border-secondary/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowRightToLine size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+        </Panel>
+      </div>
     </div>
-  )
+  );
 }
