@@ -3,12 +3,18 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { config } from "@/lib/config/env";
 import { persistSession } from "@/hooks/useAuth";
+import { resolvePostVerificationRoute } from "@/lib/onboarding/educator-routing";
+import {
+  getEducatorIntent,
+  clearEducatorIntent,
+} from "@/lib/onboarding/educator-intent";
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  const [nextRoute, setNextRoute] = useState("/dashboard");
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -25,6 +31,14 @@ export default function VerifyEmailPage() {
           setMessage(data.message || "Email verified successfully!");
           if (data.accessToken && data.user) {
             persistSession(data.accessToken, data.user);
+
+            // Fork educators to the Verify-now / Skip branch selector; every
+            // other role goes straight to the dashboard. The localStorage
+            // intent flag is a fallback when the backend role isn't set yet.
+            setNextRoute(
+              resolvePostVerificationRoute(data.user, getEducatorIntent())
+            );
+            clearEducatorIntent();
           }
           setStatus("success");
         } else {
@@ -58,10 +72,11 @@ export default function VerifyEmailPage() {
             <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
             <p className="text-muted-foreground">{message}</p>
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(nextRoute)}
+              data-testid="post-verification-continue"
               className="inline-block px-6 py-3 bg-accent text-white rounded-lg hover:bg-highlight transition-colors"
             >
-              Go to Dashboard
+              Continue
             </button>
           </div>
         )}
