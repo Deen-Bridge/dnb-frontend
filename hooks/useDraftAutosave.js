@@ -1,15 +1,28 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import useAuth from "@/hooks/useAuth";
+import {
+  buildDraftStorageKey,
+  readDraft,
+  hasDraft,
+  writeDraft,
+  clearDraft,
+} from "@/lib/utils/draft-serialization";
 
-const DRAFT_KEY_PREFIX = "dnb_course_draft_";
-
-export function useDraftAutosave(watch, courseId = null) {
+/**
+ * Debounced draft autosave to per-user localStorage.
+ *
+ * @param {function} watch - react-hook-form `watch` (subscribes to form values)
+ * @param {string|null} [id] - optional draft discriminator (course id, wizard id)
+ * @param {string} [prefix] - key namespace; defaults to the course-draft prefix
+ */
+export function useDraftAutosave(watch, id = null, prefix = "dnb_course_draft_") {
   const { user } = useAuth();
-  const storageKey = `${DRAFT_KEY_PREFIX}${user?._id || "anon"}${
-    courseId ? `_${courseId}` : ""
-  }`;
+  const storageKey = useMemo(
+    () => buildDraftStorageKey(user?._id || "anon", id, prefix),
+    [user?._id, id, prefix]
+  );
 
-  // Debounced save form draft to localStorage on form state changes
+  // Debounced save on form state changes
   useEffect(() => {
     if (!watch) return;
 
@@ -19,20 +32,7 @@ export function useDraftAutosave(watch, courseId = null) {
       if (timer) clearTimeout(timer);
 
       timer = setTimeout(() => {
-        try {
-          // Persist File values as null so non-serializable objects aren't restored as mock media
-          const serializable = JSON.parse(
-            JSON.stringify(formValues, (key, value) => {
-              if (typeof window !== "undefined" && value instanceof File) {
-                return null;
-              }
-              return value;
-            })
-          );
-          localStorage.setItem(storageKey, JSON.stringify(serializable));
-        } catch (e) {
-          // Ignore quota exceeded or storage disabled
-        }
+        writeDraft(storageKey, formValues);
       }, 500); // 500ms debounce
     });
 
@@ -42,38 +42,14 @@ export function useDraftAutosave(watch, courseId = null) {
     };
   }, [watch, storageKey]);
 
-  const hasDraft = useCallback(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return !!localStorage.getItem(storageKey);
-    } catch (e) {
-      return false;
-    }
-  }, [storageKey]);
-
-  const loadDraft = useCallback(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
-  }, [storageKey]);
-
-  const clearDraft = useCallback(() => {
-    if (typeof window === "undefined") return;
-    try {
-      localStorage.removeItem(storageKey);
-    } catch (e) {
-      // Ignore errors
-    }
-  }, [storageKey]);
+  const loadDraft = useCallback(() => readDraft(storageKey), [storageKey]);
+  const clearStoredDraft = useCallback(() => clearDraft(storageKey), [storageKey]);
+  const checkHasDraft = useCallback(() => hasDraft(storageKey), [storageKey]);
 
   return {
-    hasDraft,
+    hasDraft: checkHasDraft,
     loadDraft,
-    clearDraft,
+    clearDraft: clearStoredDraft,
   };
 }
 

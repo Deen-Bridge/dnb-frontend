@@ -9,10 +9,12 @@ import LearningProgress from "@/components/organisms/dashboard/LearningProgress"
 import OngoingSessions from "@/components/organisms/dashboard/OngoingSessions";
 import RecommendedBooks from "@/components/organisms/dashboard/RecommendedBooks";
 import SupportPalestine from "@/components/organisms/dashboard/Supports";
+import VerificationBanner from "@/components/organisms/dashboard/VerificationBanner";
 
 export default function Dashboard() {
   return (
     <div className="p-4 sm:p-6 space-y-6">
+      <VerificationBanner />
       <GreetingCard />
       <PrayerTimesWidget />
       <StatsOverview />

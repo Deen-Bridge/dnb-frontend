@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { signup } from "@/hooks/useAuth";
+import { setEducatorIntent } from "@/lib/onboarding/educator-intent";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,6 +68,14 @@ export function SignupForm({ className, ...props }) {
 
     try {
       await signup(data.name, data.email, data.password, data.role);
+
+      // Carry the educator intent across the email-verification round trip so
+      // the verify-email page can fork educators to the Verify-now / Skip
+      // branch selector (the backend user.role remains the source of truth).
+      if (data.role === "educator") {
+        setEducatorIntent();
+      }
+
       setRegisteredEmail(data.email);
       setRegistered(true);
     } catch (err) {
@@ -157,6 +166,7 @@ export function SignupForm({ className, ...props }) {
                     <SelectContent>
                       <SelectItem value="student">Student</SelectItem>
                       <SelectItem value="mentor">Mentor</SelectItem>
+                      <SelectItem value="educator">Educator</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
