@@ -4,16 +4,22 @@ import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    // Bypass the project's postcss.config.mjs (Tailwind 4 string-plugin format
+    // is not compatible with Vite's internal PostCSS loader used by Vitest).
+    // Tests don't need CSS processing.
+    postcss: {
+      plugins: [],
+    },
+  },
   test: {
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.js"],
-    // Only scan test files — keeps coverage fast
     include: ["**/__tests__/**/*.{test,spec}.{js,jsx}"],
   },
   resolve: {
     alias: {
-      // Mirror the Next.js @/ path alias
       "@": resolve(__dirname, "."),
     },
   },
