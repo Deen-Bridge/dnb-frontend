@@ -21,13 +21,6 @@
 |:---:|:---:|
 | ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
 
-| Dashboard | Courses |
-|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Courses](docs/screenshots/courses.png) |
-
-| Library | Wallet & Payments |
-|:---:|:---:|
-| ![Library](docs/screenshots/library.png) | ![Wallet](docs/screenshots/wallet.png) |
 
 ---
 
