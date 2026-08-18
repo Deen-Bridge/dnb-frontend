@@ -9,7 +9,11 @@ import React, {
 import { useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, Bookmark, Plus } from "lucide-react";
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
-import Button from "@/components/atoms/form/Button";
+import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
+import { CardGrid } from "@/components/ui/card-grid";
+import { EmptyState } from "@/components/ui/empty-state";
 import Modal from "@/components/molecules/Modal";
 import BookCreateForm from "@/components/organisms/create/book-create-form";
 import { fetchBooks } from "@/lib/actions/library/fetch-books";
@@ -29,11 +33,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
 
 const PAGE_SIZE = 9;
 
@@ -54,25 +53,12 @@ const createdAtOf = (book) => {
 
 const priceOf = (book) => Number(book?.price) || 0;
 
-/* ── building blocks (design-system consistent) ── */
-
-const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
-    {children}
-  </div>
-);
-
 const BookGridSkeleton = () => (
-  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+  <CardGrid>
     {[...Array(6)].map((_, idx) => (
       <LibraryBookSkeleton key={`skeleton-${idx}`} />
     ))}
-  </div>
+  </CardGrid>
 );
 
 const LibraryPageContent = () => {
@@ -257,44 +243,36 @@ const LibraryPageContent = () => {
   }
 
   return (
-    <div className="space-y-6 bg-surface p-4 sm:p-6">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-            <BookOpen className="h-5 w-5 text-accent" />
-          </div>
-          <div>
-            <h1
-              className={cn(
-                poppins_600,
-                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
-              )}
+    <PageShell>
+      <PageHeader
+        icon={BookOpen}
+        title={showBookmarks ? "My Bookmarked Books" : "All Books"}
+        subtitle={
+          showBookmarks
+            ? "Books you've saved for later"
+            : "Browse and read Islamic books"
+        }
+        actions={
+          <>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => setModalOpen(true)}
             >
-              {showBookmarks ? "My Bookmarked Books" : "All Books"}
-            </h1>
-            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-              {showBookmarks
-                ? "Books you've saved for later"
-                : "Browse and read Islamic books"}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button round outlined onClick={() => setModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-1" />
-            Create
-          </Button>
-          <Button
-            round
-            outlined={!showBookmarks}
-            className={showBookmarks ? "bg-accent text-white" : ""}
-            onClick={() => setShowBookmarks((prev) => !prev)}
-          >
-            <Bookmark className="h-4 w-4 mr-1" />
-            {showBookmarks ? "Show All" : "Bookmarks"}
-          </Button>
-        </div>
-      </div>
+              <Plus className="h-4 w-4 mr-1" />
+              Create
+            </Button>
+            <Button
+              variant={showBookmarks ? "default" : "outline"}
+              className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
+              onClick={() => setShowBookmarks((prev) => !prev)}
+            >
+              <Bookmark className="h-4 w-4 mr-1" />
+              {showBookmarks ? "Show All" : "Bookmarks"}
+            </Button>
+          </>
+        }
+      />
 
       {!loading && (
         <LibraryToolbar
@@ -316,46 +294,47 @@ const LibraryPageContent = () => {
       {loading ? (
         <BookGridSkeleton />
       ) : filteredBooks.length === 0 ? (
-        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
-            <BookOpen className="h-7 w-7 text-accent" />
-          </div>
-          <div>
-            <h3 className={cn(poppins_600, "text-lg text-ink")}>
-              {isFiltered
-                ? "No Matching Books"
-                : showBookmarks
-                ? "No Bookmarked Books"
-                : "No Books Yet"}
-            </h3>
-            <p
-              className={cn(
-                poppins_400,
-                "mt-1 max-w-md text-sm text-ink-muted"
-              )}
-            >
-              {isFiltered
-                ? "No books match the current filters. Try widening your search."
-                : showBookmarks
-                ? "Save titles you want to revisit!"
-                : "No books available at the moment."}
-            </p>
-          </div>
-          {isFiltered ? (
-            <Button round outlined onClick={handleClearFilters}>
-              Clear filters
-            </Button>
-          ) : (
-            !showBookmarks && (
-              <Button round outlined onClick={() => setModalOpen(true)}>
-                Create Book
+        <EmptyState
+          icon={BookOpen}
+          title={
+            isFiltered
+              ? "No Matching Books"
+              : showBookmarks
+              ? "No Bookmarked Books"
+              : "No Books Yet"
+          }
+          description={
+            isFiltered
+              ? "No books match the current filters. Try widening your search."
+              : showBookmarks
+              ? "Save titles you want to revisit!"
+              : "No books available at the moment."
+          }
+          action={
+            isFiltered ? (
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={handleClearFilters}
+              >
+                Clear filters
               </Button>
+            ) : (
+              !showBookmarks && (
+                <Button
+                  variant="outline"
+                  className="rounded-full"
+                  onClick={() => setModalOpen(true)}
+                >
+                  Create Book
+                </Button>
+              )
             )
-          )}
-        </Panel>
+          }
+        />
       ) : (
         <>
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <CardGrid>
             {pagedBooks.map((book) => (
               <LibraryBookCard
                 key={book._id}
@@ -365,7 +344,7 @@ const LibraryPageContent = () => {
                 }
               />
             ))}
-          </div>
+          </CardGrid>
 
           {totalPages > 1 && (
             <Pagination>
@@ -417,7 +396,7 @@ const LibraryPageContent = () => {
       >
         <BookCreateForm onBookCreated={handleBookCreated} />
       </Modal>
-    </div>
+    </PageShell>
   );
 };
 
@@ -426,9 +405,9 @@ const LibraryPageContent = () => {
 const LibraryPage = () => (
   <Suspense
     fallback={
-      <div className="bg-surface p-4 sm:p-6">
+      <PageShell>
         <BookGridSkeleton />
-      </div>
+      </PageShell>
     }
   >
     <LibraryPageContent />
