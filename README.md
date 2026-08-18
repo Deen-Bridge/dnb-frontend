@@ -21,13 +21,6 @@
 |:---:|:---:|
 | ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
 
-| Dashboard | Courses |
-|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Courses](docs/screenshots/courses.png) |
-
-| Library | Wallet & Payments |
-|:---:|:---:|
-| ![Library](docs/screenshots/library.png) | ![Wallet](docs/screenshots/wallet.png) |
 
 ---
 
@@ -109,7 +102,7 @@ See `.env.example` for the full variable list with example values.
 
 ## 🌊 Contributing & Drips Wave
 
-This repository participates in the **[Stellar Drips Wave](https://www.drips.network/wave/stellar)** bounty program — contributors earn Points (and real rewards) for resolving this repo's issues during a Wave, with complexity tiers set in the Drips Wave app.
+This repository is hoping to  participates in the **[Stellar Drips Wave](https://www.drips.network/wave/stellar)** bounty program — contributors earn Points (and real rewards) for resolving this repo's issues during a Wave, with complexity tiers set in the Drips Wave app.
 
 - All pull requests target the **`dev`** branch (`main` is releases only)
 - CI (lint + build) must pass before review
