@@ -11,12 +11,16 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { getBookmarkedCourses } from "@/lib/actions/courses/bookmark-course";
 import useAuth from "@/hooks/useAuth";
+import { useCan } from "@/hooks/useCan";
+import { CAPABILITIES } from "@/lib/auth/roles";
 import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import { cn } from "@/lib/utils";
 
 export default function CoursesPage() {
   const { user } = useAuth();
+  const { can } = useCan();
+  const canCreateCourse = can(CAPABILITIES.COURSE_CREATE);
   const { progressMap } = useAllCourseProgress();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,14 +70,16 @@ export default function CoursesPage() {
         }
         actions={
           <>
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => (window.location.href = "/dashboard/courses/create")}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Create
-            </Button>
+            {canCreateCourse && (
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() => (window.location.href = "/dashboard/courses/create")}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Create
+              </Button>
+            )}
             <Button
               variant={showBookmarks ? "default" : "outline"}
               className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
@@ -102,7 +108,7 @@ export default function CoursesPage() {
               : "No courses available at the moment."
           }
           action={
-            !showBookmarks && (
+            !showBookmarks && canCreateCourse && (
               <Button
                 variant="outline"
                 className="rounded-full"
