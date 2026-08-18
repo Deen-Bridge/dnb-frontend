@@ -95,5 +95,8 @@
     "tw-animate-css": "^1.2.8",
     "typescript": "^5.7.3",
     "vitest": "^2.1.9"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true
   }
 }
