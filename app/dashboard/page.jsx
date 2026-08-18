@@ -1,4 +1,4 @@
-// app/dashboard/page.jsx
+import { PageShell } from "@/components/ui/page-shell";
 import GreetingCard from "@/components/organisms/dashboard/GreetingCard";
 import PrayerTimesWidget from "@/components/organisms/dashboard/PrayerTimesWidget";
 import StatsOverview from "@/components/organisms/dashboard/StatsOverview";
@@ -12,7 +12,7 @@ import SupportPalestine from "@/components/organisms/dashboard/Supports";
 
 export default function Dashboard() {
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <PageShell>
       <GreetingCard />
       <PrayerTimesWidget />
       <StatsOverview />
@@ -29,6 +29,6 @@ export default function Dashboard() {
           <SupportPalestine />
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
