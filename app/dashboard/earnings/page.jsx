@@ -8,7 +8,10 @@ import {
   Wallet,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import Button from "@/components/atoms/form/Button";
+import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   ChartContainer,
   ChartTooltip,
@@ -46,33 +49,12 @@ const Panel = ({ className, children }) => (
   </div>
 );
 
-const PageHeader = () => (
-  <div className="flex items-center gap-3">
-    <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-      <DollarSign className="h-5 w-5 text-accent" />
-    </div>
-    <div>
-      <h1
-        className={cn(
-          poppins_600,
-          "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
-        )}
-      >
-        Earnings Dashboard
-      </h1>
-      <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-        Track your sales, revenue, and payout analytics
-      </p>
-    </div>
-  </div>
-);
-
 const SectionHeading = ({ title, subtitle, right }) => (
   <div className="mb-5 flex items-start justify-between gap-3">
     <div>
-      <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
+      <h2 className={cn(poppins_600.className, "text-lg text-ink")}>{title}</h2>
       {subtitle && (
-        <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+        <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>
           {subtitle}
         </p>
       )}
@@ -84,7 +66,7 @@ const SectionHeading = ({ title, subtitle, right }) => (
 const StatusBadge = ({ status, small }) => (
   <span
     className={cn(
-      poppins_500,
+      poppins_500.className,
       "inline-flex items-center rounded-full border capitalize",
       small ? "px-2 py-0.5 text-[11px]" : "px-3 py-1 text-xs",
       statusStyles[status] || statusStyles.expired
@@ -101,15 +83,15 @@ function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
         <div className="space-y-1">
           <p
             className={cn(
-              poppins_500,
+              poppins_500.className,
               "text-xs uppercase tracking-wider text-ink-muted"
             )}
           >
             {label}
           </p>
-          <p className={cn(poppins_600, "text-3xl text-ink")}>{value}</p>
+          <p className={cn(poppins_600.className, "text-3xl text-ink")}>{value}</p>
           {subtext && (
-            <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+            <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
               {subtext}
             </p>
           )}
@@ -119,7 +101,7 @@ function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
         </div>
       </div>
       {trend !== undefined && (
-        <div className={cn(poppins_500, "mt-4 flex items-center gap-1 text-sm")}>
+        <div className={cn(poppins_500.className, "mt-4 flex items-center gap-1 text-sm")}>
           {trend >= 0 ? (
             <TrendingUp className="h-4 w-4 text-secondary" />
           ) : (
@@ -128,7 +110,7 @@ function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
           <span className={trend >= 0 ? "text-secondary" : "text-red-600"}>
             {Math.abs(trend)}%
           </span>
-          <span className={cn(poppins_400, "ml-1 text-ink-muted")}>
+          <span className={cn(poppins_400.className, "ml-1 text-ink-muted")}>
             {trendLabel}
           </span>
         </div>
@@ -172,48 +154,46 @@ export default function EarningsPage() {
 
   if (!hasWallet && !isLoading) {
     return (
-      <div className="space-y-6 bg-surface p-4 sm:p-6">
-        <PageHeader />
-        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
-            <Wallet className="h-7 w-7 text-accent" />
-          </div>
-          <div>
-            <h3 className={cn(poppins_600, "text-lg text-ink")}>
-              Connect Your Wallet
-            </h3>
-            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-              Connect your Stellar wallet to view your earnings and sales
-              analytics
-            </p>
-          </div>
-          <WalletConnectButton />
-        </Panel>
-      </div>
+      <PageShell>
+        <PageHeader
+          icon={DollarSign}
+          title="Earnings Dashboard"
+          subtitle="Track your sales, revenue, and payout analytics"
+        />
+        <EmptyState
+          icon={Wallet}
+          title="Connect Your Wallet"
+          description="Connect your Stellar wallet to view your earnings and sales analytics"
+          action={<WalletConnectButton />}
+        />
+      </PageShell>
     );
   }
 
   if (error) {
     return (
-      <div className="space-y-6 bg-surface p-4 sm:p-6">
-        <PageHeader />
-        <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-red-50">
-            <TrendingDown className="h-7 w-7 text-red-600" />
-          </div>
-          <div>
-            <h3 className={cn(poppins_600, "text-lg text-ink")}>
-              Failed to Load Data
-            </h3>
-            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-              {error}
-            </p>
-          </div>
-          <Button round outlined onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
-        </Panel>
-      </div>
+      <PageShell>
+        <PageHeader
+          icon={DollarSign}
+          title="Earnings Dashboard"
+          subtitle="Track your sales, revenue, and payout analytics"
+        />
+        <EmptyState
+          icon={TrendingDown}
+          iconContainerClassName="bg-red-50"
+          title="Failed to Load Data"
+          description={error}
+          action={
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </Button>
+          }
+        />
+      </PageShell>
     );
   }
 
@@ -222,8 +202,12 @@ export default function EarningsPage() {
   };
 
   return (
-    <div className="space-y-6 bg-surface p-4 sm:p-6">
-      <PageHeader />
+    <PageShell>
+      <PageHeader
+        icon={DollarSign}
+        title="Earnings Dashboard"
+        subtitle="Track your sales, revenue, and payout analytics"
+      />
 
       {isLoading ? (
         <>
@@ -246,20 +230,11 @@ export default function EarningsPage() {
       ) : totalEarned === 0 && salesCount === 0 ? (
         <>
           <SummarySkeleton />
-          <Panel className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
-              <DollarSign className="h-7 w-7 text-accent" />
-            </div>
-            <div>
-              <h3 className={cn(poppins_600, "text-lg text-ink")}>
-                No Sales Yet
-              </h3>
-              <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-                Your earnings will appear here once students purchase your
-                courses or books
-              </p>
-            </div>
-          </Panel>
+          <EmptyState
+            icon={DollarSign}
+            title="No Sales Yet"
+            description="Your earnings will appear here once students purchase your courses or books"
+          />
         </>
       ) : (
         <>
@@ -304,7 +279,7 @@ export default function EarningsPage() {
                       key={range}
                       onClick={() => setChartRange(range)}
                       className={cn(
-                        poppins_500,
+                        poppins_500.className,
                         "rounded-lg px-3 py-1.5 text-sm transition-all",
                         chartRange === range
                           ? "bg-accent text-white shadow-sm"
@@ -320,7 +295,7 @@ export default function EarningsPage() {
             {chartData.length === 0 ? (
               <div
                 className={cn(
-                  poppins_400,
+                  poppins_400.className,
                   "flex h-64 items-center justify-center text-ink-muted"
                 )}
               >
@@ -383,7 +358,7 @@ export default function EarningsPage() {
               {topItems.length === 0 ? (
                 <p
                   className={cn(
-                    poppins_400,
+                    poppins_400.className,
                     "py-8 text-center text-sm text-ink-muted"
                   )}
                 >
@@ -401,7 +376,7 @@ export default function EarningsPage() {
                           <div className="flex min-w-0 flex-1 items-center gap-2">
                             <span
                               className={cn(
-                                poppins_600,
+                                poppins_600.className,
                                 "text-sm text-ink-muted"
                               )}
                             >
@@ -412,7 +387,7 @@ export default function EarningsPage() {
                                 <Link
                                   href={link}
                                   className={cn(
-                                    poppins_500,
+                                    poppins_500.className,
                                     "block truncate text-sm text-ink hover:text-secondary hover:underline"
                                   )}
                                 >
@@ -421,7 +396,7 @@ export default function EarningsPage() {
                               ) : (
                                 <p
                                   className={cn(
-                                    poppins_500,
+                                    poppins_500.className,
                                     "truncate text-sm text-ink"
                                   )}
                                 >
@@ -430,7 +405,7 @@ export default function EarningsPage() {
                               )}
                               <span
                                 className={cn(
-                                  poppins_400,
+                                  poppins_400.className,
                                   "text-xs capitalize text-ink-muted"
                                 )}
                               >
@@ -439,12 +414,12 @@ export default function EarningsPage() {
                             </div>
                           </div>
                           <div className="ml-4 flex-shrink-0 text-right">
-                            <p className={cn(poppins_600, "text-sm text-ink")}>
+                            <p className={cn(poppins_600.className, "text-sm text-ink")}>
                               ${item.revenue.toFixed(2)}
                             </p>
                             <p
                               className={cn(
-                                poppins_400,
+                                poppins_400.className,
                                 "text-xs text-ink-muted"
                               )}
                             >
@@ -481,13 +456,13 @@ export default function EarningsPage() {
                       className="flex items-center justify-between rounded-xl border border-accent/10 bg-surface p-3"
                     >
                       <StatusBadge status={status} />
-                      <span className={cn(poppins_600, "text-ink")}>{count}</span>
+                      <span className={cn(poppins_600.className, "text-ink")}>{count}</span>
                     </div>
                   ))}
                 {Object.values(statusBreakdown).every((c) => c === 0) && (
                   <p
                     className={cn(
-                      poppins_400,
+                      poppins_400.className,
                       "py-8 text-center text-sm text-ink-muted"
                     )}
                   >
@@ -498,11 +473,11 @@ export default function EarningsPage() {
               <div className="mt-4 rounded-xl border border-accent/10 bg-surface p-3">
                 <p
                   className={cn(
-                    poppins_400,
+                    poppins_400.className,
                     "flex flex-wrap items-center gap-1 text-xs text-ink-muted"
                   )}
                 >
-                  <strong className={cn(poppins_500, "text-ink")}>Note:</strong>{" "}
+                  <strong className={cn(poppins_500.className, "text-ink")}>Note:</strong>{" "}
                   Only <StatusBadge status="confirmed" small /> transactions
                   count toward your earnings totals.
                 </p>
@@ -511,6 +486,6 @@ export default function EarningsPage() {
           </div>
         </>
       )}
-    </div>
+    </PageShell>
   );
 }

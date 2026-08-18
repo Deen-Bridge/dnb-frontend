@@ -1,4 +1,4 @@
-// app/dashboard/page.jsx
+import { PageShell } from "@/components/ui/page-shell";
 import GreetingCard from "@/components/organisms/dashboard/GreetingCard";
 import PrayerTimesWidget from "@/components/organisms/dashboard/PrayerTimesWidget";
 import StatsOverview from "@/components/organisms/dashboard/StatsOverview";
@@ -15,7 +15,7 @@ import VerificationBanner from "@/components/organisms/dashboard/VerificationBan
 
 export default function Dashboard() {
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <PageShell>
       {/* Educator verification CTA — status-aware, dismissible, resumable */}
       <VerificationBanner />
       <GreetingCard />
@@ -34,6 +34,6 @@ export default function Dashboard() {
           <SupportPalestine />
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
