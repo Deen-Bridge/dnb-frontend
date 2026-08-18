@@ -106,7 +106,7 @@ function MobileNav() {
         <Button
           size="icon"
           aria-label="Open menu"
-          className="focus:outline-none bg-transparent hover:bg-transparent"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-transparent hover:bg-transparent"
         >
           <AlignJustify size={24} className="text-ink-inverse" />
         </Button>

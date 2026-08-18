@@ -81,7 +81,7 @@ export function SignupForm({ className, ...props }) {
     return (
       <div className="flex flex-col items-center gap-4 text-center py-8">
         <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
-          <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </div>
@@ -160,7 +160,7 @@ export function SignupForm({ className, ...props }) {
                 <FormLabel>Role</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[180px]" aria-label="Role">
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
                     <SelectContent>

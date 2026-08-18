@@ -48,7 +48,7 @@ export default function WizardStepBasics({ control, errors, register }) {
       </div>
 
       <div className="space-y-2">
-        <Label className="font-medium">
+        <Label htmlFor="course-category" className="font-medium">
           Course Category <span className="text-red-500">*</span>
         </Label>
         <Controller
@@ -56,6 +56,7 @@ export default function WizardStepBasics({ control, errors, register }) {
           control={control}
           render={({ field }) => (
             <CategoryCombobox
+              id="course-category"
               category={field.value}
               setCategory={(val) => field.onChange(val)}
             />

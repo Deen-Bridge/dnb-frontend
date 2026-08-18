@@ -20,7 +20,7 @@ export default function WizardStepMedia({ control, errors, watch }) {
 
       {/* Course Thumbnail */}
       <div className="space-y-2">
-        <Label className="font-medium block">
+        <Label htmlFor="course-thumbnail-upload" className="font-medium block">
           Course Cover Thumbnail <span className="text-red-500">*</span>
         </Label>
         <Controller
@@ -71,6 +71,9 @@ export default function WizardStepMedia({ control, errors, watch }) {
               )}
             </div>
 
+            <Label htmlFor={`lesson-video-${idx}`} className="font-medium block">
+              Lesson {idx + 1} Video <span className="text-red-500">*</span>
+            </Label>
             <Controller
               name={`lessons.${idx}.videoFile`}
               control={control}

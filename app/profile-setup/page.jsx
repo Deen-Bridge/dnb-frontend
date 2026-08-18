@@ -39,7 +39,7 @@ const ProfileSetupPage = () => {
             <div className="relative hidden bg-muted lg:block">
                 <Image
                     src="/images/profile-setup-img.jpeg"
-                    alt="Image"
+                    alt=""
                     width={550}
                     height={50}
                     className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"

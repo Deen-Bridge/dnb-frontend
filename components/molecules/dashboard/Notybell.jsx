@@ -136,7 +136,12 @@ const NotificationBell = () => {
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative text-accent">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative text-accent"
+            aria-label="Open notifications"
+          >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
               <Badge
@@ -172,6 +177,7 @@ const NotificationBell = () => {
                     e.stopPropagation();
                     reconnect();
                   }}
+                  aria-label="Reconnect notifications"
                   className="h-6 w-6 p-0 text-accent"
                 >
                   <RefreshCw className="h-3 w-3" />
@@ -247,7 +253,7 @@ const NotificationBell = () => {
                   <div className="flex-shrink-0">
                     {notification.sender?.avatar ? (
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={notification.sender.avatar} />
+                        <AvatarImage src={notification.sender.avatar} alt="" />
                         <AvatarFallback
                           className={cn(poppins_500, "bg-surface text-ink")}
                         >
@@ -309,6 +315,7 @@ const NotificationBell = () => {
                               e.stopPropagation();
                               markAsRead(notification._id);
                             }}
+                            aria-label="Mark as read"
                             className="h-6 w-6 p-0 text-secondary hover:text-highlight"
                           >
                             <Check className="h-3 w-3" />
@@ -324,6 +331,7 @@ const NotificationBell = () => {
                               notificationId: notification._id,
                             });
                           }}
+                          aria-label="Delete notification"
                           className="h-6 text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-3 w-3" />

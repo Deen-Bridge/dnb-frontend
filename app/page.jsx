@@ -18,20 +18,22 @@ const page = () => {
   return (
     <>
       <Navbar />
-      <Hero />
-      <About />
-      <Mission />
-      <WhyDeenBridge />
-      <FeaturedContent />
-      {/* Hidden until we have real numbers — Stats shows placeholder traction (12K+ learners, etc.) */}
-      {/* <Stats /> */}
-      <HowItWorks />
-      <StellarSection />
-      {/* Hidden until we have real users — Testimonials are placeholder quotes from fictional people */}
-      {/* <Testimonials /> */}
-      <Sources />
-      <FAQ />
-      <CTA />
+      <main id="main-content" className="flex-1">
+        <Hero />
+        <About />
+        <Mission />
+        <WhyDeenBridge />
+        <FeaturedContent />
+        {/* Hidden until we have real numbers — Stats shows placeholder traction (12K+ learners, etc.) */}
+        {/* <Stats /> */}
+        <HowItWorks />
+        <StellarSection />
+        {/* Hidden until we have real users — Testimonials are placeholder quotes from fictional people */}
+        {/* <Testimonials /> */}
+        <Sources />
+        <FAQ />
+        <CTA />
+      </main>
       <Footer />
     </>
   );

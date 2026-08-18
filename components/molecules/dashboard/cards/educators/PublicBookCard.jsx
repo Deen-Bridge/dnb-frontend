@@ -46,6 +46,7 @@ const PublicBookCard = ({ book }) => {
         </span>
         {avgRating > 0 && (
           <div className="flex items-center gap-0.5">
+            <span className="sr-only">Rated {avgRating} out of 5</span>
             {[...Array(5)].map((_, i) => (
               <Star
                 key={`${book._id}-star-${i}`}
@@ -55,6 +56,7 @@ const PublicBookCard = ({ book }) => {
                     ? "fill-yellow-400 text-yellow-400"
                     : "text-ink-muted/40"
                 }
+                aria-hidden="true"
               />
             ))}
           </div>

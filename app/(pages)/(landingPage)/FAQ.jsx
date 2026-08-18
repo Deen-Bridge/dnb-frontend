@@ -55,11 +55,11 @@ export default function FAQ() {
         <div className="text-center mb-16">
           <h2 className={cn(
             poppins_600,
-            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-secondary via-highlight to-accent text-transparent bg-clip-text font-stretch-125%"
+            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-secondary via-highlight to-secondary text-transparent bg-clip-text font-stretch-125%"
           )}>
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-ink-muted font-stretch-110%">
+          <p className="text-xl text-ink-inverse-muted font-stretch-110%">
             Everything you need to know about DeenBridge.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function FAQ() {
               >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
                 >
                   <span className="text-lg font-semibold text-ink font-stretch-110%">{faq.question}</span>
                   <span className={cn(

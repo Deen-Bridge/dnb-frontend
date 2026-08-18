@@ -7,6 +7,7 @@ export default function OfflinePage() {
         <div className="mb-8 flex justify-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-accent/10">
             <svg
+              aria-hidden="true"
               className="h-10 w-10 text-accent"
               fill="none"
               viewBox="0 0 24 24"

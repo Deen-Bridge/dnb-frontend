@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "a11y": "eslint --config eslint.config.a11y.mjs components app",
     "test": "vitest --run",
     "test:watch": "vitest"
   },

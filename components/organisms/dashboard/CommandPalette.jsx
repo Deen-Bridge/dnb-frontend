@@ -288,6 +288,7 @@ export function CommandPalette() {
     >
       <CommandInput
         placeholder="Type a command or search courses, books, educators..."
+        aria-label="Search"
         value={query}
         onValueChange={setQuery}
       />
