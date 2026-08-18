@@ -58,12 +58,12 @@ const GreetingCard = () => {
     return parts.length > 1 ? parts[parts.length - 1] : parts[0];
   };
   return (
-    <div className="bg-accent text-white rounded-2xl px-4 py-5 md:px-6 md:py-6 lg:p-8 flex items-center justify-between gap-4 md:gap-8 w-full shadow-md">
+    <div className="bg-accent-card text-white rounded-2xl px-4 py-5 md:px-6 md:py-6 lg:p-8 flex items-center justify-between gap-4 md:gap-8 w-full shadow-md">
       {/* Avatar */}
       <Avatar className="hidden sm:block  lg:h-36 lg:w-36 rounded-lg shrink-0">
         <AvatarImage
           src={user?.avatar || "/images/man.jpg"}
-          alt="user"
+          alt={user?.name || "Profile avatar"}
           className="object-cover"
         />
         <AvatarFallback className="rounded-lg uppercase">
@@ -73,7 +73,7 @@ const GreetingCard = () => {
 
       {/* Text and Button Group */}
       <div className="flex flex-1 flex-col gap-3 md:gap-4">
-        <h2
+        <h1
           className={cn(
             "text-xl md:text-2xl lg:text-4xl  leading-snug font-stretch-125%",
             poppins_700.className
@@ -82,13 +82,13 @@ const GreetingCard = () => {
           As-salāmu ʿalaykum
           <span
             className={cn(
-              "bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text font-semibold pl-2",
+              "bg-gradient-to-r from-green-300 via-green-200 to-green-100 text-transparent bg-clip-text font-semibold pl-2",
               poppins_600.className
             )}
           >
             {getLastName(user?.name)}
           </span>
-        </h2>
+        </h1>
         {progress === 100 && (
           <span className="text-sm flex sm:text-base md:text-lg font-stretch-125% ">
             {completionMessages[messageIndex]}

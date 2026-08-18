@@ -81,7 +81,7 @@ export default function CTA() {
               wide
               round
               to="/signup"
-              className="bg-gradient-to-r from-secondary to-highlight hover:from-highlight hover:to-secondary text-white px-10 py-3.5 text-base font-bold animate-in-out transition-all shadow-lg"
+              className="bg-gradient-to-r from-highlight to-accent hover:from-accent hover:to-highlight text-white px-10 py-3.5 text-base font-bold animate-in-out transition-all shadow-lg"
             >
               Create free account
             </Button>

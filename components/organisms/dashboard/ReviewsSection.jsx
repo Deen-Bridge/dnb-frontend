@@ -139,7 +139,7 @@ export default function ReviewsSection({
                     className="flex items-center gap-3 group"
                   >
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={review.user?.avatar} />
+                      <AvatarImage src={review.user?.avatar} alt="" />
                       <AvatarFallback>
                         {review.user?.name?.charAt(0) || "U"}
                       </AvatarFallback>

@@ -38,7 +38,9 @@ export default function Layout({ children }) {
       {/* Mobile drawer */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div
+          <button
+            type="button"
+            aria-label="Close chat history"
             className="absolute inset-0 bg-basic/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />

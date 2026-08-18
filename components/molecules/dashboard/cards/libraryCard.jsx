@@ -51,7 +51,7 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
             className="flex items-center gap-2"
           >
             <Avatar className="h-10 w-10 rounded-lg">
-              <AvatarImage src={book.author?.avatar || "/images/img1.jpeg"} />
+              <AvatarImage src={book.author?.avatar || "/images/img1.jpeg"} alt="" />
               <AvatarFallback>
                 {book.author?.name?.charAt(0) || "A"}
               </AvatarFallback>
@@ -77,6 +77,9 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
         <div className="flex justify-between items-center text-xs">
           <span>{book.readCount || 0} readers</span>
           <div className="flex items-center gap-0.5 text-yellow-500">
+            <span className="sr-only">
+              Rated {Math.round(getAverageRating(book?.reviews) || 0)} out of 5
+            </span>
             {[...Array(5)].map((_, i) => (
               <Star
                 key={`${book._id}-star-${i}`}
@@ -87,6 +90,7 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
                     : "none"
                 }
                 stroke="#FFD700"
+                aria-hidden="true"
               />
             ))}
           </div>

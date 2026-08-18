@@ -86,7 +86,11 @@ const ToggleRow = ({ icon: Icon, title, description, checked, onCheckedChange })
         <p className={cn(poppins_400, "text-sm text-ink-muted")}>{description}</p>
       </div>
     </div>
-    <Switch checked={checked} onCheckedChange={onCheckedChange} />
+    <Switch
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      aria-label={title}
+    />
   </div>
 );
 
@@ -402,7 +406,10 @@ const SettingsPage = () => {
                 <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
                   <div className="relative">
                     <Avatar className="h-24 w-24 border-4 border-surface-raised shadow-md">
-                      <AvatarImage src={profile.avatar || user?.avatar} />
+                      <AvatarImage
+                        src={profile.avatar || user?.avatar}
+                        alt=""
+                      />
                       <AvatarFallback className="bg-accent text-2xl text-white">
                         {profile.name?.charAt(0) ||
                           user?.name?.charAt(0) ||
@@ -561,6 +568,9 @@ const SettingsPage = () => {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -589,6 +599,9 @@ const SettingsPage = () => {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowNewPassword(!showNewPassword)}
+                        aria-label={
+                          showNewPassword ? "Hide password" : "Show password"
+                        }
                       >
                         {showNewPassword ? (
                           <EyeOff className="h-4 w-4" />

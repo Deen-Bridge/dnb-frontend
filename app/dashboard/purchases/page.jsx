@@ -292,7 +292,12 @@ function PurchaseCard({ item, itemType, getReceipt }) {
               {actionLabel}
             </Button>
             {receipt && (
-              <Button round outlined onClick={() => setReceiptOpen(true)}>
+              <Button
+                round
+                outlined
+                onClick={() => setReceiptOpen(true)}
+                aria-label={`View receipt for ${item?.title || "item"}`}
+              >
                 <Receipt className="h-4 w-4" />
               </Button>
             )}
