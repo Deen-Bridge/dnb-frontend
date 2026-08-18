@@ -151,7 +151,7 @@ export default function PublicEducatorPage({ params }) {
     return (
       <div className="min-h-screen bg-basic flex flex-col">
         <Navbar />
-        <main className="flex-1 flex items-center justify-center">
+        <main id="main-content" className="flex-1 flex items-center justify-center">
           <NotFoundComp errMsg="Educator profile not found or is private." />
         </main>
         <Footer />
@@ -166,7 +166,7 @@ export default function PublicEducatorPage({ params }) {
     return (
       <div className="min-h-screen bg-basic flex flex-col">
         <Navbar />
-        <main className="flex-1">
+        <main id="main-content" className="flex-1">
           <EducatorProfileHeader
             educator={educator}
             followersCount={followersCount}
@@ -209,7 +209,7 @@ export default function PublicEducatorPage({ params }) {
   return (
     <div className="min-h-screen bg-basic flex flex-col">
       <Navbar />
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <EducatorProfileHeader
           educator={educator}
           followersCount={followersCount}

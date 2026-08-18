@@ -130,7 +130,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* Story */}
         <section className="relative overflow-hidden bg-surface px-4 py-20 sm:px-6 lg:px-8 sm:py-28">
           <div className="pointer-events-none absolute inset-0 z-0">
@@ -143,7 +143,7 @@ export default function AboutPage() {
                 <div className="relative z-10">
                   <Image
                     src="/images/mosque.png"
-                    alt="Deen Bridge"
+                    alt="Mosque architecture"
                     width={600}
                     height={600}
                     className="h-auto w-full rounded-3xl object-cover shadow-2xl"

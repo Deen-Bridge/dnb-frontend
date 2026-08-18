@@ -122,7 +122,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <main className="flex-1 bg-surface">
+      <main id="main-content" className="flex-1 bg-surface">
         {/* Channels */}
         <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">

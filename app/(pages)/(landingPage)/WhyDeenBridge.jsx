@@ -56,7 +56,7 @@ export default function WhyDeenBridge() {
         <h2
           className={cn(
             poppins_600,
-            "text-4xl sm:text-8xl font-bold text-center pb-12 bg-gradient-to-r from-secondary via-highlight to-accent text-transparent bg-clip-text font-stretch-125%"
+            "text-4xl sm:text-8xl font-bold text-center pb-12 bg-gradient-to-r from-secondary via-highlight to-secondary text-transparent bg-clip-text font-stretch-125%"
           )}
         >
           Why Deen Bridge?

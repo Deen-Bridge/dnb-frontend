@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "a11y": "eslint --config eslint.config.a11y.mjs components app"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.4.0",

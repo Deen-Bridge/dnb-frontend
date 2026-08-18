@@ -29,7 +29,7 @@ const Button = ({
         wide && 'flex-grow w-full bg-accent hover:bg-highlight transitions-all',
         outlined && 'border border-accent bg-background text-foreground hover:bg-accent hover:text-white animate-in-out transition-all delay-100',
         round ? 'rounded-full' : 'rounded-lg',
-        'inline-block text-sm py-2 px-4 font-medium flex items-center justify-center cursor-pointer flex-shrink-0 font-nunito font-normal focus:outline-none focus:ring-0',
+        'inline-block text-sm py-2 px-4 font-medium flex items-center justify-center cursor-pointer flex-shrink-0 font-nunito font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         poppins_500.className,
         className
     );
@@ -53,18 +53,17 @@ const Button = ({
                     <button
                         type={type}
                         {...props}
+                        onClick={onClick}
                         disabled={commonProps.disabled}
                         id={commonProps.id}
+                        itemScope
                         className={cn(wide && 'w-full flex-grow')}
                     >
                         <div
-                            id={commonProps.id}
                             className={cn(
                                 'hover:!shadow-none !shadow-none inline-block',
                                 commonProps.className
                             )}
-                            onClick={onClick}
-                            itemScope
                         >
                             <p
                                 className={cn(
@@ -73,7 +72,7 @@ const Button = ({
                                 )}
                             >
                                 {loading ? (
-                                    <FaSpinner
+                                    <Loader2Icon
                                         className="animate-spin"
                                         color={loaderColor}
                                         size={loaderSize}

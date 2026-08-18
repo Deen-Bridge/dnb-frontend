@@ -346,7 +346,7 @@ export default function SadaqahPage() {
                         poppins_600,
                         "flex h-16 flex-col items-center justify-center rounded-xl border text-lg transition-all",
                         presetActive(preset)
-                          ? "border-accent bg-accent text-white shadow-md"
+                          ? "border-accent-card bg-accent-card text-white shadow-md"
                           : "border-accent/15 bg-surface text-ink hover:border-secondary/50 hover:bg-secondary/5"
                       )}
                     >
@@ -650,6 +650,7 @@ export default function SadaqahPage() {
                         rel="noopener noreferrer"
                         className="text-secondary transition-colors hover:text-highlight"
                         title="View on Stellar Explorer"
+                        aria-label="View on Stellar Explorer"
                       >
                         <ExternalLink className="h-4 w-4" />
                       </a>

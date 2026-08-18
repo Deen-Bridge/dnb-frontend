@@ -389,8 +389,9 @@ export default function BookDetailPage({ book }) {
                       }
                     />
                     <Textarea
+                      aria-label="Write a review"
                       placeholder="What did you think about the book?"
-                      className="min-h-[120px] border-accent/15 bg-surface-raised focus:outline-none"
+                      className="min-h-[120px] border-accent/15 bg-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                       value={review}
                       onChange={(e) => setReview(e.target.value)}
                       disabled={submitting || submitted}

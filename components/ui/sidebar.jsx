@@ -279,6 +279,7 @@ function SidebarInset({
 }) {
   return (
     (<main
+      id="main-content"
       data-slot="sidebar-inset"
       className={cn(
         // min-w-0 is load-bearing: this is a flex child, and the default

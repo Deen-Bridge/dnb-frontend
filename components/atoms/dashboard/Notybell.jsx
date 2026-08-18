@@ -49,13 +49,15 @@ export default function Notybell() {
 
     return (
         <>
-            <div
+            <button
+                type="button"
                 className="relative p-2 rounded-full  transition cursor-pointer"
                 onClick={() => setOpen(true)}
+                aria-label="Open notifications"
             >
                 <Bell size={18} className="text-black" />
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
-            </div>
+            </button>
 
             <Modal
                 isOpen={open}
