@@ -36,6 +36,7 @@ export default function CategoryCombobox({ category, setCategory, id }) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-label="Select category"
           className="w-full justify-between text-muted-foreground hover:bg-transparent"
         >
           {value || "Select category..."}
@@ -44,7 +45,7 @@ export default function CategoryCombobox({ category, setCategory, id }) {
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-0">
         <Command>
-          <CommandInput placeholder="Search category..." className="h-9" />
+          <CommandInput placeholder="Search category..." aria-label="Search categories" className="h-9" />
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             {islamicCategories.map((group) => (

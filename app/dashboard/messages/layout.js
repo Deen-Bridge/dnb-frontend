@@ -38,7 +38,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden overscroll-none">
-      <main className="flex-1 flex flex-col md:flex-row gap-4 p-2 sm:p-4 h-full">
+      <div className="flex-1 flex flex-col md:flex-row gap-4 p-2 sm:p-4 h-full">
         {/* Left Side List - Always visible on desktop, conditional on mobile */}
         <div
           className={`bg-muted rounded-xl p-2 sm:p-3 h-full overflow-y-auto scrollbar-hide transition-all duration-300 ${
@@ -56,7 +56,7 @@ export default function Layout({ children }) {
         >
           {children}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

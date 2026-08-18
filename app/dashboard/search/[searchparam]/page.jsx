@@ -57,7 +57,7 @@ const typeBadge = (item) => {
       <span
         className={cn(
           poppins_600,
-          "rounded-full bg-accent px-3 py-1 text-xs uppercase tracking-wider text-white shadow-sm"
+          "rounded-full bg-accent-card px-3 py-1 text-xs uppercase tracking-wider text-white shadow-sm"
         )}
       >
         User
@@ -104,6 +104,7 @@ const Page = ({ params }) => {
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <circle
               className="opacity-25"
@@ -126,7 +127,7 @@ const Page = ({ params }) => {
       ) : results.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="mb-4 flex size-20 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
-            <svg width="40" height="40" fill="none" className="text-accent">
+            <svg width="40" height="40" fill="none" className="text-accent" aria-hidden="true">
               <path
                 d="M8 20h24M20 8v24"
                 stroke="currentColor"
@@ -247,7 +248,7 @@ const Page = ({ params }) => {
                       {item.avatar && (
                         <Image
                           src={item.avatar}
-                          alt={item.name}
+                          alt=""
                           width={32}
                           height={32}
                           className="rounded-full object-cover"

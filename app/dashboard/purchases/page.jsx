@@ -294,6 +294,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
                 size="icon"
                 className="rounded-full"
                 onClick={() => setReceiptOpen(true)}
+                aria-label={`View receipt for ${item?.title || "item"}`}
               >
                 <Receipt className="h-4 w-4" />
               </Button>

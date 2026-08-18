@@ -94,7 +94,7 @@ const Hero = () => {
                 wide
                 round
                 to="/signup"
-                className="bg-gradient-to-r from-secondary to-highlight hover:from-highlight hover:to-secondary text-white px-8 py-3 text-base font-bold animate-in-out transition-all shadow-lg"
+                className="bg-gradient-to-r from-highlight to-accent hover:from-accent hover:to-highlight text-white px-8 py-3 text-base font-bold animate-in-out transition-all shadow-lg"
               >
                 Start learning
               </Button>
@@ -141,7 +141,7 @@ const Hero = () => {
               <span
                 className={cn(
                   poppins_600,
-                  "text-[11px] uppercase tracking-wider text-secondary"
+                  "text-[11px] uppercase tracking-wider text-highlight"
                 )}
               >
                 USDC
@@ -176,7 +176,7 @@ const Hero = () => {
                     <span
                       className={cn(
                         poppins_500,
-                        "text-[10px] uppercase tracking-wider text-secondary"
+                        "text-[10px] uppercase tracking-wider text-ink-inverse-muted"
                       )}
                     >
                       {p.label}

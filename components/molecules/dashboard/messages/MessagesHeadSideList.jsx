@@ -146,7 +146,7 @@ const MessagesHeadSideList = () => {
                   <div className="relative">
                   <Avatar className="h-10 w-10 rounded-lg">
                     {otherParticipant?.avatar ? (
-                      <AvatarImage src={otherParticipant.avatar} />
+                      <AvatarImage src={otherParticipant.avatar} alt="" />
                     ) : (
                       <AvatarFallback>
                         {otherParticipant?.name?.charAt(0) || "?"}

@@ -5,7 +5,7 @@ export default function Page() {
     <div className="hidden sm:flex sm:flex-1 bg-highlight/20 rounded-xl w-full h-full p-4  flex-col justify-center items-center">
       <div className=" w-full flex justify-center items-center h-full relative">
         <Image
-          alt="shadow"
+          alt=""
           src="/svgs/choose-chat.svg"
           height={293}
           width={263}

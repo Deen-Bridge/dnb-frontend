@@ -97,7 +97,7 @@ export default function TransactionHistory() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl font-semibold">Transaction History</h2>
         <Select value={role} onValueChange={handleRoleChange}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px]" aria-label="View transactions as">
             <SelectValue placeholder="Select role" />
           </SelectTrigger>
           <SelectContent>

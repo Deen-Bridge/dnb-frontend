@@ -162,7 +162,7 @@ export default function Page({ params }) {
         </Button>
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
-            <AvatarImage src={otherParticipantInfo?.avatar} />
+            <AvatarImage src={otherParticipantInfo?.avatar} alt="" />
             <AvatarFallback>
               {otherParticipantInfo?.name?.charAt(0)}
             </AvatarFallback>
@@ -170,14 +170,14 @@ export default function Page({ params }) {
         </Link>
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <div className="flex-1 min-w-0">
-            <h2
+            <h1
               className={cn(
                 poppins_600,
                 "truncate text-sm text-ink sm:text-base"
               )}
             >
               {otherParticipantInfo?.name}
-            </h2>
+            </h1>
             {otherOnline ? (
               <p
                 className={cn(
@@ -296,7 +296,7 @@ export default function Page({ params }) {
                       poppins_400,
                       "rounded-2xl px-3 py-2 text-sm shadow-sm sm:px-4 sm:py-2.5",
                       isOwnMessage
-                        ? "rounded-tr-none bg-accent text-white"
+                        ? "rounded-tr-none bg-accent-card text-white"
                         : "rounded-tl-none border border-accent/10 bg-surface-raised text-ink"
                     )}
                   >
@@ -330,6 +330,7 @@ export default function Page({ params }) {
       >
         <div className="flex relative max-w-4xl mx-auto gap-4">
           <Textarea
+            aria-label="Type your message"
             placeholder="Type your message..."
             value={newMessage}
             onChange={(e) => {
@@ -340,7 +341,7 @@ export default function Page({ params }) {
             onBlur={() => setTyping(room, user._id, false)}
             className={cn(
               poppins_400,
-              "min-h-[40px] resize-none rounded-full border border-accent/15 bg-surface pr-10 text-sm shadow-none focus:outline-none sm:min-h-[44px] sm:pr-12 sm:text-base"
+              "min-h-[40px] resize-none rounded-full border border-accent/15 bg-surface pr-10 text-sm shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none sm:min-h-[44px] sm:pr-12 sm:text-base"
             )}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -353,6 +354,7 @@ export default function Page({ params }) {
             round
             type="submit"
             size="icon"
+            aria-label="Send message"
             className="absolute right-1 h-8 w-8 sm:h-10 sm:w-10 text-white font-thin bg-accent hover:bg-accent/90"
             disabled={!newMessage.trim()}
           >

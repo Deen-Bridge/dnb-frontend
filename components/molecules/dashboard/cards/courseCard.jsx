@@ -125,7 +125,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
             <Avatar className="h-10 w-10 rounded-lg">
               <AvatarImage
                 src={course.createdBy?.avatar || "/images/placeholder.jpg"}
-                alt="Instructor"
+                alt=""
               />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>

@@ -243,7 +243,10 @@ export default function CourseDetailClient({ course }) {
                 className="group flex items-center gap-2.5"
               >
                 <Avatar className="h-9 w-9 rounded-lg">
-                  <AvatarImage src={course.createdBy?.avatar || "/images/img1.jpeg"} />
+                  <AvatarImage
+                    src={course.createdBy?.avatar || "/images/img1.jpeg"}
+                    alt=""
+                  />
                   <AvatarFallback>
                     {course.createdBy?.name?.charAt(0) || "A"}
                   </AvatarFallback>
@@ -486,8 +489,9 @@ export default function CourseDetailClient({ course }) {
                           }
                         />
                         <Textarea
+                          aria-label="Write a review"
                           placeholder="What did you think about the course?"
-                          className="min-h-[120px] border-accent/20 bg-surface-raised focus:outline-none"
+                          className="min-h-[120px] border-accent/20 bg-surface-raised focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                           value={review}
                           onChange={(e) => setReview(e.target.value)}
                           disabled={submitting || submitted}

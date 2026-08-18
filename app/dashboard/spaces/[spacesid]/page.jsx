@@ -95,7 +95,7 @@ export default async function Page({ params }) {
                     {/* Host Card */}
                     <div className="flex items-center gap-4 mt-10 rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm">
                         <Avatar className="h-14 w-14 border border-accent/10 shadow-sm">
-                            <AvatarImage src={space.host?.avatar || "/images/avatar-placeholder.png"} />
+                            <AvatarImage src={space.host?.avatar || "/images/avatar-placeholder.png"} alt="" />
                             <AvatarFallback>{space.host?.name?.slice(0, 2).toUpperCase() || "HN"}</AvatarFallback>
                         </Avatar>
                         <div>

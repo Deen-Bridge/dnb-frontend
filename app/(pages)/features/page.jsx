@@ -148,7 +148,7 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* The four pillars */}
         <section className="relative overflow-hidden bg-surface px-4 py-20 sm:px-6 sm:py-28">
           <div className="pointer-events-none absolute inset-0 z-0">

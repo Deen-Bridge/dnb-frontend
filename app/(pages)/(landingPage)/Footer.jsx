@@ -102,7 +102,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="rounded-full border border-secondary/25 p-2.5 transition-all hover:border-secondary hover:bg-secondary/10 hover:text-secondary"
+                  className="rounded-full border border-secondary/25 p-2.5 transition-all hover:border-secondary hover:bg-secondary/10 hover:text-ink-inverse"
                 >
                   {s.icon}
                 </Link>
@@ -116,7 +116,7 @@ export default function Footer() {
               <h3
                 className={cn(
                   poppins_600,
-                  "mb-4 text-sm uppercase tracking-wider text-secondary"
+                  "mb-4 text-sm uppercase tracking-wider text-ink-inverse"
                 )}
               >
                 {col.heading}
@@ -126,7 +126,7 @@ export default function Footer() {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-ink-inverse-muted transition-colors duration-300 hover:text-secondary"
+                      className="text-ink-inverse-muted transition-colors duration-300 hover:text-ink-inverse"
                     >
                       {link.name}
                     </Link>

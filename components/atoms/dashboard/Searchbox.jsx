@@ -49,11 +49,11 @@ const Searchbox = ({ className, placeholder }) => {
       >
         <div className="flex items-center gap-2 overflow-hidden flex-1">
           <Search size={18} className="text-accent shrink-0" />
-          <span className="text-sm text-gray-500 truncate">
+          <span className="text-sm text-gray-600 truncate">
             {placeholderText}
           </span>
         </div>
-        <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground shadow-xs shrink-0">
+        <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-gray-600 shadow-xs shrink-0">
           <span className="text-xs">{isMac ? "⌘" : "Ctrl"}</span>K
         </kbd>
       </button>
