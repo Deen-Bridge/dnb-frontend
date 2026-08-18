@@ -22,6 +22,7 @@ import {
   poppins_500,
   poppins_600,
 } from "@/lib/config/font.config";
+import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 
 /* ── building blocks (design-system consistent) ── */
 
@@ -81,14 +82,6 @@ export default function WalletPage() {
   const truncateAddress = (addr) => {
     if (!addr) return "";
     return `${addr.slice(0, 12)}...${addr.slice(-12)}`;
-  };
-
-  const getExplorerUrl = (publicKey) => {
-    const baseUrl =
-      network === "mainnet"
-        ? "https://stellar.expert/explorer/public/account/"
-        : "https://stellar.expert/explorer/testnet/account/";
-    return baseUrl + publicKey;
   };
 
   return (
@@ -161,7 +154,7 @@ export default function WalletPage() {
                   </p>
                 </div>
                 <a
-                  href={getExplorerUrl(connectedWallet)}
+                  href={getExplorerUrl(connectedWallet, network)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
