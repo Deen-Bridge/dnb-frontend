@@ -1,5 +1,6 @@
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import nextPlugin from "@next/eslint-plugin-next";
+import reactHooks from "eslint-plugin-react-hooks";
 
 // Dedicated accessibility gate: applies eslint-plugin-jsx-a11y (the static,
 // axe-aligned WCAG rules) to the whole source tree, independent of the
@@ -63,7 +64,7 @@ export default [
         __dirname: "readonly",
       },
     },
-    plugins: { "jsx-a11y": jsxA11y, "@next/next": nextPlugin },
+    plugins: { "jsx-a11y": jsxA11y, "@next/next": nextPlugin, "react-hooks": reactHooks },
     rules: {
       ...jsxA11y.configs.recommended.rules,
     },

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import Button from "@/components/atoms/form/Button";
+import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/ui/page-shell";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   HeartHandshake,
@@ -14,8 +15,6 @@ import {
   Sparkles,
   ShieldCheck,
   Coins,
-  TrendingUp,
-  Users,
   MousePointerClick,
   PenLine,
   Landmark,
@@ -66,7 +65,7 @@ const Panel = ({ className, children }) => (
 const Chip = ({ icon: Icon, children }) => (
   <span
     className={cn(
-      poppins_500,
+      poppins_500.className,
       "inline-flex items-center gap-1.5 rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 text-xs text-accent"
     )}
   >
@@ -77,9 +76,9 @@ const Chip = ({ icon: Icon, children }) => (
 
 const SectionHeading = ({ title, subtitle }) => (
   <div className="mb-5">
-    <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
+    <h2 className={cn(poppins_600.className, "text-lg text-ink")}>{title}</h2>
     {subtitle && (
-      <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+      <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>
         {subtitle}
       </p>
     )}
@@ -214,19 +213,19 @@ export default function SadaqahPage() {
       ) : statsUnconfigured ? (
         <div className="flex items-center gap-2 text-ink-inverse-muted">
           <AlertCircle className="h-4 w-4 shrink-0" />
-          <p className={cn(poppins_400, "text-sm")}>
+          <p className={cn(poppins_400.className, "text-sm")}>
             Fund not configured yet — check back soon, insha&apos;Allah.
           </p>
         </div>
       ) : statsError ? (
         <div className="space-y-3">
-          <p className={cn(poppins_400, "text-sm text-ink-inverse-muted")}>
+          <p className={cn(poppins_400.className, "text-sm text-ink-inverse-muted")}>
             {statsError}
           </p>
           <button
             onClick={fetchStats}
             className={cn(
-              poppins_500,
+              poppins_500.className,
               "inline-flex items-center gap-2 text-sm text-ink-inverse hover:opacity-80"
             )}
           >
@@ -237,34 +236,34 @@ export default function SadaqahPage() {
         <>
           <p
             className={cn(
-              poppins_500,
+              poppins_500.className,
               "text-xs uppercase tracking-wider text-ink-inverse-muted"
             )}
           >
             Scholarship Pool Balance
           </p>
-          <p className={cn(poppins_600, "mt-1 text-4xl leading-none")}>
+          <p className={cn(poppins_600.className, "mt-1 text-4xl leading-none")}>
             ${formatAmount(stats?.poolBalance)}
             <span
-              className={cn(poppins_500, "ml-1 text-lg text-ink-inverse-muted")}
+              className={cn(poppins_500.className, "ml-1 text-lg text-ink-inverse-muted")}
             >
               USDC
             </span>
           </p>
           <div className="mt-5 grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-              <p className={cn(poppins_400, "text-[11px] text-ink-inverse-muted")}>
+              <p className={cn(poppins_400.className, "text-[11px] text-ink-inverse-muted")}>
                 Total donated
               </p>
-              <p className={cn(poppins_600, "text-base text-ink-inverse")}>
+              <p className={cn(poppins_600.className, "text-base text-ink-inverse")}>
                 ${formatAmount(stats?.totalDonated)}
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-              <p className={cn(poppins_400, "text-[11px] text-ink-inverse-muted")}>
+              <p className={cn(poppins_400.className, "text-[11px] text-ink-inverse-muted")}>
                 Donations
               </p>
-              <p className={cn(poppins_600, "text-base text-ink-inverse")}>
+              <p className={cn(poppins_600.className, "text-base text-ink-inverse")}>
                 {stats?.donationCount ?? 0}
               </p>
             </div>
@@ -275,7 +274,7 @@ export default function SadaqahPage() {
   );
 
   return (
-    <div className="space-y-6 bg-surface p-4 sm:p-6">
+    <PageShell>
       {/* ── Hero + featured pool (2/3 · 1/3) ── */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Panel className="relative overflow-hidden bg-gradient-to-br from-secondary/10 via-surface-raised to-highlight/10 p-6 sm:p-8 lg:col-span-2">
@@ -287,7 +286,7 @@ export default function SadaqahPage() {
               </div>
               <h1
                 className={cn(
-                  poppins_600,
+                  poppins_600.className,
                   "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent sm:text-3xl"
                 )}
               >
@@ -296,7 +295,7 @@ export default function SadaqahPage() {
             </div>
             <p
               className={cn(
-                poppins_400,
+                poppins_400.className,
                 "mt-3 max-w-xl leading-relaxed text-ink-muted"
               )}
             >
@@ -310,6 +309,16 @@ export default function SadaqahPage() {
               <Chip icon={Coins}>USDC on Stellar</Chip>
               <Chip icon={Sparkles}>Funds scholarships</Chip>
             </div>
+            <a
+              href="/transparency"
+              className={cn(
+                poppins_500,
+                "mt-5 inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-colors hover:text-secondary hover:underline"
+              )}
+            >
+              Watch donations arrive live
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
           </div>
         </Panel>
 
@@ -343,7 +352,7 @@ export default function SadaqahPage() {
                       type="button"
                       onClick={() => handlePresetSelect(preset)}
                       className={cn(
-                        poppins_600,
+                        poppins_600.className,
                         "flex h-16 flex-col items-center justify-center rounded-xl border text-lg transition-all",
                         presetActive(preset)
                           ? "border-accent-card bg-accent-card text-white shadow-md"
@@ -353,7 +362,7 @@ export default function SadaqahPage() {
                       ${preset}
                       <span
                         className={cn(
-                          poppins_400,
+                          poppins_400.className,
                           "text-[10px] uppercase tracking-wider",
                           presetActive(preset)
                             ? "text-white/70"
@@ -369,14 +378,14 @@ export default function SadaqahPage() {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="custom-amount"
-                    className={cn(poppins_500, "text-sm text-ink-muted")}
+                    className={cn(poppins_500.className, "text-sm text-ink-muted")}
                   >
                     Or enter a custom amount
                   </label>
                   <div className="relative">
                     <span
                       className={cn(
-                        poppins_600,
+                        poppins_600.className,
                         "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-muted"
                       )}
                     >
@@ -390,13 +399,13 @@ export default function SadaqahPage() {
                       value={customAmount}
                       onChange={handleCustomChange}
                       className={cn(
-                        poppins_500,
+                        poppins_500.className,
                         "w-full rounded-xl border border-accent/15 bg-surface py-3 pl-8 pr-16 text-ink outline-none transition-colors placeholder:text-ink-muted/60 focus:border-secondary focus:ring-2 focus:ring-secondary/20"
                       )}
                     />
                     <span
                       className={cn(
-                        poppins_500,
+                        poppins_500.className,
                         "pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs uppercase tracking-wider text-ink-muted"
                       )}
                     >
@@ -407,13 +416,12 @@ export default function SadaqahPage() {
 
                 {!connectedWallet ? (
                   <div className="rounded-xl border border-secondary/20 bg-secondary/5 p-4">
-                    <p className={cn(poppins_500, "mb-3 text-sm text-accent")}>
+                    <p className={cn(poppins_500.className, "mb-3 text-sm text-accent")}>
                       Connect your Stellar wallet to donate
                     </p>
                     <Button
-                      round
+                      className="w-full rounded-full bg-accent text-white hover:bg-accent/90"
                       onClick={connectWallet}
-                      wide
                       disabled={isConnecting}
                     >
                       {isConnecting ? (
@@ -433,12 +441,12 @@ export default function SadaqahPage() {
                   <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/10 bg-surface px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Wallet className="h-4 w-4 text-accent" />
-                      <span className={cn(poppins_400, "text-sm text-ink-muted")}>
+                      <span className={cn(poppins_400.className, "text-sm text-ink-muted")}>
                         Balance
                       </span>
                       <span
                         className={cn(
-                          poppins_600,
+                          poppins_600.className,
                           "text-sm",
                           hasInsufficientBalance ? "text-red-600" : "text-ink"
                         )}
@@ -448,7 +456,7 @@ export default function SadaqahPage() {
                     </div>
                     <span
                       className={cn(
-                        poppins_500,
+                        poppins_500.className,
                         "rounded-full border border-accent/15 bg-surface-raised px-3 py-0.5 text-xs capitalize text-accent"
                       )}
                     >
@@ -458,15 +466,14 @@ export default function SadaqahPage() {
                 )}
 
                 {connectedWallet && hasInsufficientBalance && (
-                  <p className={cn(poppins_400, "text-sm text-red-600")}>
+                  <p className={cn(poppins_400.className, "text-sm text-red-600")}>
                     Insufficient USDC balance for this amount.
                   </p>
                 )}
 
                 {connectedWallet && (
                   <Button
-                    round
-                    wide
+                    className="w-full rounded-full bg-accent text-white hover:bg-accent/90"
                     onClick={handleInitiate}
                     disabled={
                       !isValidAmount || hasInsufficientBalance || isProcessing
@@ -489,14 +496,14 @@ export default function SadaqahPage() {
             {step === "confirm" && donationData && (
               <>
                 <div className="space-y-1 rounded-xl border border-secondary/20 bg-secondary/5 p-4">
-                  <p className={cn(poppins_500, "text-sm text-accent")}>
+                  <p className={cn(poppins_500.className, "text-sm text-accent")}>
                     Please confirm the transaction in your wallet extension.
                   </p>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className={cn(poppins_400, "text-ink-muted")}>
+                    <span className={cn(poppins_400.className, "text-ink-muted")}>
                       Donating:
                     </span>
-                    <span className={cn(poppins_600, "text-ink")}>
+                    <span className={cn(poppins_600.className, "text-ink")}>
                       ${formatAmount(donationData.amount)} USDC
                     </span>
                   </div>
@@ -506,7 +513,7 @@ export default function SadaqahPage() {
                   <div className="rounded-xl border border-accent/10 bg-surface p-4">
                     <p
                       className={cn(
-                        poppins_500,
+                        poppins_500.className,
                         "mb-3 text-center text-sm text-ink"
                       )}
                     >
@@ -517,10 +524,17 @@ export default function SadaqahPage() {
                 )}
 
                 <div className="flex gap-3">
-                  <Button round outlined onClick={handleBack} className="flex-1">
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-full"
+                    onClick={handleBack}
+                  >
                     Back
                   </Button>
-                  <Button round onClick={handleConfirm} className="flex-1">
+                  <Button
+                    className="flex-1 rounded-full bg-accent text-white hover:bg-accent/90"
+                    onClick={handleConfirm}
+                  >
                     <Wallet className="mr-2 h-4 w-4" />
                     Sign &amp; Donate
                   </Button>
@@ -531,12 +545,12 @@ export default function SadaqahPage() {
             {step === "processing" && (
               <div className="flex flex-col items-center py-10">
                 <Loader2 className="h-12 w-12 animate-spin text-secondary" />
-                <p className={cn(poppins_500, "mt-4 text-ink")}>
+                <p className={cn(poppins_500.className, "mt-4 text-ink")}>
                   {isProcessing
                     ? "Processing donation…"
                     : "Preparing transaction…"}
                 </p>
-                <p className={cn(poppins_400, "mt-2 text-xs text-ink-muted")}>
+                <p className={cn(poppins_400.className, "mt-2 text-xs text-ink-muted")}>
                   Please check your wallet for the signing request
                 </p>
               </div>
@@ -547,10 +561,10 @@ export default function SadaqahPage() {
                 <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-secondary/10">
                   <CheckCircle className="h-9 w-9 text-secondary" />
                 </div>
-                <h3 className={cn(poppins_600, "mt-4 text-xl text-ink")}>
+                <h3 className={cn(poppins_600.className, "mt-4 text-xl text-ink")}>
                   JazakAllahu Khairan!
                 </h3>
-                <p className={cn(poppins_400, "mt-2 text-ink-muted")}>
+                <p className={cn(poppins_400.className, "mt-2 text-ink-muted")}>
                   Your donation was recorded on the Stellar network.
                 </p>
                 {result?.explorerUrl && (
@@ -559,14 +573,17 @@ export default function SadaqahPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                      poppins_500,
+                      poppins_500.className,
                       "mt-4 inline-flex items-center gap-1 text-sm text-secondary hover:text-highlight"
                     )}
                   >
                     View on Stellar Explorer <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
-                <Button round wide onClick={handleReset} className="mt-6">
+                <Button
+                  className="mt-6 w-full rounded-full bg-accent text-white hover:bg-accent/90"
+                  onClick={handleReset}
+                >
                   Donate Again
                 </Button>
               </div>
@@ -577,11 +594,14 @@ export default function SadaqahPage() {
                 <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-red-50">
                   <AlertCircle className="h-9 w-9 text-red-600" />
                 </div>
-                <h3 className={cn(poppins_600, "mt-4 text-xl text-ink")}>
+                <h3 className={cn(poppins_600.className, "mt-4 text-xl text-ink")}>
                   Donation Failed
                 </h3>
-                <p className={cn(poppins_400, "mt-2 text-ink-muted")}>{error}</p>
-                <Button round wide onClick={handleReset} className="mt-6">
+                <p className={cn(poppins_400.className, "mt-2 text-ink-muted")}>{error}</p>
+                <Button
+                  className="mt-6 w-full rounded-full bg-accent text-white hover:bg-accent/90"
+                  onClick={handleReset}
+                >
                   Try Again
                 </Button>
               </div>
@@ -604,7 +624,7 @@ export default function SadaqahPage() {
               </div>
             ) : statsUnconfigured || statsError ? (
               <div className="rounded-xl border border-dashed border-accent/15 py-8 text-center">
-                <p className={cn(poppins_400, "text-sm text-ink-muted")}>
+                <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>
                   Donation activity is unavailable right now
                 </p>
               </div>
@@ -613,8 +633,8 @@ export default function SadaqahPage() {
                 <div className="mx-auto mb-3 flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/15 to-highlight/10">
                   <HeartHandshake className="h-5 w-5 text-accent" />
                 </div>
-                <p className={cn(poppins_500, "text-ink")}>No donations yet</p>
-                <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
+                <p className={cn(poppins_500.className, "text-ink")}>No donations yet</p>
+                <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>
                   Be the first to give Sadaqah Jariyah
                 </p>
               </div>
@@ -630,15 +650,15 @@ export default function SadaqahPage() {
                         <HeartHandshake className="h-4 w-4 text-accent" />
                       </div>
                       <div>
-                        <p className={cn(poppins_600, "text-ink")}>
+                        <p className={cn(poppins_600.className, "text-ink")}>
                           ${formatAmount(donation.amount)}{" "}
                           <span
-                            className={cn(poppins_400, "text-xs text-ink-muted")}
+                            className={cn(poppins_400.className, "text-xs text-ink-muted")}
                           >
                             USDC
                           </span>
                         </p>
-                        <p className={cn(poppins_400, "text-xs text-ink-muted")}>
+                        <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
                           {formatDate(donation.createdAt)}
                         </p>
                       </div>
@@ -670,7 +690,7 @@ export default function SadaqahPage() {
                     <s.icon className="h-4 w-4 text-accent" />
                   </div>
                   <div className="pt-1">
-                    <p className={cn(poppins_500, "text-sm text-ink")}>
+                    <p className={cn(poppins_500.className, "text-sm text-ink")}>
                       <span className="text-ink-muted">{i + 1}.</span> {s.text}
                     </p>
                   </div>
@@ -679,7 +699,7 @@ export default function SadaqahPage() {
             </ol>
             <p
               className={cn(
-                poppins_400,
+                poppins_400.className,
                 "mt-5 border-t border-accent/10 pt-4 text-xs leading-relaxed text-ink-muted"
               )}
             >
@@ -689,6 +709,6 @@ export default function SadaqahPage() {
           </Panel>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

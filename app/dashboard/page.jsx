@@ -1,4 +1,4 @@
-// app/dashboard/page.jsx
+import { PageShell } from "@/components/ui/page-shell";
 import GreetingCard from "@/components/organisms/dashboard/GreetingCard";
 import PrayerTimesWidget from "@/components/organisms/dashboard/PrayerTimesWidget";
 import StatsOverview from "@/components/organisms/dashboard/StatsOverview";
@@ -9,10 +9,15 @@ import LearningProgress from "@/components/organisms/dashboard/LearningProgress"
 import OngoingSessions from "@/components/organisms/dashboard/OngoingSessions";
 import RecommendedBooks from "@/components/organisms/dashboard/RecommendedBooks";
 import SupportPalestine from "@/components/organisms/dashboard/Supports";
+// Verification status banner — client component island, renders nothing for
+// non-educators and verified educators.
+import VerificationBanner from "@/components/organisms/dashboard/VerificationBanner";
 
 export default function Dashboard() {
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <PageShell>
+      {/* Educator verification CTA — status-aware, dismissible, resumable */}
+      <VerificationBanner />
       <GreetingCard />
       <PrayerTimesWidget />
       <StatsOverview />
@@ -29,6 +34,6 @@ export default function Dashboard() {
           <SupportPalestine />
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
