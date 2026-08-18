@@ -12,6 +12,8 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { searchQuery } from "@/hooks/useSearch";
+import { useCan } from "@/hooks/useCan";
+import { CAPABILITIES } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -90,12 +92,23 @@ const primaryDestinations = [
 ];
 
 const quickActions = [
-  { name: "Create Course", href: "/dashboard/courses/create", icon: PlusCircle },
+  {
+    name: "Create Course",
+    href: "/dashboard/courses/create",
+    icon: PlusCircle,
+    capability: CAPABILITIES.COURSE_CREATE,
+  },
   { name: "Open Wallet", href: "/dashboard/earnings", icon: Wallet },
 ];
 
 export function CommandPalette() {
   const router = useRouter();
+  const { can } = useCan();
+  // Hide capability-gated quick actions the current user can't perform
+  // (defense-in-depth; the server remains the source of truth).
+  const visibleQuickActions = quickActions.filter(
+    (action) => !action.capability || can(action.capability)
+  );
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -566,7 +579,7 @@ export function CommandPalette() {
 
             {/* Quick Actions */}
             <CommandGroup heading="Quick Actions">
-              {quickActions.map((action) => (
+              {visibleQuickActions.map((action) => (
                 <CommandItem
                   key={action.name}
                   value={`action-${action.name}`}

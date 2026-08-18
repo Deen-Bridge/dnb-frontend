@@ -20,6 +20,8 @@ import { fetchBooks } from "@/lib/actions/library/fetch-books";
 import { getBookmarkedBooks } from "@/lib/actions/library/bookmark-book";
 import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
 import useAuth from "@/hooks/useAuth";
+import { useCan } from "@/hooks/useCan";
+import { CAPABILITIES } from "@/lib/auth/roles";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
@@ -63,6 +65,8 @@ const BookGridSkeleton = () => (
 
 const LibraryPageContent = () => {
   const { user } = useAuth();
+  const { can } = useCan();
+  const canCreateBook = can(CAPABILITIES.BOOK_CREATE);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -254,14 +258,16 @@ const LibraryPageContent = () => {
         }
         actions={
           <>
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => setModalOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Create
-            </Button>
+            {canCreateBook && (
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() => setModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Create
+              </Button>
+            )}
             <Button
               variant={showBookmarks ? "default" : "outline"}
               className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
@@ -320,7 +326,7 @@ const LibraryPageContent = () => {
                 Clear filters
               </Button>
             ) : (
-              !showBookmarks && (
+              !showBookmarks && canCreateBook && (
                 <Button
                   variant="outline"
                   className="rounded-full"

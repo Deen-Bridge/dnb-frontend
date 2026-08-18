@@ -12,6 +12,8 @@ import SpaceCreateForm from "@/components/organisms/create/space-create-form";
 import Modal from "@/components/molecules/Modal";
 import { getSpaces } from "@/lib/actions/spaces/get-spaces";
 import useAuth from "@/hooks/useAuth";
+import { useCan } from "@/hooks/useCan";
+import { CAPABILITIES } from "@/lib/auth/roles";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +31,8 @@ const Page = () => {
   const [modalOpen, setmodalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("all");
   const { user } = useAuth();
+  const { can } = useCan();
+  const canCreateSpace = can(CAPABILITIES.SPACE_CREATE);
 
   const fetchSpaces = async () => {
     setLoading(true);
@@ -73,14 +77,16 @@ const Page = () => {
         title="Islamic Spaces"
         subtitle="Join live sessions, discussions, and community events"
         actions={
-          <Button
-            variant="outline"
-            className="rounded-full"
-            onClick={() => setmodalOpen(true)}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Create
-          </Button>
+          canCreateSpace && (
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => setmodalOpen(true)}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              Create
+            </Button>
+          )
         }
       />
 
@@ -117,13 +123,15 @@ const Page = () => {
               : `No ${selectedTab} spaces at the moment.`
           }
           action={
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => setmodalOpen(true)}
-            >
-              Create Space
-            </Button>
+            canCreateSpace && (
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() => setmodalOpen(true)}
+              >
+                Create Space
+              </Button>
+            )
           }
         />
       ) : (

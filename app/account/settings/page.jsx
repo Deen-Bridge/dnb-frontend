@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
 import {
   User,
   Mail,
@@ -432,9 +433,12 @@ const SettingsPage = () => {
                     <p className={cn(poppins_400, "text-ink-muted")}>
                       @{profile.username || user?.username}
                     </p>
-                    <Badge className="mt-2 bg-accent text-white">
-                      {user?.role || "Member"}
-                    </Badge>
+                    <div className="mt-2 flex items-center justify-center gap-2 sm:justify-start">
+                      <Badge className="bg-accent text-white">
+                        {user?.role || "Member"}
+                      </Badge>
+                      <VerifiedBadge user={user} />
+                    </div>
                   </div>
                 </div>
                 <Separator className="bg-accent/10" />
