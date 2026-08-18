@@ -1,7 +1,7 @@
 "use client";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import Button from "@/components/atoms/form/Button";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -104,7 +104,7 @@ const LibraryToolbar = ({
           {resultCount} {resultCount === 1 ? "book" : "books"}
         </p>
         {isFiltered && (
-          <Button round outlined onClick={onClear}>
+          <Button variant="outline" className="rounded-full" onClick={onClear}>
             Clear filters
           </Button>
         )}
