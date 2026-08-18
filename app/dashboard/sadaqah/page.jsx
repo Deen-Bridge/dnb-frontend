@@ -310,6 +310,16 @@ export default function SadaqahPage() {
               <Chip icon={Coins}>USDC on Stellar</Chip>
               <Chip icon={Sparkles}>Funds scholarships</Chip>
             </div>
+            <a
+              href="/transparency"
+              className={cn(
+                poppins_500,
+                "mt-5 inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-colors hover:text-secondary hover:underline"
+              )}
+            >
+              Watch donations arrive live
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
           </div>
         </Panel>
 

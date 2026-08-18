@@ -12,6 +12,16 @@ const getReconnectDelay = (attempts) => {
 
 const getAuthToken = () => Cookies.get("authToken");
 
+/**
+ * useNotificationSSE
+ * ------------------
+ * Real-time notification hook backed by Server-Sent Events.
+ *
+ * Also handles the `verification_status_update` SSE event emitted by
+ * dnb-backend#92 when an educator's application state changes (e.g.
+ * approved, rejected).  Consumers can subscribe via the returned
+ * `onVerificationUpdate` registration helper.
+ */
 export const useNotificationSSE = () => {
   const eventSourceRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
@@ -26,9 +36,21 @@ export const useNotificationSSE = () => {
   const [error, setError] = useState(null);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
-  useEffect(() => {
-    notificationsRef.current = notifications;
-  }, [notifications]);
+  // Registry of callbacks interested in verification status changes.
+  // Stored in a ref so re-renders don't recreate the connectSSE closure.
+  const verificationCallbacksRef = useRef(new Set());
+
+  /**
+   * Register a callback that fires whenever a `verification_status_update`
+   * SSE event arrives.  Returns an unsubscribe function.
+   *
+   * @param {(payload: { status: string, data: object }) => void} cb
+   * @returns {() => void}
+   */
+  const onVerificationUpdate = useCallback((cb) => {
+    verificationCallbacksRef.current.add(cb);
+    return () => verificationCallbacksRef.current.delete(cb);
+  }, []);
 
   const fetchNotifications = useCallback(async () => {
     const token = getAuthToken();
@@ -111,6 +133,18 @@ export const useNotificationSSE = () => {
               prev.map((n) => ({ ...n, isRead: true }))
             );
             setUnreadCount(0);
+          } else if (data.type === "verification_status_update") {
+            // Emitted by dnb-backend#92 when an educator's application
+            // state changes (pending → under_review, under_review → verified,
+            // under_review → rejected, etc.).
+            // Notify all registered subscribers (e.g. useVerificationStatus).
+            verificationCallbacksRef.current.forEach((cb) => {
+              try {
+                cb({ status: data.status, data: data.applicationData ?? {} });
+              } catch (e) {
+                console.error("verification update callback error:", e);
+              }
+            });
           }
         } catch (err) {
           console.error("Error parsing SSE message:", err);
@@ -260,5 +294,7 @@ export const useNotificationSSE = () => {
     deleteNotification,
     reconnect,
     refetch: fetchNotifications,
+    /** Subscribe to educator verification status change events from SSE. */
+    onVerificationUpdate,
   };
 };

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { WALLET_INSTALL_LINKS } from "@/lib/stellar/stellarErrors";
+import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 
 export default function WalletConnectButton({ variant = "outline", size = "default" }) {
   const {
@@ -48,11 +49,7 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
   };
 
   const viewOnExplorer = () => {
-    const baseUrl =
-      network === "mainnet"
-        ? "https://stellar.expert/explorer/public/account/"
-        : "https://stellar.expert/explorer/testnet/account/";
-    window.open(baseUrl + connectedWallet, "_blank");
+    window.open(getExplorerUrl(connectedWallet, network), "_blank");
   };
 
   if (isLoading) {
