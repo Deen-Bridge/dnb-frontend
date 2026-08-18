@@ -3,18 +3,17 @@ import { useEffect, useState } from "react";
 import { GraduationCap, Bookmark, Plus } from "lucide-react";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
-import Button from "@/components/atoms/form/Button";
+import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
+import { CardGrid } from "@/components/ui/card-grid";
+import { EmptyState } from "@/components/ui/empty-state";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { getBookmarkedCourses } from "@/lib/actions/courses/bookmark-course";
 import useAuth from "@/hooks/useAuth";
 import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
 
 export default function CoursesPage() {
   const { user } = useAuth();
@@ -56,91 +55,68 @@ export default function CoursesPage() {
   }
 
   return (
-    <div className="space-y-6 bg-surface p-4 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-            <GraduationCap className="h-5 w-5 text-accent" />
-          </div>
-          <div>
-            <h1
-              className={cn(
-                poppins_600,
-                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
-              )}
+    <PageShell>
+      <PageHeader
+        icon={GraduationCap}
+        title={showBookmarks ? "My Bookmarked Courses" : "All Courses"}
+        subtitle={
+          showBookmarks
+            ? "Courses you've saved for later"
+            : "Browse and enroll in courses"
+        }
+        actions={
+          <>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => (window.location.href = "/dashboard/courses/create")}
             >
-              {showBookmarks ? "My Bookmarked Courses" : "All Courses"}
-            </h1>
-            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-              {showBookmarks
-                ? "Courses you've saved for later"
-                : "Browse and enroll in courses"}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            round
-            outlined
-            onClick={() => (window.location.href = "/dashboard/courses/create")}
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Create
-          </Button>
-          <Button
-            round
-            outlined={!showBookmarks}
-            className={showBookmarks ? "bg-accent text-white" : ""}
-            onClick={() => setShowBookmarks(!showBookmarks)}
-          >
-            <Bookmark className="h-4 w-4 mr-1" />
-            {showBookmarks ? "Show All" : "Bookmarks"}
-          </Button>
-        </div>
-      </div>
+              <Plus className="h-4 w-4 mr-1" />
+              Create
+            </Button>
+            <Button
+              variant={showBookmarks ? "default" : "outline"}
+              className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
+              onClick={() => setShowBookmarks(!showBookmarks)}
+            >
+              <Bookmark className="h-4 w-4 mr-1" />
+              {showBookmarks ? "Show All" : "Bookmarks"}
+            </Button>
+          </>
+        }
+      />
 
       {loading ? (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <CardGrid>
           {[...Array(6)].map((_, idx) => (
             <CourseCardSkeleton key={`skeleton-${idx}`} />
           ))}
-        </div>
+        </CardGrid>
       ) : courses.length === 0 ? (
-        <div className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
-          <div className="flex flex-col items-center justify-center space-y-4 py-16 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
-              <GraduationCap className="h-7 w-7 text-accent" />
-            </div>
-            <div>
-              <h3 className={cn(poppins_600, "text-lg text-ink")}>
-                {showBookmarks ? "No Bookmarked Courses" : "No Courses Yet"}
-              </h3>
-              <p
-                className={cn(
-                  poppins_400,
-                  "mt-1 max-w-md text-sm text-ink-muted"
-                )}
-              >
-                {showBookmarks
-                  ? "Start bookmarking courses you're interested in!"
-                  : "No courses available at the moment."}
-              </p>
-            </div>
-            {!showBookmarks && (
+        <EmptyState
+          icon={GraduationCap}
+          title={showBookmarks ? "No Bookmarked Courses" : "No Courses Yet"}
+          description={
+            showBookmarks
+              ? "Start bookmarking courses you're interested in!"
+              : "No courses available at the moment."
+          }
+          action={
+            !showBookmarks && (
               <Button
-                round
-                outlined
+                variant="outline"
+                className="rounded-full"
                 onClick={() =>
                   (window.location.href = "/dashboard/courses/create")
                 }
               >
                 Create Course
               </Button>
-            )}
-          </div>
-        </div>
+            )
+          }
+        />
       ) : (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <CardGrid>
           {courses
             .filter(
               (course) =>
@@ -158,8 +134,8 @@ export default function CoursesPage() {
                 }}
               />
             ))}
-        </div>
+        </CardGrid>
       )}
-    </div>
+    </PageShell>
   );
 }

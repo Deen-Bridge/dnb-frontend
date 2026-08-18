@@ -14,9 +14,10 @@ The project has two lint passes:
 2. `npm run a11y` — a dedicated accessibility gate that applies
    `eslint-plugin-jsx-a11y` (static, axe-aligned WCAG rules) to the whole
    source tree (`components/**` and `app/**`), excluding route metadata files.
-   Config lives in `eslint.config.a11y.mjs`. The two ESLint plugins it loads
-   (`eslint-plugin-jsx-a11y` and `@next/eslint-plugin-next`) are provided by
-   `eslint-config-next`, so no extra install is required.
+   Config lives in `eslint.config.a11y.mjs`. The ESLint plugins it loads
+   (`eslint-plugin-jsx-a11y`, `@next/eslint-plugin-next`, and
+   `eslint-plugin-react-hooks`) are provided by `eslint-config-next`, so no
+   extra install is required.
 
 Both run in CI (`.github/workflows/ci.yml`). The a11y gate must report zero
 errors before merging.

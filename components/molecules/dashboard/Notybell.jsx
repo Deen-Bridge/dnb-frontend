@@ -1,9 +1,9 @@
-// NOT YET WIRED UP: SSE-backed bell built on hooks/useNotificationSSE.js.
-// The bell currently rendered in the nav is components/atoms/dashboard/Notybell.jsx.
-// Retained deliberately - this is the intended replacement, not dead code.
+// LIVE: SSE-backed notification bell built on hooks/useNotificationSSE.js.
+// Rendered by components/molecules/dashboard/nav-header.jsx.
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Bell, Check, Trash2, RefreshCw } from "lucide-react";
 import { useNotificationSSE } from "@/hooks/useNotificationSSE";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import {
 } from "@/lib/config/font.config";
 
 const NotificationBell = () => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState({
     show: false,
@@ -60,13 +61,13 @@ const NotificationBell = () => {
 
     // Handle navigation based on notification type
     if (notification.data?.courseId) {
-      window.location.href = `/dashboard/courses/${notification.data.courseId}`;
+      router.push(`/dashboard/courses/${notification.data.courseId}`);
     } else if (notification.data?.bookId) {
-      window.location.href = `/dashboard/library/${notification.data.bookId}`;
+      router.push(`/dashboard/library/${notification.data.bookId}`);
     } else if (notification.data?.spaceId) {
-      window.location.href = `/dashboard/spaces/${notification.data.spaceId}`;
+      router.push(`/dashboard/spaces/${notification.data.spaceId}`);
     } else if (notification.data?.reelId) {
-      window.location.href = `/dashboard/reels`;
+      router.push(`/dashboard/reels`);
     }
 
     setIsOpen(false);
@@ -351,7 +352,7 @@ const NotificationBell = () => {
                     )}
                     onClick={() => {
                       setIsOpen(false);
-                      window.location.href = "/account/notifications";
+                      router.push("/account/notifications");
                     }}
                   >
                     View all notifications ({notifications.length})

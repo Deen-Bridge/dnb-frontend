@@ -9,6 +9,8 @@ export default function VerifyEmailPage() {
   const router = useRouter();
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  // Track the verified user's role so we can route them correctly.
+  const [verifiedUser, setVerifiedUser] = useState(null);
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -25,6 +27,7 @@ export default function VerifyEmailPage() {
           setMessage(data.message || "Email verified successfully!");
           if (data.accessToken && data.user) {
             persistSession(data.accessToken, data.user);
+            setVerifiedUser(data.user);
           }
           setStatus("success");
         } else {
@@ -37,6 +40,19 @@ export default function VerifyEmailPage() {
         setMessage("An error occurred. Please try again.");
       });
   }, [searchParams]);
+
+  /**
+   * Route based on role:
+   *   educator → /educator-onboarding  (liveness verification wizard)
+   *   everyone else → /dashboard
+   */
+  const handleContinue = () => {
+    if (verifiedUser?.role === "educator") {
+      router.push("/educator-onboarding");
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -57,11 +73,19 @@ export default function VerifyEmailPage() {
             </div>
             <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
             <p className="text-muted-foreground">{message}</p>
+            {verifiedUser?.role === "educator" && (
+              <p className="text-sm text-muted-foreground rounded-lg border border-border bg-muted/40 px-4 py-3 text-left">
+                Next step: complete a quick identity verification so your
+                educator application can be reviewed.
+              </p>
+            )}
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={handleContinue}
               className="inline-block px-6 py-3 bg-accent text-white rounded-lg hover:bg-highlight transition-colors"
             >
-              Go to Dashboard
+              {verifiedUser?.role === "educator"
+                ? "Continue to verification"
+                : "Go to Dashboard"}
             </button>
           </div>
         )}
