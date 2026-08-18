@@ -12,6 +12,7 @@ const columns = [
       { name: "Library", href: "/dashboard/library" },
       { name: "Community Spaces", href: "/dashboard/spaces" },
       { name: "Sadaqah Fund", href: "/dashboard/sadaqah" },
+      { name: "Sadaqah Transparency", href: "/transparency" },
       { name: "AI Assistant", href: "/ai" },
     ],
   },
