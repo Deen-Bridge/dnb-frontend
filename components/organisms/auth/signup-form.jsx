@@ -50,6 +50,7 @@ export function SignupForm({ className, ...props }) {
   const [error, setError] = useState("");
   const [registered, setRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [registeredRole, setRegisteredRole] = useState("");
 
   const form = useForm({
     resolver: zodResolver(signupSchemaWithPolicy),
@@ -68,6 +69,7 @@ export function SignupForm({ className, ...props }) {
     try {
       await signup(data.name, data.email, data.password, data.role);
       setRegisteredEmail(data.email);
+      setRegisteredRole(data.role);
       setRegistered(true);
     } catch (err) {
       setError(err?.message || "Signup failed. Please try again.");
@@ -88,8 +90,15 @@ export function SignupForm({ className, ...props }) {
           We sent a verification link to <strong>{registeredEmail}</strong>.
           Click the link to activate your account.
         </p>
+        {registeredRole === "educator" && (
+          <p className="text-xs text-muted-foreground max-w-sm rounded-lg border border-border bg-muted/40 px-4 py-3">
+            As an educator, you will be guided through a quick identity
+            verification step after confirming your email. This is required
+            before your application can be reviewed.
+          </p>
+        )}
         <p className="text-xs text-muted-foreground">
-          Didn't receive it? Check your spam folder.
+          Didn&apos;t receive it? Check your spam folder.
         </p>
       </div>
     );
@@ -157,6 +166,7 @@ export function SignupForm({ className, ...props }) {
                     <SelectContent>
                       <SelectItem value="student">Student</SelectItem>
                       <SelectItem value="mentor">Mentor</SelectItem>
+                      <SelectItem value="educator">Educator</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

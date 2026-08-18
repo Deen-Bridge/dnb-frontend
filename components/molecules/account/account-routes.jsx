@@ -11,7 +11,8 @@ import {
     MessageCircleQuestion,
     BellDotIcon,
     ShieldCheck,
-    HelpCircle
+    HelpCircle,
+    BadgeCheck,
 } from "lucide-react";
 import {
     SidebarGroup,
@@ -54,6 +55,14 @@ const AccountRouter = () => {
             link: "/account/notifications",
             icon: BellDotIcon
         },
+        // Only shown for educators — the page itself handles non-educator states gracefully
+        ...(currentUser?.role === "educator"
+            ? [{
+                name: "Verification",
+                link: "/account/verification",
+                icon: BadgeCheck,
+            }]
+            : []),
         {
             name: "Support",
             link: "/account/support",
