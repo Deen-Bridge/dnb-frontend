@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import Cookies from "js-cookie";
+import axiosInstance from "@/lib/config/axios.config";
+import { config } from "@/lib/config/env";
+
+const MAX_RECONNECT_ATTEMPTS = 5;
+const RECONNECT_DELAY = 1000;
+
+const getReconnectDelay = (attempts) => {
+  return Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000);
+};
+
+const getAuthToken = () => Cookies.get("authToken");
 
 /**
  * useNotificationSSE
@@ -15,7 +26,8 @@ export const useNotificationSSE = () => {
   const eventSourceRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const connectSSERef = useRef(null);
-  const { token } = useAuth();
+  const reconnectAttemptsRef = useRef(0);
+  const notificationsRef = useRef([]);
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -23,10 +35,6 @@ export const useNotificationSSE = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
-  const [lastEventId, setLastEventId] = useState(null);
-
-  const MAX_RECONNECT_ATTEMPTS = 5;
-  const RECONNECT_DELAY = 1000;
 
   // Registry of callbacks interested in verification status changes.
   // Stored in a ref so re-renders don't recreate the connectSSE closure.
@@ -44,58 +52,59 @@ export const useNotificationSSE = () => {
     return () => verificationCallbacksRef.current.delete(cb);
   }, []);
 
-  const getReconnectDelay = (attempts) => {
-    return Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000);
-  };
-
   const fetchNotifications = useCallback(async () => {
+    const token = getAuthToken();
     if (!token) return;
 
     try {
       setIsLoading(true);
-      const response = await fetch("/api/notifications", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      const response = await axiosInstance.get("/api/notifications", {
+        params: { page: 1, limit: 50 },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch notifications");
-      }
-
-      const data = await response.json();
-      setNotifications(data.notifications || []);
-      setUnreadCount(data.notifications?.filter((n) => !n.isRead).length || 0);
+      const data = response.data || {};
+      const items = data.notifications || [];
+      setNotifications(items);
+      setUnreadCount(
+        data.unreadCount ?? items.filter((n) => !n.isRead).length
+      );
       setError(null);
     } catch (err) {
       console.error("Error fetching notifications:", err);
-      setError(err.message);
+      setError(err?.response?.data?.message || err.message);
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const connectSSE = useCallback(() => {
+    const token = getAuthToken();
     if (!token || eventSourceRef.current) return;
 
     try {
-      const eventSource = new EventSource(
-        `/api/notifications/sse?token=${token}`
-      );
+      // EventSource cannot send an Authorization header, so the JWT is passed
+      // as a query param. The backend's /api/notifications/sse route reads
+      // req.query.token via its sseAuth middleware
+      // (dnb-backend/src/routes/notificationRoutes.js), so this is the
+      // supported path. Tradeoff: the token is exposed in server/proxy logs
+      // for this request. A short-lived SSE ticket would be cleaner but is
+      // not implemented on the backend yet.
+      const sseUrl = `${config.apiUrl}/api/notifications/sse?token=${encodeURIComponent(
+        token
+      )}`;
+      const eventSource = new EventSource(sseUrl);
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {
-        console.log("SSE connection established");
         setIsConnected(true);
         setError(null);
+        reconnectAttemptsRef.current = 0;
         setReconnectAttempts(0);
       };
 
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          setLastEventId(event.lastEventId);
 
           if (data.type === "new_notification") {
             setNotifications((prev) => [data.notification, ...prev]);
@@ -142,16 +151,16 @@ export const useNotificationSSE = () => {
         }
       };
 
-      eventSource.onerror = (err) => {
-        console.error("SSE error:", err);
+      eventSource.onerror = () => {
         setIsConnected(false);
         eventSource.close();
         eventSourceRef.current = null;
 
-        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-          const delay = getReconnectDelay(reconnectAttempts);
+        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+          const delay = getReconnectDelay(reconnectAttemptsRef.current);
           reconnectTimeoutRef.current = setTimeout(() => {
-            setReconnectAttempts((prev) => prev + 1);
+            reconnectAttemptsRef.current += 1;
+            setReconnectAttempts(reconnectAttemptsRef.current);
             connectSSERef.current?.();
           }, delay);
         } else {
@@ -162,9 +171,9 @@ export const useNotificationSSE = () => {
       };
     } catch (err) {
       console.error("Error creating SSE connection:", err);
-      setError(err.message);
+      setError(err?.message || "Failed to connect to notification service");
     }
-  }, [token, reconnectAttempts]);
+  }, []);
 
   connectSSERef.current = connectSSE;
 
@@ -181,115 +190,83 @@ export const useNotificationSSE = () => {
     setIsConnected(false);
   }, []);
 
-  // Mark notification as read
-  const markAsRead = useCallback(
-    async (notificationId) => {
-      if (!token) return;
-
-      try {
-        const response = await fetch(
-          `/api/notifications/${notificationId}/read`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to mark notification as read");
-        }
-
-        // Optimistically update UI
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n._id === notificationId ? { ...n, isRead: true } : n
-          )
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
-      } catch (err) {
-        console.error("Error marking notification as read:", err);
-        // Revert optimistic update on error
-        fetchNotifications();
-      }
-    },
-    [token, fetchNotifications]
-  );
-
-  // Mark all notifications as read
-  const markAllAsRead = useCallback(async () => {
+  // Mark notification as read (optimistic, with rollback on failure)
+  const markAsRead = useCallback(async (notificationId) => {
+    const token = getAuthToken();
     if (!token) return;
 
+    const previous = notificationsRef.current;
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n._id === notificationId ? { ...n, isRead: true } : n
+      )
+    );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+
     try {
-      const response = await fetch("/api/notifications/mark-all-read", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await axiosInstance.put(`/api/notifications/${notificationId}/read`);
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+      setNotifications(previous);
+      setUnreadCount(previous.filter((n) => !n.isRead).length);
+    }
+  }, []);
 
-      if (!response.ok) {
-        throw new Error("Failed to mark all notifications as read");
-      }
+  // Mark all notifications as read (optimistic, with rollback on failure)
+  const markAllAsRead = useCallback(async () => {
+    const token = getAuthToken();
+    if (!token) return;
 
-      // Optimistically update UI
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnreadCount(0);
+    const previous = notificationsRef.current;
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+
+    try {
+      await axiosInstance.put("/api/notifications/mark-all-read");
     } catch (err) {
       console.error("Error marking all notifications as read:", err);
-      // Revert optimistic update on error
-      fetchNotifications();
+      setNotifications(previous);
+      setUnreadCount(previous.filter((n) => !n.isRead).length);
     }
-  }, [token, fetchNotifications]);
+  }, []);
 
-  // Delete notification
-  const deleteNotification = useCallback(
-    async (notificationId) => {
-      if (!token) return;
+  // Delete notification (optimistic, with rollback on failure)
+  const deleteNotification = useCallback(async (notificationId) => {
+    const token = getAuthToken();
+    if (!token) return;
 
-      try {
-        const response = await fetch(`/api/notifications/${notificationId}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+    const previous = notificationsRef.current;
+    setNotifications((prev) =>
+      prev.filter((n) => n._id !== notificationId)
+    );
+    setUnreadCount((prev) => {
+      const deletedNotification = previous.find(
+        (n) => n._id === notificationId
+      );
+      return deletedNotification && !deletedNotification.isRead
+        ? Math.max(0, prev - 1)
+        : prev;
+    });
 
-        if (!response.ok) {
-          throw new Error("Failed to delete notification");
-        }
-
-        // Optimistically update UI
-        const deletedNotification = notifications.find(
-          (n) => n._id === notificationId
-        );
-        setNotifications((prev) =>
-          prev.filter((n) => n._id !== notificationId)
-        );
-        if (deletedNotification && !deletedNotification.isRead) {
-          setUnreadCount((prev) => Math.max(0, prev - 1));
-        }
-      } catch (err) {
-        console.error("Error deleting notification:", err);
-        // Revert optimistic update on error
-        fetchNotifications();
-      }
-    },
-    [token, notifications, fetchNotifications]
-  );
+    try {
+      await axiosInstance.delete(`/api/notifications/${notificationId}`);
+    } catch (err) {
+      console.error("Error deleting notification:", err);
+      setNotifications(previous);
+      setUnreadCount(previous.filter((n) => !n.isRead).length);
+    }
+  }, []);
 
   const reconnect = useCallback(() => {
     disconnectSSE();
+    reconnectAttemptsRef.current = 0;
     setReconnectAttempts(0);
     setError(null);
     connectSSERef.current?.();
   }, [disconnectSSE]);
 
   useEffect(() => {
+    const token = getAuthToken();
     if (token) {
       fetchNotifications();
       connectSSERef.current?.();
@@ -303,14 +280,7 @@ export const useNotificationSSE = () => {
     return () => {
       disconnectSSE();
     };
-  }, [token, fetchNotifications, disconnectSSE]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      disconnectSSE();
-    };
-  }, [disconnectSSE]);
+  }, [fetchNotifications, disconnectSSE]);
 
   return {
     notifications,
