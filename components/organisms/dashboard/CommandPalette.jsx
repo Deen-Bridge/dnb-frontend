@@ -40,6 +40,7 @@ import {
   Loader2,
   AlertCircle,
   ArrowRight,
+  LayoutGrid,
 } from "lucide-react";
 
 const RECENT_SEARCHES_KEY = "dnb_recent_searches";
@@ -81,6 +82,7 @@ const getTypeIcon = (type) => {
 const primaryDestinations = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Courses", href: "/dashboard/courses", icon: LaptopMinimal },
+  { name: "Categories", href: "/dashboard/courses/categories", icon: LayoutGrid },
   { name: "Library", href: "/dashboard/library", icon: Book },
   { name: "Saved", href: "/dashboard/saved", icon: Bookmark },
   { name: "Spaces", href: "/dashboard/spaces", icon: AudioWaveform },

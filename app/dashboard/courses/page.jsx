@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { GraduationCap, Bookmark, Plus } from "lucide-react";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
@@ -15,17 +16,42 @@ import { useCan } from "@/hooks/useCan";
 import { CAPABILITIES } from "@/lib/auth/roles";
 import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
+import {
+  ISLAMIC_CATEGORIES,
+  resolveCategorySlug,
+  sortCourses,
+} from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
-export default function CoursesPage() {
+const CourseGridSkeleton = () => (
+  <CardGrid>
+    {[...Array(6)].map((_, idx) => (
+      <CourseCardSkeleton key={`skeleton-${idx}`} />
+    ))}
+  </CardGrid>
+);
+
+const CoursesPageContent = () => {
   const { user } = useAuth();
   const { can } = useCan();
   const canCreateCourse = can(CAPABILITIES.COURSE_CREATE);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { progressMap } = useAllCourseProgress();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
+  const [category, setCategory] = useState(
+    () => searchParams.get("category") || ""
+  );
+  const [sort, setSort] = useState(() => searchParams.get("sort") || "newest");
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get("search") || ""
+  );
+
+  const search = useDebouncedValue(searchInput, 300);
 
   const fetchData = async () => {
     setLoading(true);
@@ -48,6 +74,52 @@ export default function CoursesPage() {
   useEffect(() => {
     fetchData();
   }, [showBookmarks]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (search.trim()) params.set("search", search.trim());
+    if (category) params.set("category", category);
+    if (sort !== "newest") params.set("sort", sort);
+    const query = params.toString();
+    router.replace(query ? `?${query}` : "/dashboard/courses", {
+      scroll: false,
+    });
+  }, [search, category, sort, router]);
+
+  const filteredCourses = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    const result = courses.filter((course) => {
+      if (!showBookmarks && course?.createdBy?._id === user?._id) return false;
+
+      if (category && resolveCategorySlug(course?.category) !== category) {
+        return false;
+      }
+
+      if (term) {
+        const title = String(course?.title || "").toLowerCase();
+        const description = String(course?.description || "").toLowerCase();
+        const instructor = String(course?.createdBy?.name || "").toLowerCase();
+        if (
+          !title.includes(term) &&
+          !description.includes(term) &&
+          !instructor.includes(term)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    return sortCourses(result, sort);
+  }, [courses, search, category, sort, showBookmarks, user?._id]);
+
+  const handleClearFilters = () => {
+    setSearchInput("");
+    setCategory("");
+    setSort("newest");
+  };
 
   if (error) {
     return (
@@ -92,12 +164,60 @@ export default function CoursesPage() {
         }
       />
 
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+        <button
+          type="button"
+          onClick={() => setCategory("")}
+          className={cn(
+            "shrink-0 rounded-full border px-4 py-2 text-sm transition-colors",
+            !category
+              ? "bg-accent text-white border-accent"
+              : "border-accent/20 bg-surface-raised text-ink hover:border-secondary/40"
+          )}
+        >
+          All
+        </button>
+        {ISLAMIC_CATEGORIES.map((cat) => (
+          <button
+            key={cat.slug}
+            type="button"
+            onClick={() => setCategory(cat.slug)}
+            className={cn(
+              "shrink-0 rounded-full border px-4 py-2 text-sm transition-colors",
+              category === cat.slug
+                ? "bg-accent text-white border-accent"
+                : "border-accent/20 bg-surface-raised text-ink hover:border-secondary/40"
+            )}
+          >
+            {cat.shortLabel || cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          aria-label="Filter courses"
+          type="text"
+          placeholder="Search courses..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          className="w-full sm:w-64 rounded-full border border-accent/20 bg-surface-raised px-4 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
+        <select
+          aria-label="Sort courses"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="rounded-full border border-accent/20 bg-surface-raised px-4 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <option value="newest">Newest</option>
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="rating">Highest rated</option>
+        </select>
+      </div>
+
       {loading ? (
-        <CardGrid>
-          {[...Array(6)].map((_, idx) => (
-            <CourseCardSkeleton key={`skeleton-${idx}`} />
-          ))}
-        </CardGrid>
+        <CourseGridSkeleton />
       ) : courses.length === 0 ? (
         <EmptyState
           icon={GraduationCap}
@@ -121,27 +241,47 @@ export default function CoursesPage() {
             )
           }
         />
+      ) : filteredCourses.length === 0 ? (
+        <EmptyState
+          icon={GraduationCap}
+          title="No Matching Courses"
+          description="No courses match your filters. Try widening your search."
+          action={
+            <Button variant="outline" className="rounded-full" onClick={handleClearFilters}>
+              Clear filters
+            </Button>
+          }
+        />
       ) : (
         <CardGrid>
-          {courses
-            .filter(
-              (course) =>
-                showBookmarks || course?.createdBy?._id !== user?._id
-            )
-            .map((course) => (
-              <CourseCard
-                key={course._id}
-                course={course}
-                progress={progressMap[course._id]}
-                onBookmarkChange={(isBookmarked) => {
-                  if (showBookmarks && !isBookmarked) {
-                    setCourses(courses.filter((c) => c._id !== course._id));
-                  }
-                }}
-              />
-            ))}
+          {filteredCourses.map((course) => (
+            <CourseCard
+              key={course._id}
+              course={course}
+              progress={progressMap[course._id]}
+              onBookmarkChange={(isBookmarked) => {
+                if (showBookmarks && !isBookmarked) {
+                  setCourses(courses.filter((c) => c._id !== course._id));
+                }
+              }}
+            />
+          ))}
         </CardGrid>
       )}
     </PageShell>
   );
-}
+};
+
+const CoursesPage = () => (
+  <Suspense
+    fallback={
+      <div className="bg-surface p-4 sm:p-6">
+        <CourseGridSkeleton />
+      </div>
+    }
+  >
+    <CoursesPageContent />
+  </Suspense>
+);
+
+export default CoursesPage;

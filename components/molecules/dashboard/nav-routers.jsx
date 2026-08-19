@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   DollarSign,
   Bookmark,
+  LayoutGrid,
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -32,6 +33,11 @@ const links = [
     name: "Courses",
     link: "/dashboard/courses",
     icon: LaptopMinimal,
+  },
+  {
+    name: "Categories",
+    link: "/dashboard/courses/categories",
+    icon: LayoutGrid,
   },
   {
     name: "Library",
