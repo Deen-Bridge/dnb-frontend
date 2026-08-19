@@ -26,28 +26,12 @@ import {
   poppins_500,
   poppins_600,
 } from "@/lib/config/font.config";
+import { useFormatter } from "next-intl";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import useStellarDonation from "@/hooks/useStellarDonation";
 import Sep7QrCode from "@/components/stellar/Sep7QrCode";
 
 const PRESET_AMOUNTS = [5, 10, 25, 100];
-
-const formatAmount = (value) => {
-  const num = parseFloat(value || 0);
-  return num.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
-
-const formatDate = (dateString) =>
-  new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 
 /* ── building blocks ── */
 
@@ -92,6 +76,24 @@ const HOW_IT_WORKS = [
 ];
 
 export default function SadaqahPage() {
+  // Locale-aware money/date formatting via next-intl (was hardcoded "en-US").
+  // Under `/ar` these resolve through the Arabic locale; every rendered amount
+  // is additionally wrapped in `dir="ltr"` so the value never visually reverses.
+  const format = useFormatter();
+  const formatAmount = (value) =>
+    format.number(parseFloat(value || 0), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  const formatDate = (dateString) =>
+    format.dateTime(new Date(dateString), {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
   const { connectedWallet, walletInfo, connectWallet, network, isConnecting } =
     useStellar();
   const {
@@ -242,10 +244,13 @@ export default function SadaqahPage() {
           >
             Scholarship Pool Balance
           </p>
-          <p className={cn(poppins_600.className, "mt-1 text-4xl leading-none")}>
+          <p
+            dir="ltr"
+            className={cn(poppins_600.className, "mt-1 text-4xl leading-none")}
+          >
             ${formatAmount(stats?.poolBalance)}
             <span
-              className={cn(poppins_500.className, "ml-1 text-lg text-ink-inverse-muted")}
+              className={cn(poppins_500.className, "ms-1 text-lg text-ink-inverse-muted")}
             >
               USDC
             </span>
@@ -255,7 +260,10 @@ export default function SadaqahPage() {
               <p className={cn(poppins_400.className, "text-[11px] text-ink-inverse-muted")}>
                 Total donated
               </p>
-              <p className={cn(poppins_600.className, "text-base text-ink-inverse")}>
+              <p
+                dir="ltr"
+                className={cn(poppins_600.className, "text-base text-ink-inverse")}
+              >
                 ${formatAmount(stats?.totalDonated)}
               </p>
             </div>
@@ -451,7 +459,9 @@ export default function SadaqahPage() {
                           hasInsufficientBalance ? "text-red-600" : "text-ink"
                         )}
                       >
-                        {formatAmount(walletInfo?.usdcBalance)} USDC
+                        <span dir="ltr">
+                          {formatAmount(walletInfo?.usdcBalance)} USDC
+                        </span>
                       </span>
                     </div>
                     <span
@@ -503,7 +513,7 @@ export default function SadaqahPage() {
                     <span className={cn(poppins_400.className, "text-ink-muted")}>
                       Donating:
                     </span>
-                    <span className={cn(poppins_600.className, "text-ink")}>
+                    <span dir="ltr" className={cn(poppins_600.className, "text-ink")}>
                       ${formatAmount(donationData.amount)} USDC
                     </span>
                   </div>
@@ -650,7 +660,7 @@ export default function SadaqahPage() {
                         <HeartHandshake className="h-4 w-4 text-accent" />
                       </div>
                       <div>
-                        <p className={cn(poppins_600.className, "text-ink")}>
+                        <p dir="ltr" className={cn(poppins_600.className, "text-ink")}>
                           ${formatAmount(donation.amount)}{" "}
                           <span
                             className={cn(poppins_400.className, "text-xs text-ink-muted")}
@@ -658,7 +668,10 @@ export default function SadaqahPage() {
                             USDC
                           </span>
                         </p>
-                        <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
+                        <p
+                          dir="ltr"
+                          className={cn(poppins_400.className, "text-xs text-ink-muted")}
+                        >
                           {formatDate(donation.createdAt)}
                         </p>
                       </div>

@@ -21,7 +21,7 @@ export function SidebarLeft({
     const { user } = useAuth();
     return (
         <nav aria-label="Primary">
-            <Sidebar className="border-r-0" {...props}>
+            <Sidebar className="border-e-0" {...props}>
                 <SidebarHeader>
                     <DnbLogo />
                     <NavMain items={data.navMain} />

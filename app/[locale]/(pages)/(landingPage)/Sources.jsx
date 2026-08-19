@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -9,41 +10,21 @@ import {
 } from "@/lib/config/font.config";
 
 // The tradition our educators actually teach from. Deliberately not a partner
-// or endorsement list — every claim here is one we can stand behind.
+// or endorsement list — every claim here is one we can stand behind. The
+// oversized `ar` script is decorative and identical across locales, so it stays
+// in the static array; the translatable title/desc live in the message catalog.
 const sources = [
-  {
-    ar: "القرآن",
-    title: "Qur’an & Tafsir",
-    desc: "The Book of Allah first, read alongside the tafsir of scholars who spent their lives with it.",
-  },
-  {
-    ar: "الحديث",
-    title: "Hadith & Sunnah",
-    desc: "The six collections — Bukhari, Muslim, Abu Dawud, at-Tirmidhi, an-Nasa’i, and Ibn Majah.",
-  },
-  {
-    ar: "الفقه",
-    title: "Fiqh",
-    desc: "The four madhhabs — Hanafi, Maliki, Shafi‘i, and Hanbali — taught with their evidences, not in isolation.",
-  },
-  {
-    ar: "العقيدة",
-    title: "Aqeedah",
-    desc: "Creed drawn from the primary texts and the understanding of the earliest generations.",
-  },
-  {
-    ar: "السيرة",
-    title: "Seerah",
-    desc: "The life of the Prophet ﷺ taken from the classical biographies rather than retellings of retellings.",
-  },
-  {
-    ar: "التزكية",
-    title: "Tazkiyah",
-    desc: "Purification of the heart, in the tradition of al-Ghazali and Ibn al-Qayyim.",
-  },
+  { id: "quran", ar: "القرآن" },
+  { id: "hadith", ar: "الحديث" },
+  { id: "fiqh", ar: "الفقه" },
+  { id: "aqeedah", ar: "العقيدة" },
+  { id: "seerah", ar: "السيرة" },
+  { id: "tazkiyah", ar: "التزكية" },
 ];
 
 export default function Sources() {
+  const t = useTranslations("landing.sources");
+
   return (
     <section className="relative w-full overflow-hidden bg-surface py-20 sm:py-28 px-4 sm:px-6">
       {/* Geometric motif — a dot lattice plus crossed diagonals, drawn in the
@@ -56,7 +37,7 @@ export default function Sources() {
         <div
           className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(45deg,rgba(0,153,0,0.06)_0_1px,transparent_1px_28px),repeating-linear-gradient(-45deg,rgba(0,153,0,0.06)_0_1px,transparent_1px_28px)]"
         />
-        <div className="absolute left-1/2 top-0 h-1/2 w-2/3 -translate-x-1/2 rounded-full bg-gradient-to-b from-secondary/10 to-transparent blur-3xl" />
+        <div className="absolute start-1/2 top-0 h-1/2 w-2/3 -translate-x-1/2 rounded-full bg-gradient-to-b from-secondary/10 to-transparent blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl">
@@ -74,7 +55,7 @@ export default function Sources() {
               "mb-4 inline-flex items-center rounded-full border border-accent/20 bg-secondary/10 px-4 py-1.5 text-sm text-accent"
             )}
           >
-            Rooted in the tradition
+            {t("badge")}
           </span>
 
           <h2
@@ -83,7 +64,7 @@ export default function Sources() {
               "mb-4 bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text pb-2 text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl font-stretch-125%"
             )}
           >
-            Authentic Sources
+            {t("title")}
           </h2>
 
           <p
@@ -92,9 +73,7 @@ export default function Sources() {
               "mx-auto max-w-3xl text-lg leading-relaxed text-ink-muted md:text-xl font-stretch-110%"
             )}
           >
-            Everything taught on DeenBridge traces back to where the tradition
-            has always drawn from. No shortcuts, no second-hand summaries —
-            just the sources our scholars have relied on for fourteen centuries.
+            {t("description")}
           </p>
         </motion.div>
 
@@ -102,7 +81,7 @@ export default function Sources() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {sources.map((s, i) => (
             <motion.article
-              key={s.title}
+              key={s.id}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -114,7 +93,7 @@ export default function Sources() {
                 lang="ar"
                 dir="rtl"
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-2 -top-4 select-none text-7xl leading-none text-accent/[0.07] transition-all duration-500 group-hover:text-accent/[0.14] sm:text-8xl"
+                className="pointer-events-none absolute -end-2 -top-4 select-none text-7xl leading-none text-accent/[0.07] transition-all duration-500 group-hover:text-accent/[0.14] sm:text-8xl"
               >
                 {s.ar}
               </span>
@@ -134,7 +113,7 @@ export default function Sources() {
                     "mb-2 text-xl text-ink font-stretch-110%"
                   )}
                 >
-                  {s.title}
+                  {t(`items.${s.id}.title`)}
                 </h3>
 
                 <p
@@ -143,7 +122,7 @@ export default function Sources() {
                     "text-sm leading-relaxed text-ink-muted font-stretch-110%"
                   )}
                 >
-                  {s.desc}
+                  {t(`items.${s.id}.desc`)}
                 </p>
               </div>
 
