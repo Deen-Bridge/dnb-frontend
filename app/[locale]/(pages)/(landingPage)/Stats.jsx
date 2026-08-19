@@ -3,37 +3,30 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { BookOpen, Globe2, Radio, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const stats = [
   {
+    id: "learners",
     k: "12K+",
-    v: "Muslims Learning",
     icon: Users,
-    description:
-      "Brothers and sisters studying together, at their own pace, every day",
   },
   {
+    id: "resources",
     k: "850+",
-    v: "Courses & Books",
     icon: BookOpen,
-    description:
-      "Authentic resources curated by scholars and verified teachers",
   },
   {
+    id: "spaces",
     k: "300+",
-    v: "Live Spaces Monthly",
     icon: Radio,
-    description:
-      "Halaqahs, tafsir circles, and open Q&As hosted across time zones",
   },
   {
+    id: "countries",
     k: "40+",
-    v: "Countries Connected",
     icon: Globe2,
-    description:
-      "One Ummah, learning side by side from wherever they call home",
   },
 ];
 
@@ -80,7 +73,10 @@ function AnimatedCounter({ value }) {
   );
 }
 
-const Stats = () => (
+const Stats = () => {
+  const t = useTranslations("landing.stats");
+
+  return (
   <section className="relative mx-auto max-w-7xl px-4 py-20 sm:py-28 bg-surface backdrop-blur-xl">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -98,17 +94,16 @@ const Stats = () => (
           "mb-4 inline-block rounded-full border border-accent/20 bg-secondary/10 px-4 py-1.5 text-sm text-accent backdrop-blur-sm"
         )}
       >
-        Our Community
+        {t("badge")}
       </motion.span>
       <h2 className={cn(
         poppins_600,
         "pb-5 bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl font-stretch-125%"
       )}>
-        Growing Together in Faith
+        {t("title")}
       </h2>
       <p className={cn(poppins_400, "mx-auto mt-4 max-w-2xl text-lg text-ink-muted font-stretch-110%")}>
-        Numbers that reflect our commitment to connecting Muslims worldwide through
-        authentic knowledge, meaningful conversations, and spiritual growth
+        {t("subtitle")}
       </p>
     </motion.div>
 
@@ -170,14 +165,14 @@ const Stats = () => (
               <p
                 className={cn(poppins_500, "mb-2 text-base text-ink-inverse font-stretch-110%")}
               >
-                {s.v}
+                {t(`items.${s.id}.label`)}
               </p>
 
               {/* Description */}
               <p
                 className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}
               >
-                {s.description}
+                {t(`items.${s.id}.description`)}
               </p>
             </div>
           </div>
@@ -185,6 +180,7 @@ const Stats = () => (
       ))}
     </div>
   </section>
-);
+  );
+};
 
 export default Stats;

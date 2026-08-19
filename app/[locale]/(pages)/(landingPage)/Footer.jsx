@@ -1,4 +1,5 @@
 import { FaTwitter, FaGithub } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Link from "next/link";
@@ -6,50 +7,52 @@ import Image from "next/image";
 
 const columns = [
   {
-    heading: "Platform",
+    id: "platform",
     links: [
-      { name: "Courses", href: "/dashboard/courses" },
-      { name: "Library", href: "/dashboard/library" },
-      { name: "Community Spaces", href: "/dashboard/spaces" },
-      { name: "Sadaqah Fund", href: "/dashboard/sadaqah" },
-      { name: "Sadaqah Transparency", href: "/transparency" },
-      { name: "AI Assistant", href: "/ai" },
+      { id: "courses", href: "/dashboard/courses" },
+      { id: "library", href: "/dashboard/library" },
+      { id: "spaces", href: "/dashboard/spaces" },
+      { id: "sadaqah", href: "/dashboard/sadaqah" },
+      { id: "transparency", href: "/transparency" },
+      { id: "ai", href: "/ai" },
     ],
   },
   {
-    heading: "Company",
+    id: "company",
     links: [
-      { name: "About", href: "/about" },
-      { name: "Features", href: "/features" },
-      { name: "Educators", href: "/educators" },
-      { name: "Blog", href: "/blog" },
-      { name: "Contact", href: "/contact" },
+      { id: "about", href: "/about" },
+      { id: "features", href: "/features" },
+      { id: "educators", href: "/educators" },
+      { id: "blog", href: "/blog" },
+      { id: "contact", href: "/contact" },
     ],
   },
   {
-    heading: "Build",
+    id: "build",
     links: [
-      { name: "Payments on Stellar", href: "/stellar" },
-      { name: "Open Source", href: "https://github.com/Deen-Bridge" },
-      { name: "Become an Educator", href: "/signup" },
+      { id: "stellar", href: "/stellar" },
+      { id: "openSource", href: "https://github.com/Deen-Bridge" },
+      { id: "becomeEducator", href: "/signup" },
     ],
   },
 ];
 
 const socials = [
   {
+    id: "github",
     icon: <FaGithub />,
     href: "https://github.com/Deen-Bridge",
-    label: "Deen Bridge on GitHub",
   },
   {
+    id: "x",
     icon: <FaTwitter />,
     href: "https://x.com/deen_bridge",
-    label: "Deen Bridge on X",
   },
 ];
 
 export default function Footer() {
+  const t = useTranslations("landing.footer");
+
   return (
     <footer
       id="contact"
@@ -89,19 +92,17 @@ export default function Footer() {
                 "mb-6 max-w-sm text-sm leading-relaxed text-ink-inverse-muted"
               )}
             >
-              A trusted home for learners and educators across the Ummah.
-              Authentic courses, a growing library, and live spaces — built in
-              the open, and paid out on Stellar.
+              {t("tagline")}
             </p>
 
             <div className="flex items-center gap-3 text-xl">
               {socials.map((s) => (
                 <Link
-                  key={s.label}
+                  key={s.id}
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={s.label}
+                  aria-label={t(`socials.${s.id}`)}
                   className="rounded-full border border-secondary/25 p-2.5 transition-all hover:border-secondary hover:bg-secondary/10 hover:text-ink-inverse"
                 >
                   {s.icon}
@@ -112,23 +113,23 @@ export default function Footer() {
 
           {/* Link columns */}
           {columns.map((col) => (
-            <div key={col.heading}>
+            <div key={col.id}>
               <h3
                 className={cn(
                   poppins_600,
                   "mb-4 text-sm uppercase tracking-wider text-ink-inverse"
                 )}
               >
-                {col.heading}
+                {t(`columns.${col.id}.heading`)}
               </h3>
               <ul className={cn(poppins_400, "space-y-3 text-sm")}>
                 {col.links.map((link) => (
-                  <li key={link.name}>
+                  <li key={link.id}>
                     <Link
                       href={link.href}
                       className="text-ink-inverse-muted transition-colors duration-300 hover:text-ink-inverse"
                     >
-                      {link.name}
+                      {t(`columns.${col.id}.links.${link.id}`)}
                     </Link>
                   </li>
                 ))}
@@ -144,14 +145,14 @@ export default function Footer() {
             "flex flex-col-reverse items-center justify-between gap-6 border-t border-accent/40 pt-6 text-sm text-ink-inverse-muted md:flex-row"
           )}
         >
-          <p className="text-center md:text-left">
-            © {new Date().getFullYear()} Deen Bridge. All rights reserved.
+          <p className="text-center md:text-start">
+            {t("copyright", { year: new Date().getFullYear() })}
           </p>
 
           {/* Stellar attribution — shows on every page that renders the footer */}
           <Link
             href="/stellar"
-            aria-label="Learn how Deen Bridge uses the Stellar network"
+            aria-label={t("stellarAria")}
             className="inline-flex items-center gap-3 rounded-2xl bg-surface-raised px-4 py-2.5 shadow-lg transition-transform hover:scale-105"
           >
             <span
@@ -160,7 +161,7 @@ export default function Footer() {
                 "text-[10px] uppercase tracking-wider text-ink-muted"
               )}
             >
-              Built on
+              {t("builtOn")}
             </span>
             {/* Opaque-white PNG — multiply drops the background into the chip. */}
             <Image

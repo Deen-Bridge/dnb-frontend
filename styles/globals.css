@@ -312,3 +312,13 @@
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
+
+/* Arabic webfont (IBM Plex Sans Arabic, loaded via next/font as --font-arabic).
+   The `[locale]` layout adds `font-arabic` to <body> when dir="rtl"; the RTL
+   selector is a belt-and-braces fallback so Arabic never renders in a
+   Latin-serif substitute even if the class is ever dropped. */
+.font-arabic,
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), var(--font-geist-sans), ui-sans-serif,
+    system-ui, sans-serif;
+}

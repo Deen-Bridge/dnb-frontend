@@ -11,227 +11,52 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { Marquee } from "@/components/ui/marquee";
 
 // Static showcase data. Fields mirror the shapes returned by
 // fetchCourses() / fetchBooks() / getSpaces() so these rows can be swapped
-// for live data without reworking the card markup.
+// for live data without reworking the card markup. Translatable text
+// (title/description/category/personName/level/when) lives in the message
+// catalog keyed by item id and is read inside the component via `t`.
 const COURSES = [
-  {
-    id: "c1",
-    title: "Tajweed from the Ground Up",
-    description:
-      "Master the rules of recitation with guided drills and weekly feedback from your instructor.",
-    category: "Qur’an & Tafsir",
-    price: 45,
-    instructor: "Ustadh Bilal Rahman",
-    lessons: 24,
-    level: "Beginner",
-  },
-  {
-    id: "c2",
-    title: "The Fiqh of Salah",
-    description:
-      "Pray with certainty — conditions, pillars, and the common mistakes that invalidate prayer.",
-    category: "Salah (Prayer)",
-    price: 30,
-    instructor: "Shaykh Idris Ali",
-    lessons: 18,
-    level: "Beginner",
-  },
-  {
-    id: "c3",
-    title: "Seerah: The Makkan Years",
-    description:
-      "Walk through the first thirteen years of revelation and the lessons they hold for us today.",
-    category: "Seerah (Life of the Prophet ﷺ)",
-    price: 55,
-    instructor: "Dr. Amina Yusuf",
-    lessons: 32,
-    level: "Intermediate",
-  },
-  {
-    id: "c4",
-    title: "Arabic for Qur’an Readers",
-    description:
-      "Build the grammar and vocabulary you need to follow the Qur’an without a translation.",
-    category: "Qur’an & Tafsir",
-    price: 60,
-    instructor: "Ustadha Khadijah Sani",
-    lessons: 40,
-    level: "Intermediate",
-  },
-  {
-    id: "c5",
-    title: "Aqeedah Essentials",
-    description:
-      "A clear foundation in Islamic creed, grounded in the Qur’an and authentic Sunnah.",
-    category: "Aqeedah (Islamic Creed/Belief)",
-    price: 0,
-    instructor: "Shaykh Musa Abdullah",
-    lessons: 16,
-    level: "Beginner",
-  },
-  {
-    id: "c6",
-    title: "Islamic Finance in Practice",
-    description:
-      "Halal earning, riba-free contracts, and how to structure everyday transactions.",
-    category: "Business & Finance (Islamic)",
-    price: 75,
-    instructor: "Dr. Nasir Haruna",
-    lessons: 22,
-    level: "Advanced",
-  },
+  { id: "c1", price: 45, lessons: 24 },
+  { id: "c2", price: 30, lessons: 18 },
+  { id: "c3", price: 55, lessons: 32 },
+  { id: "c4", price: 60, lessons: 40 },
+  { id: "c5", price: 0, lessons: 16 },
+  { id: "c6", price: 75, lessons: 22 },
 ];
 
 const BOOKS = [
-  {
-    id: "b1",
-    title: "Gardens of the Righteous",
-    description:
-      "A curated collection of hadith on character, worship, and daily conduct.",
-    category: "Hadith & Sunnah",
-    author: "Imam an-Nawawi",
-    price: 0,
-    rating: 4.9,
-    readCount: 1904,
-  },
-  {
-    id: "b2",
-    title: "The Sealed Nectar",
-    description:
-      "An award-winning biography of the Prophet ﷺ, from lineage to final sermon.",
-    category: "Seerah (Life of the Prophet ﷺ)",
-    author: "S. al-Mubarakpuri",
-    price: 12,
-    rating: 4.8,
-    readCount: 1327,
-  },
-  {
-    id: "b3",
-    title: "Purification of the Heart",
-    description:
-      "Diagnosing and treating the spiritual diseases that hold the heart back.",
-    category: "Tazkiyah (Self-Purification)",
-    author: "Hamza Yusuf",
-    price: 9,
-    rating: 4.7,
-    readCount: 842,
-  },
-  {
-    id: "b4",
-    title: "Fortress of the Muslim",
-    description:
-      "Authentic supplications for every moment of the day, with transliteration.",
-    category: "Duas & Dhikr",
-    author: "Sa‘id al-Qahtani",
-    price: 0,
-    rating: 5.0,
-    readCount: 2611,
-  },
-  {
-    id: "b5",
-    title: "Reclaim Your Heart",
-    description:
-      "Reflections on attachment, loss, and returning to Allah with a whole heart.",
-    category: "Islamic Mindfulness",
-    author: "Yasmin Mogahed",
-    price: 11,
-    rating: 4.8,
-    readCount: 1580,
-  },
-  {
-    id: "b6",
-    title: "Raising Believers",
-    description:
-      "A practical guide to nurturing faith, adab, and confidence in Muslim children.",
-    category: "Parenting",
-    author: "Umm Sulaym Adeyemi",
-    price: 8,
-    rating: 4.6,
-    readCount: 673,
-  },
+  { id: "b1", price: 0, rating: 4.9, readCount: 1904 },
+  { id: "b2", price: 12, rating: 4.8, readCount: 1327 },
+  { id: "b3", price: 9, rating: 4.7, readCount: 842 },
+  { id: "b4", price: 0, rating: 5.0, readCount: 2611 },
+  { id: "b5", price: 11, rating: 4.8, readCount: 1580 },
+  { id: "b6", price: 8, rating: 4.6, readCount: 673 },
 ];
 
 const SPACES = [
-  {
-    id: "s1",
-    title: "Tafsir Circle: Surah Al-Kahf",
-    description:
-      "A live weekly reading through the surah of light, trials, and patience.",
-    category: "Qur’an & Tafsir",
-    host: "Ustadh Bilal Rahman",
-    status: "live",
-    when: "Now",
-    duration: 60,
-  },
-  {
-    id: "s2",
-    title: "Ask a Scholar: Marriage & Family",
-    description:
-      "Bring your questions on marriage, in-laws, and raising a household on the Sunnah.",
-    category: "Marriage & Family",
-    host: "Shaykh Idris Ali",
-    status: "upcoming",
-    when: "Thu, 8:00 PM",
-    duration: 90,
-  },
-  {
-    id: "s3",
-    title: "New Muslim Welcome Session",
-    description:
-      "A gentle first step — the basics of worship and a community to lean on.",
-    category: "For New Muslims",
-    host: "Sr. Maryam Okoye",
-    status: "upcoming",
-    when: "Sat, 4:00 PM",
-    duration: 45,
-  },
-  {
-    id: "s4",
-    title: "Youth Halaqah: Staying Firm",
-    description:
-      "Holding onto your Deen at school, at work, and everywhere online.",
-    category: "Muslim Youth",
-    host: "Ustadh Yahya Bello",
-    status: "live",
-    when: "Now",
-    duration: 60,
-  },
-  {
-    id: "s5",
-    title: "Sisters’ Circle: Tazkiyah",
-    description:
-      "A safe space for sisters to study self-purification and grow together.",
-    category: "For Sisters",
-    host: "Ustadha Khadijah Sani",
-    status: "upcoming",
-    when: "Sun, 6:30 PM",
-    duration: 75,
-  },
-  {
-    id: "s6",
-    title: "Dawah in the Digital Age",
-    description:
-      "Carrying the message with wisdom on the platforms people actually use.",
-    category: "Islam & Technology",
-    host: "Dr. Nasir Haruna",
-    status: "upcoming",
-    when: "Mon, 7:00 PM",
-    duration: 60,
-  },
+  { id: "s1", status: "live", duration: 60 },
+  { id: "s2", status: "upcoming", duration: 90 },
+  { id: "s3", status: "upcoming", duration: 45 },
+  { id: "s4", status: "live", duration: 60 },
+  { id: "s5", status: "upcoming", duration: 75 },
+  { id: "s6", status: "upcoming", duration: 60 },
 ];
 
-const formatPrice = (price) => (price > 0 ? `$${price}` : "Free");
+const formatPrice = (price, t) => (price > 0 ? `$${price}` : t("free"));
 
-const formatDuration = (minutes) => {
-  if (minutes < 60) return `${minutes} mins`;
+const formatDuration = (minutes, t) => {
+  if (minutes < 60) return t("duration.mins", { count: minutes });
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins === 0 ? `${hours} hr` : `${hours} hr ${mins} min`;
+  return mins === 0
+    ? t("duration.hr", { count: hours })
+    : t("duration.hrMin", { hours, mins });
 };
 
 // Rows are separated by weight within the single green hue — no second
@@ -239,8 +64,6 @@ const formatDuration = (minutes) => {
 const ROWS = [
   {
     key: "courses",
-    label: "Courses",
-    tagline: "Structured learning, taught live",
     icon: GraduationCap,
     items: COURSES,
     reverse: false,
@@ -250,17 +73,15 @@ const ROWS = [
       byline: "text-highlight",
       edge: "from-secondary to-accent",
     },
-    meta: (item) => [
-      { icon: Sparkles, text: formatPrice(item.price) },
-      { icon: BookOpen, text: `${item.lessons} lessons` },
-      { icon: Users, text: item.level },
+    meta: (item, t) => [
+      { icon: Sparkles, text: formatPrice(item.price, t) },
+      { icon: BookOpen, text: t("lessons", { count: item.lessons }) },
+      { icon: Users, text: t(`courses.${item.id}.level`) },
     ],
-    byline: (item) => item.instructor,
+    byline: (item, t) => t(`courses.${item.id}.personName`),
   },
   {
     key: "books",
-    label: "Library",
-    tagline: "Read, annotate, and keep",
     icon: BookOpen,
     items: BOOKS,
     reverse: true,
@@ -270,17 +91,15 @@ const ROWS = [
       byline: "text-accent",
       edge: "from-highlight to-basic",
     },
-    meta: (item) => [
-      { icon: Sparkles, text: formatPrice(item.price) },
+    meta: (item, t) => [
+      { icon: Sparkles, text: formatPrice(item.price, t) },
       { icon: Star, text: item.rating.toFixed(1) },
-      { icon: Users, text: `${item.readCount.toLocaleString()} reads` },
+      { icon: Users, text: t("reads", { count: item.readCount }) },
     ],
-    byline: (item) => item.author,
+    byline: (item, t) => t(`books.${item.id}.personName`),
   },
   {
     key: "spaces",
-    label: "Spaces",
-    tagline: "Live gatherings for the Ummah",
     icon: Radio,
     items: SPACES,
     reverse: false,
@@ -290,15 +109,16 @@ const ROWS = [
       byline: "text-secondary",
       edge: "from-secondary to-highlight",
     },
-    meta: (item) => [
-      { icon: CalendarDays, text: item.when },
-      { icon: Clock3, text: formatDuration(item.duration) },
+    meta: (item, t) => [
+      { icon: CalendarDays, text: t(`spaces.${item.id}.when`) },
+      { icon: Clock3, text: formatDuration(item.duration, t) },
     ],
-    byline: (item) => item.host,
+    byline: (item, t) => t(`spaces.${item.id}.personName`),
   },
 ];
 
 const ContentCard = ({ item, row }) => {
+  const t = useTranslations("landing.featured");
   const RowIcon = row.icon;
 
   return (
@@ -322,7 +142,9 @@ const ContentCard = ({ item, row }) => {
             )}
           >
             <RowIcon className="size-3 shrink-0" />
-            <span className="truncate">{item.category}</span>
+            <span className="truncate">
+              {t(`${row.key}.${item.id}.category`)}
+            </span>
           </span>
           {item.status === "live" && (
             <span
@@ -332,7 +154,7 @@ const ContentCard = ({ item, row }) => {
               )}
             >
               <span className="size-1.5 animate-pulse rounded-full bg-surface-raised" />
-              Live
+              {t("live")}
             </span>
           )}
         </div>
@@ -343,11 +165,11 @@ const ContentCard = ({ item, row }) => {
             "mb-2 line-clamp-1 text-xl text-ink font-stretch-110%"
           )}
         >
-          {item.title}
+          {t(`${row.key}.${item.id}.title`)}
         </h3>
 
         <p className={cn(poppins_500, "mb-1 text-xs", row.tone.byline)}>
-          {row.byline(item)}
+          {row.byline(item, t)}
         </p>
 
         <p
@@ -356,11 +178,11 @@ const ContentCard = ({ item, row }) => {
             "mb-6 line-clamp-2 text-sm leading-relaxed text-ink-muted font-stretch-110%"
           )}
         >
-          {item.description}
+          {t(`${row.key}.${item.id}.description`)}
         </p>
 
         <div className="flex items-center gap-2">
-          {row.meta(item).map(({ icon: MetaIcon, text }) => (
+          {row.meta(item, t).map(({ icon: MetaIcon, text }) => (
             <span
               key={text}
               className={cn(
@@ -380,6 +202,8 @@ const ContentCard = ({ item, row }) => {
 };
 
 const FeaturedContent = () => {
+  const t = useTranslations("landing.featured");
+
   return (
     <section
       id="explore"
@@ -387,8 +211,8 @@ const FeaturedContent = () => {
     >
       {/* Decorative motif — green on white, same treatment as WhyDeenBridge */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute left-0 top-0 h-1/2 w-1/2 rounded-full bg-gradient-to-br from-secondary/10 to-transparent blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-1/3 w-1/3 rounded-full bg-gradient-to-tr from-accent/10 to-transparent blur-2xl" />
+        <div className="absolute start-0 top-0 h-1/2 w-1/2 rounded-full bg-gradient-to-br from-secondary/10 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 end-0 h-1/3 w-1/3 rounded-full bg-gradient-to-tr from-accent/10 to-transparent blur-2xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4">
@@ -410,7 +234,7 @@ const FeaturedContent = () => {
             )}
           >
             <Sparkles className="size-3.5" />
-            Explore the Platform
+            {t("eyebrow")}
           </motion.div>
 
           {/* Same gradient as the Hero wordmark */}
@@ -420,7 +244,7 @@ const FeaturedContent = () => {
               "mb-4 bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text pb-2 text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl font-stretch-125%"
             )}
           >
-            Courses, Books &amp; Spaces
+            {t("heading")}
           </h2>
 
           <p
@@ -429,9 +253,7 @@ const FeaturedContent = () => {
               "mx-auto max-w-3xl text-lg leading-relaxed text-ink-muted md:text-xl font-stretch-110%"
             )}
           >
-            Authentic knowledge, curated by scholars and trusted teachers. Learn
-            at your own pace, read from a growing library, and gather live with
-            the Ummah.
+            {t("intro")}
           </p>
         </motion.div>
 
@@ -451,17 +273,17 @@ const FeaturedContent = () => {
                   >
                     <RowIcon className="size-4" />
                   </span>
-                  <div className="text-left">
+                  <div className="text-start">
                     <h3
                       className={cn(
                         poppins_600,
                         "text-base text-ink font-stretch-110%"
                       )}
                     >
-                      {row.label}
+                      {t(`rows.${row.key}.label`)}
                     </h3>
                     <p className={cn(poppins_400, "text-xs text-ink-muted")}>
-                      {row.tagline}
+                      {t(`rows.${row.key}.tagline`)}
                     </p>
                   </div>
                 </div>

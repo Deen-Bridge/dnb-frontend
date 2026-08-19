@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
 import {
@@ -18,28 +19,26 @@ import {
 
 const pillars = [
   {
+    id: "teachers",
     icon: <FaChalkboardTeacher className="h-5 w-5 text-accent" />,
-    title: "Learn from trusted teachers",
-    desc: "Structured courses and live mentorship from verified educators across the Ummah.",
   },
   {
+    id: "library",
     icon: <FaBookOpen className="h-5 w-5 text-accent" />,
-    title: "A growing library",
-    desc: "Read authentic Islamic books online, with your progress saved across every device.",
   },
   {
+    id: "community",
     icon: <FaUsers className="h-5 w-5 text-accent" />,
-    title: "Community & mentorship",
-    desc: "Join live spaces and message mentors directly to keep growing alongside others.",
   },
   {
+    id: "ai",
     icon: <FaRobot className="h-5 w-5 text-accent" />,
-    title: "Ask the AI assistant",
-    desc: "Get cited, scholar-reviewed answers grounded in Qur'an and authenticated hadith.",
   },
 ];
 
 const About = () => {
+  const t = useTranslations("landing.about");
+
   return (
     <section
       id="about"
@@ -62,7 +61,7 @@ const About = () => {
                   "inline-block rounded-full bg-secondary/10 px-4 py-1.5 text-xs uppercase tracking-wider text-secondary"
                 )}
               >
-                What is DeenBridge
+                {t("eyebrow")}
               </span>
               <h2
                 className={cn(
@@ -70,7 +69,7 @@ const About = () => {
                   "text-4xl font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-secondary via-highlight to-accent sm:text-5xl lg:text-6xl font-stretch-125%"
                 )}
               >
-                Where Deen meets excellence
+                {t("heading")}
               </h2>
               <p
                 className={cn(
@@ -78,17 +77,14 @@ const About = () => {
                   "max-w-2xl text-lg leading-relaxed text-ink-muted font-stretch-110%"
                 )}
               >
-                DeenBridge connects Muslims worldwide with authentic Islamic
-                knowledge — bringing courses, a digital library, live community,
-                and an Islamic-knowledge AI assistant together on one platform,
-                so anyone can learn, share, and grow in their faith.
+                {t("description")}
               </p>
             </div>
 
             <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {pillars.map((p) => (
                 <li
-                  key={p.title}
+                  key={p.id}
                   className="group rounded-2xl border border-accent/10 bg-surface-raised p-5 transition-all duration-300 hover:-translate-y-1 hover:border-secondary/40"
                 >
                   <div className="mb-3 flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/15 to-highlight/10 border border-accent/5 transition-transform group-hover:scale-110">
@@ -100,7 +96,7 @@ const About = () => {
                       "mb-1.5 text-base text-ink font-stretch-110%"
                     )}
                   >
-                    {p.title}
+                    {t(`pillars.${p.id}.title`)}
                   </h3>
                   <p
                     className={cn(
@@ -108,7 +104,7 @@ const About = () => {
                       "text-sm leading-relaxed text-ink-muted"
                     )}
                   >
-                    {p.desc}
+                    {t(`pillars.${p.id}.desc`)}
                   </p>
                 </li>
               ))}
@@ -121,7 +117,7 @@ const About = () => {
                 to="/signup"
                 className="text-white font-semibold py-4 px-8 text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                Explore DeenBridge
+                {t("cta")}
               </Button>
             </div>
           </motion.div>
@@ -137,7 +133,7 @@ const About = () => {
             <div className="relative z-10">
               <Image
                 src="/images/mosque.png"
-                alt="Beautiful mosque architecture representing Islamic excellence"
+                alt={t("imageAlt")}
                 width={600}
                 height={600}
                 className="h-auto w-full rounded-2xl object-contain shadow-2xl"
@@ -146,8 +142,8 @@ const About = () => {
             </div>
 
             {/* Decorative glows */}
-            <div className="absolute -top-4 -right-4 h-32 w-32 rounded-full bg-gradient-to-br from-secondary/40 to-highlight/30 opacity-60 blur-xl" />
-            <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-gradient-to-tr from-secondary/25 to-highlight/20 opacity-40 blur-lg" />
+            <div className="absolute -top-4 -end-4 h-32 w-32 rounded-full bg-gradient-to-br from-secondary/40 to-highlight/30 opacity-60 blur-xl" />
+            <div className="absolute -bottom-4 -start-4 h-24 w-24 rounded-full bg-gradient-to-tr from-secondary/25 to-highlight/20 opacity-40 blur-lg" />
           </motion.div>
         </div>
       </div>
