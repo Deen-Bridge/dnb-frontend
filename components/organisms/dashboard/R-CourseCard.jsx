@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import Button from "@/components/atoms/form/Button";
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge";
+import { resolveCategorySlug } from "@/lib/categories";
 
 const RecommendedCourseCard = ({ course }) => (
     <div className="bg-card rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -41,9 +42,12 @@ const RecommendedCourseCard = ({ course }) => (
                             {course.price ? `$${course.price}` : "Free"}
                         </span>
                         <span>
-                            <Badge className="bg-gradient-to-r from-highlight to-accent rounded-full  text-white/90 text-xs px-3 py-1  font-semibold shadow">
+                            <Link
+                                href={`/dashboard/courses/category/${resolveCategorySlug(course?.category)}`}
+                                className="bg-gradient-to-r from-highlight to-accent rounded-full  text-white/90 text-xs px-3 py-1  font-semibold shadow"
+                            >
                                 {course.category || "General"}
-                            </Badge>
+                            </Link>
 
                         </span>
                     </div>
