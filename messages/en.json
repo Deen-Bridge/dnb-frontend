@@ -37,6 +37,7 @@
       "routes": {
         "dashboard": "Dashboard",
         "courses": "Courses",
+        "categories": "Categories",
         "library": "Library",
         "saved": "Saved",
         "spaces": "Spaces",

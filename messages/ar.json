@@ -37,6 +37,7 @@
       "routes": {
         "dashboard": "لوحة التحكم",
         "courses": "الدورات",
+        "categories": "الفئات",
         "library": "المكتبة",
         "saved": "المحفوظات",
         "spaces": "المساحات",
