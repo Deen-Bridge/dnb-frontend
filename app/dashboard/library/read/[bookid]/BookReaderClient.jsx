@@ -17,6 +17,8 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -26,6 +28,13 @@ import {
 } from "@/lib/config/font.config";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import workerSrc from "pdfjs-dist/build/pdf.worker.min.js?url";
+import {
+  clampPage,
+  nextPageForKey,
+  progressPercent,
+  readBookProgress,
+  saveBookProgress,
+} from "./bookProgress";
 
 GlobalWorkerOptions.workerSrc = workerSrc;
 
@@ -67,6 +76,14 @@ const BookReaderClient = ({ book }) => {
   const [fitWidth, setFitWidth] = useState(true);
   const [containerWidth, setContainerWidth] = useState(0);
   const [isTransitioning, startTransition] = useTransition();
+
+  // Jump-to-page input (kept as a string so partial typing isn't clobbered)
+  // and the "resumed at page N" banner shown after restoring a saved position.
+  const [pageInput, setPageInput] = useState("1");
+  const [resumeBanner, setResumeBanner] = useState(null);
+  // Latest page, read inside the keyboard handler without re-subscribing on
+  // every page turn.
+  const pageNumberRef = useRef(pageNumber);
 
   const canAccess = useMemo(() => {
     if (!book) return false;
@@ -128,7 +145,14 @@ const BookReaderClient = ({ book }) => {
         docRef.current?.destroy?.();
         docRef.current = pdf;
         setPageCount(pdf.numPages);
-        setPageNumber((prev) => clamp(prev, 1, pdf.numPages));
+
+        // Resume the last-read position (clamped) if one is saved for this book.
+        const saved = readBookProgress(book?._id);
+        const startPage = saved
+          ? clampPage(saved.page, pdf.numPages)
+          : clamp(pageNumberRef.current, 1, pdf.numPages);
+        setPageNumber(startPage);
+        setResumeBanner(saved && startPage > 1 ? startPage : null);
       } catch (error) {
         console.error("Error loading PDF document:", error);
         if (!cancelled) {
@@ -228,11 +252,72 @@ const BookReaderClient = ({ book }) => {
     );
   };
 
+  const jumpToPage = (page) => {
+    if (!pageCount) return;
+    startTransition(() => setPageNumber(clampPage(page, pageCount)));
+  };
+
   const handleZoom = (direction) => {
     setFitWidth(false);
     setBaseScale((prev) =>
       clamp(prev + direction * 0.15, MIN_SCALE, MAX_SCALE)
     );
+  };
+
+  // Keep the jump-to-page input and the ref mirror in sync with the page.
+  useEffect(() => {
+    setPageInput(String(pageNumber));
+    pageNumberRef.current = pageNumber;
+  }, [pageNumber]);
+
+  // Persist the last-read position whenever the page changes (guarded to the
+  // browser inside saveBookProgress).
+  useEffect(() => {
+    if (!book?._id || !pageCount) return;
+    saveBookProgress(book._id, pageNumber);
+  }, [book?._id, pageNumber, pageCount]);
+
+  // Keyboard navigation while the reader is mounted. Ignored when a form field
+  // (the page input / slider) has focus so typing never triggers page flips.
+  useEffect(() => {
+    if (!pageCount) return;
+
+    const handleKeyDown = (event) => {
+      const target = event.target;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) {
+        return;
+      }
+      const targetPage = nextPageForKey(event.key, pageNumberRef.current, pageCount);
+      if (targetPage == null) return;
+      event.preventDefault();
+      startTransition(() => setPageNumber(targetPage));
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [pageCount, startTransition]);
+
+  const commitPageInput = () => {
+    const parsed = Number.parseInt(pageInput, 10);
+    if (Number.isNaN(parsed)) {
+      setPageInput(String(pageNumber));
+      return;
+    }
+    jumpToPage(parsed);
+  };
+
+  const handlePageInputKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitPageInput();
+      event.currentTarget.blur();
+    }
+  };
+
+  const handleStartOver = () => {
+    setResumeBanner(null);
+    jumpToPage(1);
   };
 
   if (!book) {
@@ -347,9 +432,11 @@ const BookReaderClient = ({ book }) => {
                 poppins_500,
                 "hidden rounded-lg border border-accent/10 bg-surface px-3 py-1.5 text-xs text-ink-muted sm:inline-flex"
               )}
+              aria-live="polite"
             >
-              Page {pageNumber}
-              {pageCount ? ` / ${pageCount}` : ""}
+              {pageCount
+                ? `Page ${pageNumber} of ${pageCount} · ${progressPercent(pageNumber, pageCount)}%`
+                : `Page ${pageNumber}`}
             </span>
 
             <div className="hidden items-center gap-1.5 sm:flex">
@@ -465,6 +552,41 @@ const BookReaderClient = ({ book }) => {
           </div>
         ) : (
           <>
+            {resumeBanner && (
+              <div
+                role="status"
+                className="flex items-center justify-center gap-3 border-b border-accent/10 bg-secondary/10 px-4 py-2 md:px-6"
+              >
+                <span
+                  className={cn(
+                    poppins_500,
+                    "text-xs text-ink-muted sm:text-sm"
+                  )}
+                >
+                  Resumed at page {resumeBanner}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleStartOver}
+                  className={cn(
+                    poppins_600,
+                    "inline-flex items-center gap-1.5 rounded-lg border border-accent/20 bg-surface-raised px-2.5 py-1 text-xs text-accent transition-colors hover:border-secondary/40"
+                  )}
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Start over
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResumeBanner(null)}
+                  aria-label="Dismiss resume notice"
+                  className="inline-flex size-6 items-center justify-center rounded-md text-ink-muted transition-colors hover:text-accent"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* Scrollable stage with centered PDF sheet */}
             <div
               ref={containerRef}
@@ -547,26 +669,56 @@ const BookReaderClient = ({ book }) => {
                 </div>
 
                 {pageCount > 1 && (
-                  <div className="flex flex-1 items-center gap-1.5 overflow-x-auto">
-                    {Array.from({ length: pageCount }).map((_, index) => {
-                      const page = index + 1;
-                      return (
-                        <button
-                          key={`page-thumb-${page}`}
-                          type="button"
-                          onClick={() => setPageNumber(page)}
-                          className={cn(
-                            poppins_500,
-                            "shrink-0 rounded-lg border px-3 py-1 text-xs transition-colors",
-                            pageNumber === page
-                              ? "border-accent bg-accent text-white shadow-sm"
-                              : "border-accent/10 bg-surface text-ink-muted hover:border-secondary/40 hover:text-accent"
-                          )}
-                        >
-                          {page}
-                        </button>
-                      );
-                    })}
+                  <div className="flex flex-1 items-center gap-3">
+                    {/* Page scrubber — O(1) DOM, no per-page buttons */}
+                    <input
+                      type="range"
+                      min={1}
+                      max={pageCount}
+                      value={pageNumber}
+                      onChange={(event) =>
+                        jumpToPage(Number(event.target.value))
+                      }
+                      aria-label="Scrub through pages"
+                      className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-accent/15 accent-accent"
+                    />
+
+                    {/* Jump-to-page input, validated 1..pageCount */}
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <label
+                        htmlFor="reader-go-to-page"
+                        className={cn(
+                          poppins_500,
+                          "text-xs text-ink-muted"
+                        )}
+                      >
+                        Go to
+                      </label>
+                      <input
+                        id="reader-go-to-page"
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={pageCount}
+                        value={pageInput}
+                        onChange={(event) => setPageInput(event.target.value)}
+                        onBlur={commitPageInput}
+                        onKeyDown={handlePageInputKeyDown}
+                        aria-label={`Go to page (1 to ${pageCount})`}
+                        className={cn(
+                          poppins_600,
+                          "w-16 rounded-lg border border-accent/15 bg-surface px-2 py-1 text-center text-xs text-ink outline-none focus:border-secondary/50"
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          poppins_500,
+                          "text-xs text-ink-muted"
+                        )}
+                      >
+                        / {pageCount}
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
