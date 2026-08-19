@@ -85,11 +85,10 @@ const CreateCourseForm = () => {
         videoUrl = await videoUpload.uploadFile(video);
       }
 
-      const data = await createCourse({
-        form,
+      const result = await createCourse({
+        form: data,
         thumbnailUrl,
         videoUrl,
-        category: data.category,
       });
 
       if (result && result.success) {
