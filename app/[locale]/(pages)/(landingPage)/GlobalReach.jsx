@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import createGlobe from "cobe";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { Globe, Users, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
@@ -66,9 +67,9 @@ const arcs = [
 ];
 
 const stats = [
-  { value: "57+", label: "Muslim Countries" },
-  { value: "1.8B+", label: "Muslims Worldwide" },
-  { value: "24/7", label: "Community Access" },
+  { value: "57+", id: "countries" },
+  { value: "1.8B+", id: "muslims" },
+  { value: "24/7", id: "access" },
 ];
 
 function GlobeCanvas() {
@@ -123,13 +124,16 @@ function GlobeCanvas() {
 }
 
 export default function GlobalReach() {
+  const t = useTranslations("landing.globalReach");
+  const features = t.raw("features");
+
   return (
     <section className="relative py-20 px-4 sm:px-6 bg-basic overflow-hidden">
       <IslamicPattern opacity={0.04} color="#009900" />
 
       {/* Decorative glow */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -137,7 +141,7 @@ export default function GlobalReach() {
           <div className="text-center mb-12">
             <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/20 bg-green-500/10 px-4 py-1.5 text-sm font-medium text-green-300 backdrop-blur-sm">
               <Globe className="w-4 h-4" />
-              Global Community
+              {t("badge")}
             </span>
             <h2
               className={cn(
@@ -145,13 +149,12 @@ export default function GlobalReach() {
                 "text-4xl sm:text-5xl lg:text-7xl font-bold mt-4 bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-transparent bg-clip-text"
               )}
             >
-              Connecting the Ummah
+              {t("headingLine1")}
               <br />
-              Worldwide
+              {t("headingLine2")}
             </h2>
             <p className="text-lg sm:text-xl text-green-200/80 max-w-2xl mx-auto mt-6">
-              DeenBridge bridges Muslims across continents — from Southeast Asia
-              to West Africa, from the Americas to the heart of the Arab world.
+              {t("subtitle")}
             </p>
           </div>
         </AnimatedSection>
@@ -164,7 +167,7 @@ export default function GlobalReach() {
                 <GlobeCanvas />
               </div>
               {/* Glow behind globe */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] bg-green-500/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] bg-green-500/10 rounded-full blur-[80px] pointer-events-none" />
             </div>
           </AnimatedSection>
 
@@ -176,7 +179,7 @@ export default function GlobalReach() {
                 <div className="grid grid-cols-3 gap-4">
                   {stats.map((stat, i) => (
                     <motion.div
-                      key={stat.label}
+                      key={stat.id}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -187,26 +190,19 @@ export default function GlobalReach() {
                         {stat.value}
                       </div>
                       <div className="text-xs sm:text-sm text-green-300/70 mt-1">
-                        {stat.label}
+                        {t(`stats.${stat.id}`)}
                       </div>
                     </motion.div>
                   ))}
                 </div>
 
                 <p className="text-green-200/70 leading-relaxed">
-                  Whether you&apos;re in Jakarta, Cairo, Istanbul, London, or
-                  Houston — DeenBridge brings the global Ummah together. Our
-                  platform connects you with authentic knowledge, supportive
-                  communities, and meaningful conversations across borders.
+                  {t("description")}
                 </p>
 
                 {/* Feature highlights */}
                 <div className="space-y-3">
-                  {[
-                    "Access courses and books from scholars worldwide",
-                    "Join community spaces with Muslims from 57+ countries",
-                    "Attend live events spanning every time zone",
-                  ].map((text, i) => (
+                  {features.map((text, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
@@ -227,7 +223,7 @@ export default function GlobalReach() {
                   to="/signup"
                   className="text-white px-10 py-3 text-lg font-semibold animate-glow-pulse transition-all duration-300 hover:scale-105"
                 >
-                  Join Global Community
+                  {t("cta")}
                 </Button>
               </div>
             </AnimatedSection>

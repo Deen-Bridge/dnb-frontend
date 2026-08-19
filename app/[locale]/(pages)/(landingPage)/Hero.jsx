@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -15,37 +16,24 @@ import Button from "@/components/atoms/form/Button";
    (e.g. img-3.jpg, img-4.jpg, img-5.jpg, img-6.jpg, auth.jpg). */
 const HERO_IMAGE = "/images/mosque.png";
 
-/* Right-side preview cards — swap img/title/meta for real content any time. */
+/* Right-side preview cards — swap img for real content any time.
+   Translatable text (label/title/meta) lives in the catalog, keyed by id. */
 const previews = [
-  {
-    img: "/images/book1.jpg",
-    label: "From the library",
-    title: "Riyāḍ aṣ-Ṣāliḥīn",
-    meta: "Read online",
-  },
-  {
-    img: "/images/img-2.jpeg",
-    label: "Featured course",
-    title: "Foundations of Tajwīd",
-    meta: "Self-paced",
-  },
-  {
-    img: "/images/img-3.jpg",
-    label: "Community spaces",
-    title: "Weekly Halaqah",
-    meta: "Live sessions",
-  },
+  { id: "library", img: "/images/book1.jpg" },
+  { id: "course", img: "/images/img-2.jpeg" },
+  { id: "community", img: "/images/img-3.jpg" },
 ];
 
-const trust = ["Trusted teachers", "Authentic sources", "A global Ummah"];
+const trustKeys = ["teachers", "sources", "ummah"];
 
 const Hero = () => {
+  const t = useTranslations("landing.hero");
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-basic text-ink-inverse">
       {/* Real image background */}
       <Image
         src={HERO_IMAGE}
-        alt="DeenBridge — authentic Islamic learning"
+        alt={t("imageAlt")}
         fill
         priority
         sizes="100vw"
@@ -64,7 +52,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="max-w-xl text-left"
+            className="max-w-xl text-start"
           >
             <h1
               className={cn(
@@ -72,9 +60,9 @@ const Hero = () => {
                 "text-3xl font-bold leading-[1.1] sm:text-4xl lg:text-5xl font-stretch-125%"
               )}
             >
-              Authentic Islamic{" "}
+              {t("titleLead")}{" "}
               <span className="bg-gradient-to-r from-secondary via-highlight to-secondary bg-clip-text text-transparent">
-                learning &amp; excellence
+                {t("titleHighlight")}
               </span>
             </h1>
 
@@ -84,9 +72,7 @@ const Hero = () => {
                 "mt-5 max-w-lg text-base leading-relaxed text-ink-inverse-muted sm:text-lg font-stretch-110%"
               )}
             >
-              Enroll in trusted courses, read a growing library, join a global
-              community, and get cited answers from an Islamic-knowledge
-              assistant — all in one place.
+              {t("subtitle")}
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -96,7 +82,7 @@ const Hero = () => {
                 to="/signup"
                 className="bg-gradient-to-r from-highlight to-accent hover:from-accent hover:to-highlight text-white px-8 py-3 text-base font-bold animate-in-out transition-all shadow-lg"
               >
-                Start learning
+                {t("cta.start")}
               </Button>
               <Link
                 href="/dashboard"
@@ -105,12 +91,12 @@ const Hero = () => {
                   "rounded-full border border-ink-inverse/25 px-7 py-3 text-center text-base text-ink-inverse transition-all hover:border-secondary hover:bg-secondary/10"
                 )}
               >
-                Explore DeenBridge
+                {t("cta.explore")}
               </Link>
             </div>
 
             <p className={cn(poppins_500, "mt-8 text-sm text-ink-inverse-muted")}>
-              {trust.join("  ·  ")}
+              {trustKeys.map((key) => t(`trust.${key}`)).join("  ·  ")}
             </p>
 
             {/* Built on Stellar — ecosystem mark; light chip so the white-bg
@@ -119,7 +105,7 @@ const Hero = () => {
               href="https://stellar.org"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Built on Stellar — visit stellar.org"
+              aria-label={t("stellar.ariaLabel")}
               className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-surface-raised px-4 py-2 shadow-lg transition-transform hover:scale-105"
             >
               <span
@@ -128,7 +114,7 @@ const Hero = () => {
                   "text-[11px] uppercase tracking-wider text-ink-muted"
                 )}
               >
-                Built on
+                {t("stellar.builtOn")}
               </span>
               <Image
                 src="/images/images.png"
@@ -151,10 +137,10 @@ const Hero = () => {
 
           {/* Right — compact product preview cards */}
           <div className="hidden lg:block">
-            <div className="ml-auto flex w-full max-w-sm flex-col gap-4">
+            <div className="ms-auto flex w-full max-w-sm flex-col gap-4">
               {previews.map((p, i) => (
                 <motion.div
-                  key={p.title}
+                  key={p.id}
                   initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 + i * 0.12 }}
@@ -166,7 +152,7 @@ const Hero = () => {
                   <div className="relative size-16 shrink-0 overflow-hidden rounded-xl">
                     <Image
                       src={p.img}
-                      alt={p.title}
+                      alt={t(`previews.${p.id}.title`)}
                       fill
                       sizes="64px"
                       className="object-cover"
@@ -179,7 +165,7 @@ const Hero = () => {
                         "text-[10px] uppercase tracking-wider text-ink-inverse-muted"
                       )}
                     >
-                      {p.label}
+                      {t(`previews.${p.id}.label`)}
                     </span>
                     <h3
                       className={cn(
@@ -187,7 +173,7 @@ const Hero = () => {
                         "truncate text-sm text-ink-inverse font-stretch-110%"
                       )}
                     >
-                      {p.title}
+                      {t(`previews.${p.id}.title`)}
                     </h3>
                     <p
                       className={cn(
@@ -195,7 +181,7 @@ const Hero = () => {
                         "text-xs text-ink-inverse-muted"
                       )}
                     >
-                      {p.meta}
+                      {t(`previews.${p.id}.meta`)}
                     </p>
                   </div>
                 </motion.div>
