@@ -1,7 +1,9 @@
 import Button from "@/components/atoms/form/Button";
 import Image from "next/image";
+import Link from "next/link";
 import { Star } from "lucide-react";
 import { getAverageRating } from "@/hooks/getAverageRating";
+import { resolveCategorySlug } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -22,14 +24,17 @@ const PublicCourseCard = ({ course }) => {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <span
+        <Link
+          href={`/dashboard/courses/category/${resolveCategorySlug(
+            course?.category
+          )}`}
           className={cn(
             poppins_600,
             "absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[11px] uppercase tracking-wider text-accent shadow"
           )}
         >
           {course.category || "General"}
-        </span>
+        </Link>
         <span
           className={cn(
             poppins_600,

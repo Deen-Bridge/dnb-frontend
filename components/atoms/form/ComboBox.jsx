@@ -17,15 +17,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { islamicCategories } from "@/lib/data";
+import { CATEGORY_GROUPS } from "@/lib/categories";
 
 export default function CategoryCombobox({ category, setCategory, id }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(category || "");
-
-  React.useEffect(() => {
-    setValue(category || "");
-  }, [category]);
 
   return (
 
@@ -39,32 +34,33 @@ export default function CategoryCombobox({ category, setCategory, id }) {
           aria-label="Select category"
           className="w-full justify-between text-muted-foreground hover:bg-transparent"
         >
-          {value || "Select category..."}
+          {category || "Select category..."}
           <ChevronsUpDown className="opacity-50 h-4 w-4 ml-2" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-0">
         <Command>
-          <CommandInput placeholder="Search category..." aria-label="Search categories" className="h-9" />
+<CommandInput placeholder="Search category..." aria-label="Search categories" className="h-9" />
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
-            {islamicCategories.map((group) => (
-              <CommandGroup key={group.main} heading={group.main}>
-                {group.subcategories.map((subcategory) => (
+            {CATEGORY_GROUPS.map((group) => (
+              <CommandGroup key={group.id} heading={group.label}>
+                {group.categories.map((subcategory) => (
                   <CommandItem
-                    key={subcategory}
-                    value={subcategory}
+                    key={subcategory.label}
+                    value={subcategory.label}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      setCategory(currentValue === category ? "" : currentValue);
                       setOpen(false);
-                      setCategory(currentValue);
                     }}
                   >
-                    {subcategory}
+                    {subcategory.label}
                     <Check
                       className={cn(
                         "ml-auto h-4 w-4",
-                        value === subcategory ? "opacity-100" : "opacity-0"
+                        category === subcategory.label
+                          ? "opacity-100"
+                          : "opacity-0"
                       )}
                     />
                   </CommandItem>
