@@ -274,11 +274,14 @@ describe("issue #74 — req.header.config is deleted", () => {
   });
 
   it("no source file imports req.header.config", () => {
-    // Matches real module references (import ... from "..." / require("..."))
-    // rather than any mention of the name, so this file's own prose is not a
-    // false positive.
+    // Matches real module references — static `from "..."`, `require("...")`,
+    // and dynamic `import("...")` — rather than any mention of the name, so
+    // this file's own prose is not a false positive. Dynamic imports matter:
+    // axios.config.js already uses `await import("js-cookie")`, so a lingering
+    // dynamic import of the deleted module would otherwise slip through and
+    // fail only when that path executed.
     const IMPORT_RE =
-      /(?:from\s*|require\(\s*)["'][^"']*req\.header\.config["']/;
+      /(?:from\s*|require\(\s*|import\(\s*)["'][^"']*req\.header\.config["']/;
 
     const offenders = collectSourceFiles(REPO_ROOT).filter((file) =>
       IMPORT_RE.test(readFileSync(file, "utf8"))
