@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Deen Bridge",
+    "slug": "deenbridge",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "deenbridge",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#092601"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deenbridge.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Deen Bridge needs camera access for liveness verification and profile photos.",
+        "NSPhotoLibraryUsageDescription": "Deen Bridge needs photo library access to upload profile photos and course media."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#092601"
+      },
+      "package": "com.deenbridge.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/GeistMono-Regular.ttf",
+            "./assets/fonts/Geist-Regular.ttf",
+            "./assets/fonts/Geist-Bold.ttf",
+            "./assets/fonts/IBMPlexArabic-Regular.ttf",
+            "./assets/fonts/IBMPlexArabic-Bold.ttf"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
