@@ -302,6 +302,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
+                            aria-hidden="true"
                           >
                             <path
                               strokeLinecap="round"
@@ -508,6 +509,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                     type="button"
                     onClick={stopStreaming}
                     round
+                    aria-label="Stop generating"
                     className="text-sm gap-1.5 text-white flex bg-red-600 hover:bg-red-600/90"
                   >
                     <StopCircle className="size-3.5" />
@@ -516,6 +518,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                 <Button
                   round
                   type="submit"
+                  aria-label="Send message"
                   className="text-sm gap-1.5 text-white flex bg-accent hover:bg-highlight"
                   disabled={isStreaming || !inputMessage.trim()}
                 >

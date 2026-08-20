@@ -20,7 +20,7 @@ function StatTile({ stat, value, inView }) {
     return (
         <div className="rounded-xl p-2 sm:p-4 space-y-4 text-center shadow-sm bg-gradient-to-br from-green-50 via-white to-green-100/80 backdrop-blur-xl">
             <div className='flex justify-between items-center'>
-                <p className="text-sm flex justify-start font-stretch-125% bg-gradient-to-r from-accent via-green-500 to-highlight text-transparent bg-clip-text">{stat.label}</p>
+                <p className="text-sm flex justify-start font-stretch-125% bg-gradient-to-r from-accent via-highlight to-accent text-transparent bg-clip-text">{stat.label}</p>
                 <span><Icon className="h-4 w-4 text-accent" /></span>
             </div>
             <h3 className="text-2xl font-bold flex justify-start text-accent">

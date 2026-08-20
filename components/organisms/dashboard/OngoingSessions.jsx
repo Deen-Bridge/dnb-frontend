@@ -18,7 +18,7 @@ const OngoingSessions = () => (
                 <li key={i} className="flex justify-between">
                     <div className="flex items-center gap-2">
                         <Avatar className="h-10 w-10 rounded-lg">
-                            <AvatarImage src="/images/mosque.png" alt="Instructor" />
+                            <AvatarImage src="/images/mosque.png" alt="" />
                             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                         </Avatar>
                         <span className="font-stretch-125% font-medium text-md">{s.name}</span>

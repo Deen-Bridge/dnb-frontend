@@ -133,37 +133,43 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
             <div className="grid gap-4">
                 <div className="grid gap-2">
                     <Label className="text-md font-stretch-125%">Gender</Label>
-                    <RadioGroup
-                        value={localData.gender || user?.gender}
-                        onValueChange={handleGenderChange}
-                        className="flex gap-4 h-10 w-10"
-                    >
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="male" id="male" />
-                            <Label htmlFor="male">Male</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="female" id="female" />
-                            <Label htmlFor="female">Female</Label>
-                        </div>
-                    </RadioGroup>
+                    <fieldset className="m-0 p-0 border-0">
+                        <legend className="sr-only">Gender</legend>
+                        <RadioGroup
+                            value={localData.gender || user?.gender}
+                            onValueChange={handleGenderChange}
+                            className="flex gap-4 h-10 w-10"
+                        >
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="male" id="male" />
+                                <Label htmlFor="male">Male</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="female" id="female" />
+                                <Label htmlFor="female">Female</Label>
+                            </div>
+                        </RadioGroup>
+                    </fieldset>
                 </div>
 
                 <div className="grid gap-2">
                     <Label className="text-md font-stretch-125%">Islamic Interests</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                        {islamicInterestsList.map((item) => (
-                            <div key={item} className="flex items-center gap-2">
-                                <Checkbox
-                                    id={item}
-                                    checked={localData.interests.includes(item)}
-                                    onCheckedChange={() => handleCheckboxChange(item)}
-                                    className="h-5 w-5"
-                                />
-                                <Label htmlFor={item}>{item}</Label>
-                            </div>
-                        ))}
-                    </div>
+                    <fieldset className="m-0 p-0 border-0">
+                        <legend className="sr-only">Islamic Interests</legend>
+                        <div className="grid grid-cols-2 gap-2">
+                            {islamicInterestsList.map((item) => (
+                                <div key={item} className="flex items-center gap-2">
+                                    <Checkbox
+                                        id={item}
+                                        checked={localData.interests.includes(item)}
+                                        onCheckedChange={() => handleCheckboxChange(item)}
+                                        className="h-5 w-5"
+                                    />
+                                    <Label htmlFor={item}>{item}</Label>
+                                </div>
+                            ))}
+                        </div>
+                    </fieldset>
                 </div>
                 <div className="sm:flex sm:justify-between">
                     {/* Country Dropdown */}
@@ -174,7 +180,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                             onValueChange={val => setLocalData(prev => ({ ...prev, country: val }))}
                             required
                         >
-                            <SelectTrigger>
+                            <SelectTrigger aria-label="Country">
                                 <SelectValue placeholder="Select country" />
                             </SelectTrigger>
                             <SelectContent>
@@ -192,7 +198,7 @@ export default function StepTwo({ data, setData, onNext, onPrev, className }) {
                             onValueChange={val => setLocalData(prev => ({ ...prev, language: val }))}
                             required
                         >
-                            <SelectTrigger>
+                            <SelectTrigger aria-label="Language">
                                 <SelectValue placeholder="Select language" />
                             </SelectTrigger>
                             <SelectContent>

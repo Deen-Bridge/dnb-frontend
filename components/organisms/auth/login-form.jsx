@@ -142,13 +142,13 @@ export function LoginForm({ className, ...props }) {
                 <FormItem>
                   <div className="flex items-center">
                     <FormLabel>Password</FormLabel>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       onClick={handleForgetPassword}
                       className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                     >
                       Forgot your password?
-                    </a>
+                    </button>
                   </div>
                   <FormControl>
                     <Input
