@@ -33,12 +33,12 @@ import {
 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
 
-export default function PublicEducatorPage({ params }) {
+export default function PublicEducatorPage({ params, educator: educatorProp }) {
   const { profileid } = use(params);
   const { user: currentUser } = useAuth();
   const router = useRouter();
 
-  const [educator, setEducator] = useState(null);
+  const [educator, setEducator] = useState(educatorProp || null);
   const [courses, setCourses] = useState([]);
   const [books, setBooks] = useState([]);
   const [spaces, setSpaces] = useState([]);
@@ -54,8 +54,11 @@ export default function PublicEducatorPage({ params }) {
       setLoading(true);
       setError(false);
       try {
-        const res = await getUserById(profileid);
-        const u = res?.user || null;
+        let u = educatorProp;
+        if (!u) {
+          const res = await getUserById(profileid);
+          u = res?.user || null;
+        }
         if (!u) {
           setError(true);
           setLoading(false);
@@ -100,7 +103,7 @@ export default function PublicEducatorPage({ params }) {
       }
     }
     load();
-  }, [profileid, currentUser?._id]);
+  }, [profileid, educatorProp, currentUser?._id]);
 
   const handleFollowToggle = async () => {
     if (!currentUser?._id) {
