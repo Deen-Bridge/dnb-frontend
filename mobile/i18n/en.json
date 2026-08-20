@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "Deen Bridge",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "done": "Done",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "noResults": "No results found",
+    "emptyState": "Nothing here yet"
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Log Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginTitle": "Welcome Back",
+    "loginSubtitle": "Sign in to continue your learning journey",
+    "signupTitle": "Join Deen Bridge",
+    "signupSubtitle": "Start your path to authentic Islamic knowledge"
+  },
+  "tabs": {
+    "home": "Home",
+    "courses": "Courses",
+    "library": "Library",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting": "Assalamu Alaikum",
+    "continueLearning": "Continue Learning",
+    "browseCourses": "Browse Courses",
+    "featuredBooks": "Featured Books",
+    "liveSpaces": "Live Spaces"
+  },
+  "courses": {
+    "title": "Courses",
+    "enroll": "Enroll",
+    "enrolled": "Enrolled",
+    "progress": "Progress",
+    "reviews": "Reviews",
+    "about": "About",
+    "curriculum": "Curriculum"
+  },
+  "library": {
+    "title": "Library",
+    "read": "Read",
+    "purchased": "Purchased"
+  },
+  "profile": {
+    "title": "Profile",
+    "settings": "Settings",
+    "purchases": "My Purchases",
+    "saved": "Saved",
+    "wallet": "Wallet",
+    "notifications": "Notifications",
+    "language": "Language",
+    "darkMode": "Dark Mode"
+  }
+}

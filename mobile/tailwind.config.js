@@ -1,0 +1,66 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./lib/**/*.{js,jsx,ts,tsx}",
+  ],
+  presets: [require("nativewind/preset")],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: "#f0f7ed",
+          100: "#d4eacc",
+          200: "#a8d69a",
+          300: "#7cc167",
+          400: "#5aad42",
+          500: "#3d8c2b",
+          600: "#2d6b1f",
+          700: "#1e4a15",
+          800: "#0f290b",
+          900: "#092601",
+          950: "#041300",
+        },
+        surface: {
+          50: "#fafafa",
+          100: "#f5f5f5",
+          200: "#e5e5e5",
+          300: "#d4d4d4",
+          400: "#a3a3a3",
+          500: "#737373",
+          600: "#525252",
+          700: "#404040",
+          800: "#262626",
+          900: "#171717",
+          950: "#0a0a0a",
+        },
+      },
+      fontFamily: {
+        sans: ["Geist", "IBMPlexArabic"],
+        mono: ["GeistMono"],
+        arabic: ["IBMPlexArabic"],
+      },
+      spacing: {
+        xs: "4px",
+        sm: "8px",
+        md: "12px",
+        lg: "16px",
+        xl: "20px",
+        "2xl": "24px",
+        "3xl": "32px",
+        "4xl": "40px",
+        "5xl": "48px",
+      },
+      borderRadius: {
+        sm: "4px",
+        md: "8px",
+        lg: "12px",
+        xl: "16px",
+        "2xl": "24px",
+        full: "9999px",
+      },
+    },
+  },
+  plugins: [],
+};
