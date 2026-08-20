@@ -1,6 +1,7 @@
 import { siteUrl, publicRoutes } from "@/lib/config/site.config";
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { fetchBooks } from "@/lib/actions/library/fetch-books";
+import { fetchEducators } from "@/lib/actions/educators/fetch-educators";
 
 const API_TIMEOUT_MS = 5000;
 
@@ -36,6 +37,12 @@ function normalizeBooks(response) {
   return [];
 }
 
+function normalizeEducators(response) {
+  if (Array.isArray(response)) return response;
+  if (response?.educators) return response.educators;
+  return [];
+}
+
 export default async function sitemap() {
   const lastModified = new Date();
 
@@ -48,6 +55,7 @@ export default async function sitemap() {
 
   let courseEntries = [];
   let bookEntries = [];
+  let educatorEntries = [];
 
   try {
     const courses = await withTimeout(fetchCourses());
@@ -79,5 +87,20 @@ export default async function sitemap() {
     );
   }
 
-  return [...staticEntries, ...courseEntries, ...bookEntries];
+  try {
+    const educators = await withTimeout(fetchEducators());
+    educatorEntries = normalizeEducators(educators).map((educator) => ({
+      url: `${siteUrl}/educators/${educator._id || educator.id}`,
+      lastModified: safeDate(educator.updatedAt, lastModified),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.warn(
+      "sitemap: educator profile fetch failed, returning static routes only.",
+      error?.message ?? error
+    );
+  }
+
+  return [...staticEntries, ...courseEntries, ...bookEntries, ...educatorEntries];
 }
