@@ -13,6 +13,37 @@ import Sources from "./(pages)/(landingPage)/Sources";
 // import Stats from "./(pages)/(landingPage)/Stats"; // hidden until real numbers
 import FeaturedContent from "./(pages)/(landingPage)/FeaturedContent";
 import StellarSection from "./(pages)/(landingPage)/StellarSection";
+import { siteUrl, siteName, siteDescription } from "@/lib/config/site.config";
+
+export const metadata = {
+  title: { absolute: "Deen Bridge — Authentic Islamic Education" },
+  description: siteDescription,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Deen Bridge — Authentic Islamic Education",
+    description: siteDescription,
+    url: siteUrl,
+    siteName,
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Deen Bridge — authentic Islamic education, together.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@deen_bridge",
+    creator: "@deen_bridge",
+    title: "Deen Bridge — Authentic Islamic Education",
+    description: siteDescription,
+    images: ["/og.png"],
+  },
+};
 
 const page = () => {
   return (
