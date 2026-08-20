@@ -24,7 +24,7 @@ const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
       <Image
         height="222"
         width="443"
-        alt="404-image"
+        alt=""
         src="/svgs/connectivity.svg"
         priority
         className="mb-12 hidden lg:block"
@@ -32,7 +32,7 @@ const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
       <Image
         height="300"
         width="300"
-        alt="404-image"
+        alt=""
         priority
         src="/svgs/connectivity.svg"
         className="mb-14 block lg:hidden"

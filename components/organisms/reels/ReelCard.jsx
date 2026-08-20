@@ -140,6 +140,7 @@ const ReelCard = ({
     >
       {/* Full-bleed 9:16 video column (letterboxed on wide screens) */}
       <div className="relative h-full w-full overflow-hidden bg-black sm:max-w-[460px]">
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           ref={videoRef}
           src={reel.video}
@@ -148,6 +149,7 @@ const ReelCard = ({
           loop
           preload="metadata"
           controls={false}
+          aria-label="Reel video"
           onClick={() => setPlaying(playing === reel.id ? null : reel.id)}
         />
 
@@ -183,7 +185,7 @@ const ReelCard = ({
         <div className="absolute bottom-24 right-2.5 z-30 flex flex-col items-center gap-5">
           <div className="mb-1 flex flex-col items-center">
             <Avatar className="h-11 w-11 border-2 border-white">
-              <AvatarImage src={reel.createdBy?.avatar} />
+              <AvatarImage src={reel.createdBy?.avatar} alt="" />
               <AvatarFallback className="bg-accent text-sm text-white">
                 {viewerAvatarFallback}
               </AvatarFallback>

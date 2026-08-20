@@ -1,0 +1,62 @@
+"use client";
+import MessagesHeadSideList from "@/components/molecules/dashboard/messages/MessagesHeadSideList";
+import { useState, useEffect } from "react";
+import { fetchUserConversations } from "@/lib/actions/messages/fetchConversations";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import Loader from "@/components/molecules/loaders/rootLoader";
+export default function Layout({ children }) {
+  const [hasConversations, setHasConversations] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
+  const isInChat = pathname !== "/dashboard/messages";
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user?._id) return; // ✅ Don't even try
+
+    const checkConversations = async () => {
+      try {
+        const conversations = await fetchUserConversations(user._id);
+        setHasConversations(conversations.length > 0);
+      } catch (error) {
+        console.log("Error fetching conversations:", error);
+        setHasConversations(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkConversations();
+  }, [user?._id]);
+
+  if (isLoading) {
+    return (
+    <Loader/>
+    );
+  }
+
+  return (
+    <div className="w-full h-[calc(100vh-4rem)] flex flex-col overflow-hidden overscroll-none">
+      <div className="flex-1 flex flex-col md:flex-row gap-4 p-2 sm:p-4 h-full">
+        {/* Left Side List - Always visible on desktop, conditional on mobile */}
+        <div
+          className={`bg-muted rounded-xl p-2 sm:p-3 h-full overflow-y-auto scrollbar-hide transition-all duration-300 ${
+            isInChat ? "hidden md:block" : "block"
+          } md:w-1/3 lg:w-1/4`}
+        >
+          <MessagesHeadSideList />
+        </div>
+
+        {/* Chat Panel (right side) */}
+        <div
+          className={`bg-muted rounded-xl flex flex-col  transition-all duration-300 ${
+            isInChat ? "md:flex-1" : "w-full"
+          } h-full overflow-hidden`}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}

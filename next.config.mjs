@@ -1,4 +1,7 @@
 import withSerwistInit from "@serwist/next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.js",
@@ -29,4 +32,4 @@ const nextConfig = {
   },
 };
 
-export default withSerwist(nextConfig);
+export default withSerwist(withNextIntl(nextConfig));

@@ -12,11 +12,11 @@ const BookStatsInfo = ({ book }) => {
       {/* Author Card */}
       {book && (
         <div className="space-y-8 w-full">
-          <div className="bg-accent p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition">
+          <div className="bg-accent-card p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition">
             <span className="text-xl font-bold flex items-center pb-2 gap-2 text-white">Author</span>
             <Link href={`/account/profile/${book.author?._id}`} className="flex items-center gap-4 mb-4">
               <Avatar className="h-14 w-14 border border-white/10 shadow-lg">
-                <AvatarImage src={book.author?.avatar} />
+                <AvatarImage src={book.author?.avatar} alt="" />
                 <AvatarFallback>AU</AvatarFallback>
               </Avatar>
               <div className="text-white ">
@@ -29,7 +29,7 @@ const BookStatsInfo = ({ book }) => {
 
 
           {/* Book Stats */}
-          <div className="bg-accent p-6 rounded-3xl text-white  backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition space-y-4">
+          <div className="bg-accent-card p-6 rounded-3xl text-white  backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition space-y-4">
             <h3 className="text-xl font-semibold flex items-center gap-2 pb-2">
               <BarChart3 className="w-5 h-5 text-indigo-300" />
               Book Stats
@@ -53,7 +53,7 @@ const BookStatsInfo = ({ book }) => {
 
 
 
-          <div className="bg-accent p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition">
+          <div className="bg-accent-card p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl transition">
             <span className="text-xl font-bold flex items-center pb-2 gap-2 text-white">
               Reviews ({book.reviews?.length || 0})
             </span>

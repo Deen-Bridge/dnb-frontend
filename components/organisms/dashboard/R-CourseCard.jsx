@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import Button from "@/components/atoms/form/Button";
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge";
+import { resolveCategorySlug } from "@/lib/categories";
 
 const RecommendedCourseCard = ({ course }) => (
     <div className="bg-card rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -13,7 +14,7 @@ const RecommendedCourseCard = ({ course }) => (
         <div className="relative h-40 w-full">
             <Image
                 src={course.image || "/images/placeholder.jpg"}
-                alt={course.title || "image"}
+                alt={course.title || "Course thumbnail"}
                 fill
                 className="object-cover"
             />
@@ -28,7 +29,7 @@ const RecommendedCourseCard = ({ course }) => (
                 {/* Instructor */}
                 <div className="flex items-center gap-2 mt-2">
                     <Avatar className="h-10 w-10 rounded-lg">
-                        <AvatarImage src="/images/img1.jpeg" alt={course.instructor || "Image"} />
+                        <AvatarImage src="/images/img1.jpeg" alt="" />
                         <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm">
@@ -41,9 +42,12 @@ const RecommendedCourseCard = ({ course }) => (
                             {course.price ? `$${course.price}` : "Free"}
                         </span>
                         <span>
-                            <Badge className="bg-gradient-to-r from-highlight to-accent rounded-full  text-white/90 text-xs px-3 py-1  font-semibold shadow">
+                            <Link
+                                href={`/dashboard/courses/category/${resolveCategorySlug(course?.category)}`}
+                                className="bg-gradient-to-r from-highlight to-accent rounded-full  text-white/90 text-xs px-3 py-1  font-semibold shadow"
+                            >
                                 {course.category || "General"}
-                            </Badge>
+                            </Link>
 
                         </span>
                     </div>
