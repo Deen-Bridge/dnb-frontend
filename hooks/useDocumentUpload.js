@@ -266,7 +266,10 @@ export function useDocumentUpload(options = {}) {
         });
 
         if (!isTerminalStatus(reference.status)) {
-          pollScanStatus(documentType, reference.documentId);
+          // Deliberately not awaited — the upload is done and the caller
+          // shouldn't block on the scan. Errors are swallowed inside the poll
+          // loop; the catch here only guards against an unhandled rejection.
+          pollScanStatus(documentType, reference.documentId).catch(() => {});
         }
 
         return { ok: true, reference };

@@ -423,9 +423,12 @@ describe("replace and remove", () => {
       `/api/educators/applications/documents/${SIGNED_TARGET.documentId}`
     );
 
-    // The referenced object now points at the new document.
-    const latest = onChange.mock.calls.at(-1)[0];
-    expect(latest[ID].documentId).toBe("doc_second");
+    // The referenced object now points at the new document. Waited for rather
+    // than read once: the filename renders as soon as validation starts, which
+    // is before the replacement upload has finalised.
+    await waitFor(() =>
+      expect(onChange.mock.calls.at(-1)[0][ID].documentId).toBe("doc_second")
+    );
   });
 
   it("remove deletes the document and clears the slot", async () => {
@@ -462,6 +465,109 @@ describe("replace and remove", () => {
 
 // ---------------------------------------------------------------------------
 
+describe("onChange reports the full reference map", () => {
+  const CERT = DOCUMENT_TYPES.TEACHING_CERTIFICATE;
+
+  const TWO_SLOTS = [
+    { ...SINGLE_SLOT[0] },
+    {
+      type: CERT,
+      label: "Teaching certificate",
+      description: "Ijazah or teaching licence.",
+      required: true,
+      allowCamera: false,
+    },
+  ];
+
+  /** Give each slot its own documentId so the map can be told apart. */
+  function mockPerSlot() {
+    axiosInstance.post.mockImplementation((url, body) => {
+      if (url.endsWith("/upload-url")) {
+        return Promise.resolve({
+          data: { ...SIGNED_TARGET, documentId: `doc_${body.documentType}` },
+        });
+      }
+      if (url.endsWith("/complete")) {
+        const documentId = url.split("/documents/")[1].split("/complete")[0];
+        return Promise.resolve({
+          data: {
+            documentId,
+            documentType: body.documentType,
+            status: "accepted",
+          },
+        });
+      }
+      return Promise.resolve({ data: {} });
+    });
+    axios.request.mockResolvedValue({ data: {}, status: 200 });
+  }
+
+  function dropInto(type, name) {
+    fireEvent.drop(screen.getByTestId(`dropzone-${type}`), {
+      dataTransfer: {
+        files: [makeFile(PDF_MAGIC, { name, type: "application/pdf" })],
+      },
+    });
+  }
+
+  it("keeps earlier slots when a later slot finishes", async () => {
+    mockPerSlot();
+    const onChange = vi.fn();
+
+    render(
+      <DocumentUpload
+        slots={TWO_SLOTS}
+        uploadOptions={{ pollIntervalMs: 5, maxPollAttempts: 5 }}
+        onChange={onChange}
+      />
+    );
+
+    dropInto(ID, "passport.pdf");
+    await waitFor(() =>
+      expect(screen.getByTestId(`document-slot-${ID}`)).toHaveAttribute(
+        "data-state",
+        "accepted"
+      )
+    );
+
+    dropInto(CERT, "ijazah.pdf");
+    await waitFor(() =>
+      expect(screen.getByTestId(`document-slot-${CERT}`)).toHaveAttribute(
+        "data-state",
+        "accepted"
+      )
+    );
+
+    // The second slot completing must not drop the first slot's reference.
+    const latest = onChange.mock.calls.at(-1)[0];
+    expect(Object.keys(latest).sort()).toEqual([CERT, ID].sort());
+    expect(latest[ID].documentId).toBe(`doc_${ID}`);
+    expect(latest[CERT].documentId).toBe(`doc_${CERT}`);
+  });
+
+  it("reports the status change when a pending scan resolves", async () => {
+    mockHappyPath({ finalStatus: "scan_pending", pollStatus: "accepted" });
+    const onChange = vi.fn();
+    renderUpload({ onChange });
+
+    dropInto(ID, "passport.pdf");
+
+    await waitFor(
+      () =>
+        expect(screen.getByTestId("slot-status")).toHaveAttribute(
+          "data-state",
+          "accepted"
+        ),
+      { timeout: 3000 }
+    );
+
+    // The parent must see the resolved status, not the stale scan_pending one.
+    expect(onChange.mock.calls.at(-1)[0][ID].status).toBe("accepted");
+  });
+});
+
+// ---------------------------------------------------------------------------
+
 describe("no public asset URL is ever produced or stored", () => {
   it("never surfaces a cloudinary or other public URL, and stores only an id", async () => {
     mockHappyPath({ finalStatus: "accepted" });
@@ -483,13 +589,17 @@ describe("no public asset URL is ever produced or stored", () => {
     );
 
     // The stored reference carries an opaque id and a status — no URL field.
-    const reference = onChange.mock.calls.at(-1)[0][ID];
-    expect(reference).toEqual(
-      expect.objectContaining({
-        documentId: "doc_abc123",
-        status: "accepted",
-      })
+    // Waited for: the reference map is reported from an effect, which flushes
+    // a tick after the slot's DOM state settles.
+    await waitFor(() =>
+      expect(onChange.mock.calls.at(-1)?.[0]?.[ID]).toEqual(
+        expect.objectContaining({
+          documentId: "doc_abc123",
+          status: "accepted",
+        })
+      )
     );
+    const reference = onChange.mock.calls.at(-1)[0][ID];
     expect(JSON.stringify(reference)).not.toMatch(/https?:\/\//);
     expect(reference.secure_url).toBeUndefined();
     expect(reference.url).toBeUndefined();
