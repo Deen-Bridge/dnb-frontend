@@ -76,6 +76,8 @@ afterEach(() => {
   document.cookie =
     "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   vi.restoreAllMocks();
+  // Covers any future test that stubs the environment and doesn't clean up.
+  vi.unstubAllEnvs();
 });
 
 // ---------------------------------------------------------------------------
@@ -238,17 +240,21 @@ describe("issue #75 — console noise", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.resetModules();
 
-    const output = await captureConsole(async () => {
-      await import("@/lib/config/axios.config");
-    });
+    try {
+      const output = await captureConsole(async () => {
+        await import("@/lib/config/axios.config");
+      });
 
-    // The only import-time output in this graph is the missing-env warning in
-    // lib/config/env.js, which is already gated on NODE_ENV. In a production
-    // build the module graph must be silent.
-    expect(output).toBe("");
-
-    vi.unstubAllEnvs();
-    vi.resetModules();
+      // The only import-time output in this graph is the missing-env warning
+      // in lib/config/env.js, which is already gated on NODE_ENV. In a
+      // production build the module graph must be silent.
+      expect(output).toBe("");
+    } finally {
+      // In a finally block so a failed assertion cannot leave NODE_ENV stubbed
+      // as "production" for the tests that follow.
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
   });
 
   it("no source file logs the API base URL", () => {
