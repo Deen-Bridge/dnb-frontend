@@ -286,8 +286,11 @@ describe("issue #74 — req.header.config is deleted", () => {
     // The dynamic form is not hypothetical: axios.config.js already uses
     // `await import("js-cookie")`, so a lingering dynamic import of the
     // deleted module would otherwise fail only when that path executed.
+    // The quote is captured and back-referenced so template-literal
+    // specifiers — require(`...`) and import(`...`), both valid — are matched
+    // alongside "..." and '...'.
     const IMPORT_RE =
-      /(?:from\s*|require\(\s*|import\(\s*|import\s+)["'][^"']*req\.header\.config(?:\.js)?["']/;
+      /(?:from\s*|require\(\s*|import\(\s*|import\s+)(["'`])[^"'`]*req\.header\.config(?:\.js)?\1/;
 
     const offenders = collectSourceFiles(REPO_ROOT).filter((file) =>
       IMPORT_RE.test(readFileSync(file, "utf8"))
