@@ -18,7 +18,14 @@
  * - No component in this tree ever receives or renders a public asset URL.
  */
 
-import { useCallback, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   AlertCircle,
   Camera,
@@ -373,34 +380,48 @@ export default function DocumentUpload({
     useDocumentUpload(uploadOptions);
 
   const handleSelectFile = useCallback(
-    async (documentType, file) => {
+    (documentType, file) => {
       const existing = slots[documentType]?.reference?.documentId;
       const run = existing ? replaceDocument : uploadDocument;
-
-      const result = await run(documentType, file);
-
-      if (result?.ok && onChange) {
-        onChange({
-          ...collectReferences(slots),
-          [documentType]: result.reference,
-        });
-      }
-      return result;
+      return run(documentType, file);
     },
-    [onChange, replaceDocument, slots, uploadDocument]
+    [replaceDocument, slots, uploadDocument]
   );
 
   const handleRemove = useCallback(
-    async (documentType) => {
-      const result = await removeDocument(documentType);
-      if (result?.ok && onChange) {
-        const next = collectReferences(slots);
-        delete next[documentType];
-        onChange(next);
-      }
-    },
-    [onChange, removeDocument, slots]
+    (documentType) => removeDocument(documentType),
+    [removeDocument]
   );
+
+  // ── Report the reference map upward ──────────────────────────────────────
+  // Derived from slot state rather than emitted at the end of each upload.
+  // Emitting per-upload read `slots` from a closure captured before the await,
+  // and never fired at all when a pending scan later resolved — so the parent
+  // could hold a reference map that was missing a slot, or stuck on
+  // "scan_pending" after the scan had finished.
+  const references = useMemo(() => collectReferences(slots), [slots]);
+
+  // Compare by content: slot state also changes on every progress tick, and
+  // those must not be reported as reference changes.
+  const referencesKey = JSON.stringify(references);
+
+  // Held in a ref so a parent passing an inline arrow doesn't re-fire this.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  const hasReportedRef = useRef(false);
+  useEffect(() => {
+    // Skip the initial empty map so mounting doesn't look like a change.
+    if (!hasReportedRef.current) {
+      hasReportedRef.current = true;
+      if (referencesKey === "{}") return;
+    }
+    onChangeRef.current?.(references);
+    // `references` is recreated per render; `referencesKey` is the real trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [referencesKey]);
 
   const requiredTypes = definitions
     .filter((d) => d.required)
