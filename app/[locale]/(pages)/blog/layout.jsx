@@ -1,7 +1,8 @@
 import Navbar from "@/components/molecules/ladingpage/Navbar";
+import { siteUrl, siteName } from "@/lib/config/site.config";
 
 export const metadata = {
-    title: "Deen Bridge Blog | Islamic Learning, Qur'an, Arabic, Fiqh & More",
+    title: { absolute: "Deen Bridge Blog | Islamic Learning, Qur'an, Arabic, Fiqh & More" },
     description:
         "Explore the Deen Bridge Blog for authentic Islamic knowledge, tips, and stories. Learn Qur'an, Arabic, Fiqh, and more through expert articles and community insights.",
     keywords: [
@@ -20,30 +21,30 @@ export const metadata = {
         title: "Deen Bridge Blog | Islamic Learning, Qur'an, Arabic, Fiqh & More",
         description:
             "Explore the Deen Bridge Blog for authentic Islamic knowledge, tips, and stories. Learn Qur'an, Arabic, Fiqh, and more through expert articles and community insights.",
-        url: "https://deenbridge.com/blog",
+        url: `${siteUrl}/blog`,
         type: "website",
         images: [
             {
-                url: "/favicon.ico",
+                url: "/og.png",
                 width: 1200,
                 height: 630,
                 alt: "Deen Bridge - Islamic Learning Platform",
             },
         ],
-        site_name: "Deen Bridge Blog",
+        site_name: siteName,
     },
     twitter: {
         card: "summary_large_image",
         title: "Deen Bridge Blog | Islamic Learning, Qur'an, Arabic, Fiqh & More",
         description:
             "Explore the Deen Bridge Blog for authentic Islamic knowledge, tips, and stories. Learn Qur'an, Arabic, Fiqh, and more through expert articles and community insights.",
-        images: ["/favicon.ico"],
-        site: "@deenbridge",
-        creator: "@deenbridge"
+        images: ["/og.png"],
+        site: "@deen_bridge",
+        creator: "@deen_bridge"
     },
-    authors: [{ name: "Deen Bridge Team", url: "https://deenbridge.com/about" }],
+    authors: [{ name: "Deen Bridge Team", url: `${siteUrl}/about` }],
     creator: "Deen Bridge Team",
-    publisher: "Deen Bridge",
+    publisher: siteName,
     robots: "index, follow",
 };
 
