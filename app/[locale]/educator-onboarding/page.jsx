@@ -7,16 +7,18 @@
  *   Step 1 — Branch selector ("verify now" vs "later")
  *   Step 2 — Consent screen (liveness disclosure + explicit opt-in)
  *   Step 3 — Capture + state machine (liveness check)
+ *   Step 4 — Document upload, at /educator-onboarding/documents
  *
- * Document upload (#3) and the admin review console (#38) are out of scope
- * here; this wizard hands off after the liveness token is acknowledged.
+ * Step 4 lives on its own route rather than in this state machine so it stays
+ * resumable and deep-linkable. The admin review console (#38) remains out of
+ * scope here.
  *
  * Navigation contract
  * -------------------
  *   • "Start verification"  → step 2 (consent)
  *   • Consent given         → step 3 (capture)
  *   • Cancel at any point   → step 1 (branch selector)
- *   • Capture success       → /profile-setup (existing profile wizard)
+ *   • Capture success       → /educator-onboarding/documents (step 4)
  *   • "Do this later"       → /dashboard
  */
 
@@ -159,9 +161,9 @@ function WizardInner() {
     [recordConsent, goToStep]
   );
 
-  // Capture success → profile setup
+  // Capture success → document upload (step 4)
   const handleCaptureSuccess = useCallback(() => {
-    router.push("/profile-setup");
+    router.push("/educator-onboarding/documents");
   }, [router]);
 
   // "Later" → dashboard
