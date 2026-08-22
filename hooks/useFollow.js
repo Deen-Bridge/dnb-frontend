@@ -1,6 +1,5 @@
 // hooks/useFollowSystem.js
 import axiosInstance from "@/lib/config/axios.config";
-import config from "@/lib/config/req.header.config";
 
 // Follow/Unfollow
 export const followUser = async (userId) => {
@@ -9,11 +8,7 @@ export const followUser = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.post(
-      `/api/users/follow/${userId}`,
-      {},
-      config
-    );
+    const res = await axiosInstance.post(`/api/users/follow/${userId}`, {});
     console.log("followUser response:", res.data);
     return res.data;
   } catch (e) {
@@ -31,10 +26,7 @@ export const unfollowUser = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.delete(
-      `/api/users/unfollow/${userId}`,
-      config
-    );
+    const res = await axiosInstance.delete(`/api/users/unfollow/${userId}`);
     console.log("unfollowUser response:", res.data);
     return res.data;
   } catch (e) {
@@ -53,10 +45,7 @@ export const getFollowers = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.get(
-      `/api/users/${userId}/followers`,
-      config
-    );
+    const res = await axiosInstance.get(`/api/users/${userId}/followers`);
     console.log("getFollowers response:", res.data);
     return res.data;
   } catch (e) {
@@ -74,10 +63,7 @@ export const getFollowersCount = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.get(
-      `/api/users/${userId}/followers/count`,
-      config
-    );
+    const res = await axiosInstance.get(`/api/users/${userId}/followers/count`);
     console.log("getFollowersCount response:", res.data);
     return res.data;
   } catch (e) {
@@ -96,10 +82,7 @@ export const getFollowing = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.get(
-      `/api/users/${userId}/following`,
-      config
-    );
+    const res = await axiosInstance.get(`/api/users/${userId}/following`);
     console.log("getFollowing response:", res.data);
     return res.data;
   } catch (e) {
@@ -117,10 +100,7 @@ export const getFollowingCount = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.get(
-      `/api/users/${userId}/following/count`,
-      config
-    );
+    const res = await axiosInstance.get(`/api/users/${userId}/following/count`);
     console.log("getFollowingCount response:", res.data);
     return res.data;
   } catch (e) {
@@ -139,10 +119,7 @@ export const checkIfFollowing = async (userId) => {
     return { success: false, message: "User ID is required" };
   }
   try {
-    const res = await axiosInstance.get(
-      `/api/users/${userId}/check-following`,
-      config
-    );
+    const res = await axiosInstance.get(`/api/users/${userId}/check-following`);
     console.log("checkIfFollowing response:", res.data);
     return res.data;
   } catch (e) {
