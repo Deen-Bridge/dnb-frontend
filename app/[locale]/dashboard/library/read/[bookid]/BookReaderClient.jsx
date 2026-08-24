@@ -597,7 +597,7 @@ const BookReaderClient = ({ book }) => {
                   ref={canvasRef}
                   className="transition-transform duration-300"
                   style={{
-                    backgroundColor: "#fafafa",
+                    backgroundColor: "var(--color-surface-raised)",
                     borderRadius: "0.75rem",
                     boxShadow:
                       "0 10px 40px -12px rgba(0,0,0,0.28), 0 2px 8px -2px rgba(0,0,0,0.12)",

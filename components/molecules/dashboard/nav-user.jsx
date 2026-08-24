@@ -84,37 +84,37 @@ export function NavUser({
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem onClick={upgrade} className="focus:text-white">
-                                    <Sparkles className="text-black" />
+                                <DropdownMenuItem onClick={upgrade} className="focus:text-ink-inverse">
+                                    <Sparkles className="text-ink" />
                                     Upgrade to Pro
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
                                 <Link href={`/account/profile/${currentUser?._id}`}>
-                                    <DropdownMenuItem className="focus:text-white">
-                                        <BadgeCheck className="text-black" />
+                                    <DropdownMenuItem className="focus:text-ink-inverse">
+                                        <BadgeCheck className="text-ink" />
                                         Account
                                     </DropdownMenuItem>
                                 </Link>
-                                <DropdownMenuItem className="focus:text-white">
-                                    <CreditCard className="text-black" />
+                                <DropdownMenuItem className="focus:text-ink-inverse">
+                                    <CreditCard className="text-ink" />
                                     Billing
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="focus:text-white">
-                                    <Bell className="text-black" />
+                                <DropdownMenuItem className="focus:text-ink-inverse">
+                                    <Bell className="text-ink" />
                                     Notifications
                                 </DropdownMenuItem>
                                 <Link href="/account/settings">
-                                    <DropdownMenuItem className="focus:text-white">
-                                        <SettingsIcon className="text-black" />
+                                    <DropdownMenuItem className="focus:text-ink-inverse">
+                                        <SettingsIcon className="text-ink" />
                                         Settings
                                     </DropdownMenuItem>
                                 </Link>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={logout} className="focus:text-white">
-                                <LogOut className="text-black" />
+                            <DropdownMenuItem onClick={logout} className="focus:text-ink-inverse">
+                                <LogOut className="text-ink" />
                                 Log out
                             </DropdownMenuItem>
                         </DropdownMenuContent>

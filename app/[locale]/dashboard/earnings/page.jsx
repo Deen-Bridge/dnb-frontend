@@ -198,7 +198,13 @@ export default function EarningsPage() {
   }
 
   const chartConfig = {
-    revenue: { label: "Revenue", color: "#009900" },
+    revenue: {
+      label: "Revenue",
+      theme: {
+        light: "var(--color-secondary)",
+        dark: "var(--color-secondary)",
+      },
+    },
   };
 
   return (
@@ -307,7 +313,7 @@ export default function EarningsPage() {
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
-                    stroke="#265902"
+                    className="stroke-accent"
                     strokeOpacity={0.12}
                   />
                   <XAxis
