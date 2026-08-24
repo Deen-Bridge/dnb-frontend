@@ -1,7 +1,12 @@
 import withSerwistInit from "@serwist/next";
 import createNextIntlPlugin from "next-intl/plugin";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.js");
+
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.js",
@@ -26,10 +31,13 @@ const nextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "react-icons"],
+  },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;
   },
 };
 
-export default withSerwist(withNextIntl(nextConfig));
+export default withSerwist(withNextIntl(withAnalyzer(nextConfig)));
