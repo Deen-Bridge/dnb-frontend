@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { WALLET_INSTALL_LINKS } from "@/lib/stellar/stellarErrors";
+import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 
 export default function WalletConnectButton({ variant = "outline", size = "default" }) {
   const {
@@ -48,11 +49,7 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
   };
 
   const viewOnExplorer = () => {
-    const baseUrl =
-      network === "mainnet"
-        ? "https://stellar.expert/explorer/public/account/"
-        : "https://stellar.expert/explorer/testnet/account/";
-    window.open(baseUrl + connectedWallet, "_blank");
+    window.open(getExplorerUrl(connectedWallet, network), "_blank");
   };
 
   if (isLoading) {
@@ -147,7 +144,9 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
               networkMismatch ? "bg-yellow-500" : "bg-green-500"
             }`}
           />
-          {truncateAddress(connectedWallet)}
+          {/* Public key is Latin/base32 — force LTR so the G… key never reverses
+              inside an RTL (Arabic) layout. */}
+          <span dir="ltr">{truncateAddress(connectedWallet)}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
@@ -169,13 +168,13 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">USDC Balance</span>
-              <span className="font-bold text-primary">
+              <span dir="ltr" className="font-bold text-primary">
                 {parseFloat(walletInfo?.usdcBalance || 0).toFixed(2)} USDC
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">XLM Balance</span>
-              <span className="font-medium">
+              <span dir="ltr" className="font-medium">
                 {parseFloat(walletInfo?.xlmBalance || 0).toFixed(4)} XLM
               </span>
             </div>

@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
-import config from "@/lib/config/req.header.config";
 
 const AuthContext = createContext(null);
 
@@ -91,7 +90,7 @@ export default function AuthProvider({ children }) {
 
   const refreshUser = useCallback(async (userId) => {
     try {
-      const res = await axiosInstance.get(`/api/users/${userId}`, config);
+      const res = await axiosInstance.get(`/api/users/${userId}`);
       if (res.data && (res.data.user || res.data)) {
         let freshUser = res.data.user || res.data;
         if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;

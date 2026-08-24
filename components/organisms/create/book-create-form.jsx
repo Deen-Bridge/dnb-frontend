@@ -111,13 +111,13 @@ const BookCreateForm = ({ onBookCreated }) => {
           )} />
 
           <div className="my-4">
-            <FormLabel>Upload Book Thumbnail Image</FormLabel>
+            <FormLabel htmlFor="book-thumbnail">Upload Book Thumbnail Image</FormLabel>
             <ImageUpload id="book-thumbnail" image={thumbnail} onChange={handleThumbnailChange} />
             {thumbnailError && <p className="text-sm text-destructive mt-1">{thumbnailError}</p>}
           </div>
 
           <div>
-            <FormLabel>Upload Book File</FormLabel>
+            <FormLabel htmlFor="book-file">Upload Book File</FormLabel>
             <FileUpload id="book-file" file={file} onChange={handleFileChange} />
             {fileError && <p className="text-sm text-destructive mt-1">{fileError}</p>}
           </div>
