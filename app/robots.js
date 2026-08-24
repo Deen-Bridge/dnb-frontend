@@ -15,12 +15,11 @@ export default function robots() {
         userAgent: "*",
         allow: "/",
         // Signed-in surfaces: nothing to index, and much of it needs auth.
+        // /blog, /login and /signup are intentionally crawlable.
         disallow: [
           "/dashboard/",
           "/account/",
           "/api/",
-          "/login",
-          "/signup",
           "/verify-email",
           "/profile-setup",
           "/offline",

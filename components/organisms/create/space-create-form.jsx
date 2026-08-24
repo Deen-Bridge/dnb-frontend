@@ -142,7 +142,7 @@ const SpaceCreateForm = ({ onSpaceCreated }) => {
           )} />
 
           <div className="my-4">
-            <FormLabel>Upload Thumbnail Image</FormLabel>
+            <FormLabel htmlFor="space-thumbnail">Upload Thumbnail Image</FormLabel>
             <ImageUpload id="space-thumbnail" image={thumbnail} onChange={handleThumbnailChange} />
             {thumbnailError && <p className="text-sm text-destructive mt-1">{thumbnailError}</p>}
           </div>

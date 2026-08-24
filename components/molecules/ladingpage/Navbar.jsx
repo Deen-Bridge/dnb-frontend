@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import AuthNavButtons from "./AuthNavButtons";
+import LocaleSwitcher from "@/components/molecules/i18n/LocaleSwitcher";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -15,15 +17,16 @@ import {
 import { AlignJustify } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Anchors match the section ids actually rendered on the landing page.
+// Anchors match the section ids actually rendered on the landing page. `key` is
+// the message key under the `navbar.links` namespace; `to` is the hrefs.
 const links = [
-  { name: "Explore", to: "/#explore" },
-  { name: "How It Works", to: "/#how-it-works" },
-  { name: "AI", to: "/ai" },
-  { name: "Stellar", to: "/stellar" },
-  { name: "FAQ", to: "/#faq" },
-  { name: "Blog", to: "/blog" },
-  { name: "Contact", to: "/contact" },
+  { key: "explore", to: "/#explore" },
+  { key: "howItWorks", to: "/#how-it-works" },
+  { key: "ai", to: "/ai" },
+  { key: "stellar", to: "/stellar" },
+  { key: "faq", to: "/#faq" },
+  { key: "blog", to: "/blog" },
+  { key: "contact", to: "/contact" },
 ];
 
 /**
@@ -35,6 +38,7 @@ const links = [
  * where the white links would otherwise be invisible at scroll-top.
  */
 const Navbar = ({ solid = false }) => {
+  const t = useTranslations("navbar");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -57,7 +61,7 @@ const Navbar = ({ solid = false }) => {
     >
       {/* Desktop Nav */}
       <nav className="mx-auto hidden h-20 max-w-7xl items-center justify-between px-6 font-stretch-125% lg:flex">
-        <Link href="/" aria-label="Deen Bridge home">
+        <Link href="/" aria-label={t("homeAria")}>
           <Image
             src="/images/dnb-nobg.png"
             width={150}
@@ -66,23 +70,26 @@ const Navbar = ({ solid = false }) => {
             className="h-10 w-auto"
           />
         </Link>
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center gap-6">
           {links.map((link) => (
             <Link
               key={link.to}
               href={link.to}
               className="text-ink-inverse transition-colors duration-200 hover:text-secondary"
             >
-              {link.name}
+              {t(`links.${link.key}`)}
             </Link>
           ))}
         </div>
-        <AuthNavButtons />
+        <div className="flex items-center gap-4">
+          <LocaleSwitcher tone="inverse" />
+          <AuthNavButtons />
+        </div>
       </nav>
 
       {/* Mobile Nav */}
       <nav className="flex items-center justify-between px-4 py-3 lg:hidden">
-        <Link href="/" aria-label="Deen Bridge home">
+        <Link href="/" aria-label={t("homeAria")}>
           <Image
             src="/images/dnb-nobg.png"
             width={80}
@@ -91,7 +98,10 @@ const Navbar = ({ solid = false }) => {
             className="h-9 w-auto"
           />
         </Link>
-        <MobileNav />
+        <div className="flex items-center gap-3">
+          <LocaleSwitcher tone="inverse" />
+          <MobileNav />
+        </div>
       </nav>
     </header>
   );
@@ -100,20 +110,21 @@ const Navbar = ({ solid = false }) => {
 export default Navbar;
 
 function MobileNav() {
+  const t = useTranslations("navbar");
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
           size="icon"
-          aria-label="Open menu"
-          className="focus:outline-none bg-transparent hover:bg-transparent"
+          aria-label={t("openMenu")}
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-transparent hover:bg-transparent"
         >
           <AlignJustify size={24} className="text-ink-inverse" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 bg-muted">
-        <SheetHeader className="mb-4 text-left text-xl font-semibold">
-          Menu
+        <SheetHeader className="mb-4 text-start text-xl font-semibold">
+          {t("menu")}
         </SheetHeader>
         <nav className="flex flex-col space-y-4 px-4 font-stretch-125%">
           {links.map((link) => (
@@ -122,7 +133,7 @@ function MobileNav() {
                 href={link.to}
                 className="text-md font-stretch-90% font-light hover:font-medium hover:text-primary transition-all"
               >
-                {link.name}
+                {t(`links.${link.key}`)}
               </Link>
             </SheetClose>
           ))}

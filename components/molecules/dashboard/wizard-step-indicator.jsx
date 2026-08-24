@@ -26,7 +26,7 @@ export default function WizardStepIndicator({
                 disabled={!isClickable}
                 aria-current={isActive ? "step" : undefined}
                 onClick={() => isClickable && onStepClick && onStepClick(idx)}
-                className={`flex items-center gap-2 group text-left focus:outline-none ${
+                className={`flex items-center gap-2 group text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                   isClickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
                 }`}
               >

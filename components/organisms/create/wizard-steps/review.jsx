@@ -67,7 +67,7 @@ export default function WizardStepReview({ watch }) {
           {/* Author Info */}
           <div className="flex items-center gap-3 p-4 bg-card border rounded-xl">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.avatar || "/images/img1.jpeg"} />
+              <AvatarImage src={user?.avatar || "/images/img1.jpeg"} alt="" />
               <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
             </Avatar>
             <div>

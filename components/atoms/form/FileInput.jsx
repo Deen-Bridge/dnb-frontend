@@ -18,6 +18,7 @@ const FileUpload = ({ id, onChange, file }) => {
                 className="absolute left-0 top-0 w-0 h-0 opacity-0"
                 accept="*/*"
                 onChange={onChange}
+                aria-label="Upload file"
             />
             <button
                 type="button"
@@ -36,6 +37,7 @@ const FileUpload = ({ id, onChange, file }) => {
                             height="24"
                             viewBox="0 0 24 24"
                             fill="none"
+                            aria-hidden="true"
                         >
                             <path
                                 d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
@@ -72,6 +74,7 @@ const FileUpload = ({ id, onChange, file }) => {
                             height="16"
                             viewBox="0 0 16 16"
                             fill="none"
+                            aria-hidden="true"
                         >
                             <svg clipPath="url(#clip0_5797_12454)">
                                 <path

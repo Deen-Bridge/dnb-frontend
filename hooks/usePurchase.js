@@ -1,6 +1,5 @@
 import useAuth from "./useAuth";
 import axiosInstance from "@/lib/config/axios.config";
-import config from "@/lib/config/req.header.config";
 
 // Returns true if the user has purchased the book
 export function useHasBook(bookId) {
@@ -22,8 +21,7 @@ export async function usePurchaseBook(bookId) {
   try {
     const res = await axiosInstance.post(
       "/api/purchase/book",
-      { bookId: bookId.toString() },
-      config
+      { bookId: bookId.toString() }
     );
     return res.data;
   } catch (e) {
@@ -65,11 +63,7 @@ export async function usePurchaseCourse(courseId) {
     return;
   }
   try {
-    const res = await axiosInstance.post(
-      `/api/courses/${courseId}/enroll`,
-      {},
-      config
-    );
+    const res = await axiosInstance.post(`/api/courses/${courseId}/enroll`, {});
     return res.data;
   } catch (e) {
     const msg = e?.response?.data?.message || e.message || "Purchase failed";

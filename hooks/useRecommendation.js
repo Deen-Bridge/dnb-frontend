@@ -1,9 +1,8 @@
 import axiosInstance from "@/lib/config/axios.config";
-import config from "@/lib/config/req.header.config";
 
 export const getRecommendations = async () => {
   try {
-    const res = await axiosInstance.get(`/api/users/recommendations`, config);
+    const res = await axiosInstance.get(`/api/users/recommendations`);
     console.log("getRecommendations response:", res.data);
     return res.data;
   } catch (e) {
