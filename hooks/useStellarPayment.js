@@ -95,6 +95,17 @@ export const useStellarPayment = () => {
           return false;
         }
 
+        import("@sentry/nextjs")
+          .then((mod) => {
+            const Sentry = mod.default ?? mod;
+            if (!Sentry || typeof Sentry.captureException !== "function") return;
+            Sentry.withScope((scope) => {
+              scope.setTag("feature", "stellar-payment");
+              Sentry.captureException(error);
+            });
+          })
+          .catch(() => {});
+
         const mapped = mapStellarError(error);
         if (mapped) {
           toast.error(mapped.title, {
@@ -104,7 +115,7 @@ export const useStellarPayment = () => {
           const message = error.response?.data?.message || error.message;
           toast.error(`Payment failed: ${message}`);
         }
-        return { success: false, cancelled: isCancelled };
+        return { success: false, cancelled: false };
       } finally {
         setIsProcessing(false);
       }

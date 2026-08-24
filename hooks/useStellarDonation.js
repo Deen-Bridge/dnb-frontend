@@ -96,6 +96,17 @@ export const useStellarDonation = () => {
           throw new Error(res.data.message);
         }
       } catch (error) {
+        import("@sentry/nextjs")
+          .then((mod) => {
+            const Sentry = mod.default ?? mod;
+            if (!Sentry || typeof Sentry.captureException !== "function") return;
+            Sentry.withScope((scope) => {
+              scope.setTag("feature", "stellar-donation");
+              Sentry.captureException(error);
+            });
+          })
+          .catch(() => {});
+
         const message = error.response?.data?.message || error.message;
 
         // Handle specific Stellar errors
