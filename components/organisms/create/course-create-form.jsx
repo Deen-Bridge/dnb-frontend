@@ -85,11 +85,10 @@ const CreateCourseForm = () => {
         videoUrl = await videoUpload.uploadFile(video);
       }
 
-      const data = await createCourse({
-        form,
+      const result = await createCourse({
+        form: data,
         thumbnailUrl,
         videoUrl,
-        category: data.category,
       });
 
       if (result && result.success) {
@@ -143,7 +142,7 @@ const CreateCourseForm = () => {
         )} />
 
         <div className="my-4">
-          <FormLabel>Upload Course Thumbnail Image</FormLabel>
+          <FormLabel htmlFor="course-thumbnail">Upload Course Thumbnail Image</FormLabel>
           <ImageUpload id="course-thumbnail" image={thumbnail} onChange={handleThumbnailChange} />
           {thumbnailUpload.uploading && (
             <div className="mt-2 space-y-1">
@@ -154,7 +153,7 @@ const CreateCourseForm = () => {
         </div>
 
         <div>
-          <FormLabel>Upload Course Video</FormLabel>
+          <FormLabel htmlFor="course-video">Upload Course Video</FormLabel>
           <VideoUpload id="course-video" video={video} onChange={handleVideoChange} />
           {videoUpload.uploading && (
             <div className="mt-2 space-y-1">
@@ -181,103 +180,6 @@ const CreateCourseForm = () => {
         </Button>
       </form>
     </Form>
-    <form
-      onSubmit={handleSubmit}
-      className="w-sm sm:w-lg mx-auto  rounded-xl p-1 space-y-3"
-    >
-      <Label htmlFor="title">Course title</Label>
-      <Input
-        id="title"
-        name="title"
-        placeholder="Course Title"
-        value={form.title}
-        onChange={handleChange}
-        required
-      />
-      <Label htmlFor="description">Course description</Label>
-      <Textarea
-        id="description"
-        name="description"
-        placeholder="Book Description"
-        value={form.description}
-        onChange={handleChange}
-        required
-        className="w-full h-24 resize-none overflow-y-auto"
-      />
-      <Label htmlFor="category">Course Category</Label>
-      <CategoryCombobox
-        id="category"
-        category={form.category}
-        setCategory={(value) =>
-          setForm((prev) => ({ ...prev, category: value }))
-        }
-      />
-      <Label htmlFor="price">Course price</Label>
-      <Input
-        id="price"
-        name="price"
-        type="number"
-        placeholder="Price (₦)"
-        value={form.price}
-        onChange={handleChange}
-        required
-      />
-
-      <div className="my-4">
-        <Label htmlFor="thumbnail" className="block mb-1 text-sm font-medium">
-          Upload Course Thumbnail Image
-        </Label>
-        <ImageUpload
-          id="thumbnail"
-          image={thumbnail}
-          onChange={(e) => setThumbnail(e.target.files[0])}
-        />
-        {thumbnailUpload.uploading && (
-          <div className="mt-2 space-y-1">
-            <Progress value={thumbnailUpload.progress} className="h-2" />
-            <p className="text-xs text-muted-foreground">
-              Uploading thumbnail: {thumbnailUpload.progress}%
-            </p>
-          </div>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="file" className="block mb-1 text-sm font-medium">
-          Upload Course video
-        </Label>
-        <VideoUpload
-          id="file"
-          video={video}
-          onChange={(e) => setVideo(e.target.files[0])}
-        />
-        {videoUpload.uploading && (
-          <div className="mt-2 space-y-1">
-            <Progress value={videoUpload.progress} className="h-2" />
-            <p className="text-xs text-muted-foreground">
-              Uploading video: {videoUpload.progress}%
-            </p>
-          </div>
-        )}
-      </div>
-
-      <Button
-        loading={loading || thumbnailUpload.uploading || videoUpload.uploading}
-        round
-        wide
-        type="submit"
-        disabled={loading || thumbnailUpload.uploading || videoUpload.uploading}
-        className="w-full bg-accent hover:bg-highlight transition"
-      >
-        {thumbnailUpload.uploading
-          ? "Uploading Thumbnail..."
-          : videoUpload.uploading
-          ? `Uploading Video... ${videoUpload.progress}%`
-          : loading
-          ? "Creating Course..."
-          : "Create Course"}
-      </Button>
-    </form>
   );
 };
 export default CreateCourseForm;

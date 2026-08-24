@@ -5,6 +5,7 @@ import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { followUser, unfollowUser, checkIfFollowing } from "@/hooks/useFollow";
+import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
 import { cn } from "@/lib/utils";
 
 const UserCard = ({ user, showFollowButton = true }) => {
@@ -75,7 +76,10 @@ const UserCard = ({ user, showFollowButton = true }) => {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <h3 className="font-semibold text-lg">{user.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-lg">{user.name}</h3>
+            <VerifiedBadge user={user} showLabel={false} />
+          </div>
           <p className="text-sm ">{user.role || "Member"}</p>
         </div>
       </Link>

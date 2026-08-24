@@ -80,7 +80,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
                     size="icon"
                     disabled={index === 0}
                     onClick={() => swap(index, index - 1)}
-                    title="Move Up"
+                    aria-label={`Move lesson ${index + 1} up`}
                     className="h-8 w-8"
                   >
                     <ArrowUp className="w-4 h-4" />
@@ -92,7 +92,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
                     size="icon"
                     disabled={index === fields.length - 1}
                     onClick={() => swap(index, index + 1)}
-                    title="Move Down"
+                    aria-label={`Move lesson ${index + 1} down`}
                     className="h-8 w-8"
                   >
                     <ArrowDown className="w-4 h-4" />
@@ -104,7 +104,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
                     size="icon"
                     disabled={fields.length <= 1}
                     onClick={() => remove(index)}
-                    title="Remove Lesson"
+                    aria-label={`Remove lesson ${index + 1}`}
                     className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />

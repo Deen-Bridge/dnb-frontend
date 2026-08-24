@@ -127,6 +127,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* WCAG 2.4.7: every interactive element shows a visible keyboard-focus
+     indicator. Components with their own focus:ring/focus-visible:ring
+     utilities win this cascade; this is the safety net for everything else
+     (links, custom buttons, textareas, etc.). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
 
 @theme {
@@ -134,6 +142,11 @@
   --color-secondary: #009900;
   --color-accent: #265902;
   --color-highlight: #008200;
+
+  /* Accent surface that must stay dark enough for white text in BOTH themes.
+     Dark-mode --color-accent (#5aa83e) is too light for text-white (~2.96:1),
+     so surfaces that carry white text use this stable dark green instead. */
+  --color-accent-card: #265902;
 
   /* Light surfaces. Pure #fff reads too bright next to the brand greens, so
      sections and cards sit on a faint green-tinted off-white instead. */
@@ -298,4 +311,14 @@
   animation-duration: var(--duration, 40s);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+}
+
+/* Arabic webfont (IBM Plex Sans Arabic, loaded via next/font as --font-arabic).
+   The `[locale]` layout adds `font-arabic` to <body> when dir="rtl"; the RTL
+   selector is a belt-and-braces fallback so Arabic never renders in a
+   Latin-serif substitute even if the class is ever dropped. */
+.font-arabic,
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), var(--font-geist-sans), ui-sans-serif,
+    system-ui, sans-serif;
 }

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useBookmark } from "@/hooks/useBookmark";
 import BookmarkButton from "@/components/atoms/BookmarkButton";
+import { resolveCategorySlug } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -53,14 +54,17 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
 
         {/* Category  */}
         <div className="absolute left-3 right-3 top-3 z-20 flex justify-between">
-          <span
+          <Link
+            href={`/dashboard/courses/category/${resolveCategorySlug(
+              course?.category
+            )}`}
             className={cn(
               poppins_600,
               "rounded-full border border-accent/15 bg-surface-raised/90 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow"
             )}
           >
             {course.category || "General"}
-          </span>
+          </Link>
           {user?._id === course?.createdBy?._id ? (
             <span
               className={cn(
@@ -125,7 +129,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
             <Avatar className="h-10 w-10 rounded-lg">
               <AvatarImage
                 src={course.createdBy?.avatar || "/images/placeholder.jpg"}
-                alt="Instructor"
+                alt=""
               />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
