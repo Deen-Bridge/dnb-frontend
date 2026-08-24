@@ -15,6 +15,7 @@ const ImageUpload = ({ id, onChange, image }) => {
                 className="hidden"
                 accept="image/*"
                 onChange={onChange}
+                aria-label="Upload image"
             />
             <button
                 type="button"
@@ -30,6 +31,7 @@ const ImageUpload = ({ id, onChange, image }) => {
                             height="24"
                             viewBox="0 0 24 24"
                             fill="none"
+                            aria-hidden="true"
                         >
                             <path
                                 d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
@@ -66,6 +68,7 @@ const ImageUpload = ({ id, onChange, image }) => {
                             height="16"
                             viewBox="0 0 16 16"
                             fill="none"
+                            aria-hidden="true"
                         >
                             <svg clip-path="url(#clip0_5797_12454)">
                                 <path
