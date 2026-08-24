@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import dynamic from "next/dynamic"
 
 import {
     Card,
@@ -10,33 +10,19 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart"
 import { BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Inter_500 } from "@/lib/config/font.config";
-const chartData = [
-    { month: "January", course: 186, book: 80 },
-    { month: "February", course: 305, book: 200 },
-    { month: "March", course: 237, book: 120 },
-    { month: "April", course: 73, book: 190 },
-    { month: "May", course: 209, book: 130 },
-    { month: "June", course: 214, book: 140 },
-]
 
-const chartConfig = {
-    course: {
-        label: "course",
-        color: "hsl(var(--chart-1))",
-    },
-    book: {
-        label: "book",
-        color: "hsl(var(--chart-2))",
-    },
-}
+const LearningProgressChart = dynamic(
+    () => import("@/components/organisms/dashboard/LearningProgressChart"),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="h-64 w-full animate-pulse rounded-xl bg-muted" />
+        ),
+    }
+)
 
 export default function LearningProgress() {
     return (
@@ -50,15 +36,7 @@ export default function LearningProgress() {
                     <BarChart3 className="h-10 w-10" />
                     <p className="text-sm text-center">Monthly activity data coming soon</p>
                 </div>
-                <ChartContainer config={chartConfig} className="hidden">
-                    <BarChart accessibilityLayer data={[]}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
-                        <Bar dataKey="course" fill="var(--color-course)" radius={4} />
-                        <Bar dataKey="book" fill="var(--color-book)" radius={4} />
-                    </BarChart>
-                </ChartContainer>
+                <LearningProgressChart />
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm">
                 <div className="leading-none text-muted-foreground">
