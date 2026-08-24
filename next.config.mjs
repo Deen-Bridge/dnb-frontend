@@ -1,5 +1,6 @@
 import withSerwistInit from "@serwist/next";
 import createNextIntlPlugin from "next-intl/plugin";
+import withSentryConfig from "@sentry/nextjs";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 
@@ -32,4 +33,12 @@ const nextConfig = {
   },
 };
 
-export default withSerwist(withNextIntl(nextConfig));
+// Sentry source-map upload auto-skips when SENTRY_AUTH_TOKEN is absent,
+// so local builds are unaffected.
+export default withSentryConfig(withSerwist(withNextIntl(nextConfig)), {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  sourcemaps: { hideSourcemaps: true },
+  disableLogger: true,
+});
