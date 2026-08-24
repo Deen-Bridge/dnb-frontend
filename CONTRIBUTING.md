@@ -136,6 +136,34 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 5. **Screenshots**: Include for UI changes
 6. **Testing**: Describe how you tested
 
+## Admin Area Development
+
+Work on admin-facing pages has a few extra requirements beyond the general workflow above. Read [`docs/rbac.md`](docs/rbac.md) and [`docs/admin-architecture.md`](docs/admin-architecture.md) before picking up your first admin issue.
+
+### Where things live
+
+| Path | Purpose |
+|------|---------|
+| `lib/auth/roles.js` | Base RBAC — roles (`student` / `educator` / `admin`), capabilities, fail-closed `can()` |
+| `lib/auth/admin-tiers.js` | Admin role tiers (`staff` / `super-admin`) and tier gating, kept isolated so tiers can evolve |
+| `components/auth/AdminTierGuard.jsx` | Page-level guard enforcing super-admin-only surfaces |
+| `components/auth/StepUpConfirmDialog.jsx` | Reusable confirm-to-proceed dialog for sensitive actions |
+
+### Conventions
+
+- **Super-admin-only pages must render inside `AdminTierGuard`.** Never rely on hidden navigation alone — unknown/loading users must see a denial state, not the page.
+- Destructive actions (demote, revoke, delete) go through the step-up confirmation dialog; no plain `confirm()` calls.
+- Tier checks always go through the helpers in `lib/auth/admin-tiers.js` — never read `user.tier` ad hoc inside components.
+- The backend is the real authorization boundary; client-side gating is defense-in-depth only (see `docs/rbac.md`).
+
+### Seeding an admin user locally
+
+Roles come from the [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) user record — the frontend only reads `user.role` (and the tier fields for admins), it never assigns them. To get an admin user for local development:
+
+1. Run dnb-backend locally and point `NEXT_PUBLIC_API_URL` at it (see `.env.example`), then set your test user's `role` to `admin` (plus its `tier` to `super_admin` if you are working on team management) via the backend's seed step or database.
+2. For pure UI work you can instead edit the `userInfo` cookie in your browser devtools and change its `role` value. Client-side checks exist to stop the UI *offering* actions the server would reject — this trick is acceptable for local development only, never in shipped code.
+3. Log out and back in so the auth provider picks up the updated record.
+
 ## Issue Guidelines
 
 ### Reporting Bugs
