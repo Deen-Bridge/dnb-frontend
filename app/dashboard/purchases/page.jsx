@@ -218,7 +218,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
             <span
               className={cn(
                 poppins_600,
-                "inline-flex items-center rounded-full bg-white/80 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow"
+                "inline-flex items-center rounded-full bg-background/80 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow"
               )}
             >
               {item.category || itemType}
@@ -228,7 +228,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
             <span
               className={cn(
                 poppins_500,
-                "inline-flex items-center rounded-full bg-black/60 px-3 py-1 text-xs text-white"
+                "inline-flex items-center rounded-full bg-basic/60 px-3 py-1 text-xs text-white"
               )}
             >
               {item.price > 0 ? `$${item.price} USDC` : "Free"}

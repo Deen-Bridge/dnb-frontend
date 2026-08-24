@@ -207,9 +207,9 @@ export default function SadaqahPage() {
     <Panel className="flex h-full flex-col justify-center bg-gradient-to-br from-basic to-accent p-6 text-ink-inverse">
       {statsLoading ? (
         <div className="space-y-3">
-          <Skeleton className="h-3 w-28 bg-white/20" />
-          <Skeleton className="h-9 w-40 bg-white/20" />
-          <Skeleton className="h-10 w-full bg-white/10" />
+          <Skeleton className="h-3 w-28 bg-ink-inverse/20" />
+          <Skeleton className="h-9 w-40 bg-ink-inverse/20" />
+          <Skeleton className="h-10 w-full bg-ink-inverse/10" />
         </div>
       ) : statsUnconfigured ? (
         <div className="flex items-center gap-2 text-ink-inverse-muted">
@@ -252,7 +252,7 @@ export default function SadaqahPage() {
             </span>
           </p>
           <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+            <div className="rounded-xl border border-ink-inverse/10 bg-ink-inverse/5 px-3 py-2">
               <p className={cn(poppins_400, "text-[11px] text-ink-inverse-muted")}>
                 Total donated
               </p>
@@ -260,7 +260,7 @@ export default function SadaqahPage() {
                 ${formatAmount(stats?.totalDonated)}
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+            <div className="rounded-xl border border-ink-inverse/10 bg-ink-inverse/5 px-3 py-2">
               <p className={cn(poppins_400, "text-[11px] text-ink-inverse-muted")}>
                 Donations
               </p>
@@ -356,7 +356,7 @@ export default function SadaqahPage() {
                           poppins_400,
                           "text-[10px] uppercase tracking-wider",
                           presetActive(preset)
-                            ? "text-white/70"
+                            ? "text-ink-inverse-muted"
                             : "text-ink-muted"
                         )}
                       >
