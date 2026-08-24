@@ -53,7 +53,7 @@ export default function Notybell() {
                 className="relative p-2 rounded-full  transition cursor-pointer"
                 onClick={() => setOpen(true)}
             >
-                <Bell size={18} className="text-black" />
+                <Bell size={18} className="text-ink" />
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
             </div>
 
@@ -71,7 +71,7 @@ export default function Notybell() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.3 }}
-                            className="flex justify-center items-start gap-3 p-3 bg-white/10 backdrop-blur-md rounded-xl hover:bg-white/20 transition"
+                            className="flex justify-center items-start gap-3 p-3 bg-surface/80 backdrop-blur-md rounded-xl hover:bg-surface transition"
                         >
                             <div className="flex-shrink-0 pt-4">{iconMap[n.type]}</div>
                             <div className="flex-1">
@@ -83,7 +83,7 @@ export default function Notybell() {
                     ))}
 
                     {notes.length === 0 && (
-                        <p className="text-center text-sm text-white/70">
+                        <p className="text-center text-sm text-ink-muted">
                             You’re all caught up!
                         </p>
                     )}

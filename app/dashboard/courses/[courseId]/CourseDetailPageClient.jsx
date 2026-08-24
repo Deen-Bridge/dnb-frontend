@@ -45,8 +45,8 @@ const VidPlayerBox = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full flex items-center justify-center rounded-xl bg-black/90">
-        <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      <div className="w-full h-full flex items-center justify-center rounded-xl bg-basic/90">
+        <div className="w-8 h-8 border-2 border-ink-inverse/30 border-t-ink-inverse rounded-full animate-spin" />
       </div>
     ),
   }
