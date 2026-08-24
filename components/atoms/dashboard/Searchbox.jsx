@@ -43,13 +43,13 @@ const Searchbox = ({ className, placeholder }) => {
         onKeyDown={handleKeyDown}
         aria-label="Open command palette (⌘K)"
         className={cn(
-          "flex items-center justify-between gap-2 bg-[#F7F7F7] hover:bg-gray-100 rounded-full px-4 py-2 border border-accent/40 hover:border-accent transition-all w-full text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent",
+          "flex items-center justify-between gap-2 bg-surface hover:bg-muted rounded-full px-4 py-2 border border-accent/40 hover:border-accent transition-all w-full text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent",
           poppins_400.className
         )}
       >
         <div className="flex items-center gap-2 overflow-hidden flex-1">
           <Search size={18} className="text-accent shrink-0" />
-          <span className="text-sm text-gray-600 truncate">
+          <span className="text-sm text-ink-muted truncate">
             {placeholderText}
           </span>
         </div>
