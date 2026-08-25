@@ -13,10 +13,10 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
+import { adminToastSuccess, adminToastError } from "@/lib/utils/admin-toast";
 import {
   listAllHighlights,
   createHighlight,
@@ -92,12 +92,19 @@ export default function useAdminHighlights() {
         target: { label: `highlight: ${id}`, href: null },
         metadata: { id, enabled },
       });
+      adminToastSuccess({
+        title: enabled ? "Highlight shown" : "Highlight hidden",
+        action: { label: "Undo", onClick: () => toggle(id, !enabled) },
+      });
     } catch (err) {
       // Revert on failure
       setHighlights((prev) =>
         prev.map((h) => (h.id === id ? { ...h, enabled: previous } : h))
       );
-      toast.error(err?.message || `Couldn't update "${id}"`);
+      adminToastError({
+        title: err?.message || "Couldn't update highlight",
+        action: { label: "Retry", onClick: () => toggle(id, enabled) },
+      });
     }
   }, []);
 
@@ -108,7 +115,7 @@ export default function useAdminHighlights() {
     async (payload) => {
       const { highlight } = await createHighlight(payload);
       await refresh();
-      toast.success(`Highlight "${highlight.id}" created`);
+      adminToastSuccess({ title: "Highlight created" });
       logAuditEvent({
         action: AUDIT_ACTIONS.SETTINGS_CHANGE,
         target: { label: `highlight: ${highlight.id}`, href: null },
@@ -134,7 +141,7 @@ export default function useAdminHighlights() {
 
     try {
       const { highlight } = await updateHighlight(id, updates);
-      toast.success(`Highlight "${id}" updated`);
+      adminToastSuccess({ title: "Highlight updated" });
       return highlight;
     } catch (err) {
       // Revert on failure
@@ -143,7 +150,10 @@ export default function useAdminHighlights() {
           prev.map((h) => (h.id === id ? previous : h))
         );
       }
-      toast.error(err?.message || `Couldn't update "${id}"`);
+      adminToastError({
+        title: err?.message || "Couldn't update highlight",
+        action: { label: "Retry", onClick: () => update(id, updates) },
+      });
       throw err;
     }
   }, []);
@@ -157,7 +167,7 @@ export default function useAdminHighlights() {
 
     try {
       await deleteHighlight(id);
-      toast.success(`Highlight "${id}" deleted`);
+      adminToastSuccess({ title: "Highlight deleted" });
       logAuditEvent({
         action: AUDIT_ACTIONS.SETTINGS_CHANGE,
         target: { label: `highlight: ${id}`, href: null },
@@ -168,7 +178,10 @@ export default function useAdminHighlights() {
       if (previous) {
         setHighlights((prev) => [...prev, previous]);
       }
-      toast.error(err?.message || `Couldn't delete "${id}"`);
+      adminToastError({
+        title: err?.message || "Couldn't delete highlight",
+        action: { label: "Retry", onClick: () => remove(id) },
+      });
       throw err;
     }
   }, [highlights]);
@@ -189,11 +202,14 @@ export default function useAdminHighlights() {
 
     try {
       await reorderHighlights(order);
-      toast.success("Highlights reordered");
+      adminToastSuccess({ title: "Highlights reordered" });
     } catch (err) {
       // Revert on failure
       setHighlights(previous);
-      toast.error(err?.message || "Couldn't reorder highlights");
+      adminToastError({
+        title: err?.message || "Couldn't reorder highlights",
+        action: { label: "Retry", onClick: () => reorder(order) },
+      });
       throw err;
     }
   }, [highlights]);
