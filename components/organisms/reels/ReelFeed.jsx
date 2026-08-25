@@ -1,6 +1,5 @@
 "use client";
 
-"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Button from "@/components/atoms/form/Button";
@@ -16,7 +15,7 @@ import {
 } from "@/lib/actions/reels-action";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
-import { ArrowDown, ArrowUp, UploadCloud } from "lucide-react";
+import { UploadCloud } from "lucide-react";
 
 const LOAD_AHEAD_THRESHOLD = 2;
 
@@ -261,14 +260,14 @@ const ReelFeedInner = () => {
   const feedEmpty = !loading && reels.length === 0;
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-gradient-to-b from-background via-muted/40 to-background">
-      <div className="flex flex-shrink-0 items-center justify-between gap-3 border-b border-border/80 bg-background/80 px-4 py-4 backdrop-blur md:px-10">
+    <div className="relative flex h-screen flex-col overflow-hidden bg-black">
+      <div className="flex flex-shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-black/60 px-4 py-3.5 backdrop-blur md:px-8">
         <div>
-          <h1 className="text-xl font-semibold text-foreground md:text-2xl">
+          <h1 className="text-lg font-semibold text-white md:text-xl">
             Community Reels
           </h1>
-          <p className="text-xs text-muted-foreground md:text-sm">
-            Immerse yourself in short reflections from the community.
+          <p className="text-xs text-white/60">
+            Short reflections from the community.
           </p>
         </div>
         <Button
@@ -283,14 +282,14 @@ const ReelFeedInner = () => {
 
       {feedEmpty ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center">
-          <div className="rounded-full bg-accent/10 p-4 text-accent shadow-inner">
+          <div className="rounded-full bg-accent/20 p-4 text-white shadow-inner">
             <UploadCloud className="h-8 w-8" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-white">
               The feed is quiet… for now.
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white/60">
               Be the first to post a reel and spark a wave of inspiration.
             </p>
           </div>
@@ -303,7 +302,7 @@ const ReelFeedInner = () => {
           </Button>
         </div>
       ) : (
-        <div className="relative flex flex-1 items-center justify-center px-4 pb-6 md:px-8">
+        <div className="relative flex flex-1 items-center justify-center overflow-hidden">
           {currentReel ? (
             <ReelCard
               reel={currentReel}
@@ -319,32 +318,10 @@ const ReelFeedInner = () => {
               hasPrev={currentIndex > 0}
             />
           ) : (
-            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+            <div className="flex flex-col items-center gap-3 text-white/70">
               <UploadCloud className="h-10 w-10 animate-pulse" />
               <p className="text-sm">Preparing your feed…</p>
             </div>
-          )}
-
-          {currentIndex > 0 && (
-            <button
-              type="button"
-              className="absolute left-4 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-lg backdrop-blur transition hover:bg-black/70 md:flex"
-              onClick={handlePrevious}
-              aria-label="Previous reel"
-            >
-              <ArrowUp className="h-5 w-5" />
-            </button>
-          )}
-
-          {currentIndex < reels.length - 1 && (
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-lg backdrop-blur transition hover:bg-black/70 md:flex"
-              onClick={handleNext}
-              aria-label="Next reel"
-            >
-              <ArrowDown className="h-5 w-5" />
-            </button>
           )}
         </div>
       )}

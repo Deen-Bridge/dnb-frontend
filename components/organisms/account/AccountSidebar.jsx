@@ -19,19 +19,21 @@ export default  function SidebarLeft({
 }) {
     const { user } = useAuth();
     return (
-        <Sidebar className="border-r-0" {...props}>
-            <SidebarHeader>
-                <DnbLogo />
-                <AccountMain />
-            </SidebarHeader>
-            {/* account pages route */}
-            <SidebarContent>
-                <AccountRouter/>
-            </SidebarContent>
-            {/* // user info components */}
-            <SidebarFooter>
-                <NavUser user={user} />            </SidebarFooter>
-            <SidebarRail />
-        </Sidebar>
+        <nav aria-label="Account">
+            <Sidebar className="border-r-0" {...props}>
+                <SidebarHeader>
+                    <DnbLogo />
+                    <AccountMain />
+                </SidebarHeader>
+                {/* account pages route */}
+                <SidebarContent>
+                    <AccountRouter/>
+                </SidebarContent>
+                {/* // user info components */}
+                <SidebarFooter>
+                    <NavUser user={user} />            </SidebarFooter>
+                <SidebarRail />
+            </Sidebar>
+        </nav>
     )
 }

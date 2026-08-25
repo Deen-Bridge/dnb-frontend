@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { poppins_500 } from "@/lib/config/font.config";
 
 const tabs = [
   { value: "courses", label: "Courses" },
@@ -12,14 +14,17 @@ const tabs = [
 
 const ProfileTabs = ({ selectedTab, onChange }) => {
   return (
-    <div className="w-full mt-6 overflow-auto overscroll-x-auto">
+    <div className="mt-6 w-full overflow-x-auto">
       <Tabs defaultValue={selectedTab} onValueChange={onChange}>
-        <TabsList className="w-full flex flex-wrap justify-start gap-2 bg-white rounded-full">
+        <TabsList className="flex w-full flex-wrap justify-start gap-1.5 rounded-full border border-accent/10 bg-surface-raised p-1">
           {tabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="px-4 py-2 rounded-full text-sm font-medium data-[state=active]:bg-accent data-[state=active]:text-white font-stretch-125%"
+              className={cn(
+                poppins_500,
+                "rounded-full px-4 py-2 text-sm text-ink-muted transition-colors hover:text-ink data-[state=active]:bg-accent data-[state=active]:text-white"
+              )}
             >
               {tab.label}
             </TabsTrigger>

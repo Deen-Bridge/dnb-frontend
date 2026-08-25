@@ -1,34 +1,34 @@
-import React from "react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import Notybell from "@/components/atoms/dashboard/Notybell";
-import Searchbox from "@/components/atoms/dashboard/Searchbox";
-import { useRouter } from "next/navigation";
+"use client";
 
-const searchParams = ["Courses", " Books", " Spaces", " Authors"];
+import React from "react";
+import { useTranslations } from "next-intl";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import Notybell from "@/components/molecules/dashboard/Notybell";
+import Searchbox from "@/components/atoms/dashboard/Searchbox";
+import ThemeToggle from "@/components/ui/theme-toggle";
+import LocaleSwitcher from "@/components/molecules/i18n/LocaleSwitcher";
 
 const NavHeader = () => {
-  const router = useRouter();
+  const t = useTranslations("dashboard.nav");
+  // Rotating search placeholders, localised.
+  const searchParams = [
+    t("searchParams.courses"),
+    t("searchParams.books"),
+    t("searchParams.spaces"),
+    t("searchParams.authors"),
+  ];
 
-  const handleSearch = (term) => {
-    if (term && term.trim()) {
-      router.push(`/dashboard/search/${encodeURIComponent(term.trim())}`);
-    }
-  };
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="flex h-14 items-center px-4 md:px-6 gap-4 justify-between">
-        {/* Left: Sidebar + Search */}
         <div className="flex items-center gap-3 flex-1">
           <SidebarTrigger />
-          <Searchbox
-            placeholder={searchParams}
-            className="max-w-[300px]"
-            onSearch={handleSearch}
-          />
+          <Searchbox placeholder={searchParams} className="max-w-[300px]" />
         </div>
 
-        {/* Right: Bell */}
         <div className="flex items-center space-x-4">
+          <LocaleSwitcher />
+          <ThemeToggle />
           <Notybell />
         </div>
       </div>

@@ -11,14 +11,14 @@ const sessions = [
 ];
 
 const OngoingSessions = () => (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-card rounded-xl shadow-sm p-4">
         <h3 className="text-lg font-semibold mb-3">Ongoing Sessions</h3>
         <ul className="space-y-2 text-sm">
             {sessions.map((s, i) => (
                 <li key={i} className="flex justify-between">
                     <div className="flex items-center gap-2">
                         <Avatar className="h-10 w-10 rounded-lg">
-                            <AvatarImage src="/images/mosque.png" alt="Instructor" />
+                            <AvatarImage src="/images/mosque.png" alt="" />
                             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                         </Avatar>
                         <span className="font-stretch-125% font-medium text-md">{s.name}</span>

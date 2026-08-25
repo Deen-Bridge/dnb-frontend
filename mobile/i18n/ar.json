@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "دين بريدج",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "done": "تم",
+    "back": "رجوع",
+    "next": "التالي",
+    "search": "بحث",
+    "noResults": "لم يتم العثور على نتائج",
+    "emptyState": "لا يوجد شيء هنا بعد"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "name": "الاسم الكامل",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "loginTitle": "مرحباً بعودتك",
+    "loginSubtitle": "سجّل الدخول لمتابعة رحلة التعلم",
+    "signupTitle": "انضم إلى دين بريدج",
+    "signupSubtitle": "ابدأ طريقك نحو المعرفة الإسلامية الأصيلة"
+  },
+  "tabs": {
+    "home": "الرئيسية",
+    "courses": "الدورات",
+    "library": "المكتبة",
+    "profile": "الملف الشخصي"
+  },
+  "home": {
+    "greeting": "السلام عليكم",
+    "continueLearning": "متابعة التعلم",
+    "browseCourses": "تصفح الدورات",
+    "featuredBooks": "كتب مميزة",
+    "liveSpaces": "مساحات مباشرة"
+  },
+  "courses": {
+    "title": "الدورات",
+    "enroll": "التسجيل",
+    "enrolled": "مسجّل",
+    "progress": "التقدم",
+    "reviews": "التقييمات",
+    "about": "حول",
+    "curriculum": "المنهج"
+  },
+  "library": {
+    "title": "المكتبة",
+    "read": "قراءة",
+    "purchased": "المشتريات"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "purchases": "مشترياتي",
+    "saved": "المحفوظات",
+    "wallet": "المحفظة",
+    "notifications": "الإشعارات",
+    "language": "اللغة",
+    "darkMode": "الوضع الداكن"
+  }
+}

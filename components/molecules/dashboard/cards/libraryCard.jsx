@@ -4,14 +4,14 @@ import { Star } from "lucide-react"; // optional: use a custom star icon or emoj
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
-import { CirclePlus } from "lucide-react";
-import { cn } from "@/lib/utils";
 import useBookBookmark from "@/hooks/useBookBookmark";
+import BookmarkButton from "@/components/atoms/BookmarkButton";
 
-const LibraryBookCard = ({ book, onBookmarkChange }) => {
+const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
   const { isBookmarked, loading, toggle } = useBookBookmark(
     book._id,
-    onBookmarkChange
+    onBookmarkChange,
+    initialIsBookmarked
   );
 
   const handleBookmark = async (event) => {
@@ -21,7 +21,7 @@ const LibraryBookCard = ({ book, onBookmarkChange }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
+    <div className="bg-card rounded-2xl overflow-hidden shadow-md w-full max-w-md mx-auto">
       {/* Image with overlay */}
       <div className="relative w-full h-64">
         <Image
@@ -47,17 +47,17 @@ const LibraryBookCard = ({ book, onBookmarkChange }) => {
         <div className="flex items-center justify-between gap-2 mb-2">
           {/* Author */}
           <Link
-            href={`/account/profile/${book.author?._id}`}
+            href={`/educators/${book.author?._id}`}
             className="flex items-center gap-2"
           >
             <Avatar className="h-10 w-10 rounded-lg">
-              <AvatarImage src={book.author?.avatar || "/images/img1.jpeg"} />
+              <AvatarImage src={book.author?.avatar || "/images/img1.jpeg"} alt="" />
               <AvatarFallback>
                 {book.author?.name?.charAt(0) || "A"}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col pt-2">
-              <span className="font-medium text-black">
+              <span className="font-medium text-foreground">
                 {book.author?.name || "Unknown Author"}
               </span>
               <span className="text-sm">
@@ -66,29 +66,20 @@ const LibraryBookCard = ({ book, onBookmarkChange }) => {
             </div>
           </Link>
           {/* Bookmark button */}
-          <button
+          <BookmarkButton
+            isBookmarked={isBookmarked}
+            loading={loading}
             onClick={handleBookmark}
-            disabled={loading}
-            className={cn(
-              "flex items-center justify-center rounded-full p-1 transition-all",
-              "hover:bg-accent hover:text-white",
-              loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
-              isBookmarked ? "bg-accent text-white" : "text-accent"
-            )}
-            title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-          >
-            <CirclePlus
-              className="w-6 h-6"
-              strokeWidth={1.75}
-              fill={isBookmarked ? "currentColor" : "none"}
-            />
-          </button>
+            variant="book"
+          />
         </div>
         {/* Reads & Rating */}
         <div className="flex justify-between items-center text-xs">
           <span>{book.readCount || 0} readers</span>
           <div className="flex items-center gap-0.5 text-yellow-500">
+            <span className="sr-only">
+              Rated {Math.round(getAverageRating(book?.reviews) || 0)} out of 5
+            </span>
             {[...Array(5)].map((_, i) => (
               <Star
                 key={`${book._id}-star-${i}`}
@@ -99,6 +90,7 @@ const LibraryBookCard = ({ book, onBookmarkChange }) => {
                     : "none"
                 }
                 stroke="#FFD700"
+                aria-hidden="true"
               />
             ))}
           </div>
