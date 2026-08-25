@@ -64,7 +64,7 @@ export default function useAdminTeam() {
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading]);
+  }, [authLoading, user?.id, user?._id, user?.role, user?.tier, user?.adminTier]);
 
   /**
    * Create an invite via the stubbed service. Resolves

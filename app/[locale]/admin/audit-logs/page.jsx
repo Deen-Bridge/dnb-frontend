@@ -225,9 +225,9 @@ export default function AuditLogsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Actor Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
+              <label htmlFor="audit-actor-filter" className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
               <Select value={actorFilter} onValueChange={setActorFilter}>
-                <SelectTrigger>
+                <SelectTrigger id="audit-actor-filter">
                   <SelectValue placeholder="Select actor" />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,9 +243,9 @@ export default function AuditLogsPage() {
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Action Category</label>
+              <label htmlFor="audit-category-filter" className={cn(poppins_500.className, "text-sm")}>Action Category</label>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
+                <SelectTrigger id="audit-category-filter">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,10 +264,10 @@ export default function AuditLogsPage() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <label htmlFor="audit-date-range" className={cn(poppins_500.className, "text-sm")}>Date Range</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  <Button id="audit-date-range" variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange.from ? (
                       dateRange.to ? (

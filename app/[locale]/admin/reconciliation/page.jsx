@@ -236,10 +236,10 @@ export default function PayoutReconciliationPage() {
         <CardContent>
           <div className="flex flex-wrap gap-4 items-end">
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <label htmlFor="reconciliation-date-range" className={cn(poppins_500.className, "text-sm")}>Date Range</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
+                  <Button id="reconciliation-date-range" variant="outline" className="w-[280px] justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange.from ? (
                       dateRange.to ? (
