@@ -18,6 +18,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
+import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
 import { listFlags, createFlag, updateFlag } from "@/lib/actions/admin-flags";
 
 export default function useFeatureFlags() {
@@ -83,6 +84,12 @@ export default function useFeatureFlags() {
     );
     try {
       await updateFlag(key, { enabled });
+      // Fire-and-forget audit trail — never awaited, never blocks the UI.
+      logAuditEvent({
+        action: AUDIT_ACTIONS.FLAG_TOGGLE,
+        target: { label: `flag: ${key}`, href: null },
+        metadata: { key, enabled },
+      });
     } catch (err) {
       // Revert on failure.
       setFlags((prev) =>
