@@ -1,15 +1,31 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Clock, Copy, ExternalLink, VideoIcon, CheckCircle } from "lucide-react";
 import Button from "@/components/atoms/form/Button";
 import useAuth from "@/hooks/useAuth";
-import JaasMeetingComponent from "@/components/organisms/jitsi/JitsiMeeting";
 import { joinSpaceWaitlist } from "@/lib/actions/spaces/joinSpaceWaitlist";
 import { updateSpace } from "@/lib/actions/spaces/updateSpace";
 import { getSpaceMeetingToken } from "@/lib/actions/calls/get-space-meeting-token";
 import { config } from "@/lib/config/env";
+
+// The Jitsi meeting client (and the external_api.js script it injects) is
+// only needed once a live session is actually joined — the mount below is
+// gated on meetingActive — so keep it out of the space-page bundle.
+const JaasMeetingComponent = dynamic(
+  () => import("@/components/organisms/jitsi/JitsiMeeting"),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="w-full animate-pulse rounded-xl bg-black/80"
+        style={{ height: "75vh", marginTop: "1rem" }}
+      />
+    ),
+  }
+);
 
 const normalizeDomain = (domain = "meet.jit.si") =>
   domain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "");

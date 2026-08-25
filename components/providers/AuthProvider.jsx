@@ -66,6 +66,21 @@ export default function AuthProvider({ children }) {
     };
   }, [setAuthState]);
 
+  // Anonymous error-tracking context: id only, never email or name.
+  useEffect(() => {
+    let active = true;
+    import("@sentry/nextjs")
+      .then((mod) => {
+        const Sentry = mod.default ?? mod;
+        if (!active || !Sentry || typeof Sentry.setUser !== "function") return;
+        Sentry.setUser(user?._id ? { id: user._id } : null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user?._id]);
+
   const logout = useCallback(() => {
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
