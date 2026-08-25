@@ -11,7 +11,6 @@
  * rendering decisions — this hook just refuses to fetch without one.
  */
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
@@ -21,6 +20,7 @@ import {
   demoteAdmin,
   revokeAdmin,
 } from "@/lib/actions/admin-team";
+import { adminToastSuccess } from "@/lib/utils/admin-toast";
 
 export default function useAdminTeam() {
   const { user, loading: authLoading } = useAuth();
@@ -91,7 +91,7 @@ export default function useAdminTeam() {
       },
       metadata: { to: "staff", confirmation: context?.confirmation },
     });
-    toast.success("Admin demoted to staff");
+    adminToastSuccess({ title: "Admin demoted to staff" });
   }, []);
 
   /** Remove a member's admin access; removes them from the local list. */
@@ -108,7 +108,7 @@ export default function useAdminTeam() {
       },
       metadata: { confirmation: context?.confirmation },
     });
-    toast.success("Admin access revoked");
+    adminToastSuccess({ title: "Admin access revoked" });
   }, []);
 
   return {
