@@ -8,7 +8,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { VideoIcon, Clock, CirclePlus } from "lucide-react";
+import { VideoIcon, Clock, CirclePlus, Flag } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -54,16 +54,24 @@ const SpaceCard = ({ space }) => {
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
         {/* Category + Status */}
         <div className="absolute left-4 right-4 top-4 z-20 flex items-center justify-between">
-          {category && (
-            <span
-              className={cn(
-                poppins_600,
-                "rounded-full border border-accent/15 bg-surface-raised/80 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow-sm"
-              )}
-            >
-              {category}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {category && (
+              <span
+                className={cn(
+                  poppins_600,
+                  "rounded-full border border-accent/15 bg-surface-raised/80 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow-sm"
+                )}
+              >
+                {category}
+              </span>
+            )}
+            {space.flagCount > 0 && (
+              <span className="flex items-center gap-1 rounded-full bg-red-500/90 px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+                <Flag className="h-3 w-3" />
+                {space.flagCount}
+              </span>
+            )}
+          </div>
           {status && (
             <div
               className={cn(
