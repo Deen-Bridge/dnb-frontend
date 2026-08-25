@@ -1,6 +1,21 @@
 "use client";
-
-import { useState, useMemo } from "react";
+/**
+ * Admin revenue analytics (#332).
+ * ---------------------------------------------------------------------------
+ * PERFORMANCE BUDGET — admin routes must never tax learner-facing pages.
+ *   - App Router already code-splits every route, so this page's JS (under
+ *     `app/[locale]/admin/...`) is a separate chunk that public/learner pages
+ *     never download.
+ *   - The heaviest cost here is `recharts`. It is quarantined in the sibling
+ *     `RevenueCharts` module and pulled in only via `next/dynamic({ ssr:false })`
+ *     below, so it lands in its own async chunk and is OUT of this route's
+ *     initial JS (charts fetch after the shell paints, behind a skeleton).
+ *   Budget target: keep this route's First Load JS in line with other admin
+ *   pages (~well under the recharts-inflated baseline). Do NOT statically import
+ *   `recharts` or `@/components/ui/chart` here — charts stay async-only.
+ */
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -10,8 +25,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -19,24 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-} from "recharts";
 import {
   TrendingUp,
   DollarSign,
@@ -48,6 +45,26 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+
+// recharts is heavy and browser-only: load each chart lazily (ssr:false) so the
+// library ships in its own async chunk, never in this route's initial payload.
+const chartLoader = (height) =>
+  function ChartSkeleton() {
+    return <Skeleton className={cn("w-full", height)} />;
+  };
+
+const RevenueSplitChart = dynamic(
+  () => import("./RevenueCharts").then((m) => m.RevenueSplitChart),
+  { ssr: false, loading: chartLoader("h-[300px]") }
+);
+const MonthlyTrendsChart = dynamic(
+  () => import("./RevenueCharts").then((m) => m.MonthlyTrendsChart),
+  { ssr: false, loading: chartLoader("h-[300px]") }
+);
+const RevenueByCategoryChart = dynamic(
+  () => import("./RevenueCharts").then((m) => m.RevenueByCategoryChart),
+  { ssr: false, loading: chartLoader("h-[400px]") }
+);
 
 // Mock revenue data
 const revenueByType = [
@@ -203,36 +220,11 @@ export default function RevenueAnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="mx-auto h-[300px]">
-              <PieChart>
-                <Pie
-                  data={revenueByType}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={4}
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percentage }) => `${name}: ${percentage}%`}
-                  labelLine={false}
-                >
-                  {revenueByType.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={PIE_COLORS[index % PIE_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value) => `$${value.toLocaleString()}`}
-                    />
-                  }
-                />
-              </PieChart>
-            </ChartContainer>
+            <RevenueSplitChart
+              data={revenueByType}
+              config={chartConfig}
+              pieColors={PIE_COLORS}
+            />
             <div className="mt-4 flex justify-center gap-6">
               {revenueByType.map((item, index) => (
                 <div key={item.name} className="flex items-center gap-2">
@@ -264,49 +256,11 @@ export default function RevenueAnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <BarChart data={monthlyTrends}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke={COLORS.accent}
-                  strokeOpacity={0.12}
-                />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`}
-                />
-                <ChartTooltip
-                  cursor={{ fill: "rgba(0,153,0,0.06)" }}
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value) => `$${value.toLocaleString()}`}
-                    />
-                  }
-                />
-                <Bar
-                  dataKey="courses"
-                  fill={COLORS.courses}
-                  radius={[4, 4, 0, 0]}
-                  name="Courses"
-                />
-                <Bar
-                  dataKey="books"
-                  fill={COLORS.books}
-                  radius={[4, 4, 0, 0]}
-                  name="Books"
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-              </BarChart>
-            </ChartContainer>
+            <MonthlyTrendsChart
+              data={monthlyTrends}
+              config={chartConfig}
+              colors={COLORS}
+            />
           </CardContent>
         </Card>
       </div>
@@ -323,59 +277,11 @@ export default function RevenueAnalyticsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[400px] w-full">
-            <BarChart
-              data={revenueByCategory}
-              layout="vertical"
-              margin={{ left: 120 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                horizontal={true}
-                vertical={false}
-                stroke={COLORS.accent}
-                strokeOpacity={0.12}
-              />
-              <XAxis
-                type="number"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`}
-              />
-              <YAxis
-                type="category"
-                dataKey="category"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                width={110}
-              />
-              <ChartTooltip
-                cursor={{ fill: "rgba(0,153,0,0.06)" }}
-                content={
-                  <ChartTooltipContent
-                    formatter={(value) => `$${value.toLocaleString()}`}
-                  />
-                }
-              />
-              <Bar
-                dataKey="courses"
-                fill={COLORS.courses}
-                radius={[0, 4, 4, 0]}
-                name="Courses"
-                stackId="a"
-              />
-              <Bar
-                dataKey="books"
-                fill={COLORS.books}
-                radius={[0, 4, 4, 0]}
-                name="Books"
-                stackId="a"
-              />
-              <ChartLegend content={<ChartLegendContent />} />
-            </BarChart>
-          </ChartContainer>
+          <RevenueByCategoryChart
+            data={revenueByCategory}
+            config={chartConfig}
+            colors={COLORS}
+          />
         </CardContent>
       </Card>
 
