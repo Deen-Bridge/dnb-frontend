@@ -1,10 +1,11 @@
 import LoginForm from '@/components/organisms/auth/login-form'
 import ForgetPassword from '@/components/organisms/auth/forget-password'
 import { GalleryVerticalEnd } from 'lucide-react'
-import React from 'react'
+import React, { Suspense } from 'react'
 import Image from "next/image"
 import Link from 'next/link'
 import { siteUrl, siteName } from "@/lib/config/site.config"
+import SessionEndedNotice from "@/components/auth/SessionEndedNotice"
 
 export const metadata = {
   title: { absolute: "Sign in | Deen Bridge" },
@@ -43,6 +44,9 @@ const page = () => {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
+            <Suspense fallback={null}>
+              <SessionEndedNotice />
+            </Suspense>
             <LoginForm />
           </div>
         </div>
