@@ -446,7 +446,8 @@ export default function UnifiedReportsPage() {
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={7} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                      <span className="sr-only">Loading reports</span>
                     </TableCell>
                   </TableRow>
                 ) : reports.length === 0 ? (
@@ -511,7 +512,7 @@ export default function UnifiedReportsPage() {
                                 {contentType?.label}
                               </p>
                             </div>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" aria-hidden="true" />
                           </Link>
                         </TableCell>
 
@@ -565,9 +566,9 @@ export default function UnifiedReportsPage() {
 
                         {/* Actions */}
                         <TableCell>
-                          <DropdownMenu>
+                            <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Report actions">
                                 <MoreVertical className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -620,6 +621,7 @@ export default function UnifiedReportsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1 || loading}
+                  aria-label="Go to previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
@@ -629,6 +631,7 @@ export default function UnifiedReportsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages || loading}
+                  aria-label="Go to next page"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />

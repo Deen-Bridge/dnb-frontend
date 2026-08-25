@@ -315,7 +315,7 @@ export default function AuditLogsPage() {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border">
-            <Table>
+            <Table aria-label="Audit log events">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[180px]">Timestamp</TableHead>
@@ -326,11 +326,12 @@ export default function AuditLogsPage() {
                   <TableHead className="w-[120px]">IP Address</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody aria-live="polite">
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                      <span className="sr-only">Loading audit logs</span>
                     </TableCell>
                   </TableRow>
                 ) : logs.length === 0 ? (
@@ -365,10 +366,10 @@ export default function AuditLogsPage() {
                         <TableCell>
                           <Link
                             href={getTargetLink(log.target)}
-                            className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                            className="flex items-center gap-1 text-sm text-blue-600 hover:underline dark:text-blue-400"
                           >
                             {log.target.name}
-                            <ExternalLink className="h-3 w-3" />
+                            <ExternalLink className="h-3 w-3" aria-hidden="true" />
                           </Link>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
@@ -397,6 +398,7 @@ export default function AuditLogsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1 || loading}
+                  aria-label="Go to previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
@@ -406,6 +408,7 @@ export default function AuditLogsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages || loading}
+                  aria-label="Go to next page"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />

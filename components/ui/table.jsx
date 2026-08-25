@@ -12,6 +12,7 @@ function Table({
     (<div data-slot="table-container" className="relative w-full overflow-x-auto">
       <table
         data-slot="table"
+        role="table"
         className={cn("w-full caption-bottom text-sm", className)}
         {...props} />
     </div>)
@@ -61,8 +62,9 @@ function TableRow({
   return (
     (<tr
       data-slot="table-row"
+      tabIndex={0}
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring",
         className
       )}
       {...props} />)
