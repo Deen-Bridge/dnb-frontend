@@ -7,6 +7,7 @@ import CacheProvider from "@/components/providers/CacheProvider";
 import FeatureFlagProvider from "@/components/providers/FeatureFlagProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
 import MaintenanceGate from "@/components/maintenance/MaintenanceGate";
+import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastBanner";
 import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 
 export default function AppProviders({ children }) {
@@ -22,6 +23,14 @@ export default function AppProviders({ children }) {
                  * client-side user; it wraps the whole app so maintenance mode
                  * applies platform-wide on every render/navigation (#303).
                  */}
+                {/*
+                 * Learner-side red alert banner for the emergency-broadcast
+                 * quick-action (#307). Renders nothing when no incident is
+                 * active; shown app-wide to every visitor when one is. Mounted
+                 * alongside the maintenance gate so both surfaces read their
+                 * public state and stay in sync within a session.
+                 */}
+                <EmergencyBroadcastBanner />
                 <MaintenanceGate>{children}</MaintenanceGate>
                 {/* Idle-timeout auto-logout for admin sessions (#337).
                     Self-noops for non-admins and non-admin routes. */}
