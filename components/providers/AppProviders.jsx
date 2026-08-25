@@ -6,6 +6,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import CacheProvider from "@/components/providers/CacheProvider";
 import FeatureFlagProvider from "@/components/providers/FeatureFlagProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
+import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 import MaintenanceGate from "@/components/maintenance/MaintenanceGate";
 import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastBanner";
 import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
@@ -19,6 +20,9 @@ export default function AppProviders({ children }) {
           <AuthProvider>
             <FeatureFlagProvider>
               <StellarProvider>
+                {/* Idle-timeout auto-logout for admin sessions (#337).
+                    Self-noops for non-admins and non-admin routes. */}
+                <AdminIdleGuard />
                 {/*
                  * Mounted inside AuthProvider so the gate sees the decoded
                  * client-side user; it wraps the whole app so maintenance mode
