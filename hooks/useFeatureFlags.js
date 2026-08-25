@@ -15,11 +15,11 @@
  * `@/components/providers/FeatureFlagProvider`, not this hook.
  */
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
 import { listFlags, createFlag, updateFlag } from "@/lib/actions/admin-flags";
+import { adminToastSuccess, adminToastError } from "@/lib/utils/admin-toast";
 
 export default function useFeatureFlags() {
   const { user, loading: authLoading } = useAuth();
@@ -90,6 +90,10 @@ export default function useFeatureFlags() {
         target: { label: `flag: ${key}`, href: null },
         metadata: { key, enabled },
       });
+      adminToastSuccess({
+        title: enabled ? "Flag enabled" : "Flag disabled",
+        action: { label: "Undo", onClick: () => toggleFlag(key, !enabled) },
+      });
     } catch (err) {
       // Revert on failure.
       setFlags((prev) =>
@@ -97,7 +101,10 @@ export default function useFeatureFlags() {
           flag.key === key ? { ...flag, enabled: previous } : flag
         )
       );
-      toast.error(err?.message || `Couldn't update "${key}"`);
+      adminToastError({
+        title: err?.message || "Couldn't update flag",
+        action: { label: "Retry", onClick: () => toggleFlag(key, enabled) },
+      });
     }
   }, []);
 
@@ -120,13 +127,17 @@ export default function useFeatureFlags() {
     );
     try {
       await updateFlag(key, { rolloutPercentage: clamped });
+      adminToastSuccess({ title: "Rollout updated" });
     } catch (err) {
       setFlags((prev) =>
         prev.map((flag) =>
           flag.key === key ? { ...flag, rolloutPercentage: previous } : flag
         )
       );
-      toast.error(err?.message || `Couldn't update rollout for "${key}"`);
+      adminToastError({
+        title: err?.message || "Couldn't update rollout",
+        action: { label: "Retry", onClick: () => setRollout(key, pct) },
+      });
     }
   }, []);
 
@@ -141,7 +152,7 @@ export default function useFeatureFlags() {
     async (payload) => {
       const { flag } = await createFlag(payload);
       await refresh();
-      toast.success(`Flag "${flag.key}" created`);
+      adminToastSuccess({ title: "Flag created" });
       return flag;
     },
     [refresh]
