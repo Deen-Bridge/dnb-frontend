@@ -43,7 +43,6 @@ import {
 export default function StreamingAIChat({ chatData, onChatUpdate }) {
   const { user } = useAuth();
   const [inputMessage, setInputMessage] = useState("");
-  const [userId, setUserId] = useState(null);
   const messagesEndRef = useRef(null);
 
   // Use the streaming chat hook
@@ -55,7 +54,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
     stopStreaming,
     newConversation,
     setMessagesFromHistory,
-  } = useStreamingChat(userId, chatData?.chatId);
+  } = useStreamingChat(user?._id, chatData?.chatId);
 
   // Sync with chatData from layout when sidebar selection changes
   useEffect(() => {
@@ -72,37 +71,32 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
     scrollToBottom();
   }, [messages]);
 
-  // Load user ID and chat history on mount
+  // Load chat history when user ID becomes available
   useEffect(() => {
-    const loadUserAndHistory = async () => {
+    if (!user?._id) return;
+
+    const loadHistory = async () => {
       try {
-        // Get user from localStorage
-        const userData = localStorage.getItem("user");
-        if (userData) {
-          const userObj = JSON.parse(userData);
-          setUserId(userObj.id);
+        // Load user's most recent chat if no chatData provided
+        if (!chatData) {
+          const data = await loadChatHistory(user._id);
 
-          // Load user's most recent chat if no chatData provided
-          if (!chatData) {
-            const data = await loadChatHistory(userObj.id);
+          if (data.chats && data.chats.length > 0) {
+            // Load the most recent chat
+            const latestChat = data.chats[0];
 
-            if (data.chats && data.chats.length > 0) {
-              // Load the most recent chat
-              const latestChat = data.chats[0];
-
-              // Load the chat history messages
-              const history = await loadChatMessages(latestChat.chat_id);
-              setMessagesFromHistory(history);
-            }
+            // Load the chat history messages
+            const history = await loadChatMessages(latestChat.chat_id);
+            setMessagesFromHistory(history);
           }
         }
       } catch (error) {
-        console.error("Error loading user data:", error);
+        console.error("Error loading chat history:", error);
       }
     };
 
-    loadUserAndHistory();
-  }, [chatData, setMessagesFromHistory]);
+    loadHistory();
+  }, [user?._id, chatData, setMessagesFromHistory]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
