@@ -21,7 +21,6 @@
  *   />
  */
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ShieldAlert } from "lucide-react";
 import {
   Dialog,
@@ -33,6 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { adminToastError } from "@/lib/utils/admin-toast";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
@@ -70,7 +70,12 @@ function StepUpConfirmDialog({
       onOpenChange?.(false);
     } catch (err) {
       console.error("Step-up confirmed action failed:", err);
-      toast.error(err?.message || "Action failed. Please try again.");
+      // Keep the dialog open (the confirm button is the retry affordance) and
+      // surface a consistent error toast with an explicit retry action.
+      adminToastError({
+        title: err?.message || "Action failed. Please try again.",
+        action: { label: "Retry", onClick: () => handleConfirm() },
+      });
       setIsSubmitting(false);
     }
   };
