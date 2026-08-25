@@ -74,6 +74,7 @@ import {
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
+import DismissReportDialog from "@/components/admin/DismissReportDialog";
 
 // Content type definitions with icons and colors
 const CONTENT_TYPES = {
@@ -235,6 +236,9 @@ export default function UnifiedReportsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const tableRef = useRef(null);
   const pageSize = 15;
+  // Dismiss dialog state
+  const [isDismissDialogOpen, setIsDismissDialogOpen] = useState(false);
+  const [dismissTarget, setDismissTarget] = useState(null);
 
   // Keyboard navigation
   useEffect(() => {
@@ -273,7 +277,8 @@ export default function UnifiedReportsPage() {
         case "d":
           e.preventDefault();
           if (reports[selectedIndex]) {
-            handleStatusChange(reports[selectedIndex].id, "dismissed");
+            setDismissTarget(reports[selectedIndex]);
+            setIsDismissDialogOpen(true);
           }
           break;
       }
@@ -592,7 +597,10 @@ export default function UnifiedReportsPage() {
                                 Mark Resolved
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => handleStatusChange(report.id, "dismissed")}
+                                onClick={() => {
+                                  setDismissTarget(report);
+                                  setIsDismissDialogOpen(true);
+                                }}
                               >
                                 <XCircle className="h-4 w-4 mr-2" />
                                 Dismiss
@@ -659,6 +667,21 @@ export default function UnifiedReportsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dismiss Report Dialog */}
+      {dismissTarget && (
+        <DismissReportDialog
+          open={isDismissDialogOpen}
+          onOpenChange={(open) => {
+            setIsDismissDialogOpen(open);
+            if (!open) setDismissTarget(null);
+          }}
+          report={dismissTarget}
+          onDismissed={(reportId) => {
+            handleStatusChange(reportId, "dismissed");
+          }}
+        />
+      )}
     </PageShell>
   );
 }
