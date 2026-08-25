@@ -1,0 +1,21 @@
+{
+  "ci": {
+    "collect": {
+      "urlList": [
+        "http://localhost:3000/",
+        "http://localhost:3000/login"
+      ],
+      "numberOfRuns": 1,
+      "settings": {
+        "preset": "desktop"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.85 }],
+        "resource-summary:total-byte-weight": ["error", { "maxNumericValue": 5242880 }],
+        "unused-javascript": ["warn", { "maxNumericValue": 1572864 }]
+      }
+    }
+  }
+}

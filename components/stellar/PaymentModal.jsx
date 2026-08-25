@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,10 +17,17 @@ import {
   ExternalLink,
   ArrowRight,
   QrCode,
+  ShieldAlert,
+  WifiOff,
 } from "lucide-react";
 import { useStellar } from "./StellarProvider";
 import useStellarPayment from "@/hooks/useStellarPayment";
 import Sep7QrCode from "./Sep7QrCode";
+import {
+  mapStellarError,
+  isUserRejection,
+  WALLET_INSTALL_LINKS,
+} from "@/lib/stellar/stellarErrors";
 
 export default function PaymentModal({
   isOpen,
@@ -29,30 +36,54 @@ export default function PaymentModal({
   itemType,
   onSuccess,
 }) {
-  const { connectedWallet, walletInfo, connectWallet, network, isConnecting } =
-    useStellar();
+  const {
+    connectedWallet,
+    walletInfo,
+    connectWallet,
+    network,
+    isConnecting,
+    hasWalletExtension,
+    networkMismatch,
+    validateForPayment,
+  } = useStellar();
   const { initializePayment, executePayment, isProcessing } =
     useStellarPayment();
 
-  const [step, setStep] = useState("preview"); // preview | confirm | processing | success | error
+  const [step, setStep] = useState("preview");
   const [paymentData, setPaymentData] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [errorDetail, setErrorDetail] = useState(null);
   const [showQr, setShowQr] = useState(false);
+  const [preCheckIssues, setPreCheckIssues] = useState([]);
+  const closingRef = useRef(false);
 
-  // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
+      closingRef.current = false;
       setStep("preview");
       setPaymentData(null);
       setResult(null);
       setError(null);
+      setErrorDetail(null);
       setShowQr(false);
+      setPreCheckIssues([]);
     }
   }, [isOpen]);
 
+  // Run pre-payment validation when modal opens
+  useEffect(() => {
+    if (isOpen && connectedWallet) {
+      validateForPayment(item?.price).then((issues) => {
+        setPreCheckIssues(issues);
+      });
+    }
+  }, [isOpen, connectedWallet, item?.price, validateForPayment]);
+
   const handleInitiate = async () => {
     setStep("processing");
+    setError(null);
+    setErrorDetail(null);
     const data = await initializePayment({
       itemType,
       itemId: item._id,
@@ -68,25 +99,59 @@ export default function PaymentModal({
 
   const handleConfirm = async () => {
     setStep("processing");
-    const success = await executePayment(paymentData);
+    setError(null);
+    setErrorDetail(null);
 
-    if (success) {
-      setResult(success);
-      setStep("success");
-      onSuccess?.(success);
-    } else {
+    try {
+      const success = await executePayment(paymentData);
+
+      if (success) {
+        setResult(success);
+        setStep("success");
+        onSuccess?.(success);
+      } else {
+        setStep("error");
+        setError("Transaction failed. Please try again.");
+      }
+    } catch (err) {
+      const mapped = mapStellarError(err);
+      if (mapped) {
+        setError(mapped.message);
+        setErrorDetail(mapped);
+      } else if (isUserRejection(err)) {
+        setStep("preview");
+        setError(null);
+        setErrorDetail(null);
+        return;
+      } else {
+        setError(err.message || "Transaction failed. Please try again.");
+      }
       setStep("error");
-      setError("Transaction failed. Please try again.");
     }
   };
 
   const handleClose = () => {
+    if (step === "processing" || closingRef.current) return;
+    closingRef.current = true;
+
+    if (paymentData && step !== "success" && step !== "error") {
+      cancelPayment();
+    }
+
     setStep("preview");
     setPaymentData(null);
     setResult(null);
     setError(null);
+    setErrorDetail(null);
     setShowQr(false);
+    setPreCheckIssues([]);
     onClose();
+  };
+
+  const handleBack = () => {
+    cancelPayment();
+    setPaymentData(null);
+    setStep("preview");
   };
 
   const sep7Uri = paymentData?.sep7Uri || paymentData?.payment?.sep7Uri;
@@ -100,9 +165,21 @@ export default function PaymentModal({
     connectedWallet &&
     parseFloat(walletInfo?.usdcBalance || 0) < (item?.price || 0);
 
+  const hasBlockingIssues = preCheckIssues.some(
+    (i) => i.type === "no_wallet" || i.type === "network" || i.type === "trustline"
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(e) => {
+          if (step === "processing") e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          if (step === "processing") e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>
             {step === "success"
@@ -132,8 +209,55 @@ export default function PaymentModal({
             </div>
           </div>
 
-          {/* Wallet Not Connected */}
-          {!connectedWallet && step === "preview" && (
+          {/* No Wallet Extension Installed */}
+          {!connectedWallet && step === "preview" && !hasWalletExtension && (
+            <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg space-y-3">
+              <div className="flex items-start gap-2">
+                <WifiOff className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-orange-800">
+                    No Stellar wallet detected
+                  </p>
+                  <p className="text-sm text-orange-700 mt-1">
+                    Install a Stellar wallet extension to make purchases on
+                    DeenBridge.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <a
+                  href={WALLET_INSTALL_LINKS.freighter.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-orange-800 hover:underline"
+                >
+                  Install Freighter
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <a
+                  href={WALLET_INSTALL_LINKS.xbull.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-orange-700 hover:underline"
+                >
+                  Install xBull
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <a
+                  href={WALLET_INSTALL_LINKS.albedo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-orange-700 hover:underline"
+                >
+                  Use Albedo (web wallet)
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Wallet Not Connected (extension exists) */}
+          {!connectedWallet && step === "preview" && hasWalletExtension && (
             <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
               <p className="text-sm text-orange-700 mb-3">
                 Connect your Stellar wallet to continue
@@ -158,40 +282,95 @@ export default function PaymentModal({
             </div>
           )}
 
-          {/* Wallet Connected - Preview */}
-          {connectedWallet && step === "preview" && (
-            <div className="p-4 border rounded-lg space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Your Wallet
-                </span>
-                <span className="font-mono text-sm">
-                  {truncateAddress(connectedWallet)}
-                </span>
+          {/* Network Mismatch Warning */}
+          {connectedWallet && networkMismatch && step === "preview" && (
+            <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <ShieldAlert className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-red-800">
+                    Wrong Network
+                  </p>
+                  <p className="text-sm text-red-700 mt-1">
+                    Your wallet is on a different network. Please switch to{" "}
+                    <strong>{network}</strong> in your wallet settings and try
+                    again.
+                  </p>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  USDC Balance
-                </span>
-                <span
-                  className={`font-semibold ${
-                    hasInsufficientBalance ? "text-red-500" : "text-green-600"
-                  }`}
-                >
-                  {parseFloat(walletInfo?.usdcBalance || 0).toFixed(2)} USDC
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Network</span>
-                <Badge variant="secondary">{network}</Badge>
-              </div>
-              {hasInsufficientBalance && (
-                <p className="text-sm text-red-500 mt-2">
-                  Insufficient USDC balance. Please add funds to your wallet.
-                </p>
-              )}
             </div>
           )}
+
+          {/* Pre-check Issues (trustline, balance) */}
+          {connectedWallet &&
+            !networkMismatch &&
+            step === "preview" &&
+            preCheckIssues.length > 0 && (
+              <div className="space-y-2">
+                {preCheckIssues.map((issue, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-3 rounded-lg border text-sm ${
+                      issue.type === "trustline"
+                        ? "border-orange-200 bg-orange-50 text-orange-800"
+                        : issue.type === "balance"
+                          ? "border-red-200 bg-red-50 text-red-800"
+                          : "border-yellow-200 bg-yellow-50 text-yellow-800"
+                    }`}
+                  >
+                    <p className="font-medium">{issue.title}</p>
+                    <p className="mt-1 text-xs opacity-80">{issue.message}</p>
+                    {issue.nextStep && (
+                      <p className="mt-1 text-xs font-medium">
+                        {issue.nextStep}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+          {/* Wallet Connected - Preview */}
+          {connectedWallet &&
+            !networkMismatch &&
+            step === "preview" && (
+              <div className="p-4 border rounded-lg space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    Your Wallet
+                  </span>
+                  <span className="font-mono text-sm">
+                    {truncateAddress(connectedWallet)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    USDC Balance
+                  </span>
+                  <span
+                    className={`font-semibold ${
+                      hasInsufficientBalance ? "text-red-500" : "text-green-600"
+                    }`}
+                  >
+                    {parseFloat(walletInfo?.usdcBalance || 0).toFixed(2)} USDC
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Network</span>
+                  <Badge variant="secondary">{network}</Badge>
+                </div>
+                {!walletInfo?.hasTrustline && (
+                  <p className="text-sm text-orange-500 mt-2">
+                    ⚠ No USDC trustline. Add USDC asset in your wallet first.
+                  </p>
+                )}
+                {hasInsufficientBalance && (
+                  <p className="text-sm text-red-500 mt-2">
+                    Insufficient USDC balance. Please add funds to your wallet.
+                  </p>
+                )}
+              </div>
+            )}
 
           {/* Confirm Step */}
           {step === "confirm" && paymentData && (
@@ -214,7 +393,9 @@ export default function PaymentModal({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Creator:</span>
-                  <span className="font-semibold">{paymentData.creator.name}</span>
+                  <span className="font-semibold">
+                    {paymentData.creator.name}
+                  </span>
                 </div>
               </div>
             </div>
@@ -247,7 +428,7 @@ export default function PaymentModal({
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="mt-4 text-muted-foreground">
                 {isProcessing
-                  ? "Processing payment..."
+                  ? "Waiting for wallet confirmation…"
                   : "Preparing transaction..."}
               </p>
               <p className="text-xs text-muted-foreground mt-2">
@@ -282,14 +463,21 @@ export default function PaymentModal({
           {step === "error" && (
             <div className="text-center py-4">
               <AlertCircle className="h-16 w-16 text-red-500 mx-auto" />
-              <h3 className="text-xl font-semibold mt-4">Payment Failed</h3>
+              <h3 className="text-xl font-semibold mt-4">
+                {errorDetail?.title || "Payment Failed"}
+              </h3>
               <p className="text-muted-foreground mt-2">{error}</p>
+              {errorDetail?.nextStep && (
+                <p className="text-sm text-accent font-medium mt-2">
+                  {errorDetail.nextStep}
+                </p>
+              )}
             </div>
           )}
 
           {/* Action Buttons */}
           <div className="flex gap-3">
-            {step === "preview" && connectedWallet && (
+            {step === "preview" && (
               <>
                 <Button
                   variant="outline"
@@ -298,20 +486,37 @@ export default function PaymentModal({
                 >
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleInitiate}
-                  className="flex-1"
-                  disabled={hasInsufficientBalance}
-                >
-                  {hasInsufficientBalance ? (
-                    "Insufficient Balance"
-                  ) : (
-                    <>
-                      Continue
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
+                {connectedWallet && !networkMismatch ? (
+                  <Button
+                    onClick={handleInitiate}
+                    className="flex-1"
+                    disabled={hasBlockingIssues || hasInsufficientBalance}
+                  >
+                    {hasInsufficientBalance ? (
+                      "Insufficient Balance"
+                    ) : hasBlockingIssues ? (
+                      "Fix Issues Above"
+                    ) : (
+                      <>
+                        Continue
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                ) : !connectedWallet ? (
+                  <Button
+                    onClick={connectWallet}
+                    className="flex-1"
+                    disabled={isConnecting}
+                  >
+                    {isConnecting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Wallet className="mr-2 h-4 w-4" />
+                    )}
+                    Connect Wallet
+                  </Button>
+                ) : null}
               </>
             )}
 
@@ -319,7 +524,7 @@ export default function PaymentModal({
               <>
                 <Button
                   variant="outline"
-                  onClick={() => setStep("preview")}
+                  onClick={handleBack}
                   className="flex-1"
                 >
                   Back

@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  Card,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
+import Link from "next/link";
 import Image from "next/image";
 import {
   Avatar,
@@ -14,6 +10,12 @@ import {
 } from "@/components/ui/avatar";
 import { VideoIcon, Clock, CirclePlus } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 
 const SpaceCard = ({ space }) => {
   const {
@@ -38,27 +40,37 @@ const SpaceCard = ({ space }) => {
   const formattedTime = format(new Date(eventDate), "PPpp");
 
   return (
-    <Card className="relative flex flex-col overflow-hidden rounded-3xl bg-gradient-to-br from-green-50 via-white to-green-100/80 backdrop-blur-xl shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all group border-0">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm transition-all hover:-translate-y-0.5 hover:border-secondary/30 hover:shadow-md">
       {/* Thumbnail */}
       <div className="relative h-60 w-full overflow-hidden">
         <Image
           src={thumbnail || "/images/space-placeholder.jpg"}
           alt={title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110 rounded-t-3xl border-b-4 border-accent/10 shadow-lg will-change-transform"
+          className="rounded-t-2xl border-b border-accent/10 object-cover shadow-sm transition-transform duration-500 will-change-transform group-hover:scale-110"
           priority
           style={{ maxHeight: '15rem' }} // Ensures the image never exceeds the container height
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent z-10 pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
         {/* Category + Status */}
-        <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-center">
+        <div className="absolute left-4 right-4 top-4 z-20 flex items-center justify-between">
           {category && (
-            <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+            <span
+              className={cn(
+                poppins_600,
+                "rounded-full border border-accent/15 bg-surface-raised/80 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow-sm"
+              )}
+            >
               {category}
-            </Badge>
+            </span>
           )}
           {status && (
-            <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-accent text-white text-xs rounded-full font-semibold shadow-md  border-0">
+            <div
+              className={cn(
+                poppins_500,
+                "rounded-full bg-gradient-to-r from-secondary to-accent px-3 py-1 text-xs text-white shadow-sm"
+              )}
+            >
               🟢 {status.toUpperCase()}
             </div>
           )}
@@ -66,31 +78,49 @@ const SpaceCard = ({ space }) => {
       </div>
 
       {/* New Layout: Host, Title, Description, Meta, Button */}
-      <div className="flex flex-col gap-3 px-6 py-4 flex-1">
+      <div className="flex flex-1 flex-col gap-3 px-6 py-4">
 
         {/* Title & Description */}
         <div className="mb-2">
-          <CardTitle className="text-lg font-extrabold line-clamp-1 text-accent drop-shadow-sm mb-1">
+          <h3
+            className={cn(
+              poppins_600,
+              "mb-1 line-clamp-1 text-lg text-ink"
+            )}
+          >
             {title}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          </h3>
+          <p className={cn(poppins_400, "line-clamp-2 text-sm text-ink-muted")}>
             {description}
           </p>
         </div>
 
         {/* Meta Info */}
-        <div className="flex items-center justify-between gap-4 mt-2 mb-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="mb-4 mt-2 flex items-center justify-between gap-4">
+          <div
+            className={cn(
+              poppins_400,
+              "flex items-center gap-2 text-xs text-ink-muted"
+            )}
+          >
             <Clock className="h-4 w-4 text-accent" />
-            <span className="font-medium text-accent/90">{formattedTime}</span>
+            <span className={cn(poppins_500, "text-ink")}>{formattedTime}</span>
           </div>
-          <div className="bg-gradient-to-r from-highlight to-accent text-white px-2 py-0.5 rounded-full font-bold shadow border-0 text-xs">
+          <div
+            className={cn(
+              poppins_600,
+              "rounded-full bg-gradient-to-r from-highlight to-accent px-2 py-0.5 text-xs text-white shadow-sm"
+            )}
+          >
             {formatDuration(duration)}
           </div>
         </div>
         {/* Host */}
-        <div className="flex items-center justify-between gap-3 mb-2">
-          <div className="flex gap-2">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <Link
+            href={host?._id ? `/educators/${host._id}` : "#"}
+            className="flex items-center gap-2"
+          >
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={host?.avatar || "/images/avatar-placeholder.png"}
@@ -102,13 +132,13 @@ const SpaceCard = ({ space }) => {
             </Avatar>
 
             <div className="flex flex-col">
-              <span className="font-semibold text-accent leading-tight text-base">{host?.name || "Ustadh Ahmad"}</span>
-              <span className="text-muted-foreground text-xs">Host</span>
+              <span className={cn(poppins_600, "text-base leading-tight text-ink")}>{host?.name || "Ustadh Ahmad"}</span>
+              <span className={cn(poppins_400, "text-xs text-ink-muted")}>Host</span>
             </div>
-          </div>
+          </Link>
 
           <div>
-            <CirclePlus className="w-5 sm:w-8 h-5 sm:h-8  text-accent hover:bg-accent hover:text-white rounded-full p-1 transition" />
+            <CirclePlus className="h-5 w-5 rounded-full p-1 text-accent transition hover:bg-accent hover:text-white sm:h-8 sm:w-8" />
           </div>
 
         </div>
@@ -117,14 +147,17 @@ const SpaceCard = ({ space }) => {
         <Button
           wide
           round
-          className="w-full bg-gradient-to-r from-highlight to-accent text-white hover:brightness-110 hover:scale-[1.01] text-base font-bold shadow-lg transition-all py-3 mt-auto"
+          className={cn(
+            poppins_600,
+            "mt-auto w-full bg-gradient-to-r from-highlight to-accent py-3 text-base text-white shadow-sm transition-all hover:brightness-110"
+          )}
           to={`/dashboard/spaces/${_id}`}
         >
-          <VideoIcon className="h-5 w-5 mr-2" />
+          <VideoIcon className="mr-2 h-5 w-5" />
           View Space
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 

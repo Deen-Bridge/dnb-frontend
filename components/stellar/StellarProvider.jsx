@@ -16,8 +16,18 @@ import { AlbedoModule } from "@creit.tech/stellar-wallets-kit/modules/albedo";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import axiosInstance from "@/lib/config/axios.config";
+import {
+  isNoWalletError,
+  isUserRejection,
+  WALLET_ERRORS,
+  WALLET_INSTALL_LINKS,
+} from "@/lib/stellar/stellarErrors";
 
 const NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
+const EXPECTED_PASSPHRASE =
+  NETWORK === "mainnet"
+    ? Networks.PUBLIC
+    : Networks.TESTNET;
 
 const StellarContext = createContext(null);
 
@@ -36,28 +46,46 @@ export default function StellarProvider({ children }) {
   const [walletInfo, setWalletInfo] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasWalletExtension, setHasWalletExtension] = useState(false);
+  const [walletNetwork, setWalletNetwork] = useState(null);
+  const [networkMismatch, setNetworkMismatch] = useState(false);
 
-  // Initialize Stellar Wallets Kit
+  // Detect wallet extensions and initialize kit
   useEffect(() => {
-    try {
-      // Create modules for different wallets
-      const modules = [
-        new FreighterModule(),
-        new xBullModule(),
-        new AlbedoModule(),
-      ];
+    async function detectWallets() {
+      try {
+        const modules = [
+          new FreighterModule(),
+          new xBullModule(),
+          new AlbedoModule(),
+        ];
 
-      // Initialize the kit with static method
-      StellarWalletsKit.init({
-        modules,
-        network: NETWORK === "mainnet" ? Networks.PUBLIC : Networks.TESTNET,
-        selectedWalletId: FREIGHTER_ID, // Default to Freighter
-      });
+        StellarWalletsKit.init({
+          modules,
+          network: EXPECTED_PASSPHRASE,
+          selectedWalletId: FREIGHTER_ID,
+        });
 
-      setKitInitialized(true);
-    } catch (error) {
-      console.error("Failed to initialize Stellar Wallets Kit:", error);
+        setKitInitialized(true);
+
+        // Check if Freighter is actually installed
+        try {
+          if (typeof window !== "undefined" && window.freighter) {
+            const connected = await window.freighter.isConnected();
+            setHasWalletExtension(connected);
+          } else {
+            // Check for any wallet by trying to detect
+            setHasWalletExtension(false);
+          }
+        } catch {
+          setHasWalletExtension(false);
+        }
+      } catch (error) {
+        console.error("Failed to initialize Stellar Wallets Kit:", error);
+      }
     }
+
+    detectWallets();
   }, []);
 
   // Check if user already has connected wallet in database
@@ -84,6 +112,44 @@ export default function StellarProvider({ children }) {
     checkStoredWallet();
   }, [user?._id]);
 
+  // Check network alignment when wallet connects
+  useEffect(() => {
+    if (!connectedWallet || !kitInitialized) return;
+
+    async function checkNetwork() {
+      try {
+        const { address } = await StellarWalletsKit.authModal().catch(() => ({}));
+        // If we can reach this, wallet is available.
+        // The kit was initialized with the correct network, so if auth succeeds
+        // the wallet should be on the right network.
+        setNetworkMismatch(false);
+        setWalletNetwork(NETWORK);
+      } catch (error) {
+        if (!isNoWalletError(error)) {
+          // Some other issue — could be network mismatch
+          const msg = error?.message || "";
+          if (msg.includes("network") || msg.includes("mismatch")) {
+            setNetworkMismatch(true);
+          }
+        }
+      }
+    }
+
+    checkNetwork();
+  }, [connectedWallet, kitInitialized]);
+
+  // Open wallet auth modal and return address (no backend persistence)
+  const selectWallet = useCallback(async () => {
+    if (!kitInitialized) {
+      throw new Error("Wallet kit not initialized");
+    }
+    const { address } = await StellarWalletsKit.authModal();
+    if (!address) {
+      throw new Error("Failed to get wallet address");
+    }
+    return address;
+  }, [kitInitialized]);
+
   // Connect wallet using the auth modal
   const connectWallet = useCallback(async () => {
     if (!kitInitialized) {
@@ -98,7 +164,6 @@ export default function StellarProvider({ children }) {
 
     setIsConnecting(true);
     try {
-      // Open the authentication modal which returns the address when successful
       const { address } = await StellarWalletsKit.authModal();
 
       if (!address) {
@@ -113,9 +178,10 @@ export default function StellarProvider({ children }) {
       if (res.data.success) {
         setConnectedWallet(address);
         setWalletInfo(res.data.wallet);
+        setWalletNetwork(NETWORK);
+        setNetworkMismatch(false);
         toast.success("Wallet connected successfully!");
 
-        // Refresh user data
         if (user?._id) {
           await refreshUser(user._id);
         }
@@ -123,9 +189,20 @@ export default function StellarProvider({ children }) {
         throw new Error(res.data.message || "Failed to connect wallet");
       }
     } catch (error) {
-      // User closing modal is not an error worth showing
-      if (error?.code === -1 && error?.message?.includes("closed")) {
-        console.log("User closed wallet modal");
+      if (isNoWalletError(error)) {
+        const installInfo = WALLET_INSTALL_LINKS;
+        toast.error(
+          "No Stellar wallet detected. Install Freighter to continue.",
+          {
+            duration: 8000,
+            action: {
+              label: "Install Freighter",
+              onClick: () => window.open(installInfo.freighter.url, "_blank"),
+            },
+          }
+        );
+      } else if (isUserRejection(error)) {
+        // Silent — user cancelled
       } else {
         console.error("Wallet connection error:", error);
         toast.error(error.message || "Failed to connect wallet");
@@ -133,18 +210,19 @@ export default function StellarProvider({ children }) {
     } finally {
       setIsConnecting(false);
     }
-  }, [kitInitialized, user, refreshUser]);
+  }, [kitInitialized, user, refreshUser, selectWallet]);
 
   // Disconnect wallet
   const disconnectWallet = useCallback(async () => {
     try {
       await axiosInstance.delete("/api/stellar/wallet/disconnect");
 
-      // Disconnect from the kit as well
       StellarWalletsKit.disconnect();
 
       setConnectedWallet(null);
       setWalletInfo(null);
+      setWalletNetwork(null);
+      setNetworkMismatch(false);
       toast.success("Wallet disconnected");
 
       if (user?._id) {
@@ -172,20 +250,70 @@ export default function StellarProvider({ children }) {
     }
   }, [connectedWallet]);
 
-  // Sign transaction
+  // Sign transaction with user rejection handling
   const signTransaction = useCallback(
     async (xdr, networkPassphrase) => {
       if (!kitInitialized) {
         throw new Error("Wallet kit not initialized");
       }
 
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase,
-      });
+      try {
+        const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
+          networkPassphrase,
+        });
 
-      return signedTxXdr;
+        return signedTxXdr;
+      } catch (error) {
+        if (isUserRejection(error)) {
+          const rejectionError = new Error(WALLET_ERRORS.user_rejected.message);
+          rejectionError.code = "USER_REJECTED";
+          rejectionError.title = WALLET_ERRORS.user_rejected.title;
+          rejectionError.nextStep = WALLET_ERRORS.user_rejected.nextStep;
+          throw rejectionError;
+        }
+        throw error;
+      }
     },
     [kitInitialized]
+  );
+
+  // Validate pre-payment conditions
+  const validateForPayment = useCallback(
+    async (price) => {
+      const issues = [];
+
+      if (!connectedWallet) {
+        issues.push({
+          ...WALLET_ERRORS.wallet_not_installed,
+          type: "no_wallet",
+        });
+      }
+
+      if (networkMismatch) {
+        issues.push({
+          ...WALLET_ERRORS.network_mismatch,
+          message: `Your wallet is on the wrong network. Please switch to ${NETWORK}.`,
+        });
+      }
+
+      if (walletInfo && !walletInfo.hasTrustline) {
+        issues.push(WALLET_ERRORS.trustline_missing);
+      }
+
+      if (
+        connectedWallet &&
+        walletInfo &&
+        parseFloat(walletInfo.usdcBalance || 0) < (price || 0)
+      ) {
+        issues.push({
+          ...WALLET_ERRORS.insufficient_balance,
+          message: `You need $${price} USDC but only have $${parseFloat(walletInfo.usdcBalance || 0).toFixed(2)}.`,
+        });
+      }
+
+      return issues;
+    },
+    [connectedWallet, networkMismatch, walletInfo]
   );
 
   const value = {
@@ -194,11 +322,17 @@ export default function StellarProvider({ children }) {
     walletInfo,
     isConnecting,
     isLoading,
+    hasWalletExtension,
+    walletNetwork,
+    networkMismatch,
     connectWallet,
+    selectWallet,
     disconnectWallet,
     refreshBalance,
     signTransaction,
+    validateForPayment,
     network: NETWORK,
+    expectedNetworkPassphrase: EXPECTED_PASSPHRASE,
   };
 
   return (

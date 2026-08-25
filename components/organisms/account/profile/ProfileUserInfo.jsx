@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
-import { roboto_900 } from "@/lib/config/font.config";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
@@ -110,27 +114,35 @@ const ProfileUserInfo = ({ user }) => {
   };
 
   return (
-    <div className="pt-16  pb-6">
-      <div className="flex justify-between items-center gap-4 pb-3">
-        <h1 className={cn("text-3xl sm:text-4xl font-bold", roboto_900)}>
-          {user?.name}
-        </h1>
+    <div className="px-4 pb-5 pt-16 sm:px-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className={cn(poppins_600, "text-2xl text-ink sm:text-3xl")}>
+            {user?.name}
+          </h1>
+          {user?.role && (
+            <span
+              className={cn(
+                poppins_500,
+                "mt-1 inline-block rounded-full bg-secondary/10 px-3 py-0.5 text-xs capitalize text-accent"
+              )}
+            >
+              {user.role}
+            </span>
+          )}
+        </div>
+
         {currentUser?._id === user?._id ? (
-          <Button
-            to={"/profile-setup"}
-            outlined
-            round
-            className="text-sm px-6 py-2"
-          >
+          <Button to={"/profile-setup"} outlined round className="px-6 py-2 text-sm">
             Edit Profile
           </Button>
         ) : (
-          <div className="space-x-2 flex justify-center items-center">
+          <div className="flex items-center gap-2">
             <Button
               outlined
               round
               loading={loading}
-              className="text-sm px-6 py-2"
+              className="px-6 py-2 text-sm"
               onClick={handleStartConversation}
             >
               Message
@@ -140,8 +152,8 @@ const ProfileUserInfo = ({ user }) => {
               round
               loading={followLoading}
               className={cn(
-                "text-sm px-6 py-2",
-                following && "bg-accent text-white hover:bg-accent/90"
+                "px-6 py-2 text-sm",
+                following && "bg-accent text-white hover:bg-highlight"
               )}
               onClick={handleFollowToggle}
             >
@@ -151,28 +163,29 @@ const ProfileUserInfo = ({ user }) => {
         )}
       </div>
 
-      <div>
-        {/* Follower/Following Stats */}
-        {/* <div className="flex flex-row gap-6 mb-3">
-          <div className="flex text-center">
-            <span className="text-lg font-semibold text-accent">
-              {followersCount}
-            </span>
-            <p className="text-sm text-muted-foreground">Followers</p>
-          </div>
-
-          <div className="flex text-center">
-            <span className="text-lg font-semibold text-accent">
-              {followingCount}
-            </span>
-            <p className="text-sm text-muted-foreground">Following</p>
-          </div>
-        </div> */}
-
-        <p className="mt-2 text-md font-stretch-110% w-full">
-          {user?.bio || "No bio"}
-        </p>
+      {/* Stats */}
+      <div className="mt-4 flex items-center gap-6">
+        <div className="flex items-baseline gap-1.5">
+          <span className={cn(poppins_600, "text-lg text-ink")}>
+            {followersCount}
+          </span>
+          <span className={cn(poppins_400, "text-sm text-ink-muted")}>
+            Followers
+          </span>
+        </div>
+        <div className="flex items-baseline gap-1.5">
+          <span className={cn(poppins_600, "text-lg text-ink")}>
+            {followingCount}
+          </span>
+          <span className={cn(poppins_400, "text-sm text-ink-muted")}>
+            Following
+          </span>
+        </div>
       </div>
+
+      <p className={cn(poppins_400, "mt-3 max-w-2xl leading-relaxed text-ink-muted")}>
+        {user?.bio || "No bio yet."}
+      </p>
     </div>
   );
 };

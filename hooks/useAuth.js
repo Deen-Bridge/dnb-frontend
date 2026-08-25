@@ -1,69 +1,34 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useAuthContext, __triggerAuthUpdate } from "@/components/providers/AuthProvider";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
-import config from "@/lib/config/req.header.config";
 
-export const useAuth = () => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const router = useRouter();
+const COOKIE_OPTIONS = { expires: 1, path: "/" };
 
-  useEffect(() => {
-    const token = Cookies.get("authToken");
-    const userInfo = Cookies.get("userInfo")
-      ? JSON.parse(Cookies.get("userInfo"))
-      : null;
+/**
+ * Persist auth session cookies and sync AuthProvider state.
+ * Shared by email/password login, signup, and Sign in with Stellar.
+ */
+export const persistSession = (token, user) => {
+  if (!token || !user) {
+    throw new Error("Missing token or user for session persistence");
+  }
 
-    if (token && userInfo) {
-      // Normalize user object to always have _id
-      if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
-      setUser(userInfo);
-      setIsAuthenticated(true);
-    } else {
-      setUser(null);
-      setIsAuthenticated(false);
-    }
-    setLoading(false);
-  }, []);
+  if (user.id && !user._id) user._id = user.id;
 
-  const logout = () => {
-    Cookies.remove("authToken", { path: "/" });
-    Cookies.remove("userInfo", { path: "/" });
-    setUser(null);
-    setIsAuthenticated(false);
-    toast.success("Logged out successfully");
-    router.push("/");
-  };
+  Cookies.set("authToken", token, COOKIE_OPTIONS);
+  Cookies.set("userInfo", JSON.stringify(user), COOKIE_OPTIONS);
 
-  // Add a function to refresh user data from backend after profile update
-  const refreshUser = async (userId) => {
-    try {
-      const res = await axiosInstance.get(`/api/users/${userId}`, config);
-      if (res.data && (res.data.user || res.data)) {
-        let freshUser = res.data.user || res.data;
-        // Normalize user object to always have _id
-        if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;
-        console.log("User data refreshed:", freshUser);
-        // Update user state and cookies
-        setUser(freshUser);
-        Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1 });
-        setIsAuthenticated(true);
-        return freshUser;
-      }
-    } catch (error) {
-      console.log("Failed to refresh user:", error);
-      toast.error("Failed to refresh user info");
-    }
-  };
+  __triggerAuthUpdate(user);
 
-  return { user, isAuthenticated, loading, logout, refreshUser };
+  return user;
 };
 
-// Export login function separately
+export const useAuth = () => {
+  return useAuthContext();
+};
+
 export const login = async (email, password) => {
   try {
     const res = await axiosInstance.post("/api/auth/login", {
@@ -71,12 +36,7 @@ export const login = async (email, password) => {
       password,
     });
     const { token, user } = res.data;
-    // Normalize user object to always have _id
-    if (user.id && !user._id) user._id = user.id;
-
-    // Save token and user info in cookies with proper path
-    Cookies.set("authToken", token, { expires: 1, path: "/" });
-    Cookies.set("userInfo", JSON.stringify(user), { expires: 1, path: "/" });
+    persistSession(token, user);
 
     toast.success("Login successful");
     return user;
@@ -86,13 +46,13 @@ export const login = async (email, password) => {
       console.log("Login failed:", errorMessage);
       toast.error(errorMessage);
     } else {
-      // Network or other unexpected errors
       console.log("Login failed:", error.message);
       toast.error("An unexpected error occurred. Please try again.");
     }
-    throw error; // Re-throw error for handling in the component
+    throw error;
   }
 };
+
 export const signup = async (name, email, password, role) => {
   try {
     const res = await axiosInstance.post("/api/auth/register", {
@@ -102,26 +62,20 @@ export const signup = async (name, email, password, role) => {
       role,
     });
 
-    const { token, user } = res.data;
-    // Normalize user object to always have _id
-    if (user.id && !user._id) user._id = user.id;
-    // Save token and user info in cookies
-    Cookies.set("authToken", token, { expires: 7 }); // Expires in 1 day
-    Cookies.set("userInfo", JSON.stringify(user), { expires: 7 });
-    toast.success("Signup successful! Redirecting to dashboard...");
-    return user; // Return user data if needed
+    const message = res.data.message || "Verification email sent. Please check your inbox.";
+    toast.success(message);
+    return { success: true, message };
   } catch (error) {
     if (error.response) {
-      // Handle backend error response
       const errorMessage = error.response.data?.message || "Signup failed";
       console.log("Signup failed:", errorMessage);
-      toast.error(errorMessage); // Show the error message from the backend
+      toast.error(errorMessage);
     } else {
-      // Handle network or unexpected errors
       console.log("Signup failed:", error.message);
       toast.error("An unexpected error occurred. Please try again.");
     }
-    throw error; // Re-throw error for handling in the component
+    throw error;
   }
 };
+
 export default useAuth;

@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { config } from "@/lib/config/env";
 
 const getBackendBaseUrl = () => {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  return base.replace(/\/$/, "");
+  return config.apiUrl.replace(/\/$/, "");
 };
 
 export async function GET(_request, { params }) {
-  const { bookId } = params || {};
+  const { bookId } = await params || {};
 
   if (!bookId) {
     return NextResponse.json(
@@ -18,7 +18,8 @@ export async function GET(_request, { params }) {
 
   try {
     const backendUrl = `${getBackendBaseUrl()}/api/books/${bookId}/preview`;
-    const token = cookies().get("authToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("authToken")?.value;
 
     const headers = new Headers();
     if (token) {

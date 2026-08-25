@@ -15,6 +15,16 @@
 
 ---
 
+## 📸 Screenshots
+
+| Landing Page | Login / Sign Up |
+|:---:|:---:|
+| ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Admin Area](docs/screenshots/admin.png) |
+
+
+---
+
 ## About
 
 Deen Bridge is a modern learning platform that connects Muslims worldwide with authentic Islamic knowledge. Learners enroll in interactive courses, read from a digital library, join live community spaces, message mentors directly, and get instant answers from an Islamic-knowledge AI assistant. Courses and books are purchased with **USDC on the Stellar network** — non-custodial, with creators paid directly to their own wallets.
@@ -38,6 +48,8 @@ This repository is the web client. The platform is composed of three services:
 - ⭐ **Stellar Payments** — buy courses and books with USDC; creators are paid directly
 - 👛 **Multi-Wallet Support** — Freighter, xBull, and Albedo via Stellar Wallets Kit
 - 🔒 **Role-Based Access** — student, mentor, and admin experiences
+- 🛡️ **Admin Area** — role-tiered admin access (staff / super-admin) with isolated gating logic ([architecture guide](docs/admin-architecture.md))
+- 👥 **Team Management** — super-admin-only admin roster with invite links and demote/revoke actions guarded by step-up confirmation
 
 ## 🛠️ Tech Stack
 
@@ -70,12 +82,19 @@ The app runs at `http://localhost:3000`.
 
 ### Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Base URL of the [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) API |
-| `NEXT_PUBLIC_STELLAR_NETWORK` | `testnet` or `public` (mainnet) |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | No (default `http://localhost:5000`) | Base URL of the [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) API |
+| `NEXT_PUBLIC_AI_API_URL` | No (default `http://localhost:8000`) | Base URL of the [dnb-ai](https://github.com/Deen-Bridge/dnb-ai) AI assistant service |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | No (default `testnet`) | Stellar network — `testnet` or `mainnet` |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | **Yes** | Cloudinary cloud name for unsigned image/video uploads |
+| `NEXT_PUBLIC_JITSI_DOMAIN` | No (default `meet.jit.si`) | Jitsi Meet domain for live video spaces |
+| `NEXT_PUBLIC_JITSI_REQUIRE_JWT` | No (default `false`) | Whether the Jitsi deployment requires a signed JWT token |
+| `NEXT_PUBLIC_FIREBASE_*` | No | Firebase Web SDK config values (apiKey, authDomain, projectId, etc.) — defaults to the project's current values |
+| `NEXT_PUBLIC_ADMIN_INVITE_BASE_URL` | No (default current origin) | Base URL used when building admin invite links generated on the team management page |
+| `NEXT_PUBLIC_ADMIN_INVITE_TTL_HOURS` | No (default `72`) | Validity window (in hours) surfaced for admin invite tokens — enforced by the backend |
 
-See `.env.example` for the full list.
+See `.env.example` for the full variable list with example values.
 
 ### Scripts
 
@@ -88,11 +107,11 @@ See `.env.example` for the full list.
 
 ## 🌊 Contributing & Drips Wave
 
-This repository participates in the **[Stellar Drips Wave](https://www.drips.network/wave/stellar)** bounty program — contributors earn Points (and real rewards) for resolving this repo's issues during a Wave, with complexity tiers set in the Drips Wave app.
+This repository is hoping to  participates in the **[Stellar Drips Wave](https://www.drips.network/wave/stellar)** bounty program — contributors earn Points (and real rewards) for resolving this repo's issues during a Wave, with complexity tiers set in the Drips Wave app.
 
 - All pull requests target the **`dev`** branch (`main` is releases only)
 - CI (lint + build) must pass before review
-- One contributor per issue — comment to claim it first
+- One contributor per issue — request it through the campaign (Drips Wave / GrantFox OSS); the maintainer assigns it. Please don't open a PR for an issue you haven't been assigned.
 
 Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full workflow, coding standards, and Wave rules.
 

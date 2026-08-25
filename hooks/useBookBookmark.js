@@ -1,58 +1,14 @@
-import { useEffect, useState } from "react";
-import {
-  toggleBookBookmark,
-  checkIfBookBookmarked,
-} from "@/lib/actions/library/bookmark-book";
-import { toast } from "sonner";
-import useAuth from "./useAuth";
+import { useBookmarkCore } from "./useBookmarkCore";
 
-export const useBookBookmark = (bookId, onToggle) => {
-  const { user } = useAuth();
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkBookmark = async () => {
-      if (user?._id && bookId) {
-        try {
-          const bookmarked = await checkIfBookBookmarked(bookId);
-          setIsBookmarked(Boolean(bookmarked));
-        } catch (_error) {
-          // ignore
-        }
-      }
-    };
-
-    checkBookmark();
-  }, [user?._id, bookId]);
-
-  const toggle = async () => {
-    if (!user) {
-      toast.error("Please login to bookmark books");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await toggleBookBookmark(bookId);
-      setIsBookmarked(result.isBookmarked);
-      toast.success(result.message);
-      if (onToggle) {
-        onToggle(result.isBookmarked);
-      }
-    } catch (_error) {
-      toast.error("Failed to update book bookmark");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return {
-    isBookmarked,
-    loading,
-    toggle,
-  };
+/**
+ * Custom hook for managing book bookmarks
+ * @param {string} bookId - The book ID
+ * @param {function} [onToggle] - Optional callback when bookmark is toggled
+ * @param {boolean|null} [initialIsBookmarked=null] - Optional pre-seeded bookmark state
+ * @returns {Object} - Bookmark state and toggle function
+ */
+export const useBookBookmark = (bookId, onToggle, initialIsBookmarked = null) => {
+  return useBookmarkCore(bookId, "book", onToggle, initialIsBookmarked);
 };
 
 export default useBookBookmark;
-

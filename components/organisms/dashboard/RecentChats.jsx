@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
 import useAuth from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -18,6 +22,7 @@ const RecentChats = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userCache, setUserCache] = useState({});
+  const fetchingUsersRef = useRef(new Set());
 
   useEffect(() => {
     if (!user?._id) return;
@@ -43,19 +48,25 @@ const RecentChats = () => {
   useEffect(() => {
     if (!conversations.length || !user?._id) return;
 
-    const idsToFetch = new Set();
+    const idsToFetch = [];
     conversations.forEach((conversation) => {
       conversation.participants?.forEach((participantId) => {
-        if (participantId !== user._id && !userCache[participantId]) {
-          idsToFetch.add(participantId);
+        if (
+          participantId !== user._id &&
+          !userCache[participantId] &&
+          !fetchingUsersRef.current.has(participantId)
+        ) {
+          idsToFetch.push(participantId);
         }
       });
     });
 
-    if (idsToFetch.size === 0) return;
+    if (idsToFetch.length === 0) return;
+
+    idsToFetch.forEach((id) => fetchingUsersRef.current.add(id));
 
     Promise.all(
-      Array.from(idsToFetch).map(async (participantId) => {
+      idsToFetch.map(async (participantId) => {
         try {
           const response = await getUserById(participantId);
           return { participantId, user: response?.user || null };
@@ -74,8 +85,9 @@ const RecentChats = () => {
         });
         return updated;
       });
+      idsToFetch.forEach((id) => fetchingUsersRef.current.delete(id));
     });
-  }, [conversations, user?._id, userCache]);
+  }, [conversations, user?._id]);
 
   const sortedConversations = useMemo(() => {
     const sortByTimestamp = (conversation) => {
@@ -103,16 +115,16 @@ const RecentChats = () => {
           {[...Array(4)].map((_, index) => (
             <li
               key={index}
-              className="flex items-center justify-between rounded-lg bg-muted/60 p-2.5"
+              className="flex items-center justify-between rounded-xl border border-accent/10 bg-surface p-2.5"
             >
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-muted" />
+                <div className="h-10 w-10 rounded-lg bg-accent/10" />
                 <div className="space-y-2">
-                  <div className="h-3 w-24 rounded-full bg-muted" />
-                  <div className="h-3 w-32 rounded-full bg-muted" />
+                  <div className="h-3 w-24 rounded-full bg-accent/10" />
+                  <div className="h-3 w-32 rounded-full bg-accent/10" />
                 </div>
               </div>
-              <div className="h-5 w-5 rounded-full bg-muted" />
+              <div className="h-5 w-5 rounded-full bg-accent/10" />
             </li>
           ))}
         </ul>
@@ -121,7 +133,12 @@ const RecentChats = () => {
 
     if (sortedConversations.length === 0) {
       return (
-        <div className="rounded-lg border border-dashed border-muted p-6 text-center text-sm text-muted-foreground">
+        <div
+          className={cn(
+            poppins_400,
+            "rounded-xl border border-dashed border-accent/15 p-6 text-center text-sm text-ink-muted"
+          )}
+        >
           No recent conversations yet.
         </div>
       );
@@ -160,10 +177,10 @@ const RecentChats = () => {
               <Link
                 href={`/dashboard/messages/${conversation._id}`}
                 className={cn(
-                  "flex items-center justify-between gap-2 rounded-lg p-0.5 transition-colors flex-nowrap",
+                  "flex items-center justify-between gap-2 rounded-xl p-2 transition-colors flex-nowrap",
                   unreadCount
                     ? "bg-accent/10 hover:bg-accent/20"
-                    : "hover:bg-muted/60"
+                    : "hover:bg-surface"
                 )}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -174,7 +191,12 @@ const RecentChats = () => {
                         alt={otherParticipant.name}
                       />
                     ) : (
-                      <AvatarFallback className="rounded-lg">
+                      <AvatarFallback
+                        className={cn(
+                          poppins_600,
+                          "rounded-lg border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10 text-accent"
+                        )}
+                      >
                         {otherParticipant?.name?.[0]?.toUpperCase() || "?"}
                       </AvatarFallback>
                     )}
@@ -182,11 +204,21 @@ const RecentChats = () => {
 
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-base font-semibold truncate font-stretch-125%">
+                      <span
+                        className={cn(
+                          poppins_600,
+                          "text-base truncate text-ink"
+                        )}
+                      >
                         {otherParticipant?.name || "Loading..."}
                       </span>
                       {timeLabel && (
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        <span
+                          className={cn(
+                            poppins_400,
+                            "text-xs text-ink-muted whitespace-nowrap"
+                          )}
+                        >
                           {timeLabel}
                         </span>
                       )}
@@ -195,8 +227,8 @@ const RecentChats = () => {
                       className={cn(
                         "max-w-[200px] truncate text-sm md:max-w-xs",
                         unreadCount
-                          ? "font-semibold text-foreground"
-                          : "text-muted-foreground"
+                          ? cn(poppins_600, "text-ink")
+                          : cn(poppins_400, "text-ink-muted")
                       )}
                     >
                       {lastMessageText}
@@ -205,7 +237,12 @@ const RecentChats = () => {
                 </div>
 
                 {unreadCount > 0 && (
-                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent px-1.5 text-[11px] font-semibold text-white">
+                  <span
+                    className={cn(
+                      poppins_600,
+                      "flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent px-1.5 text-[11px] text-white"
+                    )}
+                  >
                     {unreadCount}
                   </span>
                 )}
@@ -218,14 +255,17 @@ const RecentChats = () => {
   };
 
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className={cn("text-xl font-semibold", roboto_500)}>
+        <h3 className={cn(poppins_600, "text-xl text-ink")}>
           Recent Conversations
         </h3>
         <Link
           href="/dashboard/messages"
-          className="text-xs font-medium text-accent hover:text-highlight"
+          className={cn(
+            poppins_500,
+            "text-xs text-secondary hover:text-highlight"
+          )}
         >
           View all
         </Link>

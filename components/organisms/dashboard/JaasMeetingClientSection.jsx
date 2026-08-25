@@ -1,14 +1,31 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Clock, Copy, ExternalLink, VideoIcon, CheckCircle } from "lucide-react";
 import Button from "@/components/atoms/form/Button";
 import useAuth from "@/hooks/useAuth";
-import JaasMeetingComponent from "@/components/organisms/jitsi/JitsiMeeting";
 import { joinSpaceWaitlist } from "@/lib/actions/spaces/joinSpaceWaitlist";
 import { updateSpace } from "@/lib/actions/spaces/updateSpace";
 import { getSpaceMeetingToken } from "@/lib/actions/calls/get-space-meeting-token";
+import { config } from "@/lib/config/env";
+
+// The Jitsi meeting client (and the external_api.js script it injects) is
+// only needed once a live session is actually joined — the mount below is
+// gated on meetingActive — so keep it out of the space-page bundle.
+const JaasMeetingComponent = dynamic(
+  () => import("@/components/organisms/jitsi/JitsiMeeting"),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="w-full animate-pulse rounded-xl bg-black/80"
+        style={{ height: "75vh", marginTop: "1rem" }}
+      />
+    ),
+  }
+);
 
 const normalizeDomain = (domain = "meet.jit.si") =>
   domain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "");
@@ -39,9 +56,7 @@ export default function JaasMeetingClientButtons({ space }) {
   const [isCopying, setIsCopying] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
   const [tokenLoading, setTokenLoading] = useState(false);
-  const envRequiresJwt =
-    typeof process !== "undefined" &&
-    process.env.NEXT_PUBLIC_JITSI_REQUIRE_JWT === "true";
+  const envRequiresJwt = config.jitsiRequireJwt;
 
   const [meetingToken, setMeetingToken] = useState(null);
   const [requiresJwt, setRequiresJwt] = useState(
@@ -52,8 +67,7 @@ export default function JaasMeetingClientButtons({ space }) {
     [requiresJwt, envRequiresJwt]
   );
   const [meetingMeta, setMeetingMeta] = useState(() => {
-    const domain =
-      process.env.NEXT_PUBLIC_JITSI_DOMAIN || "meet.jit.si";
+    const domain = config.jitsiDomain;
     const normalizedDomain = normalizeDomain(domain);
     const fallbackRoom =
       space?.meetingRoom || (space?._id ? `deenbridge-space-${space._id}` : "");
@@ -82,7 +96,7 @@ export default function JaasMeetingClientButtons({ space }) {
   }, [waitListIds, user?._id]);
 
   const baseDomain = useMemo(
-    () => normalizeDomain(process.env.NEXT_PUBLIC_JITSI_DOMAIN || "meet.jit.si"),
+    () => normalizeDomain(config.jitsiDomain),
     []
   );
 
@@ -351,7 +365,7 @@ export default function JaasMeetingClientButtons({ space }) {
                 </Button>
             ) : (
                 <Button outlined round disabled>
-          <CheckCircle className="w-5 h-5 mr-2 text-accent" /> Waitlist Joined
+          <CheckCircle className="w-5 h-5 mr-2 text-brand-text" /> Waitlist Joined
         </Button>
       )}
 

@@ -1,7 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import dynamic from "next/dynamic"
 
 import {
     Card,
@@ -11,71 +10,38 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart"
+import { BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { roboto_500 } from "@/lib/config/font.config";
-const chartData = [
-    { month: "January", course: 186, book: 80 },
-    { month: "February", course: 305, book: 200 },
-    { month: "March", course: 237, book: 120 },
-    { month: "April", course: 73, book: 190 },
-    { month: "May", course: 209, book: 130 },
-    { month: "June", course: 214, book: 140 },
-]
+import { Inter_500 } from "@/lib/config/font.config";
 
-const chartConfig = {
-    course: {
-        label: "course",
-        color: "hsl(var(--chart-1))",
-    },
-    book: {
-        label: "book",
-        color: "hsl(var(--chart-2))",
-    },
-}
+const LearningProgressChart = dynamic(
+    () => import("@/components/organisms/dashboard/LearningProgressChart"),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="h-64 w-full animate-pulse rounded-xl bg-muted" />
+        ),
+    }
+)
 
 export default function LearningProgress() {
     return (
         <Card>
             <CardHeader className="pt-4">
                 <CardTitle className={"text-lg font-semibold"}>Study Progress</CardTitle>
-                <CardDescription> Activities completed (January – June)</CardDescription>
+                <CardDescription>Monthly activity breakdown</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig} >
-                    <BarChart accessibilityLayer data={chartData} >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="month"
-                            tickLine={false}
-                            tickMargin={10}
-                            axisLine={false}
-                            tickFormatter={(value) => value.slice(0, 3)}
-                            
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            className="bg-accent text-white" 
-                            content={<ChartTooltipContent indicator="dashed"/>}
-                        />
-                        <Bar dataKey="course" fill="var(--color-accent)" radius={4} />
-                        <Bar dataKey="book" fill="var(--color-accent)" radius={4} />
-                    </BarChart>
-                </ChartContainer>
+                <div className="flex flex-col items-center gap-3 py-8 text-muted-foreground">
+                    <BarChart3 className="h-10 w-10" />
+                    <p className="text-sm text-center">Monthly activity data coming soon</p>
+                </div>
+                <LearningProgressChart />
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm">
-                <div className="flex gap-2 font-medium leading-none">
-                    You've boosted study by 30%
-                <TrendingUp className="h-4 w-4" />
-                </div>
                 <div className="leading-none text-muted-foreground">
-                    Tracking your memorization and study over the last 6 months
-                    </div>
+                    Tracking your memorization and study over time
+                </div>
             </CardFooter>
         </Card>
     )

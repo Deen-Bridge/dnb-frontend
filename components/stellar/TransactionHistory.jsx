@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,8 @@ import {
   ChevronRight,
   BookOpen,
   GraduationCap,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import useStellarPayment from "@/hooks/useStellarPayment";
 
@@ -46,9 +48,11 @@ export default function TransactionHistory() {
   });
   const [role, setRole] = useState("buyer");
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     const result = await getTransactionHistory({
       role,
       page: pagination.page,
@@ -57,13 +61,20 @@ export default function TransactionHistory() {
     if (result.success) {
       setTransactions(result.transactions);
       setPagination(result.pagination);
+    } else {
+      setError(result.error || "Failed to fetch transactions");
     }
     setIsLoading(false);
-  };
+  }, [role, pagination.page, pagination.limit, getTransactionHistory]);
 
   useEffect(() => {
     fetchTransactions();
-  }, [role, pagination.page]);
+  }, [fetchTransactions]);
+
+  const handleRoleChange = (newRole) => {
+    setRole(newRole);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
 
   const truncateAddress = (addr) => {
     if (!addr) return "";
@@ -80,29 +91,13 @@ export default function TransactionHistory() {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-10 w-32" />
-          <Skeleton className="h-10 w-40" />
-        </div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* Header - always mounted */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl font-semibold">Transaction History</h2>
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="w-[180px]">
+        <Select value={role} onValueChange={handleRoleChange}>
+          <SelectTrigger className="w-[180px]" aria-label="View transactions as">
             <SelectValue placeholder="Select role" />
           </SelectTrigger>
           <SelectContent>
@@ -112,8 +107,36 @@ export default function TransactionHistory() {
         </Select>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <div className="text-center py-12 border rounded-lg bg-red-50 border-red-200">
+          <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+          <p className="text-red-600 font-medium">Failed to load transactions</p>
+          <p className="text-sm text-red-500 mt-1">{error}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4"
+            onClick={fetchTransactions}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            Try Again
+          </Button>
+        </div>
+      )}
+
+      {/* Loading skeleton - only table area */}
+      {isLoading && !error && (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full" />
+          ))}
+        </div>
+      )}
+
       {/* Empty State */}
-      {transactions.length === 0 ? (
+      {!isLoading && !error && transactions.length === 0 && (
         <div className="text-center py-12 border rounded-lg">
           <p className="text-muted-foreground">No transactions found</p>
           <p className="text-sm text-muted-foreground mt-1">
@@ -122,9 +145,11 @@ export default function TransactionHistory() {
               : "You haven't received any payments yet"}
           </p>
         </div>
-      ) : (
+      )}
+
+      {/* Table */}
+      {!isLoading && !error && transactions.length > 0 && (
         <>
-          {/* Table */}
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
@@ -196,9 +221,10 @@ export default function TransactionHistory() {
                           href={tx.explorerUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          aria-label={`View transaction for ${tx.itemTitle} on Stellar Explorer`}
                           className="text-primary hover:text-primary/80"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
                         </a>
                       )}
                     </TableCell>
@@ -222,7 +248,7 @@ export default function TransactionHistory() {
                   onClick={() =>
                     setPagination((p) => ({ ...p, page: p.page - 1 }))
                   }
-                  disabled={pagination.page <= 1}
+                  disabled={pagination.page <= 1 || isLoading}
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
@@ -233,7 +259,7 @@ export default function TransactionHistory() {
                   onClick={() =>
                     setPagination((p) => ({ ...p, page: p.page + 1 }))
                   }
-                  disabled={pagination.page >= pagination.pages}
+                  disabled={pagination.page >= pagination.pages || isLoading}
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />
