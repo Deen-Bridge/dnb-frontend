@@ -29,6 +29,8 @@ function PageHeader({
   return (
     <div
       data-slot="page-header"
+      id="main-content"
+      tabIndex={-1}
       className={cn(
         "flex flex-wrap items-center justify-between gap-4",
         className
