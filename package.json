@@ -11,7 +11,8 @@
     "a11y": "eslint --config eslint.config.a11y.mjs components app",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test e2e/i18n.spec.js"
+    "test:e2e": "playwright test e2e/i18n.spec.js",
+    "test:e2e:admin": "playwright test e2e/admin-smoke.spec.js"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.4.0",

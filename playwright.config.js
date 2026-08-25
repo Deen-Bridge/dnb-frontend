@@ -14,7 +14,10 @@ export default defineConfig({
   reporter: [["list"]],
   use: {
     baseURL: `http://localhost:${PORT}`,
-    trace: "off",
+    // Failure artifacts (#341): keep a trace + screenshot only when a test
+    // fails. Global and harmless to the passing i18n/documents specs.
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
   webServer: {
     command: `npx next start -p ${PORT}`,
