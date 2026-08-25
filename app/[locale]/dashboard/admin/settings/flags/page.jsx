@@ -60,7 +60,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import AdminTierGuard from "@/components/auth/AdminTierGuard";
+import ReauthPromptDialog from "@/components/auth/ReauthPromptDialog";
 import useFeatureFlags from "@/hooks/useFeatureFlags";
+import useReauth from "@/hooks/useReauth";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -275,7 +277,7 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
   );
 }
 
-function FlagRow({ flag, onToggle, onRolloutCommit }) {
+function FlagRow({ flag, onToggle, onRolloutCommit, ensureFreshSession }) {
   const [confirmOff, setConfirmOff] = useState(false);
   const [rolloutDraft, setRolloutDraft] = useState(String(flag.rolloutPercentage));
 
@@ -392,7 +394,15 @@ function FlagRow({ flag, onToggle, onRolloutCommit }) {
             <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="rounded-full bg-destructive text-white hover:bg-destructive/90"
-              onClick={() => onToggle(flag.key, false)}
+              onClick={async () => {
+                // Sensitive action (#337): if the session is older than the
+                // configured re-auth age, require a password step-up before
+                // disabling a kill-switch flag. `ensureFreshSession` resolves
+                // instantly when the session is already fresh.
+                if (await ensureFreshSession()) {
+                  onToggle(flag.key, false);
+                }
+              }}
             >
               Turn off
             </AlertDialogAction>
@@ -429,6 +439,7 @@ function FlagsHeader() {
 function FeatureFlagsContent() {
   const { flags, isLoading, error, refresh, toggleFlag, setRollout, createFlag } =
     useFeatureFlags();
+  const { ensureFreshSession, reauthProps } = useReauth();
   const [createOpen, setCreateOpen] = useState(false);
 
   const existingKeys = useMemo(() => flags.map((flag) => flag.key), [flags]);
@@ -501,6 +512,7 @@ function FeatureFlagsContent() {
                   flag={flag}
                   onToggle={toggleFlag}
                   onRolloutCommit={setRollout}
+                  ensureFreshSession={ensureFreshSession}
                 />
               ))}
             </TableBody>
@@ -514,6 +526,9 @@ function FeatureFlagsContent() {
         existingKeys={existingKeys}
         onCreate={createFlag}
       />
+
+      {/* Step-up re-auth for sensitive flag changes (#337). */}
+      <ReauthPromptDialog {...reauthProps} />
     </PageShell>
   );
 }

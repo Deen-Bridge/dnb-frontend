@@ -6,6 +6,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import CacheProvider from "@/components/providers/CacheProvider";
 import FeatureFlagProvider from "@/components/providers/FeatureFlagProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
+import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 
 export default function AppProviders({ children }) {
   return (
@@ -14,7 +15,12 @@ export default function AppProviders({ children }) {
         <CacheProvider>
           <AuthProvider>
             <FeatureFlagProvider>
-              <StellarProvider>{children}</StellarProvider>
+              <StellarProvider>
+                {/* Idle-timeout auto-logout for admin sessions (#337).
+                    Self-noops for non-admins and non-admin routes. */}
+                <AdminIdleGuard />
+                {children}
+              </StellarProvider>
             </FeatureFlagProvider>
           </AuthProvider>
         </CacheProvider>
