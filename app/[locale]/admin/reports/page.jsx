@@ -14,8 +14,9 @@
  * - Deep links to underlying entity admin pages
  */
 
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -202,6 +203,7 @@ const generateMockReports = () => {
       assignee,
       status,
       reason,
+      reportCount: 1 + Math.floor(Math.random() * 15),
       description: `Reported for ${REASON_CATEGORIES[reason].toLowerCase()} - ${target.name}`,
       createdAt: createdAt.toISOString(),
       updatedAt: createdAt.toISOString(),
@@ -225,11 +227,19 @@ const getTargetAdminLink = (target) => {
   return `${type.adminPath}/${target.id}`;
 };
 
-export default function UnifiedReportsPage() {
+function UnifiedReportsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("open");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const s = searchParams.get("status");
+    return s && Object.keys(REPORT_STATUSES).includes(s) ? s : "open";
+  });
+  const [typeFilter, setTypeFilter] = useState(() => {
+    const t = searchParams.get("type");
+    return t && Object.keys(CONTENT_TYPES).includes(t) ? t : "all";
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -276,6 +286,14 @@ export default function UnifiedReportsPage() {
             handleStatusChange(reports[selectedIndex].id, "dismissed");
           }
           break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.max(prev - 1, 0));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.min(prev + 1, reports.length - 1));
+          break;
       }
     };
 
@@ -317,6 +335,15 @@ export default function UnifiedReportsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [statusFilter, typeFilter]);
+
+  // Keep URL in sync so filters are deep-linkable (?status=&type=)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (statusFilter !== "open") params.set("status", statusFilter);
+    if (typeFilter !== "all") params.set("type", typeFilter);
+    const qs = params.toString();
+    router.replace(qs ? `/admin/reports?${qs}` : "/admin/reports", { scroll: false });
+  }, [router, statusFilter, typeFilter]);
 
   // Handle status change
   const handleStatusChange = useCallback((reportId, newStatus) => {
@@ -436,6 +463,7 @@ export default function UnifiedReportsPage() {
                   <TableHead className="w-[200px]">Reporter</TableHead>
                   <TableHead className="w-[250px]">Target</TableHead>
                   <TableHead className="w-[150px]">Reason</TableHead>
+                  <TableHead className="w-[90px]">Reports</TableHead>
                   <TableHead className="w-[100px]">Age</TableHead>
                   <TableHead className="w-[100px]">Status</TableHead>
                   <TableHead className="w-[150px]">Assignee</TableHead>
@@ -445,13 +473,13 @@ export default function UnifiedReportsPage() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="py-8 text-center">
+                    <TableCell colSpan={8} className="py-8 text-center">
                       <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                     </TableCell>
                   </TableRow>
                 ) : reports.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                       <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No reports found</p>
                     </TableCell>
@@ -520,6 +548,11 @@ export default function UnifiedReportsPage() {
                           <Badge variant="outline" className="text-xs">
                             {REASON_CATEGORIES[report.reason]}
                           </Badge>
+                        </TableCell>
+
+                        {/* Report Count */}
+                        <TableCell className="text-xs text-muted-foreground">
+                          ×{report.reportCount}
                         </TableCell>
 
                         {/* Age */}
@@ -660,5 +693,13 @@ export default function UnifiedReportsPage() {
         </CardContent>
       </Card>
     </PageShell>
+  );
+}
+
+export default function UnifiedReportsPage() {
+  return (
+    <Suspense fallback={null}>
+      <UnifiedReportsContent />
+    </Suspense>
   );
 }
