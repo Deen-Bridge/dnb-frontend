@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
+import PushNotificationCard from "@/components/pwa/PushNotificationCard";
 import {
   User,
   Mail,
@@ -667,6 +668,7 @@ const SettingsPage = () => {
 
           {/* Notifications Tab */}
           <TabsContent value="notifications" className="space-y-6">
+            <PushNotificationCard />
             <Panel>
               <CardHead
                 icon={Bell}
