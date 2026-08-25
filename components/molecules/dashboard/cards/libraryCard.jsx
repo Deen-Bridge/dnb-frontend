@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import useBookBookmark from "@/hooks/useBookBookmark";
 import BookmarkButton from "@/components/atoms/BookmarkButton";
+import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
 
 const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
   const { isBookmarked, loading, toggle } = useBookBookmark(
@@ -59,6 +60,9 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
             <div className="flex flex-col pt-2">
               <span className="font-medium text-foreground">
                 {book.author?.name || "Unknown Author"}
+                {book.author?.isVerified && (
+                  <VerifiedBadge user={book.author} showLabel={false} />
+                )}
               </span>
               <span className="text-sm">
                 {book.author?.role || "Unknown Author"}

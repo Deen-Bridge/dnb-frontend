@@ -29,6 +29,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import PaymentModal from "@/components/stellar/PaymentModal";
+import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import { cn } from "@/lib/utils";
 import {
@@ -254,6 +255,9 @@ export default function CourseDetailClient({ course }) {
                 <div className="leading-tight">
                   <p className={cn(poppins_500, "text-sm text-ink group-hover:text-secondary")}>
                     {course.createdBy?.name || "Unknown creator"}
+                    {course.createdBy?.isVerified && (
+                      <VerifiedBadge user={course.createdBy} showLabel={false} />
+                    )}
                   </p>
                   <p className={cn(poppins_400, "text-xs capitalize text-ink-muted")}>
                     {course.createdBy?.role || "Educator"}
