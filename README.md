@@ -20,6 +20,7 @@
 | Landing Page | Login / Sign Up |
 |:---:|:---:|
 | ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Admin Area](docs/screenshots/admin.png) |
 
 
 ---
@@ -47,6 +48,8 @@ This repository is the web client. The platform is composed of three services:
 - ⭐ **Stellar Payments** — buy courses and books with USDC; creators are paid directly
 - 👛 **Multi-Wallet Support** — Freighter, xBull, and Albedo via Stellar Wallets Kit
 - 🔒 **Role-Based Access** — student, mentor, and admin experiences
+- 🛡️ **Admin Area** — role-tiered admin access (staff / super-admin) with isolated gating logic ([architecture guide](docs/admin-architecture.md))
+- 👥 **Team Management** — super-admin-only admin roster with invite links and demote/revoke actions guarded by step-up confirmation
 
 ## 🛠️ Tech Stack
 
@@ -88,6 +91,8 @@ The app runs at `http://localhost:3000`.
 | `NEXT_PUBLIC_JITSI_DOMAIN` | No (default `meet.jit.si`) | Jitsi Meet domain for live video spaces |
 | `NEXT_PUBLIC_JITSI_REQUIRE_JWT` | No (default `false`) | Whether the Jitsi deployment requires a signed JWT token |
 | `NEXT_PUBLIC_FIREBASE_*` | No | Firebase Web SDK config values (apiKey, authDomain, projectId, etc.) — defaults to the project's current values |
+| `NEXT_PUBLIC_ADMIN_INVITE_BASE_URL` | No (default current origin) | Base URL used when building admin invite links generated on the team management page |
+| `NEXT_PUBLIC_ADMIN_INVITE_TTL_HOURS` | No (default `72`) | Validity window (in hours) surfaced for admin invite tokens — enforced by the backend |
 
 See `.env.example` for the full variable list with example values.
 

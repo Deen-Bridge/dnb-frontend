@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import {
   DollarSign,
   ShoppingCart,
@@ -12,12 +13,6 @@ import { Button } from "@/components/ui/button";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import WalletConnectButton from "@/components/stellar/WalletConnectButton";
 import useEarnings from "@/hooks/useEarnings";
 import Link from "next/link";
@@ -31,10 +26,15 @@ import {
 const statusStyles = {
   confirmed: "bg-secondary/10 text-secondary border-secondary/20",
   pending: "bg-amber-100 text-amber-700 border-amber-200",
-  submitted: "bg-sky-100 text-sky-700 border-sky-200",
+  submitted: "bg-sky-100 text-sky-200 border-sky-200",
   failed: "bg-red-100 text-red-600 border-red-200",
   expired: "bg-ink/5 text-ink-muted border-accent/10",
 };
+
+const RevenueChart = dynamic(() => import("./RevenueChart"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-72 w-full rounded-xl" />,
+});
 
 /* ── building blocks (design-system consistent) ── */
 
@@ -151,7 +151,6 @@ export default function EarningsPage() {
 
   const [chartRange, setChartRange] = useState("30d");
   const chartData = revenueChartData(chartRange);
-
   if (!hasWallet && !isLoading) {
     return (
       <PageShell>
@@ -198,7 +197,13 @@ export default function EarningsPage() {
   }
 
   const chartConfig = {
-    revenue: { label: "Revenue", color: "#009900" },
+    revenue: {
+      label: "Revenue",
+      theme: {
+        light: "var(--color-secondary)",
+        dark: "var(--color-secondary)",
+      },
+    },
   };
 
   return (
@@ -307,7 +312,7 @@ export default function EarningsPage() {
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
-                    stroke="#265902"
+                    className="stroke-accent"
                     strokeOpacity={0.12}
                   />
                   <XAxis

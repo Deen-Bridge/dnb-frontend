@@ -30,8 +30,54 @@ jobs:
       - name: Run accessibility gate
         run: npm run a11y
 
+      - name: Run component tests
+        run: npm test
+
       - name: Build application
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          # Optional — Sentry source-map upload auto-skips when the token is
+          # absent, so CI stays green without these secrets configured.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://api.example.com
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+
+      - name: Start production server
+        run: |
+          npx next start &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 > /dev/null; then
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json

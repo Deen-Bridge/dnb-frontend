@@ -26,8 +26,6 @@ import {
   poppins_500,
   poppins_600,
 } from "@/lib/config/font.config";
-import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
-import workerSrc from "pdfjs-dist/build/pdf.worker.min.js?url";
 import {
   clampPage,
   nextPageForKey,
@@ -35,8 +33,6 @@ import {
   readBookProgress,
   saveBookProgress,
 } from "./bookProgress";
-
-GlobalWorkerOptions.workerSrc = workerSrc;
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const MIN_SCALE = 0.5;
@@ -65,6 +61,10 @@ const BookReaderClient = ({ book }) => {
   const docRef = useRef(null);
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
+  // pdfjs-dist is a heavy browser-only dependency, so it's fetched lazily
+  // the first time a book is actually opened (kept out of the library
+  // list-page bundles entirely). The worker URL ships via the ?url import.
+  const pdfjsRef = useRef(null);
 
   const [loadingDocument, setLoadingDocument] = useState(false);
   const [renderingPage, setRenderingPage] = useState(false);
@@ -134,7 +134,20 @@ const BookReaderClient = ({ book }) => {
         }
 
         const buffer = await response.arrayBuffer();
-        const loadingTask = getDocument({ data: new Uint8Array(buffer) });
+
+        let pdfjs = pdfjsRef.current;
+        if (!pdfjs) {
+          const [lib, workerModule] = await Promise.all([
+            import("pdfjs-dist"),
+            import("pdfjs-dist/build/pdf.worker.min.js?url"),
+          ]);
+          if (cancelled) return;
+          lib.GlobalWorkerOptions.workerSrc = workerModule.default;
+          pdfjsRef.current = lib;
+          pdfjs = lib;
+        }
+
+        const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
         const pdf = await loadingTask.promise;
 
         if (cancelled) {
@@ -597,7 +610,7 @@ const BookReaderClient = ({ book }) => {
                   ref={canvasRef}
                   className="transition-transform duration-300"
                   style={{
-                    backgroundColor: "#fafafa",
+                    backgroundColor: "var(--color-surface-raised)",
                     borderRadius: "0.75rem",
                     boxShadow:
                       "0 10px 40px -12px rgba(0,0,0,0.28), 0 2px 8px -2px rgba(0,0,0,0.12)",

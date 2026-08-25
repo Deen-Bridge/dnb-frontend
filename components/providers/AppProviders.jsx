@@ -4,6 +4,7 @@ import ThemeProvider from "@/components/providers/ThemeProvider";
 import AppearanceProvider from "@/components/providers/AppearanceProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
 import CacheProvider from "@/components/providers/CacheProvider";
+import FeatureFlagProvider from "@/components/providers/FeatureFlagProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
 
 export default function AppProviders({ children }) {
@@ -12,7 +13,9 @@ export default function AppProviders({ children }) {
       <AppearanceProvider>
         <CacheProvider>
           <AuthProvider>
-            <StellarProvider>{children}</StellarProvider>
+            <FeatureFlagProvider>
+              <StellarProvider>{children}</StellarProvider>
+            </FeatureFlagProvider>
           </AuthProvider>
         </CacheProvider>
       </AppearanceProvider>
