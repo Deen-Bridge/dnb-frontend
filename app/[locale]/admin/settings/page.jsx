@@ -36,6 +36,8 @@ import {
   FileText,
   AlertTriangle,
   Zap,
+  UserCog,
+  Eye,
 } from "lucide-react";
 
 // Settings sections configuration
@@ -126,6 +128,21 @@ const settingsSections = [
       { label: "OAuth Providers", description: "Social login integrations" },
     ],
   },
+  {
+    id: "preferences",
+    title: "Admin Preferences",
+    description: "Your personal admin settings and defaults",
+    icon: UserCog,
+    href: "/admin/settings/preferences",
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    settings: [
+      { label: "Default Landing Page", description: "Choose where to go after login" },
+      { label: "Timezone Override", description: "Set your preferred timezone" },
+      { label: "Media Blur Default", description: "Blur sensitive content by default" },
+      { label: "Email Notifications", description: "Manage admin notification opt-ins" },
+    ],
+  },
 ];
 
 // Flatten all settings for search
@@ -171,6 +188,10 @@ const getSettingIcon = (label) => {
     "Analytics": FileText,
     "Webhooks": Webhook,
     "OAuth Providers": Lock,
+    "Default Landing Page": Globe,
+    "Timezone Override": Clock,
+    "Media Blur Default": Eye,
+    "Email Notifications": Bell,
   };
   return iconMap[label] || Settings;
 };
