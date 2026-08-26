@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Button from "@/components/atoms/form/Button";
-import { Star } from "lucide-react"; // optional: use a custom star icon or emoji
+import { Star, Ban } from "lucide-react"; // optional: use a custom star icon or emoji
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import useBookBookmark from "@/hooks/useBookBookmark";
@@ -41,6 +42,14 @@ const LibraryBookCard = ({ book, onBookmarkChange, initialIsBookmarked }) => {
             </span>
           </div>
         </div>
+        {book.status === "taken-down" && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-red-600 text-white text-xs gap-1">
+              <Ban className="h-3 w-3" />
+              Taken Down
+            </Badge>
+          </div>
+        )}
       </div>
       {/* Author, Reads, Rating */}
       <div className="px-4 py-4 flex flex-col gap-3 text-sm text-muted-foreground">
