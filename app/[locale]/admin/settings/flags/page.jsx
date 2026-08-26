@@ -394,10 +394,11 @@ export default function FeatureFlagsPage() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="relative max-w-md" role="search" aria-label="Search feature flags">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
         <Input
           placeholder="Search flags..."
+          aria-label="Search feature flags"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -414,7 +415,7 @@ export default function FeatureFlagsPage() {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border">
-            <Table>
+            <Table aria-label="Feature flags list">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[200px]">Flag Key</TableHead>
@@ -466,10 +467,11 @@ export default function FeatureFlagsPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {loadingFlags[flag.id] ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <Loader2 className="h-4 w-4 animate-spin" aria-label="Loading" />
                           ) : (
                             <Switch
                               checked={flag.enabled}
+                              aria-label={`Toggle feature flag ${flag.key}`}
                               onCheckedChange={() =>
                                 handleToggle(flag.id, flag.enabled)
                               }
@@ -508,6 +510,7 @@ export default function FeatureFlagsPage() {
                             max={100}
                             step={5}
                             disabled={!flag.enabled}
+                            aria-label={`Rollout percentage for ${flag.key}`}
                             className="w-full"
                           />
                         </div>

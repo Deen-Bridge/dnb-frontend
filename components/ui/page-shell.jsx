@@ -13,6 +13,9 @@ function PageShell({
       className={cn("p-4 sm:p-6 space-y-6", className)}
       {...props}
     >
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {children}
     </Comp>
   );

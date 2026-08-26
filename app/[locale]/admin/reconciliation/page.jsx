@@ -208,9 +208,9 @@ export default function PayoutReconciliationPage() {
       />
 
       {/* Info Banner */}
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-blue-200 bg-blue-50" role="note">
         <CardContent className="flex items-center gap-3 py-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100" aria-hidden="true">
             <Info className="h-5 w-5 text-blue-600" />
           </div>
           <div className="flex-1">
@@ -272,6 +272,23 @@ export default function PayoutReconciliationPage() {
                   <Search className="mr-2 h-4 w-4" />
                 )}
                 Run Reconciliation
+            <Button
+              onClick={handleSearch}
+              disabled={!dateRange.from || !dateRange.to || loading}
+              aria-label="Run reconciliation search"
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="mr-2 h-4 w-4" />
+              )}
+              Run Reconciliation
+            </Button>
+
+            {transactions.length > 0 && (
+              <Button variant="outline" onClick={handleExport}>
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
               </Button>
 
               {transactions.length > 0 && (
@@ -289,7 +306,7 @@ export default function PayoutReconciliationPage() {
       {hasSearched && (
         <>
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-live="polite">
             <Card>
               <CardContent className="p-4">
                 <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
@@ -332,7 +349,7 @@ export default function PayoutReconciliationPage() {
 
           {/* Discrepancy Alert */}
           {discrepancyCount > 0 && (
-            <Card className="border-red-200 bg-red-50">
+            <Card className="border-red-200 bg-red-50" role="alert" aria-live="polite">
               <CardContent className="flex items-center gap-3 py-4">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
                 <div>
@@ -415,6 +432,102 @@ export default function PayoutReconciliationPage() {
                                 <div className="flex gap-2">
                                   <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
                                     <a href={`/admin/transactions/${tx.id}`}>Platform<ArrowUpRight className="ml-1 h-3 w-3" /></a>
+                <div className="rounded-lg border overflow-x-auto">
+                  <Table aria-label="Reconciliation transaction records">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Platform ID</TableHead>
+                        <TableHead>Timestamp</TableHead>
+                        <TableHead>Creator</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead className="text-right">Platform Amount</TableHead>
+                        <TableHead className="text-right">On-Chain Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Links</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {transactions.map((tx) => {
+                        const statusConfig = STATUS_CONFIG[tx.status];
+                        const StatusIcon = statusConfig.icon;
+                        const isDiscrepancy = tx.status !== "matched";
+
+                        return (
+                          <TableRow
+                            key={tx.id}
+                            className={cn(
+                              isDiscrepancy && statusConfig.bgColor,
+                              isDiscrepancy && "hover:opacity-90"
+                            )}
+                          >
+                            <TableCell className="font-mono text-sm">
+                              {tx.platformId}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {format(new Date(tx.timestamp), "MMM d, HH:mm")}
+                            </TableCell>
+                            <TableCell className="text-sm">{tx.creatorEmail}</TableCell>
+                            <TableCell>
+                              <div className="text-sm">
+                                <Badge variant="outline" className="mr-2 text-xs">
+                                  {tx.itemType}
+                                </Badge>
+                                {tx.itemTitle}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right font-mono">
+                              ${tx.platformAmount.toFixed(2)}
+                            </TableCell>
+                            <TableCell className={cn(
+                              "text-right font-mono",
+                              tx.status === "amount-mismatch" && "text-amber-700 font-bold"
+                            )}>
+                              {tx.onChainAmount !== null
+                                ? `$${tx.onChainAmount.toFixed(2)}`
+                                : "—"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "text-xs gap-1",
+                                  statusConfig.color,
+                                  statusConfig.borderColor
+                                )}
+                              >
+                                <StatusIcon className="h-3 w-3" />
+                                {statusConfig.label}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 text-xs"
+                                  asChild
+                                >
+                                  <a href={`/admin/transactions/${tx.id}`} aria-label={`View platform transaction ${tx.platformId}`}>
+                                    Platform
+                                    <ArrowUpRight className="ml-1 h-3 w-3" aria-hidden="true" />
+                                  </a>
+                                </Button>
+                                {tx.txHash && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 text-xs"
+                                    asChild
+                                  >
+                                    <a
+                                      href={getStellarExplorerUrl(tx.txHash)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      aria-label={`View on Stellar explorer for transaction ${tx.platformId}`}
+                                    >
+                                      Stellar
+                                      <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
+                                    </a>
                                   </Button>
                                   {tx.txHash && (
                                     <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
