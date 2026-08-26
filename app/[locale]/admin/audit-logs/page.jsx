@@ -46,8 +46,11 @@ import {
   Calendar as CalendarIcon,
   RefreshCw,
   ExternalLink,
-  Loader2,
 } from "lucide-react";
+import { TableSkeleton } from "@/components/admin/table-skeleton";
+import { TableEmptyState } from "@/components/admin/table-empty-state";
+import { TableErrorState } from "@/components/admin/table-error-state";
+import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { format } from "date-fns";
@@ -133,6 +136,8 @@ const getTargetLink = (target) => {
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isRefetching, setIsRefetching] = useState(false);
   const [actorFilter, setActorFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateRange, setDateRange] = useState({ from: null, to: null });
@@ -141,43 +146,59 @@ export default function AuditLogsPage() {
   const pageSize = 15;
 
   // Simulate server-side pagination
-  const fetchLogs = useCallback(async (page, filters) => {
-    setLoading(true);
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Filter logs
-    let filteredLogs = [...mockLogs];
-
-    if (filters.actor !== "all") {
-      filteredLogs = filteredLogs.filter((log) => log.actor === filters.actor);
+  const fetchLogs = useCallback(async (page, filters, isRefetch = false) => {
+    if (isRefetch) {
+      setIsRefetching(true);
+    } else {
+      setLoading(true);
     }
+    setError(null);
 
-    if (filters.category !== "all") {
-      filteredLogs = filteredLogs.filter((log) => log.category === filters.category);
+    try {
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Simulate occasional error for demo
+      if (Math.random() < 0.05) {
+        throw new Error("Failed to fetch audit logs");
+      }
+
+      // Filter logs
+      let filteredLogs = [...mockLogs];
+
+      if (filters.actor !== "all") {
+        filteredLogs = filteredLogs.filter((log) => log.actor === filters.actor);
+      }
+
+      if (filters.category !== "all") {
+        filteredLogs = filteredLogs.filter((log) => log.category === filters.category);
+      }
+
+      if (filters.dateRange?.from) {
+        filteredLogs = filteredLogs.filter(
+          (log) => new Date(log.timestamp) >= filters.dateRange.from
+        );
+      }
+
+      if (filters.dateRange?.to) {
+        filteredLogs = filteredLogs.filter(
+          (log) => new Date(log.timestamp) <= filters.dateRange.to
+        );
+      }
+
+      // Paginate
+      const total = Math.ceil(filteredLogs.length / pageSize);
+      const start = (page - 1) * pageSize;
+      const paginatedLogs = filteredLogs.slice(start, start + pageSize);
+
+      setLogs(paginatedLogs);
+      setTotalPages(total);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setIsRefetching(false);
     }
-
-    if (filters.dateRange?.from) {
-      filteredLogs = filteredLogs.filter(
-        (log) => new Date(log.timestamp) >= filters.dateRange.from
-      );
-    }
-
-    if (filters.dateRange?.to) {
-      filteredLogs = filteredLogs.filter(
-        (log) => new Date(log.timestamp) <= filters.dateRange.to
-      );
-    }
-
-    // Paginate
-    const total = Math.ceil(filteredLogs.length / pageSize);
-    const start = (page - 1) * pageSize;
-    const paginatedLogs = filteredLogs.slice(start, start + pageSize);
-
-    setLogs(paginatedLogs);
-    setTotalPages(total);
-    setLoading(false);
   }, []);
 
   // Initial fetch and refetch on filter change
@@ -199,7 +220,7 @@ export default function AuditLogsPage() {
       actor: actorFilter,
       category: categoryFilter,
       dateRange,
-    });
+    }, true);
   };
 
   return (
@@ -305,6 +326,8 @@ export default function AuditLogsPage() {
         </CardContent>
       </Card>
 
+      <RefetchBanner isRefetching={isRefetching} />
+
       {/* Audit Log Table */}
       <Card>
         <CardHeader>
@@ -314,32 +337,31 @@ export default function AuditLogsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[180px]">Timestamp</TableHead>
-                  <TableHead className="w-[180px]">Admin Actor</TableHead>
-                  <TableHead className="w-[150px]">Action</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead>Summary</TableHead>
-                  <TableHead className="w-[120px]">IP Address</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
+          {error ? (
+            <TableErrorState message={error} onRetry={handleRefresh} />
+          ) : (
+            <div className="rounded-lg border">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                    </TableCell>
+                    <TableHead className="w-[180px]">Timestamp</TableHead>
+                    <TableHead className="w-[180px]">Admin Actor</TableHead>
+                    <TableHead className="w-[150px]">Action</TableHead>
+                    <TableHead>Target</TableHead>
+                    <TableHead>Summary</TableHead>
+                    <TableHead className="w-[120px]">IP Address</TableHead>
                   </TableRow>
-                ) : logs.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                      No audit logs found matching your filters
-                    </TableCell>
-                  </TableRow>
-                ) : (
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableSkeleton rows={6} columns={6} />
+                  ) : logs.length === 0 ? (
+                    <TableEmptyState
+                      icon={FileText}
+                      title="No audit logs found"
+                      description="No audit logs match your current filters. Try adjusting the filters."
+                    />
+                  ) : (
                   logs.map((log) => {
                     const category = ACTION_CATEGORIES[log.category];
                     const CategoryIcon = category?.icon || FileText;
@@ -384,6 +406,7 @@ export default function AuditLogsPage() {
               </TableBody>
             </Table>
           </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (

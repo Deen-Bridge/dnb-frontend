@@ -36,10 +36,13 @@ import {
   ExternalLink,
   RefreshCw,
   Download,
-  Loader2,
   Info,
   ArrowUpRight,
 } from "lucide-react";
+import { TableSkeleton } from "@/components/admin/table-skeleton";
+import { TableEmptyState } from "@/components/admin/table-empty-state";
+import { TableErrorState } from "@/components/admin/table-error-state";
+import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { format, subDays } from "date-fns";
@@ -134,21 +137,39 @@ export default function PayoutReconciliationPage() {
   });
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isRefetching, setIsRefetching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   // Fetch reconciliation data
-  const handleSearch = useCallback(async () => {
+  const handleSearch = useCallback(async (isRefetch = false) => {
     if (!dateRange.from || !dateRange.to) return;
 
-    setLoading(true);
+    if (isRefetch) {
+      setIsRefetching(true);
+    } else {
+      setLoading(true);
+    }
     setHasSearched(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const data = generateMockData(dateRange.from, dateRange.to);
-    setTransactions(data);
-    setLoading(false);
+      // Simulate occasional error for demo
+      if (Math.random() < 0.05) {
+        throw new Error("Failed to fetch reconciliation data");
+      }
+
+      const data = generateMockData(dateRange.from, dateRange.to);
+      setTransactions(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setIsRefetching(false);
+    }
   }, [dateRange]);
 
   // Calculate stats
@@ -267,11 +288,11 @@ export default function PayoutReconciliationPage() {
             </div>
 
             <Button
-              onClick={handleSearch}
+              onClick={() => handleSearch(false)}
               disabled={!dateRange.from || !dateRange.to || loading}
             >
               {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Search className="mr-2 h-4 w-4" />
               )}
@@ -291,6 +312,8 @@ export default function PayoutReconciliationPage() {
       {/* Results */}
       {hasSearched && (
         <>
+          <RefetchBanner isRefetching={isRefetching} />
+
           {/* Stats Overview */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -359,14 +382,34 @@ export default function PayoutReconciliationPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              {error ? (
+                <TableErrorState message={error} onRetry={() => handleSearch(true)} />
+              ) : loading ? (
+                <div className="rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Platform ID</TableHead>
+                        <TableHead>Timestamp</TableHead>
+                        <TableHead>Creator</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead className="text-right">Platform Amount</TableHead>
+                        <TableHead className="text-right">On-Chain Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Links</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableSkeleton rows={5} columns={8} />
+                    </TableBody>
+                  </Table>
                 </div>
               ) : transactions.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  No transactions found for the selected date range
-                </div>
+                <TableEmptyState
+                  icon={Scale}
+                  title="No transactions found"
+                  description="No transactions found for the selected date range. Try a different date range."
+                />
               ) : (
                 <div className="rounded-lg border overflow-x-auto">
                   <Table>
