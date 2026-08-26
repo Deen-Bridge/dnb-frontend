@@ -49,6 +49,10 @@ import {
   Info,
   Eye,
 } from "lucide-react";
+import { TableSkeleton } from "@/components/admin/table-skeleton";
+import { TableEmptyState } from "@/components/admin/table-empty-state";
+import { TableErrorState } from "@/components/admin/table-error-state";
+import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { format } from "date-fns";
@@ -184,6 +188,7 @@ export default function DataPrivacyPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [processing, setProcessing] = useState({});
+  const [isRefetching, setIsRefetching] = useState(false);
 
   // Trigger export job
   const handleTriggerExport = useCallback(async (requestId) => {
@@ -354,11 +359,11 @@ export default function DataPrivacyPage() {
                   </TableHeader>
                   <TableBody>
                     {exportRequests.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                          No export requests
-                        </TableCell>
-                      </TableRow>
+                      <TableEmptyState
+                        icon={Download}
+                        title="No export requests"
+                        description="No data export requests have been submitted yet."
+                      />
                     ) : (
                       exportRequests.map((request) => {
                         const status = STATUS_CONFIG[request.status];
@@ -454,11 +459,11 @@ export default function DataPrivacyPage() {
                   </TableHeader>
                   <TableBody>
                     {deletionRequests.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                          No deletion requests
-                        </TableCell>
-                      </TableRow>
+                      <TableEmptyState
+                        icon={Trash2}
+                        title="No deletion requests"
+                        description="No account deletion requests have been submitted yet."
+                      />
                     ) : (
                       deletionRequests.map((request) => {
                         const status = STATUS_CONFIG[request.status];

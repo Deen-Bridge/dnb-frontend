@@ -67,10 +67,13 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Loader2,
   AlertTriangle,
   MessageSquare,
 } from "lucide-react";
+import { TableSkeleton } from "@/components/admin/table-skeleton";
+import { TableEmptyState } from "@/components/admin/table-empty-state";
+import { TableErrorState } from "@/components/admin/table-error-state";
+import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
@@ -228,6 +231,8 @@ const getTargetAdminLink = (target) => {
 export default function UnifiedReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isRefetching, setIsRefetching] = useState(false);
   const [statusFilter, setStatusFilter] = useState("open");
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -284,28 +289,45 @@ export default function UnifiedReportsPage() {
   }, [reports, selectedIndex]);
 
   // Fetch reports with filters
-  const fetchReports = useCallback(async (page, filters) => {
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    let filtered = [...mockReports];
-
-    if (filters.status !== "all") {
-      filtered = filtered.filter((r) => r.status === filters.status);
+  const fetchReports = useCallback(async (page, filters, isRefetch = false) => {
+    if (isRefetch) {
+      setIsRefetching(true);
+    } else {
+      setLoading(true);
     }
+    setError(null);
 
-    if (filters.type !== "all") {
-      filtered = filtered.filter((r) => r.target.type === filters.type);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // Simulate occasional error for demo
+      if (Math.random() < 0.05) {
+        throw new Error("Failed to fetch reports");
+      }
+
+      let filtered = [...mockReports];
+
+      if (filters.status !== "all") {
+        filtered = filtered.filter((r) => r.status === filters.status);
+      }
+
+      if (filters.type !== "all") {
+        filtered = filtered.filter((r) => r.target.type === filters.type);
+      }
+
+      const total = Math.ceil(filtered.length / pageSize);
+      const start = (page - 1) * pageSize;
+      const paginated = filtered.slice(start, start + pageSize);
+
+      setReports(paginated);
+      setTotalPages(total || 1);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setIsRefetching(false);
+      setSelectedIndex(0);
     }
-
-    const total = Math.ceil(filtered.length / pageSize);
-    const start = (page - 1) * pageSize;
-    const paginated = filtered.slice(start, start + pageSize);
-
-    setReports(paginated);
-    setTotalPages(total || 1);
-    setLoading(false);
-    setSelectedIndex(0);
   }, []);
 
   // Initial fetch and on filter change
@@ -327,7 +349,7 @@ export default function UnifiedReportsPage() {
 
   // Handle refresh
   const handleRefresh = () => {
-    fetchReports(currentPage, { status: statusFilter, type: typeFilter });
+    fetchReports(currentPage, { status: statusFilter, type: typeFilter }, true);
   };
 
   // Status counts for tabs
@@ -418,6 +440,8 @@ export default function UnifiedReportsPage() {
         </CardContent>
       </Card>
 
+      <RefetchBanner isRefetching={isRefetching} />
+
       {/* Reports Table */}
       <Card>
         <CardHeader>
@@ -429,34 +453,32 @@ export default function UnifiedReportsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border" ref={tableRef}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">Reporter</TableHead>
-                  <TableHead className="w-[250px]">Target</TableHead>
-                  <TableHead className="w-[150px]">Reason</TableHead>
-                  <TableHead className="w-[100px]">Age</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
-                  <TableHead className="w-[150px]">Assignee</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
+          {error ? (
+            <TableErrorState message={error} onRetry={handleRefresh} />
+          ) : (
+            <div className="rounded-lg border" ref={tableRef}>
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={7} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                    </TableCell>
+                    <TableHead className="w-[200px]">Reporter</TableHead>
+                    <TableHead className="w-[250px]">Target</TableHead>
+                    <TableHead className="w-[150px]">Reason</TableHead>
+                    <TableHead className="w-[100px]">Age</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[150px]">Assignee</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
-                ) : reports.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                      <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>No reports found</p>
-                    </TableCell>
-                  </TableRow>
-                ) : (
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableSkeleton rows={5} columns={7} />
+                  ) : reports.length === 0 ? (
+                    <TableEmptyState
+                      icon={Flag}
+                      title="No reports found"
+                      description="No reports match your current filters. Try adjusting the filters."
+                    />
+                  ) : (
                   reports.map((report, index) => {
                     const contentType = CONTENT_TYPES[report.target.type];
                     const ContentIcon = contentType?.icon || Flag;
@@ -607,6 +629,7 @@ export default function UnifiedReportsPage() {
               </TableBody>
             </Table>
           </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
