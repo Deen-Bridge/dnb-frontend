@@ -61,8 +61,10 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
+import StepUpConfirmModal from "@/components/admin/StepUpConfirmModal";
+import { toast } from "sonner";
 
 const DISPUTE_STATES = {
   open: {
@@ -200,6 +202,10 @@ export default function DisputesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Refund Step-Up Modal State (#311)
+  const [refundModalOpen, setRefundModalOpen] = useState(false);
+  const [refundTargetDispute, setRefundTargetDispute] = useState(null);
+
   const filteredDisputes = useMemo(() => {
     if (statusFilter === "all") return disputes;
     return disputes.filter((d) => d.state === statusFilter);
@@ -239,6 +245,21 @@ export default function DisputesPage() {
     );
   }, []);
 
+  const handleTriggerRefundStepUp = (dispute) => {
+    setRefundTargetDispute(dispute);
+    setRefundModalOpen(true);
+  };
+
+  const handleConfirmRefund = async () => {
+    if (!refundTargetDispute) return;
+    updateDisputeState(
+      refundTargetDispute.id,
+      "resolved-refund",
+      "Full refund issued after step-up verification."
+    );
+    toast.success(`Refund authorized for transaction ${refundTargetDispute.transactionId}`);
+  };
+
   const requestEvidence = useCallback((disputeId, target) => {
     setDisputes((prev) =>
       prev.map((d) =>
@@ -263,7 +284,7 @@ export default function DisputesPage() {
       <PageHeader
         icon={AlertTriangle}
         title="Disputes Queue"
-        subtitle="Manage buyer vs educator payment disputes"
+        subtitle="Manage buyer vs educator payment disputes with step-up verification"
         actions={
           <Button
             variant="outline"
@@ -291,28 +312,28 @@ export default function DisputesPage() {
                 <AlertTriangle className="h-4 w-4" />
                 Open
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts.open}
+                  {statusCounts.open || 0}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="awaiting-evidence" className="gap-2">
                 <Clock className="h-4 w-4" />
                 Awaiting Evidence
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts["awaiting-evidence"]}
+                  {statusCounts["awaiting-evidence"] || 0}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="resolved-refund" className="gap-2">
                 <CheckCircle className="h-4 w-4" />
                 Refunded
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts["resolved-refund"]}
+                  {statusCounts["resolved-refund"] || 0}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="resolved-rejected" className="gap-2">
                 <XCircle className="h-4 w-4" />
                 Rejected
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts["resolved-rejected"]}
+                  {statusCounts["resolved-rejected"] || 0}
                 </Badge>
               </TabsTrigger>
             </TabsList>
@@ -332,7 +353,7 @@ export default function DisputesPage() {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border">
-            <Table>
+            <Table aria-label="Disputes List Table">
               <TableHeader>
                 <TableRow>
                   <TableHead>Opened</TableHead>
@@ -340,7 +361,6 @@ export default function DisputesPage() {
                   <TableHead>Educator</TableHead>
                   <TableHead>Item</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Age</TableHead>
                   <TableHead>State</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
@@ -349,7 +369,7 @@ export default function DisputesPage() {
                 {paginatedDisputes.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={8}
+                      colSpan={7}
                       className="py-8 text-center text-muted-foreground"
                     >
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -400,21 +420,15 @@ export default function DisputesPage() {
                           ${dispute.amount.toFixed(2)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {formatAge(dispute.openedAt)}
-                          </div>
-                        </TableCell>
-                        <TableCell>
                           <Badge
                             variant="outline"
                             className={cn(
                               "text-xs",
-                              stateConfig.color,
-                              stateConfig.bgColor
+                              stateConfig?.color,
+                              stateConfig?.bgColor
                             )}
                           >
-                            {stateConfig.label}
+                            {stateConfig?.label}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -443,47 +457,12 @@ export default function DisputesPage() {
                               <DropdownMenuItem
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  requestEvidence(dispute.id, "buyer");
+                                  handleTriggerRefundStepUp(dispute);
                                 }}
+                                disabled={dispute.state.startsWith("resolved")}
                               >
-                                <Send className="h-4 w-4 mr-2" />
-                                Request Evidence from Buyer
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  requestEvidence(dispute.id, "educator");
-                                }}
-                              >
-                                <Send className="h-4 w-4 mr-2" />
-                                Request Evidence from Educator
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateDisputeState(
-                                    dispute.id,
-                                    "resolved-refund",
-                                    "Full refund issued after review."
-                                  );
-                                }}
-                              >
-                                <CheckCircle className="h-4 w-4 mr-2" />
+                                <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
                                 Resolve with Refund
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateDisputeState(
-                                    dispute.id,
-                                    "resolved-rejected",
-                                    "Dispute rejected after review."
-                                  );
-                                }}
-                              >
-                                <XCircle className="h-4 w-4 mr-2" />
-                                Reject Dispute
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -541,7 +520,7 @@ export default function DisputesPage() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5" />
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Dispute {selectedDispute.id}
                 </DialogTitle>
                 <DialogDescription>
@@ -550,190 +529,42 @@ export default function DisputesPage() {
                 </DialogDescription>
               </DialogHeader>
 
-              {/* Transaction Context */}
-              <Card className="border-blue-200 bg-blue-50">
-                <CardContent className="py-4">
-                  <p
-                    className={cn(
-                      poppins_500.className,
-                      "text-sm text-blue-800 mb-2"
-                    )}
-                  >
-                    Linked Transaction
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-blue-600">Transaction ID:</span>{" "}
-                      <span className="font-mono">{selectedDispute.transactionId}</span>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Amount:</span>{" "}
-                      <span className="font-mono">
-                        ${selectedDispute.amount.toFixed(2)}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-blue-600">Item:</span>{" "}
-                      <Badge variant="outline" className="text-xs mr-1">
-                        {selectedDispute.item.type}
-                      </Badge>
-                      {selectedDispute.item.name}
-                    </div>
-                    <div>
-                      <span className="text-blue-600">State:</span>{" "}
-                      <Badge
-                        className={cn(
-                          "text-xs",
-                          DISPUTE_STATES[selectedDispute.state]?.color,
-                          DISPUTE_STATES[selectedDispute.state]?.bgColor
-                        )}
-                      >
-                        {DISPUTE_STATES[selectedDispute.state]?.label}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Parties */}
               <div className="grid grid-cols-2 gap-4">
-                {/* Buyer Statement */}
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm flex items-center gap-2"
-                      )}
-                    >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
-                          {selectedDispute.buyer.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      Buyer
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      Buyer: {selectedDispute.buyer.name}
                     </CardTitle>
-                    <CardDescription className="text-xs">
-                      {selectedDispute.buyer.name} &middot;{" "}
-                      {selectedDispute.buyer.email}
-                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedDispute.buyerStatement}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{selectedDispute.buyerStatement}</p>
                   </CardContent>
                 </Card>
 
-                {/* Educator Statement */}
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm flex items-center gap-2"
-                      )}
-                    >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
-                          {selectedDispute.educator.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      Educator
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      Educator: {selectedDispute.educator.name}
                     </CardTitle>
-                    <CardDescription className="text-xs">
-                      {selectedDispute.educator.name} &middot;{" "}
-                      {selectedDispute.educator.email}
-                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedDispute.educatorStatement}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{selectedDispute.educatorStatement}</p>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Evidence Request */}
-              {selectedDispute.evidenceRequest && (
-                <Card className="border-amber-200 bg-amber-50">
-                  <CardContent className="py-4">
-                    <p
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm text-amber-800 mb-1"
-                      )}
-                    >
-                      <Send className="h-4 w-4 inline mr-1" />
-                      Evidence Requested from{" "}
-                      {selectedDispute.evidenceRequest.target === "buyer"
-                        ? "Buyer"
-                        : "Educator"}
-                    </p>
-                    <p className="text-xs text-amber-700">
-                      {selectedDispute.evidenceRequest.message} &middot;{" "}
-                      {formatDate(selectedDispute.evidenceRequest.requestedAt)}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Resolution */}
-              {selectedDispute.resolution && (
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="py-4">
-                    <p
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm text-green-800 mb-1"
-                      )}
-                    >
-                      <CheckCircle className="h-4 w-4 inline mr-1" />
-                      Resolution
-                    </p>
-                    <p className="text-xs text-green-700">
-                      {selectedDispute.resolution}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Actions */}
-              {selectedDispute.state === "open" ||
-              selectedDispute.state === "awaiting-evidence" ? (
-                <DialogFooter className="flex flex-wrap gap-2 sm:justify-start">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => requestEvidence(selectedDispute.id, "buyer")}
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    Request Evidence from Buyer
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      requestEvidence(selectedDispute.id, "educator")
-                    }
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    Request Evidence from Educator
-                  </Button>
+              {/* Resolution Actions */}
+              {selectedDispute.state === "open" || selectedDispute.state === "awaiting-evidence" ? (
+                <DialogFooter className="flex flex-wrap gap-2 sm:justify-start pt-2">
                   <Button
                     variant="default"
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
-                    onClick={() =>
-                      updateDisputeState(
-                        selectedDispute.id,
-                        "resolved-refund",
-                        "Full refund issued after review."
-                      )
-                    }
+                    onClick={() => handleTriggerRefundStepUp(selectedDispute)}
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    Resolve with Refund
+                    Resolve with Refund (Step-Up)
                   </Button>
                   <Button
                     variant="destructive"
@@ -755,6 +586,23 @@ export default function DisputesPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Refund Step-Up Confirmation Modal (#311) */}
+      {refundTargetDispute && (
+        <StepUpConfirmModal
+          open={refundModalOpen}
+          onOpenChange={setRefundModalOpen}
+          title="Confirm Refund Authorization"
+          description={`Issuing a refund for transaction ${refundTargetDispute.transactionId} will credit $${refundTargetDispute.amount.toFixed(2)} USDC back to the buyer and resolve this dispute.`}
+          targetName={refundTargetDispute.transactionId}
+          actionVerb="REFUND"
+          expectedPhrase={`REFUND ${refundTargetDispute.transactionId}`}
+          confirmVariant="destructive"
+          confirmText="Process Refund"
+          onConfirm={handleConfirmRefund}
+          rateLimitKey="admin_dispute_refund"
+        />
+      )}
     </PageShell>
   );
 }
