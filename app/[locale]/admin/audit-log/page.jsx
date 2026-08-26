@@ -263,8 +263,8 @@ export default function AuditLogPage() {
         subtitle="Track all administrative actions and system events"
         actions={
           <Button onClick={exportToCSV} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export CSV
+            <Download className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">Export CSV</span>
           </Button>
         }
       />
@@ -300,7 +300,7 @@ export default function AuditLogPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -360,7 +360,7 @@ export default function AuditLogPage() {
 
           {/* Quick Date Jump Shortcuts */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className={cn(poppins_500.className, "text-sm text-muted-foreground mr-2")}>
+            <span className={cn(poppins_500.className, "text-xs sm:text-sm text-muted-foreground mr-1 sm:mr-2")}>
               Quick jump:
             </span>
             {datePresets.map((preset) => (
@@ -389,88 +389,96 @@ export default function AuditLogPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[180px]">Timestamp</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Actor</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
-                  <TableHead className="hidden lg:table-cell">Details</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedLogs.length === 0 ? (
+          <div className="rounded-lg border overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="py-8 text-center text-muted-foreground"
-                    >
-                      No audit events found matching your filters
-                    </TableCell>
+                    <TableHead className="w-[180px]">Timestamp</TableHead>
+                    <TableHead>Action</TableHead>
+                    <TableHead>Actor</TableHead>
+                    <TableHead>Target</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="hidden lg:table-cell">Details</TableHead>
                   </TableRow>
-                ) : (
-                  paginatedLogs.map((log) => {
-                    const ActionIcon =
-                      actionIcons[log.action] || FileText;
-                    return (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-mono text-xs">
-                          {formatDate(log.timestamp)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <ActionIcon className="h-4 w-4 text-muted-foreground" />
-                            <span className={cn(poppins_500.className, "text-sm")}>
-                              {log.action}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">{log.actor}</TableCell>
-                        <TableCell className="text-sm">{log.target}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={cn("text-xs", getStatusColor(log.status))}
-                          >
-                            {log.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">
-                          {log.details}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {paginatedLogs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                        No audit events found matching your filters
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedLogs.map((log) => {
+                      const ActionIcon = actionIcons[log.action] || FileText;
+                      return (
+                        <TableRow key={log.id}>
+                          <TableCell className="font-mono text-xs">{formatDate(log.timestamp)}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <ActionIcon className="h-4 w-4 text-muted-foreground" />
+                              <span className={cn(poppins_500.className, "text-sm")}>{log.action}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm">{log.actor}</TableCell>
+                          <TableCell className="text-sm">{log.target}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={cn("text-xs", getStatusColor(log.status))}>{log.status}</Badge>
+                          </TableCell>
+                          <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">{log.details}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y">
+              {paginatedLogs.length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground">
+                  No audit events found matching your filters
+                </div>
+              ) : (
+                paginatedLogs.map((log) => {
+                  const ActionIcon = actionIcons[log.action] || FileText;
+                  return (
+                    <div key={log.id} className="p-3 space-y-1.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <ActionIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className={cn(poppins_500.className, "text-sm truncate")}>{log.action}</span>
+                        </div>
+                        <Badge variant="outline" className={cn("text-[10px] shrink-0", getStatusColor(log.status))}>{log.status}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-muted-foreground truncate">{log.actor}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">{formatDate(log.timestamp)}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{log.target}</p>
+                      <p className="text-xs text-muted-foreground/70 truncate">{log.details}</p>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
