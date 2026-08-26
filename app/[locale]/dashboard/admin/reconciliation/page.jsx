@@ -193,23 +193,93 @@ function ReconciliationRow({ row }) {
 function ReconciliationTable({ rows, isLoading }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Reference</TableHead>
-            <TableHead>Buyer</TableHead>
-            <TableHead>Creator</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Completed</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading
-            ? LoadingRows()
-            : rows.map((row) => <ReconciliationRow key={row.id} row={row} />)}
-        </TableBody>
-      </Table>
+      {/* Desktop Table */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Reference</TableHead>
+              <TableHead>Buyer</TableHead>
+              <TableHead>Creator</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Completed</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading
+              ? LoadingRows()
+              : rows.map((row) => <ReconciliationRow key={row.id} row={row} />)}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden divide-y divide-accent/10">
+        {isLoading
+          ? LoadingRows()
+          : rows.map((row) => {
+              const meta = STATUS_META[row.status] || STATUS_META.matched;
+              const StatusIcon = meta.icon;
+              const explorerUrl = explorerTxUrl(row.txHash);
+              const onChainAmount =
+                row.status === "amount-mismatch" && row.onChain
+                  ? amountLabel(row.onChain.amount, row.onChain.currency)
+                  : null;
+
+              return (
+                <div key={row.id} className={cn("p-3 space-y-2", meta.highlighted && "bg-muted/30")}>
+                  <div className="flex items-start justify-between gap-2">
+                    <Link
+                      href={`/dashboard/purchases/${row.id}`}
+                      className={cn(
+                        poppins_500.className,
+                        "inline-flex items-center gap-1 text-sm text-accent underline-offset-2 hover:underline"
+                      )}
+                    >
+                      {row.reference}
+                      <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                    </Link>
+                    <Badge variant="outline" className={cn("rounded-full text-[10px] shrink-0", meta.badge)}>
+                      <StatusIcon className="h-2.5 w-2.5" aria-hidden="true" />
+                      {meta.label}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-ink-muted">
+                    <span>{row.buyer}</span>
+                    <span>→ {row.creator}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className={cn(poppins_500.className, "text-sm text-ink")}>
+                      <span className="tabular-nums">{amountLabel(row.amount, row.currency)}</span>
+                      {onChainAmount && (
+                        <span className={cn(poppins_400.className, "block text-[10px] text-amber-600 tabular-nums")}>
+                          on-chain: {onChainAmount}
+                        </span>
+                      )}
+                    </span>
+                    <span className={cn(poppins_400.className, "text-[10px] text-ink-muted")}>
+                      {dateLabel(row.completedAt)}
+                    </span>
+                  </div>
+                  {explorerUrl && (
+                    <a
+                      href={explorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        poppins_400.className,
+                        "inline-flex items-center gap-1 text-xs text-accent underline-offset-2 hover:underline"
+                      )}
+                    >
+                      View on-chain
+                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
+              );
+            })}
+      </div>
     </div>
   );
 }
@@ -245,9 +315,9 @@ function ReconciliationContent() {
       {/* Read-only date range picker */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-wrap items-end gap-3 rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm"
+        className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-end gap-3 rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm"
       >
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 flex-1">
           <Label htmlFor="reconcile-from" className={poppins_500.className}>
             From
           </Label>
@@ -257,10 +327,10 @@ function ReconciliationContent() {
             value={from}
             max={to || undefined}
             onChange={(event) => setRange({ from: event.target.value })}
-            className="w-[11rem]"
+            className="w-full sm:w-[11rem]"
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 flex-1">
           <Label htmlFor="reconcile-to" className={poppins_500.className}>
             To
           </Label>
@@ -270,13 +340,13 @@ function ReconciliationContent() {
             value={to}
             min={from || undefined}
             onChange={(event) => setRange({ to: event.target.value })}
-            className="w-[11rem]"
+            className="w-full sm:w-[11rem]"
           />
         </div>
         <Button
           type="submit"
           disabled={isLoading || !from || !to}
-          className="rounded-full bg-accent text-white hover:bg-accent/90"
+          className="rounded-full bg-accent text-white hover:bg-accent/90 w-full sm:w-auto"
         >
           <Scale className="mr-1 h-4 w-4" aria-hidden="true" />
           {isLoading ? "Reconciling…" : "Reconcile"}
