@@ -538,16 +538,29 @@ export default function DisputesPage() {
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           {selectedDispute && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5" />
-                  Dispute {selectedDispute.id}
-                </DialogTitle>
-                <DialogDescription>
-                  Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
-                  {formatAge(selectedDispute.openedAt)}
-                </DialogDescription>
+            <div className="print-root space-y-4">
+              <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+                <div>
+                  <DialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    Dispute {selectedDispute.id}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                    Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
+                    {formatAge(selectedDispute.openedAt)}
+                  </DialogDescription>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.print()}
+                  className="no-print gap-1.5 text-xs font-semibold mr-6"
+                  aria-label="Print record"
+                >
+                  <Printer className="h-4 w-4" />
+                  Print Record
+                </Button>
               </DialogHeader>
 
               {/* Transaction Context */}
@@ -615,7 +628,9 @@ export default function DisputesPage() {
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {selectedDispute.buyer.name} &middot;{" "}
-                      {selectedDispute.buyer.email}
+                      <a href={`mailto:${selectedDispute.buyer.email}`} className="text-primary hover:underline print-url">
+                        {selectedDispute.buyer.email}
+                      </a>
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -643,7 +658,9 @@ export default function DisputesPage() {
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {selectedDispute.educator.name} &middot;{" "}
-                      {selectedDispute.educator.email}
+                      <a href={`mailto:${selectedDispute.educator.email}`} className="text-primary hover:underline print-url">
+                        {selectedDispute.educator.email}
+                      </a>
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -701,7 +718,7 @@ export default function DisputesPage() {
               {/* Actions */}
               {selectedDispute.state === "open" ||
               selectedDispute.state === "awaiting-evidence" ? (
-                <DialogFooter className="flex flex-wrap gap-2 sm:justify-start">
+                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start">
                   <Button
                     variant="outline"
                     size="sm"
@@ -751,10 +768,11 @@ export default function DisputesPage() {
                   </Button>
                 </DialogFooter>
               ) : null}
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
     </PageShell>
   );
 }
+
