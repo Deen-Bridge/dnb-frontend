@@ -14,7 +14,6 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Clock, KeyRound, ShieldCheck, TimerReset } from "lucide-react";
-import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -29,6 +28,7 @@ import {
   validateSessionSecurityConfig,
   DEFAULT_SESSION_SECURITY_CONFIG,
 } from "@/lib/actions/admin-session-config";
+import { adminToastSuccess, adminToastError } from "@/lib/utils/admin-toast";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
@@ -147,8 +147,7 @@ function SessionSecurityContent() {
     });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const saveSettings = async () => {
     if (!valid || isSaving) return;
     setIsSaving(true);
     try {
@@ -158,12 +157,20 @@ function SessionSecurityContent() {
         idleWarningSeconds: String(saved.idleWarningSeconds),
         reauthAfterMinutes: String(saved.reauthAfterMinutes),
       });
-      toast.success("Session-security settings saved");
+      adminToastSuccess({ title: "Session-security settings saved" });
     } catch (err) {
-      toast.error(err?.message || "Couldn't save settings");
+      adminToastError({
+        title: err?.message || "Couldn't save settings",
+        action: { label: "Retry", onClick: () => saveSettings() },
+      });
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    saveSettings();
   };
 
   return (

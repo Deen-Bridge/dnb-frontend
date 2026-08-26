@@ -135,6 +135,12 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+  /* WCAG 2.4.7 – High-contrast focus ring override for dark mode admin chrome.
+     The default ring color is too low-contrast on dark backgrounds; a white
+     ring is immediately visible against any dark surface. */
+  .dark :focus-visible {
+    outline-color: oklch(0.985 0 0);
+  }
 }
 
 @theme {
@@ -321,4 +327,33 @@
 html[dir="rtl"] body {
   font-family: var(--font-arabic), var(--font-geist-sans), ui-sans-serif,
     system-ui, sans-serif;
+}
+
+/* WCAG 2.4.1 – Skip navigation link. Visually hidden until focused. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0.375rem;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* WCAG 1.4.11 – Focus ring for dark admin chrome elements.
+   Overrides the default ring color on dark surfaces for contrast. */
+.dark [data-slot="table-row"]:focus-visible {
+  outline-color: oklch(0.985 0 0);
+}
+.dark button:focus-visible {
+  outline-color: oklch(0.985 0 0);
+}
+.dark a:focus-visible {
+  outline-color: oklch(0.985 0 0);
 }

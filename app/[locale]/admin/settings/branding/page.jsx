@@ -37,6 +37,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { adminToastSuccess, adminToastError } from "@/lib/utils/admin-toast";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 // Preset accent colors
@@ -71,13 +72,13 @@ export default function BrandingSettingsPage() {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file");
+      adminToastError({ title: "Please upload an image file" });
       return;
     }
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert("File size must be less than 2MB");
+      adminToastError({ title: "File size must be less than 2MB" });
       return;
     }
 
@@ -111,7 +112,10 @@ export default function BrandingSettingsPage() {
       }));
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Failed to upload logo. Please try again.");
+      adminToastError({
+        title: "Failed to upload logo. Please try again.",
+        action: { label: "Retry", onClick: () => handleLogoUpload(e) },
+      });
     } finally {
       setUploading(false);
     }
@@ -132,6 +136,7 @@ export default function BrandingSettingsPage() {
 
     setSaving(false);
     setSaved(true);
+    adminToastSuccess({ title: "Branding settings saved" });
     setTimeout(() => setSaved(false), 3000);
   }, []);
 
