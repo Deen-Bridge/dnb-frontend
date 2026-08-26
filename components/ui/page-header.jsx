@@ -32,23 +32,23 @@ function PageHeader({
       id="main-content"
       tabIndex={-1}
       className={cn(
-        "flex flex-wrap items-center justify-between gap-4",
+        "flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4",
         className
       )}
       {...props}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         {Icon && (
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
+          <div className="flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
             {renderIcon()}
           </div>
         )}
-        <div>
+        <div className="min-w-0">
           {title && (
             <h1
               className={cn(
                 poppins_600.className,
-                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent",
+                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-xl sm:text-2xl text-transparent",
                 titleClassName
               )}
             >
@@ -59,7 +59,7 @@ function PageHeader({
             <p
               className={cn(
                 poppins_400.className,
-                "mt-1 text-sm text-ink-muted",
+                "mt-0.5 sm:mt-1 text-xs sm:text-sm text-ink-muted truncate",
                 subtitleClassName
               )}
             >

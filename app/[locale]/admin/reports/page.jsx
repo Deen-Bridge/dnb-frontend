@@ -376,12 +376,12 @@ export default function UnifiedReportsPage() {
         subtitle="Unified moderation queue for all content types"
         actions={
           <div className="flex items-center gap-2">
-            <kbd className="hidden sm:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
+            <kbd className="hidden lg:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
               j/k to navigate
             </kbd>
             <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
-              <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-              Refresh
+              <RefreshCw className={cn("h-4 w-4 sm:mr-2", loading && "animate-spin")} />
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
           </div>
         }
@@ -390,43 +390,45 @@ export default function UnifiedReportsPage() {
       {/* Status Tabs */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <Tabs value={statusFilter} onValueChange={setStatusFilter}>
-              <TabsList>
-                <TabsTrigger value="open" className="gap-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  Open
-                  <Badge variant="secondary" className="ml-1">
-                    {statusCounts.open}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger value="in-review" className="gap-2">
-                  <Eye className="h-4 w-4" />
-                  In Review
-                  <Badge variant="secondary" className="ml-1">
-                    {statusCounts["in-review"]}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger value="resolved" className="gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  Resolved
-                  <Badge variant="secondary" className="ml-1">
-                    {statusCounts.resolved}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger value="dismissed" className="gap-2">
-                  <XCircle className="h-4 w-4" />
-                  Dismissed
-                  <Badge variant="secondary" className="ml-1">
-                    {statusCounts.dismissed}
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+          <div className="flex flex-col gap-4">
+            <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
+              <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+                <TabsList className="w-full sm:w-auto">
+                  <TabsTrigger value="open" className="gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    Open
+                    <Badge variant="secondary" className="ml-1">
+                      {statusCounts.open}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="in-review" className="gap-2">
+                    <Eye className="h-4 w-4" />
+                    In Review
+                    <Badge variant="secondary" className="ml-1">
+                      {statusCounts["in-review"]}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="resolved" className="gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Resolved
+                    <Badge variant="secondary" className="ml-1">
+                      {statusCounts.resolved}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="dismissed" className="gap-2">
+                    <XCircle className="h-4 w-4" />
+                    Dismissed
+                    <Badge variant="secondary" className="ml-1">
+                      {statusCounts.dismissed}
+                    </Badge>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
             {/* Content Type Filter */}
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="All content types" />
               </SelectTrigger>
               <SelectContent>
@@ -464,6 +466,25 @@ export default function UnifiedReportsPage() {
             <div className="rounded-lg border" ref={tableRef}>
               <Table>
                 <TableHeader>
+          <div className="rounded-lg border" ref={tableRef}>
+            {/* Desktop Table */}
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Reporter</TableHead>
+                  <TableHead className="w-[250px]">Target</TableHead>
+                  <TableHead className="w-[150px]">Reason</TableHead>
+                  <TableHead className="w-[100px]">Age</TableHead>
+                  <TableHead className="w-[100px]">Status</TableHead>
+                  <TableHead className="w-[150px]">Assignee</TableHead>
+                  <TableHead className="w-[50px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
                   <TableRow>
                     <TableHead className="w-[200px]">Reporter</TableHead>
                     <TableHead className="w-[250px]">Target</TableHead>
@@ -488,6 +509,17 @@ export default function UnifiedReportsPage() {
                       description="No reports match your current filters. Try adjusting the filters."
                     />
                   ) : (
+                ) : reports.length === 0 ? (
+                  <TableRow>
+                    <TableHead className="w-[200px]">Reporter</TableHead>
+                    <TableHead className="w-[250px]">Target</TableHead>
+                    <TableHead className="w-[150px]">Reason</TableHead>
+                    <TableHead className="w-[100px]">Age</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[150px]">Assignee</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
+                  </TableRow>
+                ) : (
                   reports.map((report, index) => {
                     const contentType = CONTENT_TYPES[report.target.type];
                     const ContentIcon = contentType?.icon || Flag;
@@ -578,21 +610,88 @@ export default function UnifiedReportsPage() {
                         <TableCell>
                           {report.assignee ? (
                             <div className="flex items-center gap-2">
-                              <Avatar className="h-6 w-6">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={report.reporter.avatar} />
                                 <AvatarFallback className="text-xs">
-                                  {report.assignee.name.charAt(0)}
+                                  {report.reporter.name.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="text-xs">
-                                {report.assignee.name}
-                              </span>
+                              <span className="text-sm font-medium">{report.reporter.name}</span>
                             </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              Unassigned
-                            </span>
-                          )}
-                        </TableCell>
+                          </TableCell>
+                          <TableCell>
+                            <Link href={getTargetAdminLink(report.target)} className="flex items-center gap-2 hover:underline">
+                              <div className={cn("p-1.5 rounded", contentType?.bgColor)}>
+                                <ContentIcon className={cn("h-4 w-4", contentType?.color)} />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium truncate">{report.target.name}</p>
+                                <p className="text-xs text-muted-foreground">{contentType?.label}</p>
+                              </div>
+                              <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs">{REASON_CATEGORIES[report.reason]}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {formatReportAge(report.createdAt)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={cn("text-xs", status?.bgColor, status?.color)}>{status?.label}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            {report.assignee ? (
+                              <div className="flex items-center gap-2">
+                                <Avatar className="h-6 w-6">
+                                  <AvatarFallback className="text-xs">{report.assignee.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs">{report.assignee.name}</span>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">Unassigned</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                  <Link href={getTargetAdminLink(report.target)}>
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    View Target
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleStatusChange(report.id, "in-review")}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Mark In Review
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleStatusChange(report.id, "resolved")}>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Mark Resolved
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleStatusChange(report.id, "dismissed")}>
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Dismiss
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
 
                         {/* Actions */}
                         <TableCell>
@@ -610,15 +709,11 @@ export default function UnifiedReportsPage() {
                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => handleStatusChange(report.id, "in-review")}
-                              >
+                              <DropdownMenuItem onClick={() => handleStatusChange(report.id, "in-review")}>
                                 <Eye className="h-4 w-4 mr-2" />
                                 Mark In Review
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleStatusChange(report.id, "resolved")}
-                              >
+                              <DropdownMenuItem onClick={() => handleStatusChange(report.id, "resolved")}>
                                 <CheckCircle className="h-4 w-4 mr-2" />
                                 Mark Resolved
                               </DropdownMenuItem>
@@ -633,19 +728,34 @@ export default function UnifiedReportsPage() {
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <Link href={getTargetAdminLink(report.target)} className="flex items-center gap-2 hover:underline">
+                          <div className={cn("p-1 rounded shrink-0", contentType?.bgColor)}>
+                            <ContentIcon className={cn("h-3.5 w-3.5", contentType?.color)} />
+                          </div>
+                          <p className="text-sm font-medium truncate">{report.target.name}</p>
+                          <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                        </Link>
+                      </div>
+                      <div className="mt-2 flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px]">{REASON_CATEGORIES[report.reason]}</Badge>
+                        {report.assignee && (
+                          <span className="text-[10px] text-muted-foreground">→ {report.assignee.name}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
           )}
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
@@ -674,8 +784,8 @@ export default function UnifiedReportsPage() {
             </div>
           )}
 
-          {/* Keyboard shortcuts help */}
-          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+          {/* Keyboard shortcuts help - hidden on mobile */}
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg hidden sm:block">
             <p className={cn(poppins_500.className, "text-xs text-muted-foreground mb-2")}>
               Keyboard Shortcuts
             </p>

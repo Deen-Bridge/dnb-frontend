@@ -231,8 +231,8 @@ export default function AuditLogsPage() {
         subtitle="Track all administrative actions across the platform"
         actions={
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
-            <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-            Refresh
+            <RefreshCw className={cn("h-4 w-4 sm:mr-2", loading && "animate-spin")} />
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
         }
       />
@@ -341,6 +341,9 @@ export default function AuditLogsPage() {
             <TableErrorState message={error} onRetry={handleRefresh} />
           ) : (
             <div className="rounded-lg border">
+          <div className="rounded-lg border overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -387,7 +390,94 @@ export default function AuditLogsPage() {
                     return (
                       <TableRow key={log.id}>
                         <TableCell className="font-mono text-xs">
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ) : logs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                        No audit logs found matching your filters
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    logs.map((log) => {
+                      const category = ACTION_CATEGORIES[log.category];
+                      const CategoryIcon = category?.icon || FileText;
+                      return (
+                        <TableRow key={log.id}>
+                          <TableCell className="font-mono text-xs">{formatTimestamp(log.timestamp)}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm">{log.actor}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <CategoryIcon className={cn("h-4 w-4", category?.color)} />
+                              <Badge variant="outline" className="text-xs">{log.action}</Badge>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Link href={getTargetLink(log.target)} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                              {log.target.name}
+                              <ExternalLink className="h-3 w-3" />
+                            </Link>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{log.summary}</TableCell>
+                          <TableCell className="font-mono text-xs text-muted-foreground">{log.ip}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y">
+              {loading ? (
+                <div className="py-8 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                </div>
+              ) : logs.length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground">
+                  No audit logs found matching your filters
+                </div>
+              ) : (
+                logs.map((log) => {
+                  const category = ACTION_CATEGORIES[log.category];
+                  const CategoryIcon = category?.icon || FileText;
+                  return (
+                    <div key={log.id} className="p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <CategoryIcon className={cn("h-4 w-4 shrink-0", category?.color)} />
+                          <Badge variant="outline" className="text-[10px]">{log.action}</Badge>
+                        </div>
+                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">
                           {formatTimestamp(log.timestamp)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <User className="h-3 w-3 text-muted-foreground shrink-0" />
+                        <span className="text-xs text-muted-foreground">{log.actor}</span>
+                        <span className="text-xs text-muted-foreground">→</span>
+                        <Link href={getTargetLink(log.target)} className="text-xs text-blue-600 hover:underline truncate">
+                          {log.target.name}
+                        </Link>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground truncate flex-1 mr-2">{log.summary}</p>
+                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">{log.ip}</span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -429,11 +519,16 @@ export default function AuditLogsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1 || loading}>
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || loading}>
                 <Button
                   variant="outline"
                   size="sm"
