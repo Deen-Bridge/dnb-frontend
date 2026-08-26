@@ -347,7 +347,7 @@ export default function DataPrivacyPage() {
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border">
-                <Table>
+                <Table aria-label="Data export requests">
                   <TableHeader>
                     <TableRow>
                       <TableHead>User</TableHead>
@@ -447,7 +447,7 @@ export default function DataPrivacyPage() {
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border">
-                <Table>
+                <Table aria-label="Account deletion requests">
                   <TableHeader>
                     <TableRow>
                       <TableHead>User</TableHead>
@@ -592,7 +592,7 @@ export default function DataPrivacyPage() {
           </DialogHeader>
 
           <div className="rounded-lg border">
-            <Table>
+            <Table aria-label="Data retention policy">
               <TableHeader>
                 <TableRow>
                   <TableHead>Data Category</TableHead>

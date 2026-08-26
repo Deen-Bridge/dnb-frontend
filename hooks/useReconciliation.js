@@ -14,7 +14,6 @@
  * rendering decision — this hook just refuses to fetch without one.
  */
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
 import {
@@ -22,6 +21,7 @@ import {
   fetchSettlementClaims,
   reconcile,
 } from "@/lib/actions/admin-reconciliation";
+import { adminToastError } from "@/lib/utils/admin-toast";
 
 /**
  * @typedef {Object} ReconciliationSummary
@@ -81,7 +81,13 @@ export default function useReconciliation(initialRange = {}) {
       } catch (err) {
         const message = err?.message || "Failed to load reconciliation data";
         setError(message);
-        toast.error(message);
+        adminToastError({
+          title: message,
+          action: {
+            label: "Retry",
+            onClick: () => run({ from: activeFrom, to: activeTo }),
+          },
+        });
       } finally {
         setIsLoading(false);
       }
