@@ -77,6 +77,7 @@ import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
+import DismissReportDialog from "@/components/admin/DismissReportDialog";
 
 // Content type definitions with icons and colors
 const CONTENT_TYPES = {
@@ -240,6 +241,9 @@ export default function UnifiedReportsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const tableRef = useRef(null);
   const pageSize = 15;
+  // Dismiss dialog state
+  const [isDismissDialogOpen, setIsDismissDialogOpen] = useState(false);
+  const [dismissTarget, setDismissTarget] = useState(null);
 
   // Keyboard navigation
   useEffect(() => {
@@ -278,7 +282,8 @@ export default function UnifiedReportsPage() {
         case "d":
           e.preventDefault();
           if (reports[selectedIndex]) {
-            handleStatusChange(reports[selectedIndex].id, "dismissed");
+            setDismissTarget(reports[selectedIndex]);
+            setIsDismissDialogOpen(true);
           }
           break;
       }
@@ -467,6 +472,10 @@ export default function UnifiedReportsPage() {
                     <TableHead className="w-[100px]">Status</TableHead>
                     <TableHead className="w-[150px]">Assignee</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
+                    <TableCell colSpan={7} className="py-8 text-center">
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                      <span className="sr-only">Loading reports</span>
+                    </TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -533,7 +542,7 @@ export default function UnifiedReportsPage() {
                                 {contentType?.label}
                               </p>
                             </div>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" aria-hidden="true" />
                           </Link>
                         </TableCell>
 
@@ -587,9 +596,9 @@ export default function UnifiedReportsPage() {
 
                         {/* Actions */}
                         <TableCell>
-                          <DropdownMenu>
+                            <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Report actions">
                                 <MoreVertical className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -614,7 +623,10 @@ export default function UnifiedReportsPage() {
                                 Mark Resolved
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => handleStatusChange(report.id, "dismissed")}
+                                onClick={() => {
+                                  setDismissTarget(report);
+                                  setIsDismissDialogOpen(true);
+                                }}
                               >
                                 <XCircle className="h-4 w-4 mr-2" />
                                 Dismiss
@@ -643,6 +655,7 @@ export default function UnifiedReportsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1 || loading}
+                  aria-label="Go to previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
@@ -652,6 +665,7 @@ export default function UnifiedReportsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages || loading}
+                  aria-label="Go to next page"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />
@@ -682,6 +696,21 @@ export default function UnifiedReportsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dismiss Report Dialog */}
+      {dismissTarget && (
+        <DismissReportDialog
+          open={isDismissDialogOpen}
+          onOpenChange={(open) => {
+            setIsDismissDialogOpen(open);
+            if (!open) setDismissTarget(null);
+          }}
+          report={dismissTarget}
+          onDismissed={(reportId) => {
+            handleStatusChange(reportId, "dismissed");
+          }}
+        />
+      )}
     </PageShell>
   );
 }
