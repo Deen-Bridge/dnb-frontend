@@ -357,8 +357,8 @@ function AdminTeamContent() {
             className="rounded-full bg-accent text-white hover:bg-accent/90"
             onClick={() => setInviteOpen(true)}
           >
-            <Link2 className="mr-1 h-4 w-4" />
-            Invite admin
+            <Link2 className="mr-0 sm:mr-1 h-4 w-4" />
+            <span className="hidden sm:inline">Invite admin</span>
           </Button>
         }
       />
@@ -395,26 +395,88 @@ function AdminTeamContent() {
         />
       ) : (
         <div className="overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Member</TableHead>
-                <TableHead>Tier</TableHead>
-                <TableHead>Last active</TableHead>
-                <TableHead>Added by</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {membersWithActions.map((member) => (
-                <MemberRow
-                  key={member.id}
-                  member={member}
-                  currentUserId={user?._id || user?.id}
-                />
-              ))}
-            </TableBody>
-          </Table>
+          {/* Desktop Table */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Member</TableHead>
+                  <TableHead>Tier</TableHead>
+                  <TableHead>Last active</TableHead>
+                  <TableHead>Added by</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {membersWithActions.map((member) => (
+                  <MemberRow key={member.id} member={member} currentUserId={user?._id || user?.id} />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-accent/10">
+            {membersWithActions.map((member) => {
+              const tier = getAdminTier(member);
+              const isSelf = member.id === (user?._id || user?.id);
+              return (
+                <div key={member.id} className="p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Avatar className="h-8 w-8 border border-accent/10 shrink-0">
+                        <AvatarImage src={member.avatar || "/images/dnb-nobg.png"} alt={member.name} />
+                        <AvatarFallback className="bg-surface-raised text-xs">{initials(member.name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className={cn(poppins_500.className, "text-sm text-ink truncate")}>
+                          {member.name}
+                          {isSelf && (
+                            <span className={cn(poppins_400.className, "ml-1.5 text-xs text-ink-muted")}>(you)</span>
+                          )}
+                        </p>
+                        <p className={cn(poppins_400.className, "text-xs text-ink-muted truncate")}>{member.email}</p>
+                      </div>
+                    </div>
+                    {!isSelf && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 shrink-0" aria-label={`Actions for ${member.name}`}>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="border-accent/10">
+                          {isSuperAdminMember && (
+                            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("demote")}>
+                              <UserMinus className="h-4 w-4" />
+                              Demote to staff
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("revoke")}>
+                            <UserX className="h-4 w-4" />
+                            Revoke access
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-ink-muted">
+                    <Badge variant="outline" className={cn("rounded-full capitalize text-[10px]", tierBadge[tier])}>
+                      {tierLabel[tier] || tier}
+                    </Badge>
+                    <span>·</span>
+                    <span>{lastActiveLabel(member.lastActiveAt)}</span>
+                    {member.addedBy?.name && (
+                      <>
+                        <span>·</span>
+                        <span>by {member.addedBy.name}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
