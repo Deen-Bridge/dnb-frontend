@@ -286,30 +286,17 @@ export default function PayoutReconciliationPage() {
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={handleSearch} disabled={!dateRange.from || !dateRange.to || loading} className="flex-1 sm:flex-none">
+              <Button
+                onClick={() => handleSearch(false)}
+                disabled={!dateRange.from || !dateRange.to || loading}
+                aria-label="Run reconciliation search"
+              >
                 {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Search className="mr-2 h-4 w-4" />
                 )}
                 Run Reconciliation
-            <Button
-              onClick={() => handleSearch(false)}
-              disabled={!dateRange.from || !dateRange.to || loading}
-              aria-label="Run reconciliation search"
-            >
-              {loading ? (
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Search className="mr-2 h-4 w-4" />
-              )}
-              Run Reconciliation
-            </Button>
-
-            {transactions.length > 0 && (
-              <Button variant="outline" onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Export CSV
               </Button>
 
               {transactions.length > 0 && (
@@ -475,119 +462,18 @@ export default function PayoutReconciliationPage() {
                                 <div className="flex gap-2">
                                   <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
                                     <a href={`/admin/transactions/${tx.id}`}>Platform<ArrowUpRight className="ml-1 h-3 w-3" /></a>
-                <div className="rounded-lg border overflow-x-auto">
-                  <Table aria-label="Reconciliation transaction records">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Platform ID</TableHead>
-                        <TableHead>Timestamp</TableHead>
-                        <TableHead>Creator</TableHead>
-                        <TableHead>Item</TableHead>
-                        <TableHead className="text-right">Platform Amount</TableHead>
-                        <TableHead className="text-right">On-Chain Amount</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Links</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {transactions.map((tx) => {
-                        const statusConfig = STATUS_CONFIG[tx.status];
-                        const StatusIcon = statusConfig.icon;
-                        const isDiscrepancy = tx.status !== "matched";
-
-                        return (
-                          <TableRow
-                            key={tx.id}
-                            className={cn(
-                              isDiscrepancy && statusConfig.bgColor,
-                              isDiscrepancy && "hover:opacity-90"
-                            )}
-                          >
-                            <TableCell className="font-mono text-sm">
-                              {tx.platformId}
-                            </TableCell>
-                            <TableCell className="text-sm">
-                              {format(new Date(tx.timestamp), "MMM d, HH:mm")}
-                            </TableCell>
-                            <TableCell className="text-sm">{tx.creatorEmail}</TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                <Badge variant="outline" className="mr-2 text-xs">
-                                  {tx.itemType}
-                                </Badge>
-                                {tx.itemTitle}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right font-mono">
-                              ${tx.platformAmount.toFixed(2)}
-                            </TableCell>
-                            <TableCell className={cn(
-                              "text-right font-mono",
-                              tx.status === "amount-mismatch" && "text-amber-700 font-bold"
-                            )}>
-                              {tx.onChainAmount !== null
-                                ? `$${tx.onChainAmount.toFixed(2)}`
-                                : "—"}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={cn(
-                                  "text-xs gap-1",
-                                  statusConfig.color,
-                                  statusConfig.borderColor
-                                )}
-                              >
-                                <StatusIcon className="h-3 w-3" />
-                                {statusConfig.label}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 text-xs"
-                                  asChild
-                                >
-                                  <a href={`/admin/transactions/${tx.id}`} aria-label={`View platform transaction ${tx.platformId}`}>
-                                    Platform
-                                    <ArrowUpRight className="ml-1 h-3 w-3" aria-hidden="true" />
-                                  </a>
-                                </Button>
-                                {tx.txHash && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs"
-                                    asChild
-                                  >
-                                    <a
-                                      href={getStellarExplorerUrl(tx.txHash)}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      aria-label={`View on Stellar explorer for transaction ${tx.platformId}`}
-                                    >
-                                      Stellar
-                                      <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
-                                    </a>
                                   </Button>
-                                  {tx.txHash && (
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                      <a href={getStellarExplorerUrl(tx.txHash)} target="_blank" rel="noopener noreferrer">Stellar<ExternalLink className="ml-1 h-3 w-3" /></a>
-                                    </Button>
-                                  )}
                                 </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
 
-                  {/* Mobile Card View */}
-                  <div className="md:hidden space-y-3">
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-3">
                     {transactions.map((tx) => {
                       const statusConfig = STATUS_CONFIG[tx.status];
                       const StatusIcon = statusConfig.icon;
