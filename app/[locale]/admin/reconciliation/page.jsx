@@ -36,10 +36,13 @@ import {
   ExternalLink,
   RefreshCw,
   Download,
-  Loader2,
   Info,
   ArrowUpRight,
 } from "lucide-react";
+import { TableSkeleton } from "@/components/admin/table-skeleton";
+import { TableEmptyState } from "@/components/admin/table-empty-state";
+import { TableErrorState } from "@/components/admin/table-error-state";
+import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { format, subDays } from "date-fns";
@@ -134,21 +137,39 @@ export default function PayoutReconciliationPage() {
   });
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isRefetching, setIsRefetching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   // Fetch reconciliation data
-  const handleSearch = useCallback(async () => {
+  const handleSearch = useCallback(async (isRefetch = false) => {
     if (!dateRange.from || !dateRange.to) return;
 
-    setLoading(true);
+    if (isRefetch) {
+      setIsRefetching(true);
+    } else {
+      setLoading(true);
+    }
     setHasSearched(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const data = generateMockData(dateRange.from, dateRange.to);
-    setTransactions(data);
-    setLoading(false);
+      // Simulate occasional error for demo
+      if (Math.random() < 0.05) {
+        throw new Error("Failed to fetch reconciliation data");
+      }
+
+      const data = generateMockData(dateRange.from, dateRange.to);
+      setTransactions(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setIsRefetching(false);
+    }
   }, [dateRange]);
 
   // Calculate stats
@@ -234,18 +255,16 @@ export default function PayoutReconciliationPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="space-y-2">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+            <div className="space-y-2 flex-1">
               <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                  <Button variant="outline" className="w-full sm:w-[280px] justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
                     {dateRange.from ? (
                       dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
-                        </>
+                        <span className="truncate">{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</span>
                       ) : (
                         format(dateRange.from, "LLL dd, y")
                       )
@@ -266,13 +285,21 @@ export default function PayoutReconciliationPage() {
               </Popover>
             </div>
 
+            <div className="flex gap-2">
+              <Button onClick={handleSearch} disabled={!dateRange.from || !dateRange.to || loading} className="flex-1 sm:flex-none">
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="mr-2 h-4 w-4" />
+                )}
+                Run Reconciliation
             <Button
-              onClick={handleSearch}
+              onClick={() => handleSearch(false)}
               disabled={!dateRange.from || !dateRange.to || loading}
               aria-label="Run reconciliation search"
             >
               {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Search className="mr-2 h-4 w-4" />
               )}
@@ -284,7 +311,14 @@ export default function PayoutReconciliationPage() {
                 <Download className="mr-2 h-4 w-4" />
                 Export CSV
               </Button>
-            )}
+
+              {transactions.length > 0 && (
+                <Button variant="outline" onClick={handleExport} className="flex-1 sm:flex-none">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export CSV
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -292,6 +326,8 @@ export default function PayoutReconciliationPage() {
       {/* Results */}
       {hasSearched && (
         <>
+          <RefetchBanner isRefetching={isRefetching} />
+
           {/* Stats Overview */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-live="polite">
             <Card>
@@ -360,15 +396,85 @@ export default function PayoutReconciliationPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              {error ? (
+                <TableErrorState message={error} onRetry={() => handleSearch(true)} />
+              ) : loading ? (
+                <div className="rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Platform ID</TableHead>
+                        <TableHead>Timestamp</TableHead>
+                        <TableHead>Creator</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead className="text-right">Platform Amount</TableHead>
+                        <TableHead className="text-right">On-Chain Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Links</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableSkeleton rows={5} columns={8} />
+                    </TableBody>
+                  </Table>
                 </div>
               ) : transactions.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  No transactions found for the selected date range
-                </div>
+                <TableEmptyState
+                  icon={Scale}
+                  title="No transactions found"
+                  description="No transactions found for the selected date range. Try a different date range."
+                />
               ) : (
+                <>
+                  {/* Desktop Table */}
+                  <div className="hidden md:block rounded-lg border overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Platform ID</TableHead>
+                          <TableHead>Timestamp</TableHead>
+                          <TableHead>Creator</TableHead>
+                          <TableHead>Item</TableHead>
+                          <TableHead className="text-right">Platform Amount</TableHead>
+                          <TableHead className="text-right">On-Chain Amount</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Links</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {transactions.map((tx) => {
+                          const statusConfig = STATUS_CONFIG[tx.status];
+                          const StatusIcon = statusConfig.icon;
+                          const isDiscrepancy = tx.status !== "matched";
+
+                          return (
+                            <TableRow
+                              key={tx.id}
+                              className={cn(isDiscrepancy && statusConfig.bgColor, isDiscrepancy && "hover:opacity-90")}
+                            >
+                              <TableCell className="font-mono text-sm">{tx.platformId}</TableCell>
+                              <TableCell className="text-sm">{format(new Date(tx.timestamp), "MMM d, HH:mm")}</TableCell>
+                              <TableCell className="text-sm">{tx.creatorEmail}</TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  <Badge variant="outline" className="mr-2 text-xs">{tx.itemType}</Badge>
+                                  {tx.itemTitle}
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-right font-mono">${tx.platformAmount.toFixed(2)}</TableCell>
+                              <TableCell className={cn("text-right font-mono", tx.status === "amount-mismatch" && "text-amber-700 font-bold")}>
+                                {tx.onChainAmount !== null ? `$${tx.onChainAmount.toFixed(2)}` : "—"}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className={cn("text-xs gap-1", statusConfig.color, statusConfig.borderColor)}>
+                                  <StatusIcon className="h-3 w-3" />
+                                  {statusConfig.label}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
+                                    <a href={`/admin/transactions/${tx.id}`}>Platform<ArrowUpRight className="ml-1 h-3 w-3" /></a>
                 <div className="rounded-lg border overflow-x-auto">
                   <Table aria-label="Reconciliation transaction records">
                     <TableHeader>
@@ -466,15 +572,71 @@ export default function PayoutReconciliationPage() {
                                       <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
                                     </a>
                                   </Button>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
+                                  {tx.txHash && (
+                                    <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
+                                      <a href={getStellarExplorerUrl(tx.txHash)} target="_blank" rel="noopener noreferrer">Stellar<ExternalLink className="ml-1 h-3 w-3" /></a>
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Card View */}
+                  <div className="md:hidden space-y-3">
+                    {transactions.map((tx) => {
+                      const statusConfig = STATUS_CONFIG[tx.status];
+                      const StatusIcon = statusConfig.icon;
+                      const isDiscrepancy = tx.status !== "matched";
+
+                      return (
+                        <div key={tx.id} className={cn("rounded-lg border p-3 space-y-2", isDiscrepancy && statusConfig.bgColor)}>
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="font-mono text-xs">{tx.platformId}</p>
+                              <p className="text-xs text-muted-foreground">{format(new Date(tx.timestamp), "MMM d, HH:mm")}</p>
+                            </div>
+                            <Badge variant="outline" className={cn("text-[10px] gap-1 shrink-0", statusConfig.color, statusConfig.borderColor)}>
+                              <StatusIcon className="h-2.5 w-2.5" />
+                              {statusConfig.label}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground">{tx.creatorEmail}</div>
+                          <div className="text-sm">
+                            <Badge variant="outline" className="mr-1.5 text-[10px]">{tx.itemType}</Badge>
+                            {tx.itemTitle}
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <div>
+                              <span className="text-muted-foreground">Platform: </span>
+                              <span className="font-mono">${tx.platformAmount.toFixed(2)}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Chain: </span>
+                              <span className={cn("font-mono", tx.status === "amount-mismatch" && "text-amber-700 font-bold")}>
+                                {tx.onChainAmount !== null ? `$${tx.onChainAmount.toFixed(2)}` : "—"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex gap-1.5 pt-1">
+                            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" asChild>
+                              <a href={`/admin/transactions/${tx.id}`}>Platform<ArrowUpRight className="ml-0.5 h-2.5 w-2.5" /></a>
+                            </Button>
+                            {tx.txHash && (
+                              <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" asChild>
+                                <a href={getStellarExplorerUrl(tx.txHash)} target="_blank" rel="noopener noreferrer">Stellar<ExternalLink className="ml-0.5 h-2.5 w-2.5" /></a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>

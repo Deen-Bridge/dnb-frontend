@@ -26,8 +26,10 @@ import {
   GraduationCap,
   AlertCircle,
   RefreshCw,
+  Eye,
 } from "lucide-react";
 import useStellarPayment from "@/hooks/useStellarPayment";
+import TransactionDrawer from "@/components/admin/TransactionDrawer";
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -49,6 +51,10 @@ export default function TransactionHistory() {
   const [role, setRole] = useState("buyer");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Transaction Drawer state (#338)
+  const [selectedTx, setSelectedTx] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
@@ -74,6 +80,11 @@ export default function TransactionHistory() {
   const handleRoleChange = (newRole) => {
     setRole(newRole);
     setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  const handleOpenDrawer = (tx) => {
+    setSelectedTx(tx);
+    setDrawerOpen(true);
   };
 
   const truncateAddress = (addr) => {
@@ -151,7 +162,7 @@ export default function TransactionHistory() {
       {!isLoading && !error && transactions.length > 0 && (
         <>
           <div className="border rounded-lg overflow-hidden">
-            <Table>
+            <Table aria-label="Transaction History Table">
               <TableHeader>
                 <TableRow>
                   <TableHead>Item</TableHead>
@@ -159,12 +170,16 @@ export default function TransactionHistory() {
                   <TableHead>{role === "buyer" ? "To" : "From"}</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead className="w-[100px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {transactions.map((tx) => (
-                  <TableRow key={tx._id}>
+                  <TableRow
+                    key={tx._id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleOpenDrawer(tx)}
+                  >
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {tx.itemType === "book" ? (
@@ -215,18 +230,33 @@ export default function TransactionHistory() {
                         {formatDate(tx.createdAt)}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      {tx.explorerUrl && (
-                        <a
-                          href={tx.explorerUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`View transaction for ${tx.itemTitle} on Stellar Explorer`}
-                          className="text-primary hover:text-primary/80"
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenDrawer(tx);
+                          }}
+                          aria-label="View transaction drawer record"
                         >
-                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                        </a>
-                      )}
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                        {tx.explorerUrl && (
+                          <a
+                            href={tx.explorerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={`View transaction for ${tx.itemTitle} on Stellar Explorer`}
+                            className="text-primary hover:text-primary/80 p-1"
+                          >
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                          </a>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -269,6 +299,14 @@ export default function TransactionHistory() {
           )}
         </>
       )}
+
+      {/* Transaction Drawer Modal (#338) */}
+      <TransactionDrawer
+        transaction={selectedTx}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+      />
     </div>
   );
 }
+

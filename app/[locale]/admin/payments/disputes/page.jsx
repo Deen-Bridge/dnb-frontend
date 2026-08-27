@@ -553,6 +553,29 @@ export default function DisputesPage() {
                   Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
                   {formatAge(selectedDispute.openedAt)}
                 </DialogDescription>
+            <div className="print-root space-y-4">
+              <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+                <div>
+                  <DialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    Dispute {selectedDispute.id}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                    Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
+                    {formatAge(selectedDispute.openedAt)}
+                  </DialogDescription>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.print()}
+                  className="no-print gap-1.5 text-xs font-semibold mr-6"
+                  aria-label="Print record"
+                >
+                  <Printer className="h-4 w-4" />
+                  Print Record
+                </Button>
               </DialogHeader>
 
               {/* Linked Transaction Info */}
@@ -599,6 +622,12 @@ export default function DisputesPage() {
                       </Avatar>
                       Buyer Statement ({selectedDispute.buyer.name})
                     </CardTitle>
+                    <CardDescription className="text-xs">
+                      {selectedDispute.buyer.name} &middot;{" "}
+                      <a href={`mailto:${selectedDispute.buyer.email}`} className="text-primary hover:underline print-url">
+                        {selectedDispute.buyer.email}
+                      </a>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground leading-relaxed">
@@ -617,6 +646,12 @@ export default function DisputesPage() {
                       </Avatar>
                       Educator Statement ({selectedDispute.educator.name})
                     </CardTitle>
+                    <CardDescription className="text-xs">
+                      {selectedDispute.educator.name} &middot;{" "}
+                      <a href={`mailto:${selectedDispute.educator.email}`} className="text-primary hover:underline print-url">
+                        {selectedDispute.educator.email}
+                      </a>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground leading-relaxed">
@@ -719,6 +754,7 @@ export default function DisputesPage() {
               {selectedDispute.state === "open" ||
               selectedDispute.state === "awaiting-evidence" ? (
                 <DialogFooter className="flex flex-wrap gap-2 sm:justify-start pt-2">
+                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start">
                   <Button
                     variant="outline"
                     size="sm"
@@ -768,7 +804,7 @@ export default function DisputesPage() {
                   </Button>
                 </DialogFooter>
               ) : null}
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -785,3 +821,4 @@ export default function DisputesPage() {
     </PageShell>
   );
 }
+
