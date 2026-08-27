@@ -656,11 +656,19 @@ export default function UnifiedReportsPage() {
                     return (
                       <div
                         key={report.id}
+                        role="button"
+                        tabIndex={0}
                         className={cn(
                           "p-3 space-y-2 cursor-pointer transition-colors",
                           isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
                         )}
                         onClick={() => setSelectedIndex(index)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setSelectedIndex(index);
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
