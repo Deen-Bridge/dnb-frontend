@@ -370,9 +370,9 @@ export default function GlobalTransactionExplorer() {
 
               {/* Status Filter */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">
+                <span className="text-xs font-medium text-muted-foreground">
                   Status
-                </label>
+                </span>
                 <Select
                   value={filters.status}
                   onValueChange={(val) => handleFilterChange("status", val)}
@@ -393,9 +393,9 @@ export default function GlobalTransactionExplorer() {
 
               {/* Item Type Filter */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">
+                <span className="text-xs font-medium text-muted-foreground">
                   Item Type
-                </label>
+                </span>
                 <Select
                   value={filters.itemType}
                   onValueChange={(val) => handleFilterChange("itemType", val)}

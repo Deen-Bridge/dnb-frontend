@@ -46,11 +46,8 @@ import {
   Calendar as CalendarIcon,
   RefreshCw,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
-import { TableSkeleton } from "@/components/admin/table-skeleton";
-import { TableEmptyState } from "@/components/admin/table-empty-state";
-import { TableErrorState } from "@/components/admin/table-error-state";
-import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { format } from "date-fns";
@@ -136,8 +133,6 @@ const getTargetLink = (target) => {
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isRefetching, setIsRefetching] = useState(false);
   const [actorFilter, setActorFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateRange, setDateRange] = useState({ from: null, to: null });
@@ -146,59 +141,43 @@ export default function AuditLogsPage() {
   const pageSize = 15;
 
   // Simulate server-side pagination
-  const fetchLogs = useCallback(async (page, filters, isRefetch = false) => {
-    if (isRefetch) {
-      setIsRefetching(true);
-    } else {
-      setLoading(true);
+  const fetchLogs = useCallback(async (page, filters) => {
+    setLoading(true);
+
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Filter logs
+    let filteredLogs = [...mockLogs];
+
+    if (filters.actor !== "all") {
+      filteredLogs = filteredLogs.filter((log) => log.actor === filters.actor);
     }
-    setError(null);
 
-    try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Simulate occasional error for demo
-      if (Math.random() < 0.05) {
-        throw new Error("Failed to fetch audit logs");
-      }
-
-      // Filter logs
-      let filteredLogs = [...mockLogs];
-
-      if (filters.actor !== "all") {
-        filteredLogs = filteredLogs.filter((log) => log.actor === filters.actor);
-      }
-
-      if (filters.category !== "all") {
-        filteredLogs = filteredLogs.filter((log) => log.category === filters.category);
-      }
-
-      if (filters.dateRange?.from) {
-        filteredLogs = filteredLogs.filter(
-          (log) => new Date(log.timestamp) >= filters.dateRange.from
-        );
-      }
-
-      if (filters.dateRange?.to) {
-        filteredLogs = filteredLogs.filter(
-          (log) => new Date(log.timestamp) <= filters.dateRange.to
-        );
-      }
-
-      // Paginate
-      const total = Math.ceil(filteredLogs.length / pageSize);
-      const start = (page - 1) * pageSize;
-      const paginatedLogs = filteredLogs.slice(start, start + pageSize);
-
-      setLogs(paginatedLogs);
-      setTotalPages(total);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      setIsRefetching(false);
+    if (filters.category !== "all") {
+      filteredLogs = filteredLogs.filter((log) => log.category === filters.category);
     }
+
+    if (filters.dateRange?.from) {
+      filteredLogs = filteredLogs.filter(
+        (log) => new Date(log.timestamp) >= filters.dateRange.from
+      );
+    }
+
+    if (filters.dateRange?.to) {
+      filteredLogs = filteredLogs.filter(
+        (log) => new Date(log.timestamp) <= filters.dateRange.to
+      );
+    }
+
+    // Paginate
+    const total = Math.ceil(filteredLogs.length / pageSize);
+    const start = (page - 1) * pageSize;
+    const paginatedLogs = filteredLogs.slice(start, start + pageSize);
+
+    setLogs(paginatedLogs);
+    setTotalPages(total);
+    setLoading(false);
   }, []);
 
   // Initial fetch and refetch on filter change
@@ -220,7 +199,7 @@ export default function AuditLogsPage() {
       actor: actorFilter,
       category: categoryFilter,
       dateRange,
-    }, true);
+    });
   };
 
   return (
@@ -246,7 +225,7 @@ export default function AuditLogsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Actor Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
+              <span className={cn(poppins_500.className, "text-sm")}>Admin Actor</span>
               <Select value={actorFilter} onValueChange={setActorFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select actor" />
@@ -264,7 +243,7 @@ export default function AuditLogsPage() {
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Action Category</label>
+              <span className={cn(poppins_500.className, "text-sm")}>Action Category</span>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -285,7 +264,7 @@ export default function AuditLogsPage() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <span className={cn(poppins_500.className, "text-sm")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
@@ -326,8 +305,6 @@ export default function AuditLogsPage() {
         </CardContent>
       </Card>
 
-      <RefetchBanner isRefetching={isRefetching} />
-
       {/* Audit Log Table */}
       <Card>
         <CardHeader>
@@ -337,10 +314,6 @@ export default function AuditLogsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error ? (
-            <TableErrorState message={error} onRetry={handleRefresh} />
-          ) : (
-            <div className="rounded-lg border">
           <div className="rounded-lg border overflow-x-auto">
             {/* Desktop Table */}
             <div className="hidden md:block">
@@ -353,43 +326,10 @@ export default function AuditLogsPage() {
                     <TableHead>Target</TableHead>
                     <TableHead>Summary</TableHead>
                     <TableHead className="w-[120px]">IP Address</TableHead>
-          <div className="rounded-lg border">
-            <Table aria-label="Audit log events">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[180px]">Timestamp</TableHead>
-                  <TableHead className="w-[180px]">Admin Actor</TableHead>
-                  <TableHead className="w-[150px]">Action</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead>Summary</TableHead>
-                  <TableHead className="w-[120px]">IP Address</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody aria-live="polite">
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
-                      <span className="sr-only">Loading audit logs</span>
-                    </TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
-                    <TableSkeleton rows={6} columns={6} />
-                  ) : logs.length === 0 ? (
-                    <TableEmptyState
-                      icon={FileText}
-                      title="No audit logs found"
-                      description="No audit logs match your current filters. Try adjusting the filters."
-                    />
-                  ) : (
-                  logs.map((log) => {
-                    const category = ACTION_CATEGORIES[log.category];
-                    const CategoryIcon = category?.icon || FileText;
-                    return (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-mono text-xs">
                     <TableRow>
                       <TableCell colSpan={6} className="py-8 text-center">
                         <Loader2 className="h-6 w-6 animate-spin mx-auto" />
@@ -478,44 +418,7 @@ export default function AuditLogsPage() {
                 })
               )}
             </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{log.actor}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <CategoryIcon className={cn("h-4 w-4", category?.color)} />
-                            <Badge variant="outline" className="text-xs">
-                              {log.action}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            href={getTargetLink(log.target)}
-                            className="flex items-center gap-1 text-sm text-blue-600 hover:underline dark:text-blue-400"
-                          >
-                            {log.target.name}
-                            <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {log.summary}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {log.ip}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
           </div>
-          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -529,23 +432,6 @@ export default function AuditLogsPage() {
                   Previous
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || loading}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1 || loading}
-                  aria-label="Go to previous page"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages || loading}
-                  aria-label="Go to next page"
-                >
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>

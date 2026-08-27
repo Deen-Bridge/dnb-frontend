@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { Suspense } from "react";
 import TransactionDrawer from "@/components/admin/TransactionDrawer";
 import AdminUserDetailPage from "@/app/[locale]/admin/users/[userId]/page";
 import DisputesPage from "@/app/[locale]/admin/payments/disputes/page";
@@ -66,12 +67,12 @@ describe("Print-Friendly Views for Records (#338)", () => {
       creatorWallet: "GCFXHS4GXL6BVUCFZFDXA2P2VJ2XGCLLK7O6R72EC2Q656BUKZ2W4567",
     };
 
-    const { container } = render(
+    render(
       <TransactionDrawer transaction={sampleTx} open={true} onOpenChange={vi.fn()} />
     );
 
     // Verify print-root container
-    const printRoot = container.querySelector(".print-root");
+    const printRoot = document.body.querySelector(".print-root");
     expect(printRoot).toBeInTheDocument();
 
     // Verify Print Record button and window.print trigger
@@ -85,7 +86,14 @@ describe("Print-Friendly Views for Records (#338)", () => {
 
   it("AdminUserDetailPage renders user record inside print-root with print-url links", async () => {
     const params = Promise.resolve({ userId: "usr_999" });
-    const { container } = render(<AdminUserDetailPage params={params} />);
+    let container;
+    await act(async () => {
+      ({ container } = render(
+        <Suspense fallback={null}>
+          <AdminUserDetailPage params={params} />
+        </Suspense>
+      ));
+    });
 
     expect(await screen.findByText("Zaynab Idris")).toBeInTheDocument();
 

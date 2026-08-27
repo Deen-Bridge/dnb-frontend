@@ -67,17 +67,13 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Loader2,
   AlertTriangle,
   MessageSquare,
 } from "lucide-react";
-import { TableSkeleton } from "@/components/admin/table-skeleton";
-import { TableEmptyState } from "@/components/admin/table-empty-state";
-import { TableErrorState } from "@/components/admin/table-error-state";
-import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
-import DismissReportDialog from "@/components/admin/DismissReportDialog";
 
 // Content type definitions with icons and colors
 const CONTENT_TYPES = {
@@ -232,8 +228,6 @@ const getTargetAdminLink = (target) => {
 export default function UnifiedReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isRefetching, setIsRefetching] = useState(false);
   const [statusFilter, setStatusFilter] = useState("open");
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -241,9 +235,6 @@ export default function UnifiedReportsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const tableRef = useRef(null);
   const pageSize = 15;
-  // Dismiss dialog state
-  const [isDismissDialogOpen, setIsDismissDialogOpen] = useState(false);
-  const [dismissTarget, setDismissTarget] = useState(null);
 
   // Keyboard navigation
   useEffect(() => {
@@ -282,8 +273,7 @@ export default function UnifiedReportsPage() {
         case "d":
           e.preventDefault();
           if (reports[selectedIndex]) {
-            setDismissTarget(reports[selectedIndex]);
-            setIsDismissDialogOpen(true);
+            handleStatusChange(reports[selectedIndex].id, "dismissed");
           }
           break;
       }
@@ -294,45 +284,28 @@ export default function UnifiedReportsPage() {
   }, [reports, selectedIndex]);
 
   // Fetch reports with filters
-  const fetchReports = useCallback(async (page, filters, isRefetch = false) => {
-    if (isRefetch) {
-      setIsRefetching(true);
-    } else {
-      setLoading(true);
+  const fetchReports = useCallback(async (page, filters) => {
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    let filtered = [...mockReports];
+
+    if (filters.status !== "all") {
+      filtered = filtered.filter((r) => r.status === filters.status);
     }
-    setError(null);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Simulate occasional error for demo
-      if (Math.random() < 0.05) {
-        throw new Error("Failed to fetch reports");
-      }
-
-      let filtered = [...mockReports];
-
-      if (filters.status !== "all") {
-        filtered = filtered.filter((r) => r.status === filters.status);
-      }
-
-      if (filters.type !== "all") {
-        filtered = filtered.filter((r) => r.target.type === filters.type);
-      }
-
-      const total = Math.ceil(filtered.length / pageSize);
-      const start = (page - 1) * pageSize;
-      const paginated = filtered.slice(start, start + pageSize);
-
-      setReports(paginated);
-      setTotalPages(total || 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      setIsRefetching(false);
-      setSelectedIndex(0);
+    if (filters.type !== "all") {
+      filtered = filtered.filter((r) => r.target.type === filters.type);
     }
+
+    const total = Math.ceil(filtered.length / pageSize);
+    const start = (page - 1) * pageSize;
+    const paginated = filtered.slice(start, start + pageSize);
+
+    setReports(paginated);
+    setTotalPages(total || 1);
+    setLoading(false);
+    setSelectedIndex(0);
   }, []);
 
   // Initial fetch and on filter change
@@ -354,7 +327,14 @@ export default function UnifiedReportsPage() {
 
   // Handle refresh
   const handleRefresh = () => {
-    fetchReports(currentPage, { status: statusFilter, type: typeFilter }, true);
+    fetchReports(currentPage, { status: statusFilter, type: typeFilter });
+  };
+
+  const handleReportCardKeyDown = (event, index) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setSelectedIndex(index);
+    }
   };
 
   // Status counts for tabs
@@ -447,8 +427,6 @@ export default function UnifiedReportsPage() {
         </CardContent>
       </Card>
 
-      <RefetchBanner isRefetching={isRefetching} />
-
       {/* Reports Table */}
       <Card>
         <CardHeader>
@@ -460,31 +438,11 @@ export default function UnifiedReportsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error ? (
-            <TableErrorState message={error} onRetry={handleRefresh} />
-          ) : (
-            <div className="rounded-lg border" ref={tableRef}>
-              <Table>
-                <TableHeader>
           <div className="rounded-lg border" ref={tableRef}>
             {/* Desktop Table */}
             <div className="hidden md:block">
               <Table>
                 <TableHeader>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">Reporter</TableHead>
-                  <TableHead className="w-[250px]">Target</TableHead>
-                  <TableHead className="w-[150px]">Reason</TableHead>
-                  <TableHead className="w-[100px]">Age</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
-                  <TableHead className="w-[150px]">Assignee</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
                   <TableRow>
                     <TableHead className="w-[200px]">Reporter</TableHead>
                     <TableHead className="w-[250px]">Target</TableHead>
@@ -493,122 +451,39 @@ export default function UnifiedReportsPage() {
                     <TableHead className="w-[100px]">Status</TableHead>
                     <TableHead className="w-[150px]">Assignee</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
-                    <TableCell colSpan={7} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
-                      <span className="sr-only">Loading reports</span>
-                    </TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
-                    <TableSkeleton rows={5} columns={7} />
+                    <TableRow>
+                      <TableCell colSpan={7} className="py-8 text-center">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                      </TableCell>
+                    </TableRow>
                   ) : reports.length === 0 ? (
-                    <TableEmptyState
-                      icon={Flag}
-                      title="No reports found"
-                      description="No reports match your current filters. Try adjusting the filters."
-                    />
+                    <TableRow>
+                      <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                        <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p>No reports found</p>
+                      </TableCell>
+                    </TableRow>
                   ) : (
-                ) : reports.length === 0 ? (
-                  <TableRow>
-                    <TableHead className="w-[200px]">Reporter</TableHead>
-                    <TableHead className="w-[250px]">Target</TableHead>
-                    <TableHead className="w-[150px]">Reason</TableHead>
-                    <TableHead className="w-[100px]">Age</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                    <TableHead className="w-[150px]">Assignee</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                ) : (
-                  reports.map((report, index) => {
-                    const contentType = CONTENT_TYPES[report.target.type];
-                    const ContentIcon = contentType?.icon || Flag;
-                    const status = REPORT_STATUSES[report.status];
-                    const isSelected = index === selectedIndex;
+                    reports.map((report, index) => {
+                      const contentType = CONTENT_TYPES[report.target.type];
+                      const ContentIcon = contentType?.icon || Flag;
+                      const status = REPORT_STATUSES[report.status];
+                      const isSelected = index === selectedIndex;
 
-                    return (
-                      <TableRow
-                        key={report.id}
-                        className={cn(
-                          "cursor-pointer transition-colors",
-                          isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
-                        )}
-                        onClick={() => setSelectedIndex(index)}
-                      >
-                        {/* Reporter */}
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={report.reporter.avatar} />
-                              <AvatarFallback className="text-xs">
-                                {report.reporter.name.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm font-medium">
-                              {report.reporter.name}
-                            </span>
-                          </div>
-                        </TableCell>
-
-                        {/* Target */}
-                        <TableCell>
-                          <Link
-                            href={getTargetAdminLink(report.target)}
-                            className="flex items-center gap-2 hover:underline"
-                          >
-                            <div
-                              className={cn(
-                                "p-1.5 rounded",
-                                contentType?.bgColor
-                              )}
-                            >
-                              <ContentIcon
-                                className={cn("h-4 w-4", contentType?.color)}
-                              />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-medium truncate">
-                                {report.target.name}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {contentType?.label}
-                              </p>
-                            </div>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" aria-hidden="true" />
-                          </Link>
-                        </TableCell>
-
-                        {/* Reason */}
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {REASON_CATEGORIES[report.reason]}
-                          </Badge>
-                        </TableCell>
-
-                        {/* Age */}
-                        <TableCell>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {formatReportAge(report.createdAt)}
-                          </div>
-                        </TableCell>
-
-                        {/* Status */}
-                        <TableCell>
-                          <Badge
-                            className={cn(
-                              "text-xs",
-                              status?.bgColor,
-                              status?.color
-                            )}
-                          >
-                            {status?.label}
-                          </Badge>
-                        </TableCell>
-
-                        {/* Assignee */}
-                        <TableCell>
-                          {report.assignee ? (
+                      return (
+                        <TableRow
+                          key={report.id}
+                          className={cn(
+                            "cursor-pointer transition-colors",
+                            isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
+                          )}
+                          onClick={() => setSelectedIndex(index)}
+                        >
+                          <TableCell>
                             <div className="flex items-center gap-2">
                               <Avatar className="h-8 w-8">
                                 <AvatarImage src={report.reporter.avatar} />
@@ -693,12 +568,53 @@ export default function UnifiedReportsPage() {
               </Table>
             </div>
 
-                        {/* Actions */}
-                        <TableCell>
-                            <DropdownMenu>
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y">
+              {loading ? (
+                <div className="py-8 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                </div>
+              ) : reports.length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground">
+                  <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>No reports found</p>
+                </div>
+              ) : (
+                reports.map((report, index) => {
+                  const contentType = CONTENT_TYPES[report.target.type];
+                  const ContentIcon = contentType?.icon || Flag;
+                  const status = REPORT_STATUSES[report.status];
+                  const isSelected = index === selectedIndex;
+
+                  return (
+                    <div
+                      key={report.id}
+                      role="button"
+                      tabIndex={0}
+                      className={cn(
+                        "p-3 cursor-pointer transition-colors",
+                        isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
+                      )}
+                      onClick={() => setSelectedIndex(index)}
+                      onKeyDown={(event) => handleReportCardKeyDown(event, index)}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Avatar className="h-7 w-7 shrink-0">
+                            <AvatarImage src={report.reporter.avatar} />
+                            <AvatarFallback className="text-xs">{report.reporter.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium truncate">{report.reporter.name}</p>
+                            <p className="text-xs text-muted-foreground">{formatReportAge(report.createdAt)}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Badge className={cn("text-[10px]", status?.bgColor, status?.color)}>{status?.label}</Badge>
+                          <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Report actions">
-                                <MoreVertical className="h-4 w-4" />
+                              <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <MoreVertical className="h-3.5 w-3.5" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -717,12 +633,7 @@ export default function UnifiedReportsPage() {
                                 <CheckCircle className="h-4 w-4 mr-2" />
                                 Mark Resolved
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setDismissTarget(report);
-                                  setIsDismissDialogOpen(true);
-                                }}
-                              >
+                              <DropdownMenuItem onClick={() => handleStatusChange(report.id, "dismissed")}>
                                 <XCircle className="h-4 w-4 mr-2" />
                                 Dismiss
                               </DropdownMenuItem>
@@ -751,7 +662,6 @@ export default function UnifiedReportsPage() {
               )}
             </div>
           </div>
-          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -760,23 +670,11 @@ export default function UnifiedReportsPage() {
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1 || loading}
-                  aria-label="Go to previous page"
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1 || loading}>
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages || loading}
-                  aria-label="Go to next page"
-                >
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || loading}>
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -806,21 +704,6 @@ export default function UnifiedReportsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Dismiss Report Dialog */}
-      {dismissTarget && (
-        <DismissReportDialog
-          open={isDismissDialogOpen}
-          onOpenChange={(open) => {
-            setIsDismissDialogOpen(open);
-            if (!open) setDismissTarget(null);
-          }}
-          report={dismissTarget}
-          onDismissed={(reportId) => {
-            handleStatusChange(reportId, "dismissed");
-          }}
-        />
-      )}
     </PageShell>
   );
 }

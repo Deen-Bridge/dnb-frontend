@@ -20,6 +20,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "@/app/account": resolve(__dirname, "app/[locale]/account"),
+      "@/app/dashboard": resolve(__dirname, "app/[locale]/dashboard"),
       "@": resolve(__dirname, "."),
     },
   },

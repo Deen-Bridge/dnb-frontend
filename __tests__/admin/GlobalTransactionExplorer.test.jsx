@@ -109,7 +109,7 @@ describe("GlobalTransactionExplorer Component", () => {
     expect(applyButton).toBeDisabled();
 
     // Fix with valid Stellar address format
-    const validAddress = "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335WFOPVQOI3ZFZG3KA4YAOMNEB";
+    const validAddress = "GD4UNPU4U5OGEKFXFZFCGNIZXZ75HEQ7R77C72AZ6QLKK3IYEDZWSOQ6";
     fireEvent.change(buyerInput, { target: { value: validAddress } });
 
     expect(
