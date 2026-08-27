@@ -37,11 +37,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
-import {
-  DISMISSAL_REASONS,
-  isFirstTimeReporter,
-  dismissReport,
-} from "@/lib/actions/admin-moderation";
+import { isFirstTimeReporter, dismissReport } from "@/lib/actions/admin-moderation";
+import { DISMISSAL_REASONS } from "@/lib/report-reasons";
 
 /**
  * @param {object}  props
