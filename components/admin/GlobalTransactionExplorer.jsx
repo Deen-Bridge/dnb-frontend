@@ -370,14 +370,14 @@ export default function GlobalTransactionExplorer() {
 
               {/* Status Filter */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">
+                <label htmlFor="status-filter" className="text-xs font-medium text-muted-foreground">
                   Status
                 </label>
                 <Select
                   value={filters.status}
                   onValueChange={(val) => handleFilterChange("status", val)}
                 >
-                  <SelectTrigger className="h-9 text-sm" aria-label="Filter by status">
+                  <SelectTrigger id="status-filter" className="h-9 text-sm" aria-label="Filter by status">
                     <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,14 +393,14 @@ export default function GlobalTransactionExplorer() {
 
               {/* Item Type Filter */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">
+                <label htmlFor="item-type-filter" className="text-xs font-medium text-muted-foreground">
                   Item Type
                 </label>
                 <Select
                   value={filters.itemType}
                   onValueChange={(val) => handleFilterChange("itemType", val)}
                 >
-                  <SelectTrigger className="h-9 text-sm" aria-label="Filter by item type">
+                  <SelectTrigger id="item-type-filter" className="h-9 text-sm" aria-label="Filter by item type">
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
