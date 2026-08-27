@@ -61,4 +61,31 @@ describe("fetchEngagementAnalytics", () => {
       expect(typeof bucket.value).toBe("number");
     }
   });
+
+  it("resolves a geographic snapshot with coverage and country shapes", async () => {
+    const data = await fetchEngagementAnalytics();
+    expect(data.geographic).toBeDefined();
+    expect(typeof data.geographic.tracked).toBe("boolean");
+    expect(typeof data.geographic.coverage.label).toBe("string");
+    expect(typeof data.geographic.coverage.value).toBe("number");
+    expect(typeof data.geographic.coverage.tracked).toBe("boolean");
+    expect(Array.isArray(data.geographic.countries)).toBe(true);
+    expect(data.geographic.countries.length).toBeGreaterThan(0);
+    for (const country of data.geographic.countries) {
+      expect(typeof country.code).toBe("string");
+      expect(typeof country.name).toBe("string");
+      expect(typeof country.learners).toBe("number");
+      expect(typeof country.revenue).toBe("number");
+      expect(typeof country.tracked).toBe("boolean");
+    }
+  });
+
+  it("accepts an optional date range and still resolves the snapshot", async () => {
+    const data = await fetchEngagementAnalytics({
+      from: "2026-01-01T00:00:00.000Z",
+      to: "2026-03-31T23:59:59.999Z",
+    });
+    expect(typeof data.generatedAt).toBe("string");
+    expect(data.geographic.countries.length).toBeGreaterThan(0);
+  });
 });

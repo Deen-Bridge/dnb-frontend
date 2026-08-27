@@ -14,6 +14,21 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -29,6 +44,10 @@ import {
   BarChart3,
   Eye,
   AlertTriangle,
+  Globe,
+  MapPin,
+  Calendar,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
@@ -219,14 +238,227 @@ function DistributionChart({
   );
 }
 
+const DATE_PRESETS = [
+  { label: "Last 30 Days", days: 30 },
+  { label: "Last 90 Days", days: 90 },
+  { label: "Last 6 Months", days: 180 },
+  { label: "Last Year", days: 365 },
+  { label: "All Time", days: 0 },
+];
+
+function GeographicDistribution({ geographic }) {
+  const { tracked, coverage, countries } = geographic;
+
+  if (!tracked) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Globe className="h-5 w-5" />
+            Geographic Distribution
+          </CardTitle>
+          <CardDescription>
+            Where learners are located around the world
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <NotTrackedPlaceholder
+            icon={Globe}
+            title="Geographic Distribution"
+            description="Country data from learner profiles isn't instrumented yet, so geographic distribution can't be computed."
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const maxLearners = Math.max(...countries.map((c) => c.learners), 1);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Globe className="h-5 w-5" />
+          Geographic Distribution
+        </CardTitle>
+        <CardDescription>
+          Learner distribution across countries (bar-list fallback view)
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Coverage indicator */}
+        <div className="flex items-center justify-between rounded-lg border border-accent/10 bg-muted/30 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-accent" />
+            <span className={cn(poppins_500.className, "text-sm")}>
+              {coverage.label}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-32 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-secondary/80 to-accent"
+                style={{ width: `${coverage.value}%` }}
+              />
+            </div>
+            <Badge
+              variant={coverage.value >= 70 ? "secondary" : "outline"}
+              className="text-xs"
+            >
+              {coverage.value}%
+            </Badge>
+          </div>
+        </div>
+
+        {coverage.value < 100 && (
+          <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
+            Country data is available for {coverage.value}% of learners. The
+            remaining learners have no country on file and are excluded from the
+            distribution below.
+          </p>
+        )}
+
+        {/* Bar-list fallback */}
+        <div className="space-y-3">
+          {countries.map((country) => {
+            const width = Math.max(4, (country.learners / maxLearners) * 100);
+            return (
+              <div key={country.code} className="flex items-center gap-3">
+                <span className={cn(poppins_500.className, "w-40 shrink-0 truncate text-sm")}>
+                  {country.name}
+                </span>
+                <div className="flex-1">
+                  <div className="h-7 w-full overflow-hidden rounded-md bg-muted">
+                    <div
+                      className="h-full rounded-md bg-gradient-to-r from-secondary/80 to-accent"
+                      style={{ width: `${width}%` }}
+                    />
+                  </div>
+                </div>
+                <span className={cn(poppins_600.className, "w-16 shrink-0 text-right text-sm")}>
+                  {country.learners.toLocaleString()}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TopCountriesTable({ countries }) {
+  const totalLearners = countries.reduce((sum, c) => sum + c.learners, 0);
+  const totalRevenue = countries.reduce((sum, c) => sum + c.revenue, 0);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <DollarSign className="h-5 w-5" />
+          Top Countries
+        </CardTitle>
+        <CardDescription>
+          Learner counts with revenue overlay for the selected period
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-lg border overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[60px]">#</TableHead>
+                <TableHead>Country</TableHead>
+                <TableHead className="text-right">Learners</TableHead>
+                <TableHead className="text-right">Revenue</TableHead>
+                <TableHead className="w-[140px]">Share</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {countries.map((country, index) => {
+                const share = totalLearners > 0
+                  ? Math.round((country.learners / totalLearners) * 100)
+                  : 0;
+                return (
+                  <TableRow key={country.code}>
+                    <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className={cn(poppins_500.className, "text-sm")}>
+                          {country.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {country.code}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className={cn(poppins_600.className, "text-sm")}>
+                        {country.learners.toLocaleString()}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className={cn(poppins_500.className, "text-sm text-secondary")}>
+                        ${country.revenue.toLocaleString()}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-accent"
+                            style={{ width: `${share}%` }}
+                          />
+                        </div>
+                        <span className="w-9 text-right text-xs text-muted-foreground">
+                          {share}%
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
+            Showing {countries.length} countries with country data on file.
+          </p>
+          <div className="flex items-center gap-4">
+            <span className={cn(poppins_500.className, "text-xs text-muted-foreground")}>
+              Total learners:{" "}
+              <span className={cn(poppins_600.className, "text-foreground")}>
+                {totalLearners.toLocaleString()}
+              </span>
+            </span>
+            <span className={cn(poppins_500.className, "text-xs text-muted-foreground")}>
+              Total revenue:{" "}
+              <span className={cn(poppins_600.className, "text-secondary")}>
+                ${totalRevenue.toLocaleString()}
+              </span>
+            </span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function LearningAnalyticsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dateRange, setDateRange] = useState(90);
 
   useEffect(() => {
     let active = true;
-    fetchEngagementAnalytics()
+    setLoading(true);
+    const to = new Date().toISOString();
+    const from = dateRange > 0
+      ? new Date(Date.now() - dateRange * 24 * 60 * 60 * 1000).toISOString()
+      : undefined;
+    fetchEngagementAnalytics({ from, to })
       .then((engagement) => {
         if (active) {
           setData(engagement);
@@ -242,7 +474,7 @@ export default function LearningAnalyticsPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [dateRange]);
 
   if (loading) {
     return (
@@ -283,7 +515,7 @@ export default function LearningAnalyticsPage() {
     );
   }
 
-  const { totals, funnel, sessionLength, lessonsCompleted, readingDepth } = data;
+  const { totals, funnel, sessionLength, lessonsCompleted, readingDepth, geographic } = data;
 
   return (
     <PageShell>
@@ -291,6 +523,21 @@ export default function LearningAnalyticsPage() {
         icon={BarChart3}
         title="Learning Analytics"
         subtitle="How learners engage with courses and content"
+        actions={
+          <Select value={String(dateRange)} onValueChange={(v) => setDateRange(Number(v))}>
+            <SelectTrigger className="w-[160px]">
+              <Calendar className="mr-2 h-4 w-4" />
+              <SelectValue placeholder="Date range" />
+            </SelectTrigger>
+            <SelectContent>
+              {DATE_PRESETS.map((preset) => (
+                <SelectItem key={preset.days} value={String(preset.days)}>
+                  {preset.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        }
       />
 
       {/* Summary Stats */}
@@ -315,6 +562,12 @@ export default function LearningAnalyticsPage() {
 
       {/* Course Completion Funnel */}
       <CourseCompletionFunnel funnel={funnel} />
+
+      {/* Geographic Distribution */}
+      <GeographicDistribution geographic={geographic} />
+
+      {/* Top Countries Table */}
+      <TopCountriesTable countries={geographic.countries} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Average Session Length */}
