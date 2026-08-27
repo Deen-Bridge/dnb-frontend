@@ -340,101 +340,68 @@ export default function AuditLogsPage() {
           {error ? (
             <TableErrorState message={error} onRetry={handleRefresh} />
           ) : (
-            <div className="rounded-lg border">
-          <div className="rounded-lg border overflow-x-auto">
-            {/* Desktop Table */}
-            <div className="hidden md:block">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[180px]">Timestamp</TableHead>
-                    <TableHead className="w-[180px]">Admin Actor</TableHead>
-                    <TableHead className="w-[150px]">Action</TableHead>
-                    <TableHead>Target</TableHead>
-                    <TableHead>Summary</TableHead>
-                    <TableHead className="w-[120px]">IP Address</TableHead>
-          <div className="rounded-lg border">
-            <Table aria-label="Audit log events">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[180px]">Timestamp</TableHead>
-                  <TableHead className="w-[180px]">Admin Actor</TableHead>
-                  <TableHead className="w-[150px]">Action</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead>Summary</TableHead>
-                  <TableHead className="w-[120px]">IP Address</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody aria-live="polite">
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
-                      <span className="sr-only">Loading audit logs</span>
-                    </TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableSkeleton rows={6} columns={6} />
-                  ) : logs.length === 0 ? (
-                    <TableEmptyState
-                      icon={FileText}
-                      title="No audit logs found"
-                      description="No audit logs match your current filters. Try adjusting the filters."
-                    />
-                  ) : (
-                  logs.map((log) => {
-                    const category = ACTION_CATEGORIES[log.category];
-                    const CategoryIcon = category?.icon || FileText;
-                    return (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-mono text-xs">
+            <div className="rounded-lg border overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden md:block">
+                <Table aria-label="Audit log events">
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={6} className="py-8 text-center">
-                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                      </TableCell>
+                      <TableHead className="w-[180px]">Timestamp</TableHead>
+                      <TableHead className="w-[180px]">Admin Actor</TableHead>
+                      <TableHead className="w-[150px]">Action</TableHead>
+                      <TableHead>Target</TableHead>
+                      <TableHead>Summary</TableHead>
+                      <TableHead className="w-[120px]">IP Address</TableHead>
                     </TableRow>
-                  ) : logs.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                        No audit logs found matching your filters
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    logs.map((log) => {
-                      const category = ACTION_CATEGORIES[log.category];
-                      const CategoryIcon = category?.icon || FileText;
-                      return (
-                        <TableRow key={log.id}>
-                          <TableCell className="font-mono text-xs">{formatTimestamp(log.timestamp)}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm">{log.actor}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <CategoryIcon className={cn("h-4 w-4", category?.color)} />
-                              <Badge variant="outline" className="text-xs">{log.action}</Badge>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Link href={getTargetLink(log.target)} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
-                              {log.target.name}
-                              <ExternalLink className="h-3 w-3" />
-                            </Link>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{log.summary}</TableCell>
-                          <TableCell className="font-mono text-xs text-muted-foreground">{log.ip}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody aria-live="polite">
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="py-8 text-center">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                          <span className="sr-only">Loading audit logs</span>
+                        </TableCell>
+                      </TableRow>
+                    ) : logs.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                          No audit logs found matching your filters
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      logs.map((log) => {
+                        const category = ACTION_CATEGORIES[log.category];
+                        const CategoryIcon = category?.icon || FileText;
+                        return (
+                          <TableRow key={log.id}>
+                            <TableCell className="font-mono text-xs">{formatTimestamp(log.timestamp)}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">{log.actor}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <CategoryIcon className={cn("h-4 w-4", category?.color)} />
+                                <Badge variant="outline" className="text-xs">{log.action}</Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Link href={getTargetLink(log.target)} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                                {log.target.name}
+                                <ExternalLink className="h-3 w-3" />
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{log.summary}</TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">{log.ip}</TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
 
             {/* Mobile Card View */}
             <div className="md:hidden divide-y">

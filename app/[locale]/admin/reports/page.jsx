@@ -464,62 +464,35 @@ export default function UnifiedReportsPage() {
             <TableErrorState message={error} onRetry={handleRefresh} />
           ) : (
             <div className="rounded-lg border" ref={tableRef}>
-              <Table>
-                <TableHeader>
-          <div className="rounded-lg border" ref={tableRef}>
-            {/* Desktop Table */}
-            <div className="hidden md:block">
-              <Table>
-                <TableHeader>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">Reporter</TableHead>
-                  <TableHead className="w-[250px]">Target</TableHead>
-                  <TableHead className="w-[150px]">Reason</TableHead>
-                  <TableHead className="w-[100px]">Age</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
-                  <TableHead className="w-[150px]">Assignee</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableHead className="w-[200px]">Reporter</TableHead>
-                    <TableHead className="w-[250px]">Target</TableHead>
-                    <TableHead className="w-[150px]">Reason</TableHead>
-                    <TableHead className="w-[100px]">Age</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                    <TableHead className="w-[150px]">Assignee</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                    <TableCell colSpan={7} className="py-8 text-center">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
-                      <span className="sr-only">Loading reports</span>
-                    </TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableSkeleton rows={5} columns={7} />
-                  ) : reports.length === 0 ? (
-                    <TableEmptyState
-                      icon={Flag}
-                      title="No reports found"
-                      description="No reports match your current filters. Try adjusting the filters."
-                    />
-                  ) : (
-                ) : reports.length === 0 ? (
-                  <TableRow>
-                    <TableHead className="w-[200px]">Reporter</TableHead>
-                    <TableHead className="w-[250px]">Target</TableHead>
-                    <TableHead className="w-[150px]">Reason</TableHead>
-                    <TableHead className="w-[100px]">Age</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                    <TableHead className="w-[150px]">Assignee</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                ) : (
+              {/* Desktop Table */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[200px]">Reporter</TableHead>
+                      <TableHead className="w-[250px]">Target</TableHead>
+                      <TableHead className="w-[150px]">Reason</TableHead>
+                      <TableHead className="w-[100px]">Age</TableHead>
+                      <TableHead className="w-[100px]">Status</TableHead>
+                      <TableHead className="w-[150px]">Assignee</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="py-8 text-center">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                          <span className="sr-only">Loading reports</span>
+                        </TableCell>
+                      </TableRow>
+                    ) : reports.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                          No reports found matching your filters
+                        </TableCell>
+                      </TableRow>
+                    ) : (
                   reports.map((report, index) => {
                     const contentType = CONTENT_TYPES[report.target.type];
                     const ContentIcon = contentType?.icon || Flag;
@@ -691,11 +664,41 @@ export default function UnifiedReportsPage() {
                   )}
                 </TableBody>
               </Table>
-            </div>
+              </div>
 
-                        {/* Actions */}
-                        <TableCell>
-                            <DropdownMenu>
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y">
+                {loading ? (
+                  <div className="py-8 text-center">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                  </div>
+                ) : reports.length === 0 ? (
+                  <div className="py-8 text-center text-muted-foreground">
+                    No reports found matching your filters
+                  </div>
+                ) : (
+                  reports.map((report, index) => {
+                    const contentType = CONTENT_TYPES[report.target.type];
+                    const ContentIcon = contentType?.icon || Flag;
+                    const status = REPORT_STATUSES[report.status];
+                    return (
+                      <div key={report.id} className="p-3 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={report.reporter.avatar} />
+                              <AvatarFallback className="text-xs">
+                                {report.reporter.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">{report.reporter.name}</p>
+                              <Badge className={cn("text-[10px]", status?.bgColor, status?.color)}>
+                                {status?.label}
+                              </Badge>
+                            </div>
+                          </div>
+                          <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Report actions">
                                 <MoreVertical className="h-4 w-4" />
@@ -729,28 +732,27 @@ export default function UnifiedReportsPage() {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
+                        <div className="mt-2">
+                          <Link href={getTargetAdminLink(report.target)} className="flex items-center gap-2 hover:underline">
+                            <div className={cn("p-1 rounded shrink-0", contentType?.bgColor)}>
+                              <ContentIcon className={cn("h-3.5 w-3.5", contentType?.color)} />
+                            </div>
+                            <p className="text-sm font-medium truncate">{report.target.name}</p>
+                            <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                          </Link>
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <Badge variant="outline" className="text-[10px]">{REASON_CATEGORIES[report.reason]}</Badge>
+                          {report.assignee && (
+                            <span className="text-[10px] text-muted-foreground">→ {report.assignee.name}</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="mt-2">
-                        <Link href={getTargetAdminLink(report.target)} className="flex items-center gap-2 hover:underline">
-                          <div className={cn("p-1 rounded shrink-0", contentType?.bgColor)}>
-                            <ContentIcon className={cn("h-3.5 w-3.5", contentType?.color)} />
-                          </div>
-                          <p className="text-sm font-medium truncate">{report.target.name}</p>
-                          <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
-                        </Link>
-                      </div>
-                      <div className="mt-2 flex items-center gap-2">
-                        <Badge variant="outline" className="text-[10px]">{REASON_CATEGORIES[report.reason]}</Badge>
-                        {report.assignee && (
-                          <span className="text-[10px] text-muted-foreground">→ {report.assignee.name}</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+                    );
+                  })
+                )}
+              </div>
             </div>
-          </div>
           )}
 
           {/* Pagination */}

@@ -293,27 +293,10 @@ export default function PayoutReconciliationPage() {
                   <Search className="mr-2 h-4 w-4" />
                 )}
                 Run Reconciliation
-            <Button
-              onClick={() => handleSearch(false)}
-              disabled={!dateRange.from || !dateRange.to || loading}
-              aria-label="Run reconciliation search"
-            >
-              {loading ? (
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Search className="mr-2 h-4 w-4" />
-              )}
-              Run Reconciliation
-            </Button>
-
-            {transactions.length > 0 && (
-              <Button variant="outline" onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Export CSV
               </Button>
 
               {transactions.length > 0 && (
-                <Button variant="outline" onClick={handleExport} className="flex-1 sm:flex-none">
+                <Button variant="outline" onClick={handleExport}>
                   <Download className="mr-2 h-4 w-4" />
                   Export CSV
                 </Button>
