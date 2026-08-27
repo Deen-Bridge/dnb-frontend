@@ -527,6 +527,29 @@ export default function DisputesPage() {
                   Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
                   {formatAge(selectedDispute.openedAt)}
                 </DialogDescription>
+            <div className="print-root space-y-4">
+              <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+                <div>
+                  <DialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    Dispute {selectedDispute.id}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                    Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
+                    {formatAge(selectedDispute.openedAt)}
+                  </DialogDescription>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.print()}
+                  className="no-print gap-1.5 text-xs font-semibold mr-6"
+                  aria-label="Print record"
+                >
+                  <Printer className="h-4 w-4" />
+                  Print Record
+                </Button>
               </DialogHeader>
 
               {/* Parties */}
@@ -536,6 +559,12 @@ export default function DisputesPage() {
                     <CardTitle className="text-sm flex items-center gap-2">
                       Buyer: {selectedDispute.buyer.name}
                     </CardTitle>
+                    <CardDescription className="text-xs">
+                      {selectedDispute.buyer.name} &middot;{" "}
+                      <a href={`mailto:${selectedDispute.buyer.email}`} className="text-primary hover:underline print-url">
+                        {selectedDispute.buyer.email}
+                      </a>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground">{selectedDispute.buyerStatement}</p>
@@ -547,6 +576,12 @@ export default function DisputesPage() {
                     <CardTitle className="text-sm flex items-center gap-2">
                       Educator: {selectedDispute.educator.name}
                     </CardTitle>
+                    <CardDescription className="text-xs">
+                      {selectedDispute.educator.name} &middot;{" "}
+                      <a href={`mailto:${selectedDispute.educator.email}`} className="text-primary hover:underline print-url">
+                        {selectedDispute.educator.email}
+                      </a>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground">{selectedDispute.educatorStatement}</p>
@@ -557,6 +592,72 @@ export default function DisputesPage() {
               {/* Resolution Actions */}
               {selectedDispute.state === "open" || selectedDispute.state === "awaiting-evidence" ? (
                 <DialogFooter className="flex flex-wrap gap-2 sm:justify-start pt-2">
+              {/* Evidence Request */}
+              {selectedDispute.evidenceRequest && (
+                <Card className="border-amber-200 bg-amber-50">
+                  <CardContent className="py-4">
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-amber-800 mb-1"
+                      )}
+                    >
+                      <Send className="h-4 w-4 inline mr-1" />
+                      Evidence Requested from{" "}
+                      {selectedDispute.evidenceRequest.target === "buyer"
+                        ? "Buyer"
+                        : "Educator"}
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      {selectedDispute.evidenceRequest.message} &middot;{" "}
+                      {formatDate(selectedDispute.evidenceRequest.requestedAt)}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Resolution */}
+              {selectedDispute.resolution && (
+                <Card className="border-green-200 bg-green-50">
+                  <CardContent className="py-4">
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-green-800 mb-1"
+                      )}
+                    >
+                      <CheckCircle className="h-4 w-4 inline mr-1" />
+                      Resolution
+                    </p>
+                    <p className="text-xs text-green-700">
+                      {selectedDispute.resolution}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Actions */}
+              {selectedDispute.state === "open" ||
+              selectedDispute.state === "awaiting-evidence" ? (
+                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => requestEvidence(selectedDispute.id, "buyer")}
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    Request Evidence from Buyer
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      requestEvidence(selectedDispute.id, "educator")
+                    }
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    Request Evidence from Educator
+                  </Button>
                   <Button
                     variant="default"
                     size="sm"
@@ -582,7 +683,7 @@ export default function DisputesPage() {
                   </Button>
                 </DialogFooter>
               ) : null}
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -606,3 +707,4 @@ export default function DisputesPage() {
     </PageShell>
   );
 }
+
