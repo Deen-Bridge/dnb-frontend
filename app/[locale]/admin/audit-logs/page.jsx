@@ -445,43 +445,6 @@ export default function AuditLogsPage() {
                 })
               )}
             </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{log.actor}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <CategoryIcon className={cn("h-4 w-4", category?.color)} />
-                            <Badge variant="outline" className="text-xs">
-                              {log.action}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            href={getTargetLink(log.target)}
-                            className="flex items-center gap-1 text-sm text-blue-600 hover:underline dark:text-blue-400"
-                          >
-                            {log.target.name}
-                            <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {log.summary}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {log.ip}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
           )}
 
           {/* Pagination */}
@@ -491,11 +454,6 @@ export default function AuditLogsPage() {
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1 || loading}>
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || loading}>
                 <Button
                   variant="outline"
                   size="sm"

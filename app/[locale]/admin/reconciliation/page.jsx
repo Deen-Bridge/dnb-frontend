@@ -555,11 +555,7 @@ export default function PayoutReconciliationPage() {
                                       <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
                                     </a>
                                   </Button>
-                                  {tx.txHash && (
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                      <a href={getStellarExplorerUrl(tx.txHash)} target="_blank" rel="noopener noreferrer">Stellar<ExternalLink className="ml-1 h-3 w-3" /></a>
-                                    </Button>
-                                  )}
+                                )}
                                 </div>
                               </TableCell>
                             </TableRow>
