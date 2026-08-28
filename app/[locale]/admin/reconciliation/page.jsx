@@ -257,10 +257,10 @@ export default function PayoutReconciliationPage() {
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
             <div className="space-y-2 flex-1">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <label htmlFor="recon-date-range" className={cn(poppins_500.className, "text-sm")}>Date Range</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-[280px] justify-start text-left font-normal">
+                  <Button id="recon-date-range" variant="outline" className="w-full sm:w-[280px] justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
                     {dateRange.from ? (
                       dateRange.to ? (
@@ -286,34 +286,21 @@ export default function PayoutReconciliationPage() {
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={handleSearch} disabled={!dateRange.from || !dateRange.to || loading} className="flex-1 sm:flex-none">
+              <Button
+                onClick={() => handleSearch(false)}
+                disabled={!dateRange.from || !dateRange.to || loading}
+                aria-label="Run reconciliation search"
+              >
                 {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Search className="mr-2 h-4 w-4" />
                 )}
                 Run Reconciliation
-            <Button
-              onClick={() => handleSearch(false)}
-              disabled={!dateRange.from || !dateRange.to || loading}
-              aria-label="Run reconciliation search"
-            >
-              {loading ? (
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Search className="mr-2 h-4 w-4" />
-              )}
-              Run Reconciliation
-            </Button>
-
-            {transactions.length > 0 && (
-              <Button variant="outline" onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Export CSV
               </Button>
 
               {transactions.length > 0 && (
-                <Button variant="outline" onClick={handleExport} className="flex-1 sm:flex-none">
+                <Button variant="outline" onClick={handleExport}>
                   <Download className="mr-2 h-4 w-4" />
                   Export CSV
                 </Button>
@@ -428,7 +415,7 @@ export default function PayoutReconciliationPage() {
                 <>
                   {/* Desktop Table */}
                   <div className="hidden md:block rounded-lg border overflow-x-auto">
-                    <Table>
+                    <Table aria-label="Reconciliation transaction records">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Platform ID</TableHead>
@@ -450,131 +437,79 @@ export default function PayoutReconciliationPage() {
                           return (
                             <TableRow
                               key={tx.id}
-                              className={cn(isDiscrepancy && statusConfig.bgColor, isDiscrepancy && "hover:opacity-90")}
+                              className={cn(
+                                isDiscrepancy && statusConfig.bgColor,
+                                isDiscrepancy && "hover:opacity-90"
+                              )}
                             >
-                              <TableCell className="font-mono text-sm">{tx.platformId}</TableCell>
-                              <TableCell className="text-sm">{format(new Date(tx.timestamp), "MMM d, HH:mm")}</TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {tx.platformId}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {format(new Date(tx.timestamp), "MMM d, HH:mm")}
+                              </TableCell>
                               <TableCell className="text-sm">{tx.creatorEmail}</TableCell>
                               <TableCell>
                                 <div className="text-sm">
-                                  <Badge variant="outline" className="mr-2 text-xs">{tx.itemType}</Badge>
+                                  <Badge variant="outline" className="mr-2 text-xs">
+                                    {tx.itemType}
+                                  </Badge>
                                   {tx.itemTitle}
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right font-mono">${tx.platformAmount.toFixed(2)}</TableCell>
-                              <TableCell className={cn("text-right font-mono", tx.status === "amount-mismatch" && "text-amber-700 font-bold")}>
-                                {tx.onChainAmount !== null ? `$${tx.onChainAmount.toFixed(2)}` : "—"}
+                              <TableCell className="text-right font-mono">
+                                ${tx.platformAmount.toFixed(2)}
+                              </TableCell>
+                              <TableCell className={cn(
+                                "text-right font-mono",
+                                tx.status === "amount-mismatch" && "text-amber-700 font-bold"
+                              )}>
+                                {tx.onChainAmount !== null
+                                  ? `$${tx.onChainAmount.toFixed(2)}`
+                                  : "—"}
                               </TableCell>
                               <TableCell>
-                                <Badge variant="outline" className={cn("text-xs gap-1", statusConfig.color, statusConfig.borderColor)}>
+                                <Badge
+                                  variant="outline"
+                                  className={cn(
+                                    "text-xs gap-1",
+                                    statusConfig.color,
+                                    statusConfig.borderColor
+                                  )}
+                                >
                                   <StatusIcon className="h-3 w-3" />
                                   {statusConfig.label}
                                 </Badge>
                               </TableCell>
                               <TableCell>
                                 <div className="flex gap-2">
-                                  <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                    <a href={`/admin/transactions/${tx.id}`}>Platform<ArrowUpRight className="ml-1 h-3 w-3" /></a>
-                <div className="rounded-lg border overflow-x-auto">
-                  <Table aria-label="Reconciliation transaction records">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Platform ID</TableHead>
-                        <TableHead>Timestamp</TableHead>
-                        <TableHead>Creator</TableHead>
-                        <TableHead>Item</TableHead>
-                        <TableHead className="text-right">Platform Amount</TableHead>
-                        <TableHead className="text-right">On-Chain Amount</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Links</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {transactions.map((tx) => {
-                        const statusConfig = STATUS_CONFIG[tx.status];
-                        const StatusIcon = statusConfig.icon;
-                        const isDiscrepancy = tx.status !== "matched";
-
-                        return (
-                          <TableRow
-                            key={tx.id}
-                            className={cn(
-                              isDiscrepancy && statusConfig.bgColor,
-                              isDiscrepancy && "hover:opacity-90"
-                            )}
-                          >
-                            <TableCell className="font-mono text-sm">
-                              {tx.platformId}
-                            </TableCell>
-                            <TableCell className="text-sm">
-                              {format(new Date(tx.timestamp), "MMM d, HH:mm")}
-                            </TableCell>
-                            <TableCell className="text-sm">{tx.creatorEmail}</TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                <Badge variant="outline" className="mr-2 text-xs">
-                                  {tx.itemType}
-                                </Badge>
-                                {tx.itemTitle}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right font-mono">
-                              ${tx.platformAmount.toFixed(2)}
-                            </TableCell>
-                            <TableCell className={cn(
-                              "text-right font-mono",
-                              tx.status === "amount-mismatch" && "text-amber-700 font-bold"
-                            )}>
-                              {tx.onChainAmount !== null
-                                ? `$${tx.onChainAmount.toFixed(2)}`
-                                : "—"}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={cn(
-                                  "text-xs gap-1",
-                                  statusConfig.color,
-                                  statusConfig.borderColor
-                                )}
-                              >
-                                <StatusIcon className="h-3 w-3" />
-                                {statusConfig.label}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 text-xs"
-                                  asChild
-                                >
-                                  <a href={`/admin/transactions/${tx.id}`} aria-label={`View platform transaction ${tx.platformId}`}>
-                                    Platform
-                                    <ArrowUpRight className="ml-1 h-3 w-3" aria-hidden="true" />
-                                  </a>
-                                </Button>
-                                {tx.txHash && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     className="h-7 text-xs"
                                     asChild
                                   >
-                                    <a
-                                      href={getStellarExplorerUrl(tx.txHash)}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      aria-label={`View on Stellar explorer for transaction ${tx.platformId}`}
-                                    >
-                                      Stellar
-                                      <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
+                                    <a href={`/admin/transactions/${tx.id}`} aria-label={`View platform transaction ${tx.platformId}`}>
+                                      Platform
+                                      <ArrowUpRight className="ml-1 h-3 w-3" aria-hidden="true" />
                                     </a>
                                   </Button>
                                   {tx.txHash && (
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                      <a href={getStellarExplorerUrl(tx.txHash)} target="_blank" rel="noopener noreferrer">Stellar<ExternalLink className="ml-1 h-3 w-3" /></a>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-7 text-xs"
+                                      asChild
+                                    >
+                                      <a
+                                        href={getStellarExplorerUrl(tx.txHash)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`View on Stellar explorer for transaction ${tx.platformId}`}
+                                      >
+                                        Stellar
+                                        <ExternalLink className="ml-1 h-3 w-3" aria-hidden="true" />
+                                      </a>
                                     </Button>
                                   )}
                                 </div>
@@ -618,7 +553,9 @@ export default function PayoutReconciliationPage() {
                             <div>
                               <span className="text-muted-foreground">Chain: </span>
                               <span className={cn("font-mono", tx.status === "amount-mismatch" && "text-amber-700 font-bold")}>
-                                {tx.onChainAmount !== null ? `$${tx.onChainAmount.toFixed(2)}` : "—"}
+                                {tx.onChainAmount !== null
+                                  ? `$${tx.onChainAmount.toFixed(2)}`
+                                  : "—"}
                               </span>
                             </div>
                           </div>

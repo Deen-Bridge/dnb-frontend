@@ -59,6 +59,7 @@ import {
   Send,
   Eye,
   Loader2,
+  Printer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
