@@ -5,6 +5,8 @@ import { useStellar } from "@/components/stellar/StellarProvider";
 import WalletConnectButton from "@/components/stellar/WalletConnectButton";
 import TransactionHistory from "@/components/stellar/TransactionHistory";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Wallet,
   ExternalLink,
@@ -69,13 +71,13 @@ export default function WalletPage() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="bg-surface p-4 sm:p-6">
-        <div className="mx-auto max-w-4xl space-y-6">
+      <PageShell>
+        <div className="mx-auto max-w-5xl space-y-6">
           <Skeleton className="h-11 w-64 rounded-2xl" />
           <Skeleton className="h-48 w-full rounded-2xl" />
           <Skeleton className="h-64 w-full rounded-2xl" />
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -85,30 +87,15 @@ export default function WalletPage() {
   };
 
   return (
-    <div className="min-h-full bg-surface p-4 sm:p-6">
+    <PageShell>
       <div className="mx-auto max-w-5xl space-y-6">
         {/* ── Header ── */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-              <Wallet className="h-5 w-5 text-accent" />
-            </div>
-            <div>
-              <h1
-                className={cn(
-                  poppins_600,
-                  "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
-                )}
-              >
-                Stellar Wallet
-              </h1>
-              <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                Manage your Stellar wallet and view transactions
-              </p>
-            </div>
-          </div>
-          <WalletConnectButton />
-        </div>
+        <PageHeader
+          icon={Wallet}
+          title="Stellar Wallet"
+          subtitle="Manage your Stellar wallet and view transactions"
+          actions={<WalletConnectButton />}
+        />
 
         {/* ── Network Info ── */}
         <div className="flex items-center gap-2 rounded-xl border border-accent/10 bg-surface-raised px-4 py-3">
@@ -346,6 +333,6 @@ export default function WalletPage() {
           </div>
         </Panel>
       </div>
-    </div>
+    </PageShell>
   );
 }

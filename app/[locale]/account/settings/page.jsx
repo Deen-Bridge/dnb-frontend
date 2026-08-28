@@ -34,6 +34,8 @@ import {
   Smartphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   poppins_400,
   poppins_500,
@@ -299,30 +301,16 @@ const SettingsPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-surface p-3 sm:p-6">
-      <div className="mx-auto max-w-5xl">
+    <PageShell>
+      <div className="mx-auto max-w-5xl space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-              <Settings className="h-6 w-6 text-accent" />
-            </div>
-            <div>
-              <h1
-                className={cn(
-                  poppins_600,
-                  "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent sm:text-3xl"
-                )}
-              >
-                Settings
-              </h1>
-              <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                Manage your account preferences and privacy
-              </p>
-            </div>
-          </div>
+        <PageHeader
+          icon={Settings}
+          title="Settings"
+          subtitle="Manage your account preferences and privacy"
+        />
 
-          {message.text && (
+        {message.text && (
             <div
               className={cn(
                 "mt-6 flex items-center gap-2 rounded-xl border p-4",
@@ -372,7 +360,6 @@ const SettingsPage = () => {
               </div>
             </div>
           )}
-        </div>
 
         <Tabs
           value={activeTab}
@@ -916,7 +903,7 @@ const SettingsPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </PageShell>
   );
 };
 
