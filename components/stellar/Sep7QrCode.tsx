@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
-/**
- * Renders a QR code for a SEP-7 (web+stellar:) payment URI so users
- * can complete a payment by scanning with a Stellar mobile wallet.
- */
-export default function Sep7QrCode({ uri, size = 168, caption }) {
-  const [copied, setCopied] = useState(false);
+export interface Sep7QrCodeProps {
+  uri?: string;
+  size?: number;
+  caption?: string;
+}
+
+export default function Sep7QrCode({ uri, size = 168, caption }: Sep7QrCodeProps) {
+  const [copied, setCopied] = useState<boolean>(false);
 
   if (!uri) return null;
 

@@ -27,7 +27,24 @@ import {
   mapStellarError,
   isUserRejection,
   WALLET_INSTALL_LINKS,
+  StellarErrorDetail,
 } from "@/lib/stellar/stellarErrors";
+import { PaymentInitializationResponse } from "@/types/stellar";
+
+export interface PaymentModalItem {
+  _id: string;
+  title: string;
+  price: number | string;
+  [key: string]: any; // TODO(types): Item payload
+}
+
+export interface PaymentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  item: PaymentModalItem;
+  itemType: "book" | "course" | string;
+  onSuccess?: (result: any) => void; // TODO(types): Payment success result
+}
 
 export default function PaymentModal({
   isOpen,
@@ -35,7 +52,7 @@ export default function PaymentModal({
   item,
   itemType,
   onSuccess,
-}) {
+}: PaymentModalProps) {
   const {
     connectedWallet,
     walletInfo,
@@ -46,17 +63,17 @@ export default function PaymentModal({
     networkMismatch,
     validateForPayment,
   } = useStellar();
-  const { initializePayment, executePayment, isProcessing } =
+  const { initializePayment, executePayment, isProcessing, cancelPayment } =
     useStellarPayment();
 
-  const [step, setStep] = useState("preview");
-  const [paymentData, setPaymentData] = useState(null);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [errorDetail, setErrorDetail] = useState(null);
-  const [showQr, setShowQr] = useState(false);
-  const [preCheckIssues, setPreCheckIssues] = useState([]);
-  const closingRef = useRef(false);
+  const [step, setStep] = useState<"preview" | "confirm" | "processing" | "success" | "error">("preview");
+  const [paymentData, setPaymentData] = useState<PaymentInitializationResponse | null>(null);
+  const [result, setResult] = useState<any | null>(null); // TODO(types): Execution result
+  const [error, setError] = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<StellarErrorDetail | null>(null);
+  const [showQr, setShowQr] = useState<boolean>(false);
+  const [preCheckIssues, setPreCheckIssues] = useState<StellarErrorDetail[]>([]);
+  const closingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -113,7 +130,7 @@ export default function PaymentModal({
         setStep("error");
         setError("Transaction failed. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) { // TODO(types): Error from payment execution
       const mapped = mapStellarError(err);
       if (mapped) {
         setError(mapped.message);
@@ -124,7 +141,7 @@ export default function PaymentModal({
         setErrorDetail(null);
         return;
       } else {
-        setError(err.message || "Transaction failed. Please try again.");
+        setError(err?.message || "Transaction failed. Please try again.");
       }
       setStep("error");
     }
@@ -154,16 +171,18 @@ export default function PaymentModal({
     setStep("preview");
   };
 
-  const sep7Uri = paymentData?.sep7Uri || paymentData?.payment?.sep7Uri;
+  const sep7Uri = paymentData?.sep7Uri || (paymentData as any)?.payment?.sep7Uri; // TODO(types): Payment nested sep7Uri
 
-  const truncateAddress = (addr) => {
+  const truncateAddress = (addr?: string) => {
     if (!addr) return "";
     return `${addr.slice(0, 8)}...${addr.slice(-8)}`;
   };
 
+  const numPrice = typeof item?.price === "string" ? parseFloat(item.price) : (item?.price || 0);
+
   const hasInsufficientBalance =
     connectedWallet &&
-    parseFloat(walletInfo?.usdcBalance || 0) < (item?.price || 0);
+    parseFloat(walletInfo?.usdcBalance || "0") < numPrice;
 
   const hasBlockingIssues = preCheckIssues.some(
     (i) => i.type === "no_wallet" || i.type === "network" || i.type === "trustline"
@@ -173,10 +192,10 @@ export default function PaymentModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
         className="sm:max-w-md"
-        onPointerDownOutside={(e) => {
+        onPointerDownOutside={(e: any) => { // TODO(types): Radix pointer down outside event
           if (step === "processing") e.preventDefault();
         }}
-        onEscapeKeyDown={(e) => {
+        onEscapeKeyDown={(e: any) => { // TODO(types): Radix escape key down event
           if (step === "processing") e.preventDefault();
         }}
       >
@@ -352,7 +371,7 @@ export default function PaymentModal({
                       hasInsufficientBalance ? "text-red-500" : "text-green-600"
                     }`}
                   >
-                    {parseFloat(walletInfo?.usdcBalance || 0).toFixed(2)} USDC
+                    {parseFloat(walletInfo?.usdcBalance || "0").toFixed(2)} USDC
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -382,19 +401,19 @@ export default function PaymentModal({
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Sending:</span>
                   <span className="font-semibold">
-                    ${paymentData.item.price} USDC
+                    ${(paymentData as any).item?.price ?? item?.price} USDC {/* // TODO(types): Payment nested item price */}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">To:</span>
                   <span className="font-mono text-xs">
-                    {truncateAddress(paymentData.creator.wallet)}
+                    {truncateAddress((paymentData as any).creator?.wallet)} {/* // TODO(types): Payment nested creator wallet */}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Creator:</span>
                   <span className="font-semibold">
-                    {paymentData.creator.name}
+                    {(paymentData as any).creator?.name} {/* // TODO(types): Payment nested creator name */}
                   </span>
                 </div>
               </div>

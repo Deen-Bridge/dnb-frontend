@@ -24,7 +24,12 @@ import { toast } from "sonner";
 import { WALLET_INSTALL_LINKS } from "@/lib/stellar/stellarErrors";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 
-export default function WalletConnectButton({ variant = "outline", size = "default" }) {
+export interface WalletConnectButtonProps {
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+}
+
+export default function WalletConnectButton({ variant = "outline", size = "default" }: WalletConnectButtonProps) {
   const {
     connectedWallet,
     walletInfo,
@@ -38,18 +43,22 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
     networkMismatch,
   } = useStellar();
 
-  const truncateAddress = (addr) => {
+  const truncateAddress = (addr: string) => {
     if (!addr) return "";
     return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
   };
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(connectedWallet);
-    toast.success("Address copied to clipboard");
+    if (connectedWallet) {
+      navigator.clipboard.writeText(connectedWallet);
+      toast.success("Address copied to clipboard");
+    }
   };
 
   const viewOnExplorer = () => {
-    window.open(getExplorerUrl(connectedWallet, network), "_blank");
+    if (connectedWallet) {
+      window.open(getExplorerUrl(connectedWallet, network), "_blank");
+    }
   };
 
   if (isLoading) {
@@ -144,8 +153,6 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
               networkMismatch ? "bg-yellow-500" : "bg-green-500"
             }`}
           />
-          {/* Public key is Latin/base32 — force LTR so the G… key never reverses
-              inside an RTL (Arabic) layout. */}
           <span dir="ltr">{truncateAddress(connectedWallet)}</span>
         </Button>
       </DropdownMenuTrigger>
@@ -169,13 +176,13 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">USDC Balance</span>
               <span dir="ltr" className="font-bold text-primary">
-                {parseFloat(walletInfo?.usdcBalance || 0).toFixed(2)} USDC
+                {parseFloat(walletInfo?.usdcBalance || "0").toFixed(2)} USDC
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">XLM Balance</span>
               <span dir="ltr" className="font-medium">
-                {parseFloat(walletInfo?.xlmBalance || 0).toFixed(4)} XLM
+                {parseFloat(walletInfo?.xlmBalance || "0").toFixed(4)} XLM
               </span>
             </div>
             {walletInfo && !walletInfo.hasTrustline && (

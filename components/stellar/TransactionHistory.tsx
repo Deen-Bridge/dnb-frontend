@@ -30,8 +30,9 @@ import {
 } from "lucide-react";
 import useStellarPayment from "@/hooks/useStellarPayment";
 import TransactionDrawer from "@/components/admin/TransactionDrawer";
+import { StellarTransaction } from "@/types/stellar";
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
   submitted: "bg-blue-100 text-blue-800",
   confirmed: "bg-green-100 text-green-800",
@@ -39,22 +40,28 @@ const statusColors = {
   expired: "bg-gray-100 text-gray-800",
 };
 
+export interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
 export default function TransactionHistory() {
   const { getTransactionHistory } = useStellarPayment();
-  const [transactions, setTransactions] = useState([]);
-  const [pagination, setPagination] = useState({
+  const [transactions, setTransactions] = useState<StellarTransaction[]>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
     page: 1,
     limit: 10,
     total: 0,
     pages: 0,
   });
-  const [role, setRole] = useState("buyer");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [role, setRole] = useState<string>("buyer");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Transaction Drawer state (#338)
-  const [selectedTx, setSelectedTx] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedTx, setSelectedTx] = useState<StellarTransaction | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
@@ -65,8 +72,8 @@ export default function TransactionHistory() {
       limit: pagination.limit,
     });
     if (result.success) {
-      setTransactions(result.transactions);
-      setPagination(result.pagination);
+      setTransactions(result.transactions || []);
+      setPagination(result.pagination || { page: 1, limit: 10, total: 0, pages: 0 });
     } else {
       setError(result.error || "Failed to fetch transactions");
     }
@@ -77,22 +84,22 @@ export default function TransactionHistory() {
     fetchTransactions();
   }, [fetchTransactions]);
 
-  const handleRoleChange = (newRole) => {
+  const handleRoleChange = (newRole: string) => {
     setRole(newRole);
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handleOpenDrawer = (tx) => {
+  const handleOpenDrawer = (tx: StellarTransaction) => {
     setSelectedTx(tx);
     setDrawerOpen(true);
   };
 
-  const truncateAddress = (addr) => {
+  const truncateAddress = (addr?: string) => {
     if (!addr) return "";
     return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -104,7 +111,7 @@ export default function TransactionHistory() {
 
   return (
     <div className="space-y-4">
-      {/* Header - always mounted */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl font-semibold">Transaction History</h2>
         <Select value={role} onValueChange={handleRoleChange}>
@@ -137,7 +144,7 @@ export default function TransactionHistory() {
         </div>
       )}
 
-      {/* Loading skeleton - only table area */}
+      {/* Loading skeleton */}
       {isLoading && !error && (
         <div className="space-y-2">
           {[...Array(5)].map((_, i) => (
@@ -220,7 +227,7 @@ export default function TransactionHistory() {
                     <TableCell>
                       <Badge
                         variant="secondary"
-                        className={statusColors[tx.status]}
+                        className={statusColors[tx.status] || "bg-gray-100 text-gray-800"}
                       >
                         {tx.status}
                       </Badge>
@@ -236,7 +243,7 @@ export default function TransactionHistory() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={(e) => {
+                          onClick={(e: any) => { // TODO(types): Mouse event
                             e.stopPropagation();
                             handleOpenDrawer(tx);
                           }}
@@ -309,4 +316,3 @@ export default function TransactionHistory() {
     </div>
   );
 }
-
