@@ -19,6 +19,7 @@ export default defineConfig({
     include: ["**/__tests__/**/*.{test,spec}.{js,jsx}"],
   },
   resolve: {
+    mainFields: ["module", "main"],
     alias: {
       "@": resolve(__dirname, "."),
     },
