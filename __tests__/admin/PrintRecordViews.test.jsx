@@ -107,18 +107,20 @@ describe("Print-Friendly Views for Records (#338)", () => {
       creatorWallet: "GCFXHS4GXL6BVUCFZFDXA2P2VJ2XGCLLK7O6R72EC2Q656BUKZ2W4567",
     };
 
-    const { container } = render(
-      <TransactionDrawer transaction={sampleTx} open={true} onOpenChange={vi.fn()} />
-    );
+    await act(async () => {
+      render(
+        <TransactionDrawer transaction={sampleTx} open={true} onOpenChange={vi.fn()} />
+      );
+    });
 
-    // Verify print-root container
-    const printRoot = container.querySelector(".print-root");
+    // Verify print-root container (Radix Dialog portals to document.body)
+    const printRoot = document.body.querySelector(".print-root");
     expect(printRoot).toBeInTheDocument();
 
     // Verify Print Record button and window.print trigger
     const printBtn = screen.getByRole("button", { name: "Print record" });
     expect(printBtn).toBeInTheDocument();
-    expect(printBtn.className).toContain("no-print");
+    expect(printBtn.closest(".no-print")).not.toBeNull();
 
     fireEvent.click(printBtn);
     expect(window.print).toHaveBeenCalledTimes(1);
@@ -126,9 +128,8 @@ describe("Print-Friendly Views for Records (#338)", () => {
 
   it("AdminUserDetailPage renders user record inside print-root with print-url links", async () => {
     const params = Promise.resolve({ userId: "usr_999" });
-    let container;
     await act(async () => {
-      ({ container } = render(<AdminUserDetailPage params={params} />));
+      render(<AdminUserDetailPage params={params} />);
     });
 
     expect(await screen.findByRole("heading", { name: "Zaynab Idris" })).toBeInTheDocument();
@@ -137,12 +138,12 @@ describe("Print-Friendly Views for Records (#338)", () => {
     expect(screen.getAllByText(/Actor:/)).toHaveLength(2);
     expect(screen.getByText(/Backend history endpoint is not available yet/i)).toBeInTheDocument();
 
-    const printRoot = container.querySelector(".print-root");
+    const printRoot = document.body.querySelector(".print-root");
     expect(printRoot).toBeInTheDocument();
 
     const printBtn = screen.getByRole("button", { name: "Print record" });
     expect(printBtn).toBeInTheDocument();
-    expect(printBtn.closest(".no-print")).toBeInTheDocument();
+    expect(printBtn.closest(".no-print")).not.toBeNull();
 
     fireEvent.click(printBtn);
     expect(window.print).toHaveBeenCalledTimes(1);
