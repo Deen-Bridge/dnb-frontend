@@ -16,24 +16,53 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Printer,
   User,
-  Mail,
-  Shield,
-  Calendar,
   Wallet,
   ExternalLink,
-  BookOpen,
-  GraduationCap,
   Activity,
-  CheckCircle,
+  Clock,
+  FileCheck,
 } from "lucide-react";
 import { getUserById } from "@/lib/actions/users/getUserById";
+import { fetchEducatorVerificationHistory } from "@/lib/actions/admin-verification-history";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
 
+const VERIFICATION_BADGE_STYLES = {
+  submitted: "bg-blue-100 text-blue-800 border-blue-200",
+  info_requested: "bg-amber-100 text-amber-800 border-amber-200",
+  approved: "bg-green-100 text-green-800 border-green-200",
+  rejected: "bg-red-100 text-red-800 border-red-200",
+  re_verified: "bg-emerald-100 text-emerald-800 border-emerald-200",
+};
+
+function isMentorRecord(user) {
+  const role = String(user?.role || "").toLowerCase();
+  return role === "educator" || role === "mentor";
+}
+
+function formatVerificationTimestamp(timestamp) {
+  if (!timestamp) return "Timestamp unavailable";
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "Timestamp unavailable";
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function AdminUserDetailPage({ params }) {
   const { userId } = use(params);
   const [user, setUser] = useState(null);
+  const [verificationHistory, setVerificationHistory] = useState({
+    source: null,
+    events: [],
+    loading: true,
+    error: null,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,11 +70,12 @@ export default function AdminUserDetailPage({ params }) {
       setLoading(true);
       try {
         const res = await getUserById(userId);
+        let resolvedUser;
         if (res?.user) {
-          setUser(res.user);
+          resolvedUser = res.user;
         } else {
           // Mock fallback user record if backend endpoint is not connected
-          setUser({
+          resolvedUser = {
             _id: userId,
             name: "Amina Yusuf",
             email: "amina@deenbridge.org",
@@ -56,14 +86,42 @@ export default function AdminUserDetailPage({ params }) {
             bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
             coursesCount: 8,
             booksCount: 3,
+            verification: {
+              submittedAt: "2025-01-16T09:00:00Z",
+              reviewedAt: "2025-01-17T14:30:00Z",
+              approvedAt: "2025-01-17T14:30:00Z",
+              reviewedBy: "Admin review team",
+            },
             purchases: [
               { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
               { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
             ],
-          });
+          };
+        }
+        setUser(resolvedUser);
+
+        if (isMentorRecord(resolvedUser)) {
+          try {
+            const history = await fetchEducatorVerificationHistory(userId, resolvedUser);
+            setVerificationHistory({
+              source: history.source,
+              events: Array.isArray(history.events) ? history.events : [],
+              loading: false,
+              error: null,
+            });
+          } catch (err) {
+            setVerificationHistory({
+              source: null,
+              events: [],
+              loading: false,
+              error: err?.message || "Failed to load verification history",
+            });
+          }
+        } else {
+          setVerificationHistory({ source: null, events: [], loading: false, error: null });
         }
       } catch {
-        setUser({
+        const fallbackUser = {
           _id: userId,
           name: "Amina Yusuf",
           email: "amina@deenbridge.org",
@@ -74,10 +132,24 @@ export default function AdminUserDetailPage({ params }) {
           bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
           coursesCount: 8,
           booksCount: 3,
+          verification: {
+            submittedAt: "2025-01-16T09:00:00Z",
+            reviewedAt: "2025-01-17T14:30:00Z",
+            approvedAt: "2025-01-17T14:30:00Z",
+            reviewedBy: "Admin review team",
+          },
           purchases: [
             { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
             { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
           ],
+        };
+        setUser(fallbackUser);
+        const history = await fetchEducatorVerificationHistory(userId, fallbackUser);
+        setVerificationHistory({
+          source: history.source,
+          events: Array.isArray(history.events) ? history.events : [],
+          loading: false,
+          error: null,
         });
       } finally {
         setLoading(false);
@@ -203,6 +275,69 @@ export default function AdminUserDetailPage({ params }) {
                 </div>
               </CardContent>
             </Card>
+
+            {isMentorRecord(user) && (
+              <Card className="border shadow-none">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <FileCheck className="h-4 w-4 text-primary" />
+                    Verification History
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Full audit trail of educator verification events, newest first
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  {verificationHistory.loading ? (
+                    <p className="text-xs text-muted-foreground">Loading verification history...</p>
+                  ) : verificationHistory.error ? (
+                    <p className="text-xs text-destructive">{verificationHistory.error}</p>
+                  ) : verificationHistory.events.length > 0 ? (
+                    <div className="space-y-3">
+                      {verificationHistory.source === "composed" && (
+                        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                          Backend history endpoint is not available yet; this timeline is composed from verification record fields.
+                        </p>
+                      )}
+                      <ol className="relative border-l pl-4">
+                        {verificationHistory.events.map((event) => (
+                          <li key={event.id} className="relative pb-5 last:pb-0">
+                            <span className="absolute -left-[21px] top-0 flex h-3 w-3 rounded-full border-2 border-background bg-primary" />
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "capitalize font-semibold",
+                                      VERIFICATION_BADGE_STYLES[event.type] || "bg-muted"
+                                    )}
+                                  >
+                                    {event.label}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    Actor: <span className="font-medium text-foreground">{event.actor}</span>
+                                  </span>
+                                </div>
+                                {event.note && (
+                                  <p className="text-xs text-muted-foreground">{event.note}</p>
+                                )}
+                              </div>
+                              <time className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {formatVerificationTimestamp(event.timestamp)}
+                              </time>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No verification events recorded yet.</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Wallet & Stellar Chain Information */}
             <Card className="border shadow-none">

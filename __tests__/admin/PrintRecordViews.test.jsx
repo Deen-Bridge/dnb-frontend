@@ -33,8 +33,37 @@ vi.mock("@/lib/actions/users/getUserById", () => ({
       createdAt: "2025-03-01T00:00:00Z",
       walletAddress: "GC3BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q111",
       bio: "Quran & Tajweed Educator",
+      verification: {
+        submittedAt: "2026-01-01T09:00:00.000Z",
+        approvedAt: "2026-01-02T10:00:00.000Z",
+        reviewedBy: "Amina Admin",
+      },
       purchases: [{ id: "p1", title: "Fiqh of Worship", amount: "42.00", date: "2026-01-01" }],
     },
+  }),
+}));
+
+vi.mock("@/lib/actions/admin-verification-history", () => ({
+  fetchEducatorVerificationHistory: vi.fn().mockResolvedValue({
+    source: "composed",
+    events: [
+      {
+        id: "approved-1",
+        type: "approved",
+        label: "Approved",
+        actor: "Amina Admin",
+        timestamp: "2026-01-02T10:00:00.000Z",
+        note: null,
+      },
+      {
+        id: "submitted-1",
+        type: "submitted",
+        label: "Submitted",
+        actor: "Zaynab Idris",
+        timestamp: "2026-01-01T09:00:00.000Z",
+        note: null,
+      },
+    ],
   }),
 }));
 
@@ -88,6 +117,10 @@ describe("Print-Friendly Views for Records (#338)", () => {
     const { container } = render(<AdminUserDetailPage params={params} />);
 
     expect(await screen.findByText("Zaynab Idris")).toBeInTheDocument();
+    expect(await screen.findByText("Verification History")).toBeInTheDocument();
+    expect(screen.getByText("Approved")).toBeInTheDocument();
+    expect(screen.getAllByText(/Actor:/)).toHaveLength(2);
+    expect(screen.getByText(/Backend history endpoint is not available yet/i)).toBeInTheDocument();
 
     const printRoot = container.querySelector(".print-root");
     expect(printRoot).toBeInTheDocument();
