@@ -17,7 +17,7 @@ import {
   progressPercent,
   readBookProgress,
   saveBookProgress,
-} from "@/app/dashboard/library/read/[bookid]/bookProgress";
+} from "@/app/[locale]/dashboard/library/read/[bookid]/bookProgress";
 
 beforeEach(() => {
   window.localStorage.clear();
