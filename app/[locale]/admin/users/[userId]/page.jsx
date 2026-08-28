@@ -66,10 +66,13 @@ export default function AdminUserDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isActive = true;
+
     async function loadUser() {
       setLoading(true);
       try {
         const res = await getUserById(userId);
+        if (!isActive) return;
         let resolvedUser;
         if (res?.user) {
           resolvedUser = res.user;
@@ -103,6 +106,7 @@ export default function AdminUserDetailPage({ params }) {
         if (isMentorRecord(resolvedUser)) {
           try {
             const history = await fetchEducatorVerificationHistory(userId, resolvedUser);
+            if (!isActive) return;
             setVerificationHistory({
               source: history.source,
               events: Array.isArray(history.events) ? history.events : [],
@@ -110,6 +114,7 @@ export default function AdminUserDetailPage({ params }) {
               error: null,
             });
           } catch (err) {
+            if (!isActive) return;
             setVerificationHistory({
               source: null,
               events: [],
@@ -121,6 +126,7 @@ export default function AdminUserDetailPage({ params }) {
           setVerificationHistory({ source: null, events: [], loading: false, error: null });
         }
       } catch {
+        if (!isActive) return;
         const fallbackUser = {
           _id: userId,
           name: "Amina Yusuf",
@@ -145,6 +151,7 @@ export default function AdminUserDetailPage({ params }) {
         };
         setUser(fallbackUser);
         const history = await fetchEducatorVerificationHistory(userId, fallbackUser);
+        if (!isActive) return;
         setVerificationHistory({
           source: history.source,
           events: Array.isArray(history.events) ? history.events : [],
@@ -152,10 +159,14 @@ export default function AdminUserDetailPage({ params }) {
           error: null,
         });
       } finally {
-        setLoading(false);
+        if (isActive) setLoading(false);
       }
     }
     loadUser();
+
+    return () => {
+      isActive = false;
+    };
   }, [userId]);
 
   const handlePrint = () => {
