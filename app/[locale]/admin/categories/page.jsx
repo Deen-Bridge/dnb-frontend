@@ -548,7 +548,6 @@ export default function CategoryTaxonomyManagementPage() {
                   setFormError("");
                 }}
                 className="mt-1"
-                autoFocus
               />
             </div>
             <div>
