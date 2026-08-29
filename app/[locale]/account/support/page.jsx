@@ -16,6 +16,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   poppins_400,
   poppins_500,
@@ -104,37 +106,15 @@ const ReportIssue = () => {
 
   };
   return (
-    <div className="min-h-full bg-surface p-4 sm:p-6">
+    <PageShell>
       {/* <DashTabs selectedTab={as}/> */}
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Hero header */}
-        <Panel className="relative overflow-hidden bg-gradient-to-br from-secondary/10 via-surface-raised to-highlight/10 p-6 sm:p-8">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/10 blur-3xl" />
-          <div className="relative flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-              <LifeBuoy className="h-6 w-6 text-accent" />
-            </div>
-            <div>
-              <h1
-                className={cn(
-                  poppins_600,
-                  "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent sm:text-3xl"
-                )}
-              >
-                Support
-              </h1>
-              <p
-                className={cn(
-                  poppins_400,
-                  "mt-1 max-w-xl text-sm leading-relaxed text-ink-muted"
-                )}
-              >
-                Having an issue? Tell us what happened and our team will attend
-                to it as soon as possible.
-              </p>
-            </div>
-          </div>
-        </Panel>
+        <PageHeader
+          icon={LifeBuoy}
+          title="Support"
+          subtitle="Having an issue? Tell us what happened and our team will attend to it as soon as possible."
+        />
 
         {/* Main: form (2/3) + sidebar (1/3) */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -266,7 +246,7 @@ const ReportIssue = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 export default ReportIssue;
