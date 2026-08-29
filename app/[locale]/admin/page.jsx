@@ -1,12 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CalendarClock, Clock3, Film, Loader2, RefreshCw, XCircle } from "lucide-react";
-import { format } from "date-fns";
+import {
+  CalendarClock,
+  Clock3,
+  Film,
+  Loader2,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -30,9 +42,9 @@ import {
 } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
-  cancelScheduledReel,
-  listUpcomingScheduledReels,
-} from "@/lib/services/scheduled-reels";
+  cancelScheduledReelAction,
+  listUpcomingScheduledReelsAction,
+} from "@/lib/actions/scheduled-reels";
 
 function creatorInitials(name) {
   return name
@@ -44,11 +56,26 @@ function creatorInitials(name) {
     .toUpperCase();
 }
 
-function formatGoLive(timestamp) {
+export function formatGoLive(timestamp, timezone) {
   const date = new Date(timestamp);
-  return Number.isNaN(date.getTime())
-    ? "Invalid schedule"
-    : format(date, "MMM d, yyyy 'at' h:mm a");
+
+  if (Number.isNaN(date.getTime())) {
+    return "Invalid schedule";
+  }
+
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+  } catch {
+    return "Invalid schedule";
+  }
 }
 
 export default function ScheduledReelsQueuePage() {
@@ -64,11 +91,15 @@ export default function ScheduledReelsQueuePage() {
     setLoadError("");
 
     try {
-      const upcomingReels = await listUpcomingScheduledReels();
+      const upcomingReels = await listUpcomingScheduledReelsAction();
       setReels(upcomingReels);
-    } catch {
+    } catch (error) {
       setReels([]);
-      setLoadError("The scheduled reels queue could not be loaded.");
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "The scheduled reels queue could not be loaded."
+      );
     } finally {
       setLoading(false);
     }
@@ -89,18 +120,17 @@ export default function ScheduledReelsQueuePage() {
 
     setCancelling(true);
     try {
-      await cancelScheduledReel(selectedReel.id, {
-        cancelledBy: "current-admin",
-        reason,
-      });
-      setReels((current) =>
-        current.filter((reel) => reel.id !== selectedReel.id)
-      );
+      await cancelScheduledReelAction(selectedReel.id, reason);
+      await loadQueue();
       setSelectedReel(null);
       setReason("");
       toast.success("Scheduled reel cancelled and creator notified.");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "The reel could not be cancelled.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "The reel could not be cancelled."
+      );
     } finally {
       setCancelling(false);
     }
@@ -113,7 +143,12 @@ export default function ScheduledReelsQueuePage() {
         description="Review and manage reels waiting to be published. Upcoming items are ordered by go-live time."
         icon={CalendarClock}
         actions={
-          <Button variant="outline" onClick={loadQueue} disabled={loading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={loadQueue}
+            disabled={loading || cancelling}
+          >
             <RefreshCw className={loading ? "animate-spin" : ""} />
             Refresh
           </Button>
@@ -131,13 +166,16 @@ export default function ScheduledReelsQueuePage() {
             </CardDescription>
           </div>
           <Badge variant="secondary" className="shrink-0">
-            <Clock3 className="mr-1 h-3.5 w-3.5" />
+            <Clock3 className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             Earliest first
           </Badge>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex min-h-64 items-center justify-center" role="status">
+            <div
+              className="flex min-h-64 items-center justify-center"
+              role="status"
+            >
               <Loader2 className="h-7 w-7 animate-spin text-accent" />
               <span className="sr-only">Loading scheduled reels</span>
             </div>
@@ -147,7 +185,7 @@ export default function ScheduledReelsQueuePage() {
               title="Unable to load the queue"
               description={loadError}
               action={
-                <Button variant="outline" onClick={loadQueue}>
+                <Button type="button" variant="outline" onClick={loadQueue}>
                   Try again
                 </Button>
               }
@@ -176,42 +214,56 @@ export default function ScheduledReelsQueuePage() {
                       <TableCell className="min-w-72">
                         <div className="flex items-center gap-3">
                           <div className="flex h-12 w-16 shrink-0 items-center justify-center rounded-lg bg-secondary/10">
-                            <Film className="h-5 w-5 text-accent" aria-hidden="true" />
+                            <Film
+                              className="h-5 w-5 text-accent"
+                              aria-hidden="true"
+                            />
                           </div>
                           <div>
                             <p className="line-clamp-2 max-w-sm font-medium text-ink">
                               {reel.caption}
                             </p>
-                            <p className="mt-1 text-xs text-ink-muted">{reel.id}</p>
+                            <p className="mt-1 text-xs text-ink-muted">
+                              {reel.id}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex min-w-52 items-center gap-3">
                           <Avatar className="h-9 w-9">
-                            <AvatarFallback>{creatorInitials(reel.creator.name)}</AvatarFallback>
+                            <AvatarFallback>
+                              {creatorInitials(reel.creator.name)}
+                            </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium text-ink">{reel.creator.name}</p>
-                            <p className="text-xs text-ink-muted">{reel.creator.email}</p>
+                            <p className="font-medium text-ink">
+                              {reel.creator.name}
+                            </p>
+                            <p className="text-xs text-ink-muted">
+                              {reel.creator.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="min-w-56">
-                        <p className="font-medium text-ink">{formatGoLive(reel.scheduledFor)}</p>
-                        <p className="mt-1 text-xs text-ink-muted">{reel.timezone}</p>
+                        <p className="font-medium text-ink">
+                          {formatGoLive(reel.scheduledFor, reel.timezone)}
+                        </p>
+                        <p className="mt-1 text-xs text-ink-muted">
+                          {reel.timezone}
+                        </p>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">Scheduled</Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
+                          type="button"
                           variant="destructive"
                           size="sm"
                           onClick={() => setSelectedReel(reel)}
-                          aria-label={`Cancel scheduled reel by ${reel.creator.name}`}
                         >
-                          <XCircle />
                           Cancel
                         </Button>
                       </TableCell>
@@ -224,44 +276,71 @@ export default function ScheduledReelsQueuePage() {
         </CardContent>
       </Card>
 
-      <Dialog open={Boolean(selectedReel)} onOpenChange={(open) => !open && closeCancelDialog()}>
+      <Dialog
+        open={Boolean(selectedReel)}
+        onOpenChange={(open) => {
+          if (!open) closeCancelDialog();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Cancel scheduled reel?</DialogTitle>
             <DialogDescription>
-              This removes the reel from the publishing queue. The creator will be notified about the cancellation.
+              This removes the reel from the upcoming publishing queue and
+              notifies its creator. The reel will not be published at its
+              scheduled time.
             </DialogDescription>
           </DialogHeader>
 
-          {selectedReel && (
-            <div className="space-y-4">
-              <div className="rounded-lg border bg-muted/30 p-4">
-                <p className="font-medium text-ink">{selectedReel.caption}</p>
-                <p className="mt-2 text-sm text-ink-muted">
-                  By {selectedReel.creator.name} · {formatGoLive(selectedReel.scheduledFor)}
+          {selectedReel ? (
+            <div className="space-y-4 py-2">
+              <div className="rounded-lg border bg-muted/30 p-3">
+                <p className="line-clamp-2 font-medium text-ink">
+                  {selectedReel.caption}
+                </p>
+                <p className="mt-1 text-sm text-ink-muted">
+                  {selectedReel.creator.name} · {formatGoLive(
+                    selectedReel.scheduledFor,
+                    selectedReel.timezone
+                  )} {selectedReel.timezone}
                 </p>
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="cancellation-reason">Reason for cancellation (optional)</Label>
+                <Label htmlFor="cancellation-reason">
+                  Reason for cancellation (optional)
+                </Label>
                 <Textarea
                   id="cancellation-reason"
                   value={reason}
                   onChange={(event) => setReason(event.target.value)}
                   placeholder="Add context for the creator"
-                  maxLength={500}
                   disabled={cancelling}
+                  maxLength={500}
                 />
               </div>
             </div>
-          )}
+          ) : null}
 
           <DialogFooter>
-            <Button variant="outline" onClick={closeCancelDialog} disabled={cancelling}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeCancelDialog}
+              disabled={cancelling}
+            >
               Keep scheduled
             </Button>
-            <Button variant="destructive" onClick={confirmCancellation} disabled={cancelling}>
-              {cancelling ? <Loader2 className="animate-spin" /> : <XCircle />}
-              {cancelling ? "Cancelling…" : "Cancel reel"}
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmCancellation}
+              disabled={cancelling}
+            >
+              {cancelling ? (
+                <Loader2 className="animate-spin" aria-hidden="true" />
+              ) : null}
+              {cancelling ? "Cancelling..." : "Cancel reel"}
             </Button>
           </DialogFooter>
         </DialogContent>
