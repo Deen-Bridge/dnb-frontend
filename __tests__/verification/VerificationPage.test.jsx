@@ -71,7 +71,7 @@ beforeEach(async () => {
   mockPush.mockClear();
   mockFetchSignedUrl.mockClear();
   if (!_VerificationPage) {
-    const mod = await import("@/app/account/verification/page");
+    const mod = await import("@/app/[locale]/account/verification/page");
     _VerificationPage = mod.default;
   }
 });
