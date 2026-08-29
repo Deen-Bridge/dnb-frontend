@@ -545,18 +545,9 @@ export default function DisputesPage() {
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           {selectedDispute && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
-                  Dispute Detail: {selectedDispute.id}
-                </DialogTitle>
-                <DialogDescription>
-                  Opened {formatDate(selectedDispute.openedAt)} &middot;{" "}
-                  {formatAge(selectedDispute.openedAt)}
-                </DialogDescription>
             <div className="print-root space-y-4">
               <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+
                 <div>
                   <DialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -755,8 +746,7 @@ export default function DisputesPage() {
               {/* Resolution / Actions */}
               {selectedDispute.state === "open" ||
               selectedDispute.state === "awaiting-evidence" ? (
-                <DialogFooter className="flex flex-wrap gap-2 sm:justify-start pt-2">
-                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start">
+                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start pt-2">
                   <Button
                     variant="outline"
                     size="sm"
