@@ -23,13 +23,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -49,21 +42,24 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Filter,
   RefreshCw,
   MoreVertical,
-  FileText,
-  MessageSquare,
   ChevronLeft,
   ChevronRight,
   Send,
   Eye,
+  FileText,
+  Paperclip,
+  ShieldCheck,
+  ImageIcon,
   Loader2,
   Printer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
+import DisputeEvidenceViewer from "@/components/admin/DisputeEvidenceViewer";
+import DisputeEvidenceUpload from "@/components/admin/DisputeEvidenceUpload";
 
 const DISPUTE_STATES = {
   open: {
@@ -98,8 +94,20 @@ const mockDisputes = [
     amount: 49.99,
     transactionId: "PLT-10042",
     state: "open",
-    buyerStatement: "I purchased this course but the video lectures won't load. I've tried multiple devices and browsers. Requesting a full refund.",
-    educatorStatement: "The course content is fully functional. The buyer may have connectivity issues. I've offered to troubleshoot but haven't received a response.",
+    buyerStatement: "I purchased this course but the video lectures won't load. Requesting a full refund.",
+    educatorStatement: "The course content is fully functional. The buyer may have connectivity issues.",
+    evidenceList: [
+      {
+        id: "ev_001_1",
+        fileName: "playback_error_screenshot.png",
+        fileType: "image/png",
+        uploadedAt: "2026-08-22T10:20:00Z",
+        senderRole: "buyer",
+        note: "Screenshot of black video player error.",
+        signedUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80",
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      },
+    ],
   },
   {
     id: "dsp_002",
@@ -110,9 +118,21 @@ const mockDisputes = [
     amount: 12.50,
     transactionId: "PLT-10038",
     state: "awaiting-evidence",
-    buyerStatement: "The book description said 300 pages but the downloaded PDF is only 50 pages. This is misleading.",
-    educatorStatement: "The 300-page count includes appendices and index. The main content is complete. I can provide a table of contents screenshot.",
+    buyerStatement: "The book description said 300 pages but the downloaded PDF is only 50 pages.",
+    educatorStatement: "The 300-page count includes appendices and index. The main content is complete.",
     evidenceRequest: { target: "buyer", requestedAt: "2026-08-21T14:00:00Z", message: "Please provide a screenshot of the misleading listing." },
+    evidenceList: [
+      {
+        id: "ev_002_1",
+        fileName: "book_toc_sample.pdf",
+        fileType: "application/pdf",
+        uploadedAt: "2026-08-21T15:00:00Z",
+        senderRole: "educator",
+        note: "Original table of contents document.",
+        signedUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      },
+    ],
   },
   {
     id: "dsp_003",
@@ -123,59 +143,10 @@ const mockDisputes = [
     amount: 75.00,
     transactionId: "PLT-10035",
     state: "resolved-refund",
-    buyerStatement: "The educator never responded to my questions and the course hasn't been updated in 6 months.",
+    buyerStatement: "The educator never responded to my questions and the course hasn't been updated.",
     educatorStatement: "I have been on medical leave. I apologize for the lack of communication.",
     resolution: "Full refund issued. Course delisted pending educator return.",
-  },
-  {
-    id: "dsp_004",
-    openedAt: "2026-08-15T12:00:00Z",
-    buyer: { id: "usr_b4", name: "Maryam Hassan", email: "maryam@example.com" },
-    educator: { id: "usr_e4", name: "Sheikh Ahmad Darwish", email: "ahmad.d@example.com" },
-    item: { type: "course", name: "Fiqh of Worship", id: "crs_108" },
-    amount: 35.00,
-    transactionId: "PLT-10030",
-    state: "resolved-rejected",
-    buyerStatement: "I changed my mind after 2 hours. I want a refund.",
-    educatorStatement: "The course was fully delivered and the buyer accessed all content. The no-refund policy was clearly stated.",
-    resolution: "Dispute rejected. Buyer accessed complete course content within the stated terms.",
-  },
-  {
-    id: "dsp_005",
-    openedAt: "2026-08-24T09:20:00Z",
-    buyer: { id: "usr_b5", name: "Omar Siddiqui", email: "omar.s@example.com" },
-    educator: { id: "usr_e5", name: "Dr. Khadija Noor", email: "khadija@example.com" },
-    item: { type: "course", name: "Arabic Grammar Basics", id: "crs_120" },
-    amount: 29.99,
-    transactionId: "PLT-10045",
-    state: "open",
-    buyerStatement: "I was charged twice for the same course. My bank statement shows two $29.99 charges.",
-    educatorStatement: "I only received one payment. This may be a platform issue.",
-  },
-  {
-    id: "dsp_006",
-    openedAt: "2026-08-21T14:10:00Z",
-    buyer: { id: "usr_b6", name: "Zainab Ali", email: "zainab@example.com" },
-    educator: { id: "usr_e6", name: "Imam Hassan Malik", email: "hassan@example.com" },
-    item: { type: "book", name: "Daily Adhkar Collection", id: "bk_210" },
-    amount: 8.00,
-    transactionId: "PLT-10041",
-    state: "awaiting-evidence",
-    buyerStatement: "The book is full of typos and formatting issues. Not worth the price.",
-    educatorStatement: "The book has been professionally edited. The buyer may have a corrupted download.",
-    evidenceRequest: { target: "educator", requestedAt: "2026-08-22T10:00:00Z", message: "Please provide the original manuscript or proof of professional editing." },
-  },
-  {
-    id: "dsp_007",
-    openedAt: "2026-08-19T11:30:00Z",
-    buyer: { id: "usr_b7", name: "Ibrahim Syed", email: "ibrahim.s@example.com" },
-    educator: { id: "usr_e7", name: "Ustadha Maryam J.", email: "maryam.j@example.com" },
-    item: { type: "course", name: "Kids Quran Reading", id: "crs_115" },
-    amount: 19.99,
-    transactionId: "PLT-10036",
-    state: "open",
-    buyerStatement: "The course is listed for ages 5-10 but the content is way too advanced for young children.",
-    educatorStatement: "The age range is stated in the description. The first lesson is an assessment to gauge the child's level.",
+    evidenceList: [],
   },
 ];
 
@@ -201,6 +172,10 @@ export default function DisputesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Viewer state for secure evidence viewing
+  const [viewingEvidence, setViewingEvidence] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+
   const filteredDisputes = useMemo(() => {
     if (statusFilter === "all") return disputes;
     return disputes.filter((d) => d.state === statusFilter);
@@ -224,6 +199,33 @@ export default function DisputesPage() {
     setSelectedDispute(dispute);
     setDetailOpen(true);
   }, []);
+
+  const openEvidenceViewer = (evidence) => {
+    setViewingEvidence(evidence);
+    setViewerOpen(true);
+  };
+
+  const handleAdminEvidenceSuccess = (newEvidence) => {
+    if (!selectedDispute) return;
+    setDisputes((prev) =>
+      prev.map((d) =>
+        d.id === selectedDispute.id
+          ? {
+              ...d,
+              evidenceList: [...(d.evidenceList || []), newEvidence],
+            }
+          : d
+      )
+    );
+    setSelectedDispute((prev) =>
+      prev
+        ? {
+            ...prev,
+            evidenceList: [...(prev.evidenceList || []), newEvidence],
+          }
+        : prev
+    );
+  };
 
   const updateDisputeState = useCallback((disputeId, newState, resolution) => {
     setDisputes((prev) =>
@@ -264,7 +266,7 @@ export default function DisputesPage() {
       <PageHeader
         icon={AlertTriangle}
         title="Disputes Queue"
-        subtitle="Manage buyer vs educator payment disputes"
+        subtitle="Manage buyer vs educator payment disputes with secure evidence viewing"
         actions={
           <Button
             variant="outline"
@@ -292,28 +294,28 @@ export default function DisputesPage() {
                 <AlertTriangle className="h-4 w-4" />
                 Open
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts.open}
+                  {statusCounts.open || 0}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="awaiting-evidence" className="gap-2">
                 <Clock className="h-4 w-4" />
                 Awaiting Evidence
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts["awaiting-evidence"]}
+                  {statusCounts["awaiting-evidence"] || 0}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="resolved-refund" className="gap-2">
                 <CheckCircle className="h-4 w-4" />
                 Refunded
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts["resolved-refund"]}
+                  {statusCounts["resolved-refund"] || 0}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="resolved-rejected" className="gap-2">
                 <XCircle className="h-4 w-4" />
                 Rejected
                 <Badge variant="secondary" className="ml-1">
-                  {statusCounts["resolved-rejected"]}
+                  {statusCounts["resolved-rejected"] || 0}
                 </Badge>
               </TabsTrigger>
             </TabsList>
@@ -333,7 +335,7 @@ export default function DisputesPage() {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border">
-            <Table>
+            <Table aria-label="Disputes List Table">
               <TableHeader>
                 <TableRow>
                   <TableHead>Opened</TableHead>
@@ -341,7 +343,7 @@ export default function DisputesPage() {
                   <TableHead>Educator</TableHead>
                   <TableHead>Item</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Age</TableHead>
+                  <TableHead>Attachments</TableHead>
                   <TableHead>State</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
@@ -360,6 +362,8 @@ export default function DisputesPage() {
                 ) : (
                   paginatedDisputes.map((dispute) => {
                     const stateConfig = DISPUTE_STATES[dispute.state];
+                    const evidenceCount = dispute.evidenceList?.length || 0;
+
                     return (
                       <TableRow
                         key={dispute.id}
@@ -401,9 +405,11 @@ export default function DisputesPage() {
                           ${dispute.amount.toFixed(2)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {formatAge(dispute.openedAt)}
+                          <div className="flex items-center gap-1">
+                            <Paperclip className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="text-xs font-medium">
+                              {evidenceCount} {evidenceCount === 1 ? "file" : "files"}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -411,11 +417,11 @@ export default function DisputesPage() {
                             variant="outline"
                             className={cn(
                               "text-xs",
-                              stateConfig.color,
-                              stateConfig.bgColor
+                              stateConfig?.color,
+                              stateConfig?.bgColor
                             )}
                           >
-                            {stateConfig.label}
+                            {stateConfig?.label}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -438,7 +444,7 @@ export default function DisputesPage() {
                                 }}
                               >
                                 <Eye className="h-4 w-4 mr-2" />
-                                View Details
+                                View Details & Evidence
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -535,12 +541,13 @@ export default function DisputesPage() {
         </CardContent>
       </Card>
 
-      {/* Detail Dialog */}
+      {/* Detail & Evidence Dialog */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           {selectedDispute && (
             <div className="print-root space-y-4">
               <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+
                 <div>
                   <DialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -564,40 +571,27 @@ export default function DisputesPage() {
                 </Button>
               </DialogHeader>
 
-              {/* Transaction Context */}
-              <Card className="border-blue-200 bg-blue-50">
-                <CardContent className="py-4">
-                  <p
-                    className={cn(
-                      poppins_500.className,
-                      "text-sm text-blue-800 mb-2"
-                    )}
-                  >
-                    Linked Transaction
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
+              {/* Linked Transaction Info */}
+              <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+                <CardContent className="py-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                     <div>
-                      <span className="text-blue-600">Transaction ID:</span>{" "}
-                      <span className="font-mono">{selectedDispute.transactionId}</span>
+                      <span className="text-muted-foreground block">Tx Reference</span>
+                      <span className="font-mono font-semibold">{selectedDispute.transactionId}</span>
                     </div>
                     <div>
-                      <span className="text-blue-600">Amount:</span>{" "}
-                      <span className="font-mono">
-                        ${selectedDispute.amount.toFixed(2)}
-                      </span>
+                      <span className="text-muted-foreground block">Amount</span>
+                      <span className="font-mono font-semibold">${selectedDispute.amount.toFixed(2)} USDC</span>
                     </div>
                     <div>
-                      <span className="text-blue-600">Item:</span>{" "}
-                      <Badge variant="outline" className="text-xs mr-1">
-                        {selectedDispute.item.type}
-                      </Badge>
-                      {selectedDispute.item.name}
+                      <span className="text-muted-foreground block">Item</span>
+                      <span className="font-medium truncate">{selectedDispute.item.name}</span>
                     </div>
                     <div>
-                      <span className="text-blue-600">State:</span>{" "}
+                      <span className="text-muted-foreground block">Status</span>
                       <Badge
                         className={cn(
-                          "text-xs",
+                          "text-[10px]",
                           DISPUTE_STATES[selectedDispute.state]?.color,
                           DISPUTE_STATES[selectedDispute.state]?.bgColor
                         )}
@@ -609,23 +603,17 @@ export default function DisputesPage() {
                 </CardContent>
               </Card>
 
-              {/* Parties */}
-              <div className="grid grid-cols-2 gap-4">
-                {/* Buyer Statement */}
+              {/* Statements */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm flex items-center gap-2"
-                      )}
-                    >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
+                    <CardTitle className="text-xs font-medium flex items-center gap-1.5">
+                      <Avatar className="h-5 w-5">
+                        <AvatarFallback className="text-[10px]">
                           {selectedDispute.buyer.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                      Buyer
+                      Buyer Statement ({selectedDispute.buyer.name})
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {selectedDispute.buyer.name} &middot;{" "}
@@ -635,27 +623,21 @@ export default function DisputesPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
                       {selectedDispute.buyerStatement}
                     </p>
                   </CardContent>
                 </Card>
 
-                {/* Educator Statement */}
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm flex items-center gap-2"
-                      )}
-                    >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
+                    <CardTitle className="text-xs font-medium flex items-center gap-1.5">
+                      <Avatar className="h-5 w-5">
+                        <AvatarFallback className="text-[10px]">
                           {selectedDispute.educator.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                      Educator
+                      Educator Statement ({selectedDispute.educator.name})
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {selectedDispute.educator.name} &middot;{" "}
@@ -665,61 +647,106 @@ export default function DisputesPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
                       {selectedDispute.educatorStatement}
                     </p>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Evidence Request */}
-              {selectedDispute.evidenceRequest && (
-                <Card className="border-amber-200 bg-amber-50">
-                  <CardContent className="py-4">
-                    <p
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm text-amber-800 mb-1"
-                      )}
-                    >
-                      <Send className="h-4 w-4 inline mr-1" />
-                      Evidence Requested from{" "}
-                      {selectedDispute.evidenceRequest.target === "buyer"
-                        ? "Buyer"
-                        : "Educator"}
-                    </p>
-                    <p className="text-xs text-amber-700">
-                      {selectedDispute.evidenceRequest.message} &middot;{" "}
-                      {formatDate(selectedDispute.evidenceRequest.requestedAt)}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
+              {/* Attachments Section (#284) */}
+              <Card className="border">
+                <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                      <Paperclip className="h-4 w-4 text-primary" />
+                      Dispute Evidence & Attachments ({selectedDispute.evidenceList?.length || 0})
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Secure expiring-URL attachments uploaded by buyer, educator, or admin.
+                    </CardDescription>
+                  </div>
 
-              {/* Resolution */}
-              {selectedDispute.resolution && (
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="py-4">
-                    <p
-                      className={cn(
-                        poppins_500.className,
-                        "text-sm text-green-800 mb-1"
-                      )}
-                    >
-                      <CheckCircle className="h-4 w-4 inline mr-1" />
-                      Resolution
-                    </p>
-                    <p className="text-xs text-green-700">
-                      {selectedDispute.resolution}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
+                  <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    <span>Protected URLs</span>
+                  </div>
+                </CardHeader>
 
-              {/* Actions */}
+                <CardContent className="px-4 pb-4 space-y-3">
+                  {!selectedDispute.evidenceList || selectedDispute.evidenceList.length === 0 ? (
+                    <div className="text-center py-6 text-xs text-muted-foreground border border-dashed rounded-lg">
+                      No evidence attachments submitted yet.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {selectedDispute.evidenceList.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex flex-col justify-between p-3 rounded-lg border bg-card hover:border-primary/40 transition-colors"
+                        >
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {item.fileType?.includes("pdf") || item.fileName?.endsWith(".pdf") ? (
+                                  <FileText className="h-4 w-4 text-red-500 shrink-0" />
+                                ) : (
+                                  <ImageIcon className="h-4 w-4 text-blue-500 shrink-0" />
+                                )}
+                                <p className="font-medium text-xs truncate" title={item.fileName}>
+                                  {item.fileName}
+                                </p>
+                              </div>
+
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] uppercase font-bold py-0 px-1.5 capitalize"
+                              >
+                                {item.senderRole}
+                              </Badge>
+                            </div>
+
+                            {item.note && (
+                              <p className="text-[11px] text-muted-foreground italic line-clamp-2">
+                                &ldquo;{item.note}&rdquo;
+                              </p>
+                            )}
+
+                            <p className="text-[10px] text-muted-foreground">
+                              Uploaded {new Date(item.uploadedAt).toLocaleDateString()}
+                            </p>
+                          </div>
+
+                          <div className="pt-3">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              className="w-full text-xs h-7 gap-1.5"
+                              onClick={() => openEvidenceViewer(item)}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                              View Secure Evidence
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Admin Upload Slot */}
+                  <div className="pt-2">
+                    <DisputeEvidenceUpload
+                      disputeId={selectedDispute.id}
+                      onUploadSuccess={handleAdminEvidenceSuccess}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Resolution / Actions */}
               {selectedDispute.state === "open" ||
               selectedDispute.state === "awaiting-evidence" ? (
-                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start">
+                <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start pt-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -773,6 +800,16 @@ export default function DisputesPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Secure Evidence Viewer Dialog */}
+      {selectedDispute && viewingEvidence && (
+        <DisputeEvidenceViewer
+          disputeId={selectedDispute.id}
+          evidence={viewingEvidence}
+          open={viewerOpen}
+          onOpenChange={setViewerOpen}
+        />
+      )}
     </PageShell>
   );
 }
