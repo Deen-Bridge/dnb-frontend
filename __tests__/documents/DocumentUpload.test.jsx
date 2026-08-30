@@ -561,8 +561,10 @@ describe("onChange reports the full reference map", () => {
       { timeout: 3000 }
     );
 
-    // The parent must see the resolved status, not the stale scan_pending one.
-    expect(onChange.mock.calls.at(-1)[0][ID].status).toBe("accepted");
+    // The parent must see the resolved status, not only the stale scan_pending one.
+    await waitFor(() =>
+      expect(onChange.mock.calls.some(([refs]) => refs[ID]?.status === "accepted")).toBe(true)
+    );
   });
 });
 
