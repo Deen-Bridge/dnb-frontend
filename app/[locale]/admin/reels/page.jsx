@@ -43,8 +43,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   Filter,
+  EyeOff,
 } from "lucide-react";
 import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
+import { ReelVisibilityDialog } from "@/components/admin/ReelVisibilityDialog";
+import { updateReelVisibility } from "@/lib/actions/reels-action";
 import { cn } from "@/lib/utils";
 
 const SEED_CREATORS = [
@@ -107,6 +110,9 @@ const SEED_REELS = [
     views: 1200,
     flagsCount: 4,
     status: "paused",
+    isHidden: true,
+    hiddenReasonCategory: "policy_violation",
+    hiddenReasonNote: "Pending moderation review after multiple reports.",
     createdAt: "2026-02-10T14:00:00Z",
   },
   {
@@ -131,6 +137,8 @@ export default function AdminReelsManagementPage() {
   const [selectedCreatorId, setSelectedCreatorId] = useState(creatorQuery || "all");
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [visibilityDialogReel, setVisibilityDialogReel] = useState(null);
+  const [visibilitySaving, setVisibilitySaving] = useState(false);
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
@@ -182,6 +190,51 @@ export default function AdminReelsManagementPage() {
     setTimeout(() => setNotification(null), 5000);
   };
 
+  const handleVisibilityChange = async ({ hidden, reasonCategory, reasonNote }) => {
+    const reel = visibilityDialogReel;
+    if (!reel || visibilitySaving) return;
+
+    const previousReel = reel;
+    const optimisticReel = {
+      ...reel,
+      isHidden: hidden,
+      visibility: hidden ? "hidden" : "visible",
+      ...(hidden
+        ? { hiddenReasonCategory: reasonCategory, hiddenReasonNote: reasonNote }
+        : { hiddenReasonCategory: null, hiddenReasonNote: null }),
+    };
+
+    setVisibilitySaving(true);
+    setReels((previous) => previous.map((item) => item.id === reel.id ? optimisticReel : item));
+    setVisibilityDialogReel(optimisticReel);
+
+    try {
+      const response = await updateReelVisibility(reel.id, {
+        hidden,
+        reasonCategory,
+        reasonNote,
+      });
+      if (response?.success === false) throw new Error(response.message || "Unable to update reel visibility.");
+
+      setNotification({
+        type: "success",
+        message: hidden ? "Reel hidden from learner-facing feeds." : "Reel restored to learner-facing feeds.",
+      });
+      setVisibilityDialogReel(null);
+      setTimeout(() => setNotification(null), 5000);
+    } catch (error) {
+      setReels((previous) => previous.map((item) => item.id === reel.id ? previousReel : item));
+      setVisibilityDialogReel(previousReel);
+      setNotification({
+        type: "error",
+        message: error?.message || "Could not update reel visibility. Your change was reverted.",
+      });
+      setTimeout(() => setNotification(null), 5000);
+    } finally {
+      setVisibilitySaving(false);
+    }
+  };
+
   const filteredReels = useMemo(() => {
     return reels.filter((r) => {
       if (selectedCreatorId !== "all" && r.creatorId !== selectedCreatorId) {
@@ -207,8 +260,8 @@ export default function AdminReelsManagementPage() {
       />
 
       {notification && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-          <CheckCircle2 className="h-4 w-4 shrink-0" />
+        <div className={cn("mb-4 flex items-center gap-2 rounded-lg border p-4 text-sm font-medium", notification.type === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400")}>
+          {notification.type === "error" ? <AlertTriangle className="h-4 w-4 shrink-0" /> : <CheckCircle2 className="h-4 w-4 shrink-0" />}
           <span>{notification.message}</span>
         </div>
       )}
@@ -338,7 +391,7 @@ export default function AdminReelsManagementPage() {
                 </TableRow>
               ) : (
                 filteredReels.map((reel) => (
-                  <TableRow key={reel.id}>
+                  <TableRow key={reel.id} className={reel.isHidden ? "bg-muted/50 opacity-75" : undefined}>
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-medium text-foreground">{reel.title}</span>
@@ -373,7 +426,16 @@ export default function AdminReelsManagementPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {reel.status === "active" ? (
+                      {reel.isHidden ? (
+                        <div className="space-y-1">
+                          <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive gap-1">
+                            <EyeOff className="h-3 w-3" /> Hidden by moderation
+                          </Badge>
+                          <p className="max-w-44 truncate text-xs text-muted-foreground" title={reel.hiddenReasonNote}>
+                            {reel.hiddenReasonNote}
+                          </p>
+                        </div>
+                      ) : reel.status === "active" ? (
                         <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                           Active
                         </Badge>
@@ -395,6 +457,14 @@ export default function AdminReelsManagementPage() {
                       >
                         Creator Controls
                       </Button>
+                      <Button
+                        size="sm"
+                        variant={reel.isHidden ? "default" : "destructive"}
+                        onClick={() => setVisibilityDialogReel(reel)}
+                        className="ml-2 text-xs"
+                      >
+                        {reel.isHidden ? "Unhide" : "Hide"}
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -412,6 +482,13 @@ export default function AdminReelsManagementPage() {
         reelsCount={creatorReelsCount}
         isCurrentlyPaused={activeCreator?.isPaused || false}
         onConfirm={handleBulkCreatorAction}
+      />
+      <ReelVisibilityDialog
+        open={Boolean(visibilityDialogReel)}
+        onOpenChange={(open) => !open && setVisibilityDialogReel(null)}
+        reel={visibilityDialogReel}
+        onConfirm={handleVisibilityChange}
+        loading={visibilitySaving}
       />
     </PageShell>
   );
