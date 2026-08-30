@@ -1,0 +1,318 @@
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  BookOpen,
+  GraduationCap,
+  AlertCircle,
+  RefreshCw,
+  Eye,
+} from "lucide-react";
+import useStellarPayment from "@/hooks/useStellarPayment";
+import TransactionDrawer from "@/components/admin/TransactionDrawer";
+import { StellarTransaction } from "@/types/stellar";
+
+const statusColors: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-800",
+  submitted: "bg-blue-100 text-blue-800",
+  confirmed: "bg-green-100 text-green-800",
+  failed: "bg-red-100 text-red-800",
+  expired: "bg-gray-100 text-gray-800",
+};
+
+export interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+export default function TransactionHistory() {
+  const { getTransactionHistory } = useStellarPayment();
+  const [transactions, setTransactions] = useState<StellarTransaction[]>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    pages: 0,
+  });
+  const [role, setRole] = useState<string>("buyer");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [selectedTx, setSelectedTx] = useState<StellarTransaction | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+  const fetchTransactions = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    const result = await getTransactionHistory({
+      role,
+      page: pagination.page,
+      limit: pagination.limit,
+    });
+    if (result.success) {
+      setTransactions(result.transactions || []);
+      setPagination(result.pagination || { page: 1, limit: 10, total: 0, pages: 0 });
+    } else {
+      setError(result.error || "Failed to fetch transactions");
+    }
+    setIsLoading(false);
+  }, [role, pagination.page, pagination.limit, getTransactionHistory]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
+
+  const handleRoleChange = (newRole: string) => {
+    setRole(newRole);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  const handleOpenDrawer = (tx: StellarTransaction) => {
+    setSelectedTx(tx);
+    setDrawerOpen(true);
+  };
+
+  const truncateAddress = (addr?: string) => {
+    if (!addr) return "";
+    return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-xl font-semibold">Transaction History</h2>
+        <Select value={role} onValueChange={handleRoleChange}>
+          <SelectTrigger className="w-[180px]" aria-label="View transactions as">
+            <SelectValue placeholder="Select role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="buyer">As Buyer</SelectItem>
+            <SelectItem value="creator">As Creator</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="text-center py-12 border rounded-lg bg-red-50 border-red-200">
+          <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+          <p className="text-red-600 font-medium">Failed to load transactions</p>
+          <p className="text-sm text-red-500 mt-1">{error}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4"
+            onClick={fetchTransactions}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            Try Again
+          </Button>
+        </div>
+      )}
+
+      {/* Loading skeleton */}
+      {isLoading && !error && (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full" />
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && !error && transactions.length === 0 && (
+        <div className="text-center py-12 border rounded-lg">
+          <p className="text-muted-foreground">No transactions found</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {role === "buyer"
+              ? "You haven't made any purchases yet"
+              : "You haven't received any payments yet"}
+          </p>
+        </div>
+      )}
+
+      {/* Table */}
+      {!isLoading && !error && transactions.length > 0 && (
+        <>
+          <div className="border rounded-lg overflow-hidden">
+            <Table aria-label="Transaction History Table">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Item</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>{role === "buyer" ? "To" : "From"}</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="w-[100px] text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {transactions.map((tx) => (
+                  <TableRow
+                    key={tx._id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleOpenDrawer(tx)}
+                  >
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {tx.itemType === "book" ? (
+                          <BookOpen className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                        )}
+                        <div>
+                          <p className="font-medium line-clamp-1">
+                            {tx.itemTitle}
+                          </p>
+                          <p className="text-xs text-muted-foreground capitalize">
+                            {tx.itemType}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-semibold">${tx.amount}</span>
+                      <span className="text-muted-foreground text-sm ml-1">
+                        USDC
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">
+                          {role === "buyer"
+                            ? tx.creator?.name
+                            : tx.buyer?.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-mono">
+                          {truncateAddress(
+                            role === "buyer" ? tx.creatorWallet : tx.buyerWallet
+                          )}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={statusColors[tx.status] || "bg-gray-100 text-gray-800"}
+                      >
+                        {tx.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {formatDate(tx.createdAt)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e: any) => { // TODO(types): Mouse event
+                            e.stopPropagation();
+                            handleOpenDrawer(tx);
+                          }}
+                          aria-label="View transaction drawer record"
+                        >
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                        {tx.explorerUrl && (
+                          <a
+                            href={tx.explorerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={`View transaction for ${tx.itemTitle} on Stellar Explorer`}
+                            className="text-primary hover:text-primary/80 p-1"
+                          >
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                          </a>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Page {pagination.page} of {pagination.pages} ({pagination.total}{" "}
+                transactions)
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setPagination((p) => ({ ...p, page: p.page - 1 }))
+                  }
+                  disabled={pagination.page <= 1 || isLoading}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setPagination((p) => ({ ...p, page: p.page + 1 }))
+                  }
+                  disabled={pagination.page >= pagination.pages || isLoading}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Transaction Drawer Modal (#338) */}
+      <TransactionDrawer
+        transaction={selectedTx}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+      />
+    </div>
+  );
+}

@@ -5,7 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 function Table({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -20,7 +20,7 @@ function Table({
 }
 
 function TableHeader({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -32,7 +32,7 @@ function TableHeader({
 }
 
 function TableBody({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -44,7 +44,7 @@ function TableBody({
 }
 
 function TableFooter({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -56,7 +56,7 @@ function TableFooter({
 }
 
 function TableRow({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -72,7 +72,7 @@ function TableRow({
 }
 
 function TableHead({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -87,7 +87,7 @@ function TableHead({
 }
 
 function TableCell({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -102,7 +102,7 @@ function TableCell({
 }
 
 function TableCaption({
-  className,
+  className = "",
   ...props
 }) {
   return (
