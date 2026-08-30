@@ -329,6 +329,21 @@ html[dir="rtl"] body {
     system-ui, sans-serif;
 }
 
+/* ─── Media Blur Gate (#268) ─────────────────────────────────────────── */
+/*
+ * When the user has opted into reduced-motion via their OS we strip all
+ * blur/transition utilities from media-blur containers so the UI stays
+ * calm and accessible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .group\/media-blur [data-slot="image"],
+  .group\/media-blur img,
+  .group\/media-blur video {
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
 /* WCAG 2.4.1 – Skip navigation link. Visually hidden until focused. */
 .skip-link {
   position: absolute;

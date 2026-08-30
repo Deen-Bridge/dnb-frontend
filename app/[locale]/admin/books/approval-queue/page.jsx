@@ -58,6 +58,7 @@ import {
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
+import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 
 const STATUS_CONFIG = {
   "pending-review": {
@@ -274,14 +275,17 @@ export default function BookApprovalQueuePage() {
         title="Book Approval Queue"
         subtitle="Review and manage new book submissions"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setBooks([...mockBooks])}
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-3">
+            <MediaBlurToggle className="hidden lg:flex" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setBooks([...mockBooks])}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         }
       />
 

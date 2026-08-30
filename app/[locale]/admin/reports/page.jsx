@@ -79,6 +79,8 @@ import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
 import DismissReportDialog from "@/components/admin/DismissReportDialog";
+import BlurImage from "@/components/ui/blur-image";
+import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 
 // Content type definitions with icons and colors
 const CONTENT_TYPES = {
@@ -376,7 +378,8 @@ export default function UnifiedReportsPage() {
         title="Reports Queue"
         subtitle="Unified moderation queue for all content types"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <MediaBlurToggle className="hidden lg:flex" />
             <kbd className="hidden lg:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
               j/k to navigate
             </kbd>

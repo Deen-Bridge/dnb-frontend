@@ -61,6 +61,8 @@ import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import TakeDownBookDialog from "@/components/admin/TakeDownBookDialog";
 import RestoreBookDialog from "@/components/admin/RestoreBookDialog";
+import BlurImage from "@/components/ui/blur-image";
+import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 
 // Mock books data — replace with real API call
 const generateMockBooks = () => [
@@ -220,17 +222,20 @@ export default function AdminBooksPage() {
         title="Book Management"
         subtitle="Manage catalog visibility with take-down and restore controls"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchBooks}
-            disabled={loading}
-          >
-            <RefreshCw
-              className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
-            />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-3">
+            <MediaBlurToggle className="hidden lg:flex" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchBooks}
+              disabled={loading}
+            >
+              <RefreshCw
+                className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
+              />
+              Refresh
+            </Button>
+          </div>
         }
       />
 
@@ -317,12 +322,14 @@ export default function AdminBooksPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="relative h-10 w-8 rounded overflow-hidden flex-shrink-0">
-                            <Image
-                              src={book.image || "/images/placeholder.jpg"}
-                              alt=""
-                              fill
-                              className="object-cover"
-                            />
+                            <BlurImage forceBlur>
+                              <Image
+                                src={book.image || "/images/placeholder.jpg"}
+                                alt=""
+                                fill
+                                className="object-cover"
+                              />
+                            </BlurImage>
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium truncate">
