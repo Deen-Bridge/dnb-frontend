@@ -83,7 +83,7 @@ export const useStellarPayment = () => {
 
           await refreshBalance();
           setCurrentTransaction(null);
-          return { success: true, data: res.data };
+          return res.data;
         } else {
           throw new Error(res.data.message);
         }

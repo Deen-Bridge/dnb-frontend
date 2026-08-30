@@ -46,7 +46,7 @@ export default function PaymentModal({
     networkMismatch,
     validateForPayment,
   } = useStellar();
-  const { initializePayment, executePayment, isProcessing } =
+  const { initializePayment, executePayment, cancelPayment, isProcessing } =
     useStellarPayment();
 
   const [step, setStep] = useState("preview");
