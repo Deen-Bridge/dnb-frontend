@@ -127,8 +127,13 @@ const getTargetLink = (target) => {
     setting: `/admin/settings`,
     backup: `/admin/backups/${target.id}`,
   };
-  return links[target.type] || "#";
-};
+function formatDateRange(range) {
+  if (!range?.from) return "Select date range";
+  if (range.to) {
+    return `${format(range.from, "LLL dd")} - ${format(range.to, "LLL dd")}`;
+  }
+  return format(range.from, "LLL dd, y");
+}
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState([]);
@@ -269,17 +274,7 @@ export default function AuditLogsPage() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "LLL dd")} - {format(dateRange.to, "LLL dd")}
-                        </>
-                      ) : (
-                        format(dateRange.from, "LLL dd, y")
-                      )
-                    ) : (
-                      "Select date range"
-                    )}
+                    {formatDateRange(dateRange)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

@@ -126,6 +126,14 @@ const getStellarExplorerUrl = (txHash) => {
   return `https://stellar.expert/explorer/public/tx/${txHash}`;
 };
 
+function formatDateRange(range) {
+  if (!range?.from) return "Select date range";
+  if (range.to) {
+    return `${format(range.from, "LLL dd, y")} - ${format(range.to, "LLL dd, y")}`;
+  }
+  return format(range.from, "LLL dd, y");
+}
+
 export default function PayoutReconciliationPage() {
   const [dateRange, setDateRange] = useState({
     from: subDays(new Date(), 30),
@@ -240,17 +248,7 @@ export default function PayoutReconciliationPage() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
-                        </>
-                      ) : (
-                        format(dateRange.from, "LLL dd, y")
-                      )
-                    ) : (
-                      "Select date range"
-                    )}
+                    {formatDateRange(dateRange)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
