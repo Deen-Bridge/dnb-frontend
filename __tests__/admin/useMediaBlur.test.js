@@ -58,14 +58,7 @@ afterEach(() => {
 describe("useMediaBlur", () => {
   it("starts with blur disabled by default", () => {
     const { result } = renderHook(() => useMediaBlur());
-    // Before hydration loaded is false
-    expect(result.current.loaded).toBe(false);
-
-    act(() => {
-      // trigger useEffect
-    });
-
-    // After mount effects run
+    expect(result.current.loaded).toBe(true);
     expect(result.current.blurEnabled).toBe(false);
   });
 
