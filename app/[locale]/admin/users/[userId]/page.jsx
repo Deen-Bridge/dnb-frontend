@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
+import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -18,15 +19,18 @@ import {
   User,
   Wallet,
   ExternalLink,
-  Activity,
   Clock,
   FileCheck,
+  Film,
+  PauseCircle,
+  PlayCircle,
 } from "lucide-react";
 import { getUserById } from "@/lib/actions/users/getUserById";
 import { fetchEducatorVerificationHistory } from "@/lib/actions/admin-verification-history";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
+import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
 
 const VERIFICATION_BADGE_STYLES = {
   submitted: "bg-blue-100 text-blue-800 border-blue-200",
@@ -56,6 +60,8 @@ function formatVerificationTimestamp(timestamp) {
 
 export default function AdminUserDetailPage({ params }) {
   const { userId } = use(params);
+  const [reelsDialogOpen, setReelsDialogOpen] = useState(false);
+  const [creatorReelsPaused, setCreatorReelsPaused] = useState(false);
   const [user, setUser] = useState(null);
   const [verificationHistory, setVerificationHistory] = useState({
     source: null,
@@ -192,7 +198,7 @@ export default function AdminUserDetailPage({ params }) {
                 variant="outline"
                 size="sm"
                 onClick={handlePrint}
-                className="gap-2 font-semibold"
+                className="no-print gap-2 font-semibold"
                 aria-label="Print record"
               >
                 <Printer className="h-4 w-4" />
@@ -386,44 +392,91 @@ export default function AdminUserDetailPage({ params }) {
               </CardContent>
             </Card>
 
-            {/* User Activity & Purchase History */}
+            {/* Creator Reels Moderation & Controls (#263) */}
             <Card className="border shadow-none">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-primary" />
-                  Transaction & Purchase History
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Film className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-sm font-semibold">
+                      Short-Form Reels & Creator Moderation
+                    </CardTitle>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      creatorReelsPaused
+                        ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    }
+                  >
+                    {creatorReelsPaused ? "Reels Paused" : "Reels Active"}
+                  </Badge>
+                </div>
                 <CardDescription className="text-xs">
-                  Summary of transactions recorded for this user
+                  Bulk control over all reels published by this creator. Cross-linked with the moderation grid.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-4">
-                {user.purchases && user.purchases.length > 0 ? (
-                  <div className="rounded-md border overflow-x-auto">
-                    <table className="w-full text-xs text-left">
-                      <thead className="bg-muted/50 border-b font-semibold">
-                        <tr>
-                          <th className="p-2">Item</th>
-                          <th className="p-2">Amount</th>
-                          <th className="p-2">Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {user.purchases.map((p) => (
-                          <tr key={p.id} className="border-b last:border-0">
-                            <td className="p-2 font-medium">{p.title}</td>
-                            <td className="p-2 font-mono">{p.amount} USDC</td>
-                            <td className="p-2 text-muted-foreground">{p.date}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">No purchases recorded.</p>
-                )}
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>
+                    Published Reels:{" "}
+                    <span className="font-semibold text-foreground">
+                      {user.reelsCount || 6} reels
+                    </span>
+                  </p>
+                  <p>
+                    Status:{" "}
+                    <span className="font-medium text-foreground">
+                      {creatorReelsPaused
+                        ? "All reels currently hidden from public discovery feeds."
+                        : "All reels visible and active."}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/reels?creator=${userId}`}
+                    className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Film className="h-3.5 w-3.5" />
+                    View Reels Grid
+                    <ExternalLink className="h-3 w-3 ml-0.5" />
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant={creatorReelsPaused ? "default" : "destructive"}
+                    onClick={() => setReelsDialogOpen(true)}
+                    className="gap-1.5 text-xs"
+                  >
+                    {creatorReelsPaused ? (
+                      <>
+                        <PlayCircle className="h-3.5 w-3.5" />
+                        Resume Reels
+                      </>
+                    ) : (
+                      <>
+                        <PauseCircle className="h-3.5 w-3.5" />
+                        Pause All Reels
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
+
+            {/* Creator Controls Dialog */}
+            <CreatorReelsControlDialog
+              open={reelsDialogOpen}
+              onOpenChange={setReelsDialogOpen}
+              creator={user}
+              reelsCount={user.reelsCount || 6}
+              isCurrentlyPaused={creatorReelsPaused}
+              onConfirm={async ({ action }) => {
+                setCreatorReelsPaused(action === "pause");
+              }}
+            />
           </>
         )}
       </div>

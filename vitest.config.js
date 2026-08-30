@@ -19,8 +19,12 @@ export default defineConfig({
     include: ["**/__tests__/**/*.{test,spec}.{js,jsx}"],
   },
   resolve: {
+    mainFields: ["module", "main"],
     alias: {
+      "@/app/account": resolve(__dirname, "app/[locale]/account"),
+      "@/app/dashboard": resolve(__dirname, "app/[locale]/dashboard"),
       "@": resolve(__dirname, "."),
+      "date-fns": resolve(__dirname, "node_modules/date-fns/index.js"),
     },
   },
 });
