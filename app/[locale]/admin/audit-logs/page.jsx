@@ -225,7 +225,7 @@ export default function AuditLogsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Actor Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Admin Actor</span>
               <Select value={actorFilter} onValueChange={setActorFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select actor" />
@@ -243,7 +243,7 @@ export default function AuditLogsPage() {
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Action Category</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Action Category</span>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -264,7 +264,7 @@ export default function AuditLogsPage() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">

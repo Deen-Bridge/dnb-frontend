@@ -361,9 +361,9 @@ export default function AnnouncementHistoryTable() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>
+              <span className={cn(poppins_500.className, "text-sm block")}>
                 State
-              </label>
+              </span>
               <div className="flex flex-wrap gap-2">
                 {["all", "draft", "scheduled", "sent", "cancelled"].map(
                   (state) => (
@@ -381,9 +381,9 @@ export default function AnnouncementHistoryTable() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>
+              <span className={cn(poppins_500.className, "text-sm block")}>
                 Audience
-              </label>
+              </span>
               <div className="flex flex-wrap gap-2">
                 {["all", "students", "educators", "admins"].map(
                   (audience) => (

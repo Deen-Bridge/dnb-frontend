@@ -9,7 +9,6 @@ import StellarProvider from "@/components/stellar/StellarProvider";
 import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 import MaintenanceGate from "@/components/maintenance/MaintenanceGate";
 import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastBanner";
-import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 import AdminShortcutsProvider from "@/components/admin/AdminShortcutsProvider";
 
 export default function AppProviders({ children }) {

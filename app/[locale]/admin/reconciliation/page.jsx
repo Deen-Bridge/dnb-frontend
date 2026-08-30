@@ -236,7 +236,7 @@ export default function PayoutReconciliationPage() {
         <CardContent>
           <div className="flex flex-wrap gap-4 items-end">
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
