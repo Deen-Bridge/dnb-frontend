@@ -9,7 +9,7 @@ vi.mock("next/font/google", () => ({
   Roboto: () => ({ className: "mock-roboto", style: {} }),
   Lato: () => ({ className: "mock-lato", style: {} }),
   Nunito: () => ({ className: "mock-nunito", style: {} }),
-  IBM_Plex_Sans_Arabic: () => ({ className: "mock-ibm-plex-arabic", style: {} }),
+  IBM_Plex_Sans_Arabic: () => ({ className: "mock-ibm-plex-sans-arabic", style: {} }),
 }));
 
 vi.mock("next/font/local", () => ({

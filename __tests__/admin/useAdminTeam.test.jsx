@@ -16,6 +16,12 @@ const authMock = vi.hoisted(() => ({
 }));
 
 // Authenticated super-admin so the hook's fail-closed guard lets it fetch.
+// The user object must be a stable reference: the hook's load effect keys off
+// `user`, so a fresh object every render would re-trigger the effect (and
+// consume a one-shot reject / overwrite an optimistic update).
+const authMock = vi.hoisted(() => ({
+  user: { id: "me", role: "admin", tier: "super_admin" },
+}));
 vi.mock("@/hooks/useAuth", () => ({
   default: () => ({ user: authMock.user, loading: false }),
   useAuth: () => ({ user: authMock.user, loading: false }),
