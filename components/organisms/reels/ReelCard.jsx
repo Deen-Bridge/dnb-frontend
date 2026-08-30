@@ -1,4 +1,4 @@
-"use client";
+ï»¿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -47,6 +47,9 @@ const ReelCard = ({
   const [posterDialogOpen, setPosterDialogOpen] = useState(false);
 
   const { user } = useAuth();
+  // UI-visibility gate only, not access control -- the real enforcement
+  // has to happen server-side once PATCH /api/reels/:id/poster exists
+  // (see the TODO(backend) contract on updateReelPoster).
   const isAdmin = normalizeRole(user?.role) === ROLES.ADMIN;
 
   const isPaused = playing !== reel.id;
@@ -193,7 +196,7 @@ const ReelCard = ({
           )}
         </button>
 
-        {/* Right action rail — overlaid inside, all breakpoints (TikTok-style) */}
+        {/* Right action rail - overlaid inside, all breakpoints (TikTok-style) */}
         <div className="absolute bottom-24 right-2.5 z-30 flex flex-col items-center gap-5">
           <div className="mb-1 flex flex-col items-center">
             <Avatar className="h-11 w-11 border-2 border-white">
@@ -256,7 +259,7 @@ const ReelCard = ({
             <span className="text-sm font-semibold">
               @{reel.createdBy?.name || "Anonymous"}
             </span>
-            <span className="text-[11px] text-white/60">·</span>
+            <span className="text-[11px] text-white/60">{"\u00B7"}</span>
             <span className="text-[11px] text-white/70">{formattedDate}</span>
             <button
               type="button"

@@ -1,18 +1,18 @@
-"use client";
+ï»¿"use client";
 /**
- * ReelPosterDialog — admin poster (cover image) management for a reel (#265).
+ * ReelPosterDialog - admin poster (cover image) management for a reel (#265).
  * ---------------------------------------------------------------------------
  * Two ways to set a reel's poster:
- *   1. "Pick a frame" — scrub the reel's own video with a slider, capture the
+ *   1. "Pick a frame" - scrub the reel's own video with a slider, capture the
  *      currently-displayed frame to a <canvas>, convert it to a Blob, and
  *      upload that still to Cloudinary.
- *   2. "Upload image" — pick a custom image file directly.
+ *   2. "Upload image" - pick a custom image file directly.
  *
  * Both paths converge on the same unsigned Cloudinary upload
  * (`dnb_reels_posters` preset, matching the `dnb_*` naming used by course
  * thumbnails) and then persist the resulting URL via `useReelPoster`, which
  * updates instantly and rolls back + toasts if the (stubbed) backend call
- * fails — see `lib/actions/reels-action.updateReelPoster`.
+ * fails - see `lib/actions/reels-action.updateReelPoster`.
  */
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -75,7 +75,6 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
   const videoRef = useRef(null);
   const [duration, setDuration] = useState(0);
   const [scrubTime, setScrubTime] = useState(0);
-  const [capturedPreview, setCapturedPreview] = useState(null);
   const [capturing, setCapturing] = useState(false);
 
   const { setPoster, isPending: persisting } = useReelPoster(
@@ -89,7 +88,6 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
 
   const resetState = useCallback(() => {
     setScrubTime(0);
-    setCapturedPreview(null);
     setCapturing(false);
     frameUpload.reset();
     fileUpload.reset();
@@ -116,23 +114,31 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
   const handleCaptureAndUpload = async () => {
     const video = videoRef.current;
     setCapturing(true);
+    // Capture failures (video not ready, canvas unsupported) don't go
+    // through either hook, so they get their own toast here. Everything
+    // past this point -- frameUpload.uploadFile and setPoster -- already
+    // toasts its own errors internally, so we deliberately don't add a
+    // second toast for those; we just stop and leave the dialog open.
+    let blob;
     try {
-      const blob = await captureVideoFrame(video);
+      blob = await captureVideoFrame(video);
+    } catch (err) {
+      setCapturing(false);
+      toast.error(err?.message || "Couldn't capture that frame.");
+      return;
+    }
+
+    try {
       const file = new File([blob], `reel-${reel.id}-frame.jpg`, {
         type: "image/jpeg",
       });
-      setCapturedPreview(URL.createObjectURL(blob));
       const secureUrl = await frameUpload.uploadFile(file);
       await setPoster(secureUrl);
       toast.success("Poster updated from video frame.");
       onUpdated?.(secureUrl);
       handleOpenChange(false);
-    } catch (err) {
-      // uploadFile already toasts upload errors; only surface capture-specific
-      // failures that didn't come from the upload hook.
-      if (!frameUpload.error) {
-        toast.error(err?.message || "Couldn't set that frame as the poster.");
-      }
+    } catch {
+      // Already toasted by uploadFile or setPoster.
     } finally {
       setCapturing(false);
     }
@@ -140,6 +146,9 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
 
   const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
+    // Clear the input immediately so selecting the exact same file again
+    // (e.g. retrying after a failed upload) still fires a change event.
+    event.target.value = "";
     if (!file) return;
     try {
       const secureUrl = await fileUpload.uploadFile(file);
@@ -148,7 +157,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
       onUpdated?.(secureUrl);
       handleOpenChange(false);
     } catch {
-      // fileUpload already toasts the specific error.
+      // Already toasted by uploadFile or setPoster.
     }
   };
 
@@ -221,7 +230,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
               {capturing || frameUpload.uploading || persisting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Setting poster…
+                  Setting poster...
                 </>
               ) : (
                 "Use this frame as poster"
@@ -246,7 +255,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
             {(fileUpload.uploading || persisting) && (
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Uploading and setting poster…
+                Uploading and setting poster...
               </p>
             )}
           </TabsContent>

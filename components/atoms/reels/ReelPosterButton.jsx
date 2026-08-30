@@ -1,10 +1,10 @@
-"use client";
+ï»¿"use client";
 /**
- * ReelPosterButton — opens `ReelPosterDialog` for a reel (#265).
+ * ReelPosterButton - opens `ReelPosterDialog` for a reel (#265).
  *
  * Purely presentational trigger, styled like the other reel action rail
  * buttons. Visibility (admin-only) is decided by the caller (`ReelCard`), not
- * here, so this stays a dumb button — consistent with `ReelModerationButton`.
+ * here, so this stays a dumb button - consistent with `ReelModerationButton`.
  *
  * @param {Object} props
  * @param {() => void} props.onClick

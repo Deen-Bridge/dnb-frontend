@@ -1,5 +1,5 @@
-/**
- * useReelPoster — optimistic poster update hook tests (#265).
+ï»¿/**
+ * useReelPoster - optimistic poster update hook tests (#265).
  * -------------------------------------------------------------------------
  * Mirrors the existing useReelModeration coverage style: asserts the
  * optimistic value shows immediately, the committed server value lands, and

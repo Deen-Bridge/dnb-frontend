@@ -1,5 +1,5 @@
-/**
- * ReelPosterDialog — frame-capture and custom-upload flows (#265).
+ï»¿/**
+ * ReelPosterDialog - frame-capture and custom-upload flows (#265).
  * -------------------------------------------------------------------------
  * Cloudinary upload and poster persistence are mocked at the hook boundary
  * (useCloudinaryUpload / useReelPoster) since those are already covered by
@@ -7,7 +7,7 @@
  * frame off the <video> via <canvas>, wiring the upload result into
  * setPoster, and the plain file-upload path.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -17,24 +17,30 @@ const mocks = vi.hoisted(() => ({
   setPoster: vi.fn(),
   uploadFrameFile: vi.fn(),
   uploadCustomFile: vi.fn(),
+  // The component calls useCloudinaryUpload(POSTER_UPLOAD_PRESET, ...) twice
+  // with identical args (frame tab, then upload tab), so there's no argument
+  // to key off of -- but React's rules of hooks guarantee a stable call
+  // order per render, so we alternate by call index instead.
+  cloudinaryCallCount: 0,
 }));
 
 vi.mock("@/hooks/useReelPoster", () => ({
   default: () => ({ poster: null, setPoster: mocks.setPoster, isPending: false, error: null }),
 }));
 
-// The dialog creates two independent useCloudinaryUpload instances (frame tab,
-// upload tab). Distinguish them by the preset argument so each tab's upload
-// can be asserted independently.
 vi.mock("@/hooks/useCloudinaryUpload", () => ({
-  useCloudinaryUpload: () => ({
-    uploadFile: mocks.uploadFrameFile,
-    uploading: false,
-    progress: 0,
-    uploadedUrl: null,
-    error: null,
-    reset: vi.fn(),
-  }),
+  useCloudinaryUpload: () => {
+    const isFrameInstance = mocks.cloudinaryCallCount % 2 === 0;
+    mocks.cloudinaryCallCount += 1;
+    return {
+      uploadFile: isFrameInstance ? mocks.uploadFrameFile : mocks.uploadCustomFile,
+      uploading: false,
+      progress: 0,
+      uploadedUrl: null,
+      error: null,
+      reset: vi.fn(),
+    };
+  },
 }));
 
 import { toast } from "sonner";
@@ -44,6 +50,7 @@ const reel = { id: "reel-1", video: "https://cdn/reel-1.mp4", poster: null };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.cloudinaryCallCount = 0;
   global.URL.createObjectURL = vi.fn(() => "blob:mock-preview");
 
   // Radix Slider/Tabs need these in jsdom; same polyfill used elsewhere
@@ -59,6 +66,10 @@ beforeEach(() => {
       disconnect() {}
     };
   }
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 /**
@@ -102,7 +113,6 @@ describe("captureVideoFrame()", () => {
     expect(drawImage).toHaveBeenCalledWith(video, 0, 0, 640, 1136);
     expect(blob).toBe(fakeBlob);
 
-    document.createElement.mockRestore();
   });
 
   it("rejects when toBlob yields nothing", async () => {
@@ -117,11 +127,10 @@ describe("captureVideoFrame()", () => {
     const video = { videoWidth: 640, videoHeight: 1136 };
     await expect(captureVideoFrame(video)).rejects.toThrow(/couldn't capture/i);
 
-    document.createElement.mockRestore();
   });
 });
 
-describe("<ReelPosterDialog /> — pick-a-frame tab", () => {
+describe("<ReelPosterDialog /> - pick-a-frame tab", () => {
   it("captures the current frame, uploads it, and persists the poster", async () => {
     const user = userEvent.setup();
     const fakeCanvas = {
@@ -171,7 +180,6 @@ describe("<ReelPosterDialog /> — pick-a-frame tab", () => {
     expect(toast.success).toHaveBeenCalled();
     expect(onOpenChange).toHaveBeenCalledWith(false);
 
-    document.createElement.mockRestore();
   });
 
   it("keeps the dialog open and toasts an error if the upload fails", async () => {
@@ -205,13 +213,12 @@ describe("<ReelPosterDialog /> — pick-a-frame tab", () => {
     expect(mocks.setPoster).not.toHaveBeenCalled();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
 
-    document.createElement.mockRestore();
   });
 });
 
-describe("<ReelPosterDialog /> — upload-image tab", () => {
+describe("<ReelPosterDialog /> - upload-image tab", () => {
   it("uploads the chosen file and persists it as the poster", async () => {
-    mocks.uploadFrameFile.mockResolvedValue(
+    mocks.uploadCustomFile.mockResolvedValue(
       "https://res.cloudinary.com/demo/image/upload/custom.jpg"
     );
     mocks.setPoster.mockResolvedValue(
@@ -235,7 +242,9 @@ describe("<ReelPosterDialog /> — upload-image tab", () => {
     const input = screen.getByLabelText(/custom cover image/i);
     await userEvent.upload(input, file);
 
-    await waitFor(() => expect(mocks.uploadFrameFile).toHaveBeenCalledWith(file));
+    await waitFor(() => expect(mocks.uploadCustomFile).toHaveBeenCalledWith(file));
+    // The frame-tab upload must never fire just because the file tab did.
+    expect(mocks.uploadFrameFile).not.toHaveBeenCalled();
     await waitFor(() =>
       expect(mocks.setPoster).toHaveBeenCalledWith(
         "https://res.cloudinary.com/demo/image/upload/custom.jpg"

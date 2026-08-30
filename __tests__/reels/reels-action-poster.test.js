@@ -1,5 +1,5 @@
-/**
- * lib/actions/reels-action — updateReelPoster (#265) stub contract.
+ï»¿/**
+ * lib/actions/reels-action - updateReelPoster (#265) stub contract.
  * -------------------------------------------------------------------------
  * Mirrors the coverage style of the existing setReelVisibility stub (#335):
  * asserts the resolved shape callers depend on, the validation guard, and

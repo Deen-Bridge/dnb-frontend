@@ -1,13 +1,13 @@
-"use client";
+ï»¿"use client";
 /**
- * useReelPoster — optimistic poster (cover image) update for a single reel (#265).
+ * useReelPoster - optimistic poster (cover image) update for a single reel (#265).
  * ---------------------------------------------------------------------------
  * Wraps {@link useOptimisticMutation} to update a reel's `poster` URL
  * instantly, reverting + toasting if the `PATCH /api/reels/:id/poster`
  * mutation (stubbed in `lib/actions/reels-action`) fails. Queue safety is
  * keyed by the reel id, mirroring `useReelModeration` (#335).
  *
- * This hook only persists an already-uploaded Cloudinary URL — it does not
+ * This hook only persists an already-uploaded Cloudinary URL - it does not
  * perform the upload itself. See `ReelPosterDialog` for frame capture /
  * custom image upload.
  *
