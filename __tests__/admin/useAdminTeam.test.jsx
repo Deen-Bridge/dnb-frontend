@@ -11,10 +11,6 @@ import { renderHook, waitFor, act } from "@testing-library/react";
 
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
-const authMock = vi.hoisted(() => ({
-  user: { id: "me", role: "admin", tier: "super_admin" },
-}));
-
 // Authenticated super-admin so the hook's fail-closed guard lets it fetch.
 // The user object must be a stable reference: the hook's load effect keys off
 // `user`, so a fresh object every render would re-trigger the effect (and
