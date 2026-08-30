@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -55,7 +55,7 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import { format } from "date-fns";
 
 const STATE_CONFIG = {

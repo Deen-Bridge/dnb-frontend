@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -49,7 +49,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import { format } from "date-fns";
 
 // Action categories

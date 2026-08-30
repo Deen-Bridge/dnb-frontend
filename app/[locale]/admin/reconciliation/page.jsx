@@ -34,7 +34,6 @@ import {
   XCircle,
   AlertTriangle,
   ExternalLink,
-  RefreshCw,
   Download,
   Loader2,
   Info,
@@ -188,7 +187,7 @@ export default function PayoutReconciliationPage() {
     const csvContent = [
       headers.join(","),
       ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+        row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")
       ),
     ].join("\n");
 
