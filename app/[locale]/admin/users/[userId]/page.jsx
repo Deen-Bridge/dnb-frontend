@@ -116,7 +116,7 @@ export default function AdminUserDetailPage({ params }) {
                 variant="outline"
                 size="sm"
                 onClick={handlePrint}
-                className="gap-2 font-semibold"
+                className="no-print gap-2 font-semibold"
                 aria-label="Print record"
               >
                 <Printer className="h-4 w-4" />

@@ -72,7 +72,7 @@ export default function TransactionDrawer({ transaction, open, onOpenChange }) {
                 variant="outline"
                 size="sm"
                 onClick={handlePrint}
-                className="gap-2 text-xs font-semibold"
+                className="no-print gap-2 text-xs font-semibold"
                 aria-label="Print record"
               >
                 <Printer className="h-4 w-4" />
