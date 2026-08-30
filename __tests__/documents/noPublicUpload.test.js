@@ -23,15 +23,21 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 /** Every source file that participates in the document-upload path. */
 const DOCUMENT_UPLOAD_SOURCES = [
-  "lib/actions/educators/uploadDocument.js",
-  "lib/verification/documents/policy.js",
-  "lib/verification/documents/fileSignature.js",
-  "hooks/useDocumentUpload.js",
+  "lib/actions/educators/uploadDocument.ts",
+  "lib/verification/documents/policy.ts",
+  "lib/verification/documents/fileSignature.ts",
+  "hooks/useDocumentUpload.ts",
   "components/organisms/educator-onboarding/DocumentUpload.jsx",
 ];
 
 function read(relativePath) {
-  const full = resolve(REPO_ROOT, relativePath);
+  let full = resolve(REPO_ROOT, relativePath);
+  if (!existsSync(full)) {
+    const altPath = relativePath.endsWith(".ts")
+      ? relativePath.replace(/\.ts$/, ".js")
+      : relativePath.replace(/\.js$/, ".ts");
+    full = resolve(REPO_ROOT, altPath);
+  }
   expect(existsSync(full), `${relativePath} should exist`).toBe(true);
   return readFileSync(full, "utf8");
 }
@@ -63,7 +69,7 @@ describe("verification documents never use the unsigned Cloudinary preset", () =
   );
 
   it("the upload action never reads or returns a public URL field", () => {
-    const source = read("lib/actions/educators/uploadDocument.js");
+    const source = read("lib/actions/educators/uploadDocument.ts");
 
     // `secure_url` is Cloudinary's public asset URL. It must not appear
     // outside the explanatory comment that says why it is absent.

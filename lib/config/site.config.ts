@@ -1,0 +1,40 @@
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+
+  const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (prod) return `https://${prod}`;
+
+  const deployment = process.env.VERCEL_URL;
+  if (deployment) return `https://${deployment}`;
+
+  return "http://localhost:3000";
+}
+
+export const siteUrl: string = resolveSiteUrl();
+
+export const isProduction: boolean =
+  process.env.VERCEL_ENV === "production" ||
+  (!process.env.VERCEL_ENV && process.env.NODE_ENV === "production");
+
+export const siteName = "Deen Bridge";
+
+export const siteDescription =
+  "Authentic Islamic education — courses, a curated library, live community spaces, and an AI assistant that cites its sources. Educators are paid directly in USDC on Stellar.";
+
+export interface PublicRoute {
+  path: string;
+  priority: number;
+  changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+}
+
+export const publicRoutes: PublicRoute[] = [
+  { path: "/", priority: 1.0, changeFrequency: "weekly" },
+  { path: "/ai", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/stellar", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/features", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/educators", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/about", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
+  { path: "/contact", priority: 0.5, changeFrequency: "yearly" },
+];

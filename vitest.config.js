@@ -16,7 +16,14 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.js"],
-    include: ["**/__tests__/**/*.{test,spec}.{js,jsx}"],
+    include: ["**/__tests__/**/*.{test,spec}.{js,jsx,ts,tsx}"],
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    server: {
+      deps: {
+        inline: ["date-fns"],
+      },
+    },
   },
   resolve: {
     mainFields: ["module", "main"],

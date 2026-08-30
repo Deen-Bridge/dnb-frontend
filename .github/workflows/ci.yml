@@ -30,6 +30,9 @@ jobs:
       - name: Run accessibility gate
         run: npm run a11y
 
+      - name: Run type check
+        run: npm run typecheck
+
       - name: Run component tests
         run: npm test
 
