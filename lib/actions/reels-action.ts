@@ -8,6 +8,8 @@ const defaultPagination = {
 export interface FetchReelsParams {
   page?: number;
   limit?: number;
+  /** Admin views include reels hidden by moderation. */
+  includeHidden?: boolean;
 }
 
 export interface FetchReelsResult {
@@ -19,13 +21,24 @@ export interface FetchReelsResult {
   hasMore: boolean;
 }
 
-export const fetchReels = async ({ page, limit }: FetchReelsParams = {}): Promise<FetchReelsResult> => {
+export const fetchReels = async ({ page, limit, includeHidden = false }: FetchReelsParams = {}): Promise<FetchReelsResult> => {
   try {
     const params = {
       page: page ?? defaultPagination.page,
       limit: limit ?? defaultPagination.limit,
+      ...(includeHidden ? { includeHidden: true } : {}),
     };
     const res = await axiosInstance.get("/api/reels", { params });
+    // Do not let a stale cache or an older backend response expose moderated
+    // content on any learner-facing consumer of this shared action.
+    if (!includeHidden && Array.isArray(res.data?.reels)) {
+      return {
+        ...res.data,
+        reels: res.data.reels.filter(
+          (reel: any) => !reel.isHidden && reel.visibility !== "hidden"
+        ),
+      };
+    }
     return res.data;
   } catch (error) {
     console.error("Error fetching reels:", error);
@@ -38,6 +51,29 @@ export const fetchReels = async ({ page, limit }: FetchReelsParams = {}): Promis
       hasMore: false,
     };
   }
+};
+
+export interface UpdateReelVisibilityPayload {
+  hidden: boolean;
+  /** Required when hiding; uses the shared moderation reason categories. */
+  reasonCategory?: string;
+  /** Required when hiding so the moderation decision is auditable. */
+  reasonNote?: string;
+}
+
+/**
+ * Hides or restores a reel. The backend preserves the prior publication state
+ * and only removes a hidden reel from learner-facing responses.
+ */
+export const updateReelVisibility = async (
+  reelId: string,
+  payload: UpdateReelVisibilityPayload
+): Promise<any> => {
+  if (payload.hidden && (!payload.reasonCategory || !payload.reasonNote?.trim())) {
+    throw new Error("A reason category and moderation note are required to hide a reel.");
+  }
+  const res = await axiosInstance.patch(`/api/admin/reels/${reelId}/visibility`, payload);
+  return res.data;
 };
 
 export const fetchReelById = async (reelId: string): Promise<any | null> => { // TODO(types): Single reel detail
