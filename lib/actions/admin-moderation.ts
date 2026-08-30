@@ -6,6 +6,23 @@ function withMockDelay<T>(value: T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), MOCK_DELAY_MS));
 }
 
+export const COURSE_STATUS = Object.freeze({
+  DRAFT: "draft",
+  PUBLISHED: "published",
+  UNPUBLISHED: "unpublished",
+  TAKEN_DOWN: "taken_down",
+} as const);
+
+export type CourseStatus = typeof COURSE_STATUS[keyof typeof COURSE_STATUS];
+
+export const TAKEDOWN_REASONS = Object.freeze([
+  { value: "copyright", label: "Copyright / DMCA" },
+  { value: "content-policy", label: "Content Policy Violation" },
+  { value: "quality", label: "Quality Issues" },
+] as const);
+
+export type TakedownReasonValue = typeof TAKEDOWN_REASONS[number]["value"];
+
 export const DISMISSAL_REASONS = Object.freeze([
   {
     value: "no_violation",
@@ -48,6 +65,43 @@ export async function getReporterReportCount(reporterId: string): Promise<number
 export async function isFirstTimeReporter(reporterId: string): Promise<boolean> {
   const count = await getReporterReportCount(reporterId);
   return count === 0;
+}
+
+export async function notifyEducator(
+  educatorId?: string,
+  type?: string,
+  details?: Record<string, any> // TODO(types): Educator notification details
+): Promise<{ success: boolean }> {
+  // Stub for actual notification service call
+  console.log(`[Notification Service] Notifying educator ${educatorId}: ${type}`, details);
+  return { success: true };
+}
+
+export interface UpdateCourseStatusOptions {
+  reason?: string;
+  note?: string;
+  educatorId?: string;
+}
+
+export async function updateCourseStatus(
+  courseId: string,
+  status: string,
+  { reason, note, educatorId }: UpdateCourseStatusOptions = {}
+): Promise<{ success: boolean; status: string }> {
+  // TODO(backend): POST /api/admin/courses/:id/status
+  await withMockDelay(null);
+
+  if (status === COURSE_STATUS.TAKEN_DOWN) {
+    await notifyEducator(educatorId, "course_taken_down", { reason, note });
+  }
+
+  logAuditEvent({
+    action: status === COURSE_STATUS.TAKEN_DOWN ? AUDIT_ACTIONS.COURSE_TAKEDOWN : AUDIT_ACTIONS.COURSE_UPDATED,
+    target: { label: `Course ${courseId}`, href: `/dashboard/admin/courses/${courseId}` },
+    metadata: { status, reason, note },
+  });
+
+  return { success: true, status };
 }
 
 export interface SendDismissalNotificationParams {

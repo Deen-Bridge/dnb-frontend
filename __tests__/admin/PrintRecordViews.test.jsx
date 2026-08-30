@@ -114,7 +114,7 @@ describe("Print-Friendly Views for Records (#338)", () => {
     fireEvent.click(row);
 
     // Verify detail modal print-root and print record button
-    expect(await screen.findByText("Linked Transaction")).toBeInTheDocument();
+    expect(await screen.findByText("Tx Reference")).toBeInTheDocument();
 
     const printBtn = screen.getByRole("button", { name: "Print record" });
     expect(printBtn).toBeInTheDocument();

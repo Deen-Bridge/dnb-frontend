@@ -540,6 +540,8 @@ export interface LogAdminActionParams {
   category: string;
   target?: AuditTarget;
   summary?: string;
+  actor?: AuditActor | null;
+  ip?: string | null;
 }
 
 export async function logAdminAction({ action, category, target, summary }: LogAdminActionParams): Promise<{ log: AuditLogEntry }> {

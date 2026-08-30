@@ -15,6 +15,8 @@ export const AUDIT_ACTIONS = Object.freeze({
   TAKEDOWN: "content.takedown",
   RESTORE: "content.restore",
   REPORT_DISMISS: "report.dismiss",
+  COURSE_TAKEDOWN: "course.takedown",
+  COURSE_UPDATED: "course.updated",
 
   // Payments
   REFUND: "payment.refund",
@@ -26,6 +28,12 @@ export const AUDIT_ACTIONS = Object.freeze({
   FLAG_TOGGLE: "flag.toggle",
   FLAG_CREATE: "flag.create",
   SETTINGS_CHANGE: "settings.change",
+
+  // Educator verifications
+  VERIFICATION_APPROVE: "verification.approve",
+  VERIFICATION_REJECT: "verification.reject",
+  VERIFICATION_BULK_APPROVE: "verification.bulk_approve",
+  VERIFICATION_BULK_REJECT: "verification.bulk_reject",
 } as const);
 
 export type AuditAction = typeof AUDIT_ACTIONS[keyof typeof AUDIT_ACTIONS];
@@ -52,10 +60,16 @@ const ACTION_CATEGORY: Record<string, AuditCategory> = Object.freeze({
   [AUDIT_ACTIONS.TAKEDOWN]: "moderation",
   [AUDIT_ACTIONS.RESTORE]: "moderation",
   [AUDIT_ACTIONS.REPORT_DISMISS]: "moderation",
+  [AUDIT_ACTIONS.COURSE_TAKEDOWN]: "course",
+  [AUDIT_ACTIONS.COURSE_UPDATED]: "course",
   [AUDIT_ACTIONS.REFUND]: "payment",
   [AUDIT_ACTIONS.BROADCAST]: "system",
   [AUDIT_ACTIONS.FLAG_TOGGLE]: "system",
   [AUDIT_ACTIONS.FLAG_CREATE]: "system",
+  [AUDIT_ACTIONS.VERIFICATION_APPROVE]: "user",
+  [AUDIT_ACTIONS.VERIFICATION_REJECT]: "user",
+  [AUDIT_ACTIONS.VERIFICATION_BULK_APPROVE]: "user",
+  [AUDIT_ACTIONS.VERIFICATION_BULK_REJECT]: "user",
 });
 
 export interface AuditTargetDescriptor {
