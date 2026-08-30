@@ -127,6 +127,9 @@ const getTargetLink = (target) => {
     setting: `/admin/settings`,
     backup: `/admin/backups/${target.id}`,
   };
+  return links[target.type] || "#";
+};
+
 function formatDateRange(range) {
   if (!range?.from) return "Select date range";
   if (range.to) {
