@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ReelActionButton from "@/components/atoms/reels/ReelActionButton";
+import ReelPosterButton from "@/components/atoms/reels/ReelPosterButton";
+import ReelPosterDialog from "@/components/organisms/reels/ReelPosterDialog";
+import { useAuth } from "@/hooks/useAuth";
+import { ROLES, normalizeRole } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -39,6 +43,11 @@ const ReelCard = ({
   const [likeCount, setLikeCount] = useState(reel.stats?.likes || 0);
   const [loveCount, setLoveCount] = useState(reel.stats?.loves || 0);
   const [muted, setMuted] = useState(true);
+  const [posterUrl, setPosterUrl] = useState(reel.poster ?? null);
+  const [posterDialogOpen, setPosterDialogOpen] = useState(false);
+
+  const { user } = useAuth();
+  const isAdmin = normalizeRole(user?.role) === ROLES.ADMIN;
 
   const isPaused = playing !== reel.id;
 
@@ -48,12 +57,14 @@ const ReelCard = ({
     setLikeCount(reel.stats?.likes || 0);
     setLoveCount(reel.stats?.loves || 0);
     setMuted(true);
+    setPosterUrl(reel.poster ?? null);
   }, [
     reel.id,
     reel.viewerState?.liked,
     reel.viewerState?.loved,
     reel.stats?.likes,
     reel.stats?.loves,
+    reel.poster,
   ]);
 
   useEffect(() => {
@@ -144,6 +155,7 @@ const ReelCard = ({
         <video
           ref={videoRef}
           src={reel.video}
+          poster={posterUrl || undefined}
           className="h-full w-full object-cover"
           playsInline
           loop
@@ -181,7 +193,7 @@ const ReelCard = ({
           )}
         </button>
 
-        {/* Right action rail â€” overlaid inside, all breakpoints (TikTok-style) */}
+        {/* Right action rail — overlaid inside, all breakpoints (TikTok-style) */}
         <div className="absolute bottom-24 right-2.5 z-30 flex flex-col items-center gap-5">
           <div className="mb-1 flex flex-col items-center">
             <Avatar className="h-11 w-11 border-2 border-white">
@@ -233,6 +245,9 @@ const ReelCard = ({
             accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
             onClick={onShare}
           />
+          {isAdmin && (
+            <ReelPosterButton onClick={() => setPosterDialogOpen(true)} />
+          )}
         </div>
 
         {/* Caption overlay (bottom-left) */}
@@ -241,7 +256,7 @@ const ReelCard = ({
             <span className="text-sm font-semibold">
               @{reel.createdBy?.name || "Anonymous"}
             </span>
-            <span className="text-[11px] text-white/60">Â·</span>
+            <span className="text-[11px] text-white/60">·</span>
             <span className="text-[11px] text-white/70">{formattedDate}</span>
             <button
               type="button"
@@ -286,6 +301,15 @@ const ReelCard = ({
           </button>
         )}
       </div>
+
+      {isAdmin && (
+        <ReelPosterDialog
+          open={posterDialogOpen}
+          onOpenChange={setPosterDialogOpen}
+          reel={reel}
+          onUpdated={(url) => setPosterUrl(url)}
+        />
+      )}
     </div>
   );
 };
