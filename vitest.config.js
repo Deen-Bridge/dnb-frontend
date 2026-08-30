@@ -21,6 +21,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "."),
+      "date-fns": resolve(__dirname, "node_modules/date-fns/index.js"),
     },
   },
 });
