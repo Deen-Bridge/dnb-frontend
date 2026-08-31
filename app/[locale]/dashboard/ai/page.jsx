@@ -24,6 +24,7 @@ import {
   poppins_500,
   poppins_600,
 } from "@/lib/config/font.config";
+import { useAiLayout } from "./context";
 
 const markdownComponents = {
   p: ({ children }) => (
@@ -95,7 +96,7 @@ const AiAvatar = ({ size = 32 }) => (
   </span>
 );
 
-export default function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
+function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -414,5 +415,17 @@ export default function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  const { chatData, onChatUpdate, onOpenSidebar } = useAiLayout();
+
+  return (
+    <Dashboard
+      chatData={chatData}
+      onChatUpdate={onChatUpdate}
+      onOpenSidebar={onOpenSidebar}
+    />
   );
 }

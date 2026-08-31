@@ -13,9 +13,9 @@ import { useHasCourse, usePurchaseCourse } from "@/hooks/usePurchase";
 import { useCourseProgress, formatTime } from "@/hooks/useCourseProgress";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { 
-  Wallet, RotateCcw, Play, Star, BookOpen, Tag, Users, MessageSquare, Lock, 
-  CheckCircle2, GraduationCap, Clock, BarChart3, AlertTriangle 
+import {
+  Wallet, RotateCcw, Play, Star, BookOpen, Tag, Users, MessageSquare, Lock,
+  CheckCircle2, GraduationCap, Clock, BarChart3, AlertTriangle
 } from "lucide-react";
 import PaymentModal from "@/components/stellar/PaymentModal";
 import { useStellar } from "@/components/stellar/StellarProvider";
@@ -72,7 +72,7 @@ export default function CourseDetailClient({ course }) {
           <div className="relative space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               {flagCount > 0 && (
-                <Link 
+                <Link
                   href={`/admin/reports?type=course&id=${course._id}`}
                   className="flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs text-red-600 transition hover:bg-red-500/20"
                 >
@@ -89,10 +89,10 @@ export default function CourseDetailClient({ course }) {
           </div>
         </Panel>
         {/* ... remainder of content remains unchanged ... */}
-        <PaymentModal 
-          isOpen={showPaymentModal} 
-          onClose={() => setShowPaymentModal(false)} 
-          course={course} 
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          course={course}
         />
       </div>
     </div>

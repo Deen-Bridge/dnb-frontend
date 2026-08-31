@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { AiSidebar } from "@/components/organisms/dashboard/ai/Ai-Sidebar";
+import { AiLayoutProvider } from "./context";
 
 export default function Layout({ children }) {
   const [currentChatId, setCurrentChatId] = useState(null);
@@ -59,13 +60,15 @@ export default function Layout({ children }) {
 
       {/* Chat panel */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {children &&
-          typeof children === "object" &&
-          React.cloneElement(children, {
+        <AiLayoutProvider
+          value={{
             chatData,
             onChatUpdate: setCurrentChatId,
             onOpenSidebar: () => setSidebarOpen(true),
-          })}
+          }}
+        >
+          {children}
+        </AiLayoutProvider>
       </div>
     </div>
   );

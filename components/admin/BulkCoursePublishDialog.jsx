@@ -31,7 +31,7 @@ export default function BulkCoursePublishDialog({ open, onOpenChange, courses, o
             Are you sure you want to set these courses to live? This action will make them visible to all students.
           </DialogDescription>
         </DialogHeader>
-        
+
         <ScrollArea className="max-h-60 border rounded-md p-2 my-2">
           <ul className="text-sm space-y-1">
             {courses.map(c => <li key={c.id}>• {c.title}</li>)}
@@ -47,8 +47,8 @@ export default function BulkCoursePublishDialog({ open, onOpenChange, courses, o
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button 
-            disabled={loading || (needsConfirmation && confirmation !== "PUBLISH")} 
+          <Button
+            disabled={loading || (needsConfirmation && confirmation !== "PUBLISH")}
             onClick={handleConfirm}
           >
             {loading ? "Publishing..." : "Confirm Publish"}
