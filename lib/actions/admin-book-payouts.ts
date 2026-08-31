@@ -86,36 +86,6 @@ const MOCK_PAYOUT_SEEDS: Record<string, MockPayoutSeed> = {
       },
     ],
   },
-  bk_003: {
-    creatorWallet: "GDFXHS4GXL6BVUCFZFDXA2P2VJ2XGCLLK7O6R72EC2Q656BUKZ2W9999",
-    creatorName: "Sheikh Omar",
-    settlements: [
-      {
-        _id: "pt_301",
-        txHash: "2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
-        amount: 9.99,
-        status: "confirmed",
-        buyerName: "Hassan Ibrahim",
-        createdAt: "2026-08-12T11:20:00.000Z",
-      },
-      {
-        _id: "pt_302",
-        txHash: "5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c",
-        amount: 9.99,
-        status: "confirmed",
-        buyerName: "Tariq Mansoor",
-        createdAt: "2026-07-28T16:40:00.000Z",
-      },
-      {
-        _id: "pt_303",
-        txHash: "6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8",
-        amount: 9.99,
-        status: "expired",
-        buyerName: "Khadija Bello",
-        createdAt: "2026-06-09T13:05:00.000Z",
-      },
-    ],
-  },
   bk_004: {
     creatorWallet: "GB7BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q9R0",
     creatorName: "Ustadh Ibrahim",
@@ -170,7 +140,7 @@ const MOCK_PAYOUT_SEEDS: Record<string, MockPayoutSeed> = {
   },
 };
 
-const FREE_BOOKS_WITHOUT_SALES = new Set(["bk_001", "bk_005"]);
+const FREE_BOOKS_WITHOUT_SALES = new Set(["bk_001", "bk_003", "bk_005"]);
 
 function isWithinRange(iso: string, dateFrom?: string, dateTo?: string): boolean {
   const date = new Date(iso);
@@ -255,6 +225,7 @@ export async function fetchBookPayouts(
     if (res.data && res.data.success) {
       const txList: Array<{
         itemType?: string;
+        itemId?: string;
         itemTitle?: string;
         amount?: number;
         status?: string;
@@ -267,11 +238,14 @@ export async function fetchBookPayouts(
       }> = res.data.transactions || [];
 
       const bookTitle = params.bookTitle?.toLowerCase();
-      const matched = txList.filter(
-        (tx) =>
-          tx.itemType?.toLowerCase() === "book" &&
-          (!bookTitle || !tx.itemTitle || tx.itemTitle.toLowerCase() === bookTitle)
-      );
+      const matched = txList.filter((tx) => {
+        if (tx.itemType?.toLowerCase() !== "book") return false;
+        if (tx.itemId) return tx.itemId === params.bookId;
+        if (bookTitle) {
+          return !!tx.itemTitle && tx.itemTitle.toLowerCase() === bookTitle;
+        }
+        return false;
+      });
 
       if (matched.length > 0) {
         const settlements: PayoutSettlement[] = matched

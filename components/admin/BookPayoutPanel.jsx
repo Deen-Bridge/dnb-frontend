@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -84,11 +84,13 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [copiedWallet, setCopiedWallet] = useState(false);
+  const requestIdRef = useRef(0);
 
   const network = config.stellarNetwork;
 
   const loadPayouts = useCallback(async () => {
     if (!book) return;
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(null);
     try {
@@ -99,6 +101,7 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
         dateFrom: range.from ? range.from.toISOString() : undefined,
         dateTo: range.to ? range.to.toISOString() : undefined,
       });
+      if (requestId !== requestIdRef.current) return;
       if (res.success && res.summary) {
         setSummary(res.summary);
       } else {
@@ -106,10 +109,11 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
         setError(res.error || "Unable to load payout summary.");
       }
     } catch (err) {
+      if (requestId !== requestIdRef.current) return;
       setSummary(null);
       setError(err?.message || "Unable to load payout summary.");
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, [book, range.from, range.to]);
 
@@ -119,6 +123,7 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
 
   useEffect(() => {
     if (!open) {
+      requestIdRef.current += 1;
       setRange({ from: null, to: null });
       setSummary(null);
       setError(null);

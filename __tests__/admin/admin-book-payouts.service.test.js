@@ -118,20 +118,107 @@ describe("admin-book-payouts service", () => {
     expect(result.summary.settlements[0].createdAt).toBe("2026-07-19T14:30:00.000Z");
   });
 
-  it("returns an empty summary for free books with no sales", async () => {
-    axiosInstance.get.mockRejectedValueOnce({ code: "ERR_NETWORK" });
+  it("prefers the immutable book identifier over title matching", async () => {
+    const matchingId = {
+      _id: "tx_a",
+      txHash: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c",
+      itemType: "book",
+      itemId: "bk_002",
+      itemTitle: "Some Other Title",
+      amount: 12.99,
+      status: "confirmed",
+      buyer: { name: "Amina Yusuf" },
+      creator: { name: "Dr. Fatima" },
+      creatorWallet: "GCFXHS4GXL6BVUCFZFDXA2P2VJ2XGCLLK7O6R72EC2Q656BUKZ2W4567",
+      createdAt: "2026-08-05T10:00:00.000Z",
+    };
+    const wrongId = {
+      _id: "tx_b",
+      txHash: "9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c",
+      itemType: "book",
+      itemId: "bk_999",
+      itemTitle: "Understanding Hadith Sciences",
+      amount: 12.99,
+      status: "confirmed",
+      buyer: { name: "Umar Farouk" },
+      creator: { name: "Dr. Fatima" },
+      creatorWallet: "GB7BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q9R0",
+      createdAt: "2026-08-04T12:00:00.000Z",
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({
+      data: { success: true, transactions: [matchingId, wrongId] },
+    });
 
     const result = await fetchBookPayouts({
+      bookId: "bk_002",
+      bookTitle: "Understanding Hadith Sciences",
+    });
+
+    expect(result.summary.creatorWallet).toBe(
+      "GCFXHS4GXL6BVUCFZFDXA2P2VJ2XGCLLK7O6R72EC2Q656BUKZ2W4567"
+    );
+    expect(result.summary.settlements.length).toBe(1);
+    expect(result.summary.unitsSold).toBe(1);
+  });
+
+  it("excludes transactions that cannot be tied to the requested book", async () => {
+    const orphan = {
+      _id: "tx_c",
+      txHash: "3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b",
+      itemType: "book",
+      amount: 9.99,
+      status: "confirmed",
+      buyer: { name: "Fatima Ali" },
+      creator: { name: "Unknown" },
+      creatorWallet: "GC3BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q111",
+      createdAt: "2026-08-05T10:00:00.000Z",
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({
+      data: { success: true, transactions: [orphan] },
+    });
+
+    const result = await fetchBookPayouts({
+      bookId: "bk_002",
+      bookTitle: "Understanding Hadith Sciences",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.summary.bookId).toBe("bk_002");
+    expect(result.summary.settlements.length).toBe(4);
+    expect(result.summary.creatorWallet).toBe(
+      "GCFXHS4GXL6BVUCFZFDXA2P2VJ2XGCLLK7O6R72EC2Q656BUKZ2W4567"
+    );
+  });
+
+  it("returns an empty summary for free books with no sales", async () => {
+    axiosInstance.get
+      .mockRejectedValueOnce({ code: "ERR_NETWORK" })
+      .mockRejectedValueOnce({ code: "ERR_NETWORK" });
+
+    const resultBk1 = await fetchBookPayouts({
       bookId: "bk_001",
       bookTitle: "Introduction to Fiqh",
       creatorName: "Sheikh Ahmad",
     });
+    const resultBk3 = await fetchBookPayouts({
+      bookId: "bk_003",
+      bookTitle: "Seerah of the Prophet",
+      creatorName: "Sheikh Omar",
+    });
 
-    expect(result.success).toBe(true);
-    expect(result.summary.unitsSold).toBe(0);
-    expect(result.summary.grossUsdc).toBe(0);
-    expect(result.summary.settlements).toEqual([]);
-    expect(result.summary.creatorWallet).toBe("");
+    expect(resultBk1.success).toBe(true);
+    expect(resultBk1.summary.unitsSold).toBe(0);
+    expect(resultBk1.summary.grossUsdc).toBe(0);
+    expect(resultBk1.summary.settlements).toEqual([]);
+    expect(resultBk1.summary.creatorWallet).toBe("");
+
+    expect(resultBk3.success).toBe(true);
+    expect(resultBk3.summary.unitsSold).toBe(0);
+    expect(resultBk3.summary.grossUsdc).toBe(0);
+    expect(resultBk3.summary.settlements).toEqual([]);
+    expect(resultBk3.summary.creatorWallet).toBe("");
   });
 
   it("returns an error result for non-fallback failures", async () => {

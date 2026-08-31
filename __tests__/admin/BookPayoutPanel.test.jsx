@@ -100,6 +100,16 @@ function renderPanel() {
   );
 }
 
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   explorerMock.isValidStellarAddress.mockReturnValue(true);
@@ -157,6 +167,47 @@ describe("BookPayoutPanel", () => {
           creatorName: "Dr. Fatima",
         })
       );
+    });
+  });
+
+  it("ignores a stale response from a superseded request", async () => {
+    const stale = deferred();
+    const fresh = deferred();
+    serviceMocks.fetchBookPayouts
+      .mockReturnValueOnce(stale.promise)
+      .mockReturnValueOnce(fresh.promise);
+
+    const otherBook = {
+      _id: "bk_004",
+      title: "Tajweed Made Simple",
+      author: { name: "Ustadh Ibrahim" },
+      price: 5.0,
+    };
+
+    const { rerender } = render(
+      <BookPayoutPanel book={BOOK} open={true} onOpenChange={vi.fn()} />
+    );
+    rerender(
+      <BookPayoutPanel book={otherBook} open={true} onOpenChange={vi.fn()} />
+    );
+
+    fresh.resolve({
+      success: true,
+      summary: {
+        ...MOCK_SUMMARY,
+        bookId: "bk_004",
+        title: "Tajweed Made Simple",
+        creatorName: "Ustadh Ibrahim",
+        creatorWallet: "GB7BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q9R0",
+      },
+    });
+    expect(
+      await screen.findByText("GB7BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q9R0")
+    ).toBeInTheDocument();
+
+    stale.resolve({ success: true, summary: MOCK_SUMMARY });
+    await waitFor(() => {
+      expect(screen.queryByText(WALLET)).not.toBeInTheDocument();
     });
   });
 
