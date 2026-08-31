@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
 } from "@/components/ui/accordion";
 import { Play, BookOpen, FileText, Settings, ShieldAlert, Calendar, BarChart3, Tag } from "lucide-react";
 import { PageShell } from "@/components/ui/page-shell";

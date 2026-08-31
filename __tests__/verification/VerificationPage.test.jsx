@@ -2,7 +2,7 @@
  * VerificationPage - status center component tests
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { VERIFICATION_STATUS } from "@/lib/actions/educators/fetchVerificationStatus";
 
@@ -66,14 +66,15 @@ function clickBtn(testId) {
   if (inner) fireEvent.click(inner);
 }
 let _VerificationPage;
-beforeEach(async () => {
+beforeAll(async () => {
+  const mod = await import("@/app/[locale]/account/verification/page");
+  _VerificationPage = mod.default;
+}, 60000);
+
+beforeEach(() => {
   _hookState.current = makeHook();
   mockPush.mockClear();
   mockFetchSignedUrl.mockClear();
-  if (!_VerificationPage) {
-    const mod = await import("@/app/[locale]/account/verification/page");
-    _VerificationPage = mod.default;
-  }
 });
 afterEach(() => vi.clearAllMocks());
 

@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
-import cloudinary from 'cloudinary';
+import crypto from 'node:crypto';
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+function signCloudinaryRequest(params, apiSecret) {
+  const payload = Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+
+  return crypto.createHash('sha1').update(`${payload}${apiSecret}`).digest('hex');
+}
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -22,18 +26,33 @@ export async function GET(request) {
   }
 
   try {
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      return NextResponse.json({ error: 'Cloudinary credentials are not configured' }, { status: 500 });
+    }
+
     const expiresInSeconds = parseInt(process.env.SIGNED_URL_EXPIRATION_SECONDS, '10') || 60;
+    const timestamp = Math.floor(Date.now() / 1000);
     const expiresAt = Math.floor(Date.now() / 1000) + expiresInSeconds;
 
     // Generate a signed URL with a short expiration.
     // Note: This route must be protected by authentication and authorization in production.
-    const signedUrl = cloudinary.v2.utils.private_download_url(id, '', {
-      resource_type: resourceType,
+    const signatureParams = {
+      timestamp,
+      public_id: id,
       type: 'authenticated',
-      sign_url: true,
       expires_at: expiresAt,
-      secure: true,
+    };
+    const signature = signCloudinaryRequest(signatureParams, apiSecret);
+    const signedParams = new URLSearchParams({
+      ...Object.fromEntries(Object.entries(signatureParams).map(([key, value]) => [key, String(value)])),
+      signature,
+      api_key: apiKey,
     });
+    const signedUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/download?${signedParams.toString()}`;
 
     // Do not log or cache the signed URL.
     return NextResponse.json({ url: signedUrl, expiresInSeconds });

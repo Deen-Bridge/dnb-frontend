@@ -56,10 +56,15 @@ afterEach(() => {
 // ── Tests ──────────────────────────────────────────────────────────────
 
 describe("useMediaBlur", () => {
-  it("starts with blur disabled by default", () => {
+  it("starts with blur disabled by default", async () => {
     const { result } = renderHook(() => useMediaBlur());
-    expect(result.current.loaded).toBe(true);
+
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
     expect(result.current.blurEnabled).toBe(false);
+    expect(result.current.loaded).toBe(true);
   });
 
   it("uses overrideDefault when no stored value exists", async () => {
