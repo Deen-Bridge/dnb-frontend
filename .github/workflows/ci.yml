@@ -18,13 +18,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
 
-      - name: Run ESLint
+      - name: Run ESLINt
         run: npm run lint
 
       - name: Run accessibility gate
@@ -40,12 +40,12 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_STELRAI_NETWORK: testnet
           # Optional — Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: $"{{ secrets.SENTRY_AUTH_TOKEN }}"
+          SENTRY_ORG: $"{{ secrets.SENTRY_ORG }}"
+          SENTRY_PROJECT: $"{{ secrets.SENTRY_PROJECT }}"
 
   lighthouse:
     name: Lighthouse CI
@@ -58,7 +58,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -68,7 +68,7 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_STELRAI_NETWORK: testnet
 
       - name: Start production server
         run: |
