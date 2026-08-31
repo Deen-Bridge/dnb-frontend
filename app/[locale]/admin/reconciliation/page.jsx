@@ -34,7 +34,6 @@ import {
   XCircle,
   AlertTriangle,
   ExternalLink,
-  RefreshCw,
   Download,
   Loader2,
   Info,
@@ -127,6 +126,14 @@ const getStellarExplorerUrl = (txHash) => {
   return `https://stellar.expert/explorer/public/tx/${txHash}`;
 };
 
+function formatDateRange(range) {
+  if (!range?.from) return "Select date range";
+  if (range.to) {
+    return `${format(range.from, "LLL dd, y")} - ${format(range.to, "LLL dd, y")}`;
+  }
+  return format(range.from, "LLL dd, y");
+}
+
 export default function PayoutReconciliationPage() {
   const [dateRange, setDateRange] = useState({
     from: subDays(new Date(), 30),
@@ -188,7 +195,7 @@ export default function PayoutReconciliationPage() {
     const csvContent = [
       headers.join(","),
       ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+        row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")
       ),
     ].join("\n");
 
@@ -236,22 +243,12 @@ export default function PayoutReconciliationPage() {
         <CardContent>
           <div className="flex flex-wrap gap-4 items-end">
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
-                        </>
-                      ) : (
-                        format(dateRange.from, "LLL dd, y")
-                      )
-                    ) : (
-                      "Select date range"
-                    )}
+                    {formatDateRange(dateRange)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

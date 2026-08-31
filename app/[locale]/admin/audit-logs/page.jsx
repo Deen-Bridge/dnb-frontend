@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -49,7 +49,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import { format } from "date-fns";
 
 // Action categories
@@ -129,6 +129,14 @@ const getTargetLink = (target) => {
   };
   return links[target.type] || "#";
 };
+
+function formatDateRange(range) {
+  if (!range?.from) return "Select date range";
+  if (range.to) {
+    return `${format(range.from, "LLL dd")} - ${format(range.to, "LLL dd")}`;
+  }
+  return format(range.from, "LLL dd, y");
+}
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState([]);
@@ -225,7 +233,7 @@ export default function AuditLogsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Actor Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Admin Actor</span>
               <Select value={actorFilter} onValueChange={setActorFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select actor" />
@@ -243,7 +251,7 @@ export default function AuditLogsPage() {
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Action Category</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Action Category</span>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -264,22 +272,12 @@ export default function AuditLogsPage() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <span className={cn(poppins_500.className, "text-sm block")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "LLL dd")} - {format(dateRange.to, "LLL dd")}
-                        </>
-                      ) : (
-                        format(dateRange.from, "LLL dd, y")
-                      )
-                    ) : (
-                      "Select date range"
-                    )}
+                    {formatDateRange(dateRange)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
