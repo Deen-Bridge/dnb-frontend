@@ -8,6 +8,7 @@
  * - Take-down action opens a reason-category confirmation dialog
  * - Restore action returns the book to its prior active state
  * - Status changes reflected immediately in the list
+ * - Payouts action opens a read-only author payout summary panel (#258)
  */
 
 import { useState, useCallback, useEffect, useMemo } from "react";
@@ -56,6 +57,7 @@ import {
   CheckCircle,
   Ban,
   Search,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
@@ -63,6 +65,7 @@ import TakeDownBookDialog from "@/components/admin/TakeDownBookDialog";
 import RestoreBookDialog from "@/components/admin/RestoreBookDialog";
 import BlurImage from "@/components/ui/blur-image";
 import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
+import BookPayoutPanel from "@/components/admin/BookPayoutPanel";
 
 // Mock books data — replace with real API call
 const generateMockBooks = () => [
@@ -156,6 +159,8 @@ export default function AdminBooksPage() {
   const [takedownTarget, setTakedownTarget] = useState(null);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [restoreTarget, setRestoreTarget] = useState(null);
+  const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
+  const [payoutTarget, setPayoutTarget] = useState(null);
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -395,6 +400,16 @@ export default function AdminBooksPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setPayoutTarget(book);
+                                setPayoutDialogOpen(true);
+                              }}
+                            >
+                              <Wallet className="h-4 w-4 mr-2" />
+                              Payouts
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             {book.status === "active" ? (
                               <DropdownMenuItem
                                 onClick={() => {
@@ -451,6 +466,17 @@ export default function AdminBooksPage() {
           }}
           book={restoreTarget}
           onRestored={handleRestored}
+        />
+      )}
+
+      {payoutTarget && (
+        <BookPayoutPanel
+          open={payoutDialogOpen}
+          onOpenChange={(open) => {
+            setPayoutDialogOpen(open);
+            if (!open) setPayoutTarget(null);
+          }}
+          book={payoutTarget}
         />
       )}
     </PageShell>
