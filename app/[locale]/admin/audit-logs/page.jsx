@@ -46,6 +46,7 @@ import {
   Calendar as CalendarIcon,
   RefreshCw,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 import { TableSkeleton } from "@/components/admin/table-skeleton";
 import { TableEmptyState } from "@/components/admin/table-empty-state";
@@ -246,9 +247,9 @@ export default function AuditLogsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Actor Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
+              <label htmlFor="actor-filter" className={cn(poppins_500.className, "text-sm")}>Admin Actor</label>
               <Select value={actorFilter} onValueChange={setActorFilter}>
-                <SelectTrigger>
+                <SelectTrigger id="actor-filter">
                   <SelectValue placeholder="Select actor" />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,9 +265,9 @@ export default function AuditLogsPage() {
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Action Category</label>
+              <label htmlFor="category-filter" className={cn(poppins_500.className, "text-sm")}>Action Category</label>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
+                <SelectTrigger id="category-filter">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -285,10 +286,10 @@ export default function AuditLogsPage() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <label htmlFor="date-range-filter" className={cn(poppins_500.className, "text-sm")}>Date Range</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  <Button id="date-range-filter" variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange.from ? (
                       dateRange.to ? (
@@ -374,7 +375,9 @@ export default function AuditLogsPage() {
                         const CategoryIcon = category?.icon || FileText;
                         return (
                           <TableRow key={log.id}>
-                            <TableCell className="font-mono text-xs">{formatTimestamp(log.timestamp)}</TableCell>
+                            <TableCell className="font-mono text-xs">
+                              {formatTimestamp(log.timestamp)}
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4 text-muted-foreground" />
@@ -384,17 +387,26 @@ export default function AuditLogsPage() {
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <CategoryIcon className={cn("h-4 w-4", category?.color)} />
-                                <Badge variant="outline" className="text-xs">{log.action}</Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {log.action}
+                                </Badge>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Link href={getTargetLink(log.target)} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                              <Link
+                                href={getTargetLink(log.target)}
+                                className="flex items-center gap-1 text-sm text-blue-600 hover:underline dark:text-blue-400"
+                              >
                                 {log.target.name}
-                                <ExternalLink className="h-3 w-3" />
+                                <ExternalLink className="h-3 w-3" aria-hidden="true" />
                               </Link>
                             </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{log.summary}</TableCell>
-                            <TableCell className="font-mono text-xs text-muted-foreground">{log.ip}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {log.summary}
+                            </TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {log.ip}
+                            </TableCell>
                           </TableRow>
                         );
                       })
@@ -403,47 +415,48 @@ export default function AuditLogsPage() {
                 </Table>
               </div>
 
-            {/* Mobile Card View */}
-            <div className="md:hidden divide-y">
-              {loading ? (
-                <div className="py-8 text-center">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                </div>
-              ) : logs.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  No audit logs found matching your filters
-                </div>
-              ) : (
-                logs.map((log) => {
-                  const category = ACTION_CATEGORIES[log.category];
-                  const CategoryIcon = category?.icon || FileText;
-                  return (
-                    <div key={log.id} className="p-3 space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <CategoryIcon className={cn("h-4 w-4 shrink-0", category?.color)} />
-                          <Badge variant="outline" className="text-[10px]">{log.action}</Badge>
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y">
+                {loading ? (
+                  <div className="py-8 text-center">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                  </div>
+                ) : logs.length === 0 ? (
+                  <div className="py-8 text-center text-muted-foreground">
+                    No audit logs found matching your filters
+                  </div>
+                ) : (
+                  logs.map((log) => {
+                    const category = ACTION_CATEGORIES[log.category];
+                    const CategoryIcon = category?.icon || FileText;
+                    return (
+                      <div key={log.id} className="p-3 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <CategoryIcon className={cn("h-4 w-4 shrink-0", category?.color)} />
+                            <Badge variant="outline" className="text-[10px]">{log.action}</Badge>
+                          </div>
+                          <span className="font-mono text-[10px] text-muted-foreground shrink-0">
+                            {formatTimestamp(log.timestamp)}
+                          </span>
                         </div>
-                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">
-                          {formatTimestamp(log.timestamp)}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <User className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <span className="text-xs text-muted-foreground">{log.actor}</span>
+                          <span className="text-xs text-muted-foreground">→</span>
+                          <Link href={getTargetLink(log.target)} className="text-xs text-blue-600 hover:underline truncate">
+                            {log.target.name}
+                          </Link>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground truncate flex-1 mr-2">{log.summary}</p>
+                          <span className="font-mono text-[10px] text-muted-foreground shrink-0">{log.ip}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <User className="h-3 w-3 text-muted-foreground shrink-0" />
-                        <span className="text-xs text-muted-foreground">{log.actor}</span>
-                        <span className="text-xs text-muted-foreground">→</span>
-                        <Link href={getTargetLink(log.target)} className="text-xs text-blue-600 hover:underline truncate">
-                          {log.target.name}
-                        </Link>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-muted-foreground truncate flex-1 mr-2">{log.summary}</p>
-                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">{log.ip}</span>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+                    );
+                  })
+                )}
+              </div>
             </div>
           )}
 

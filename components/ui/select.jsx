@@ -25,7 +25,7 @@ function SelectValue({
 }
 
 function SelectTrigger({
-  className,
+  className = "",
   size = "default",
   children,
   ...props
@@ -48,7 +48,7 @@ function SelectTrigger({
 }
 
 function SelectContent({
-  className,
+  className = "",
   children,
   position = "popper",
   ...props
@@ -78,7 +78,7 @@ function SelectContent({
 }
 
 function SelectLabel({
-  className,
+  className = "",
   ...props
 }) {
   return (
@@ -90,7 +90,7 @@ function SelectLabel({
 }
 
 function SelectItem({
-  className,
+  className = "",
   children,
   ...props
 }) {

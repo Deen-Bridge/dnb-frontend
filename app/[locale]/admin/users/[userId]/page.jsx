@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
+import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -16,36 +17,74 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Printer,
   User,
-  Mail,
-  Shield,
-  Calendar,
   Wallet,
   ExternalLink,
-  BookOpen,
-  GraduationCap,
-  Activity,
-  CheckCircle,
+  Clock,
+  FileCheck,
+  Film,
+  PauseCircle,
+  PlayCircle,
 } from "lucide-react";
 import { getUserById } from "@/lib/actions/users/getUserById";
+import { fetchEducatorVerificationHistory } from "@/lib/actions/admin-verification-history";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
+import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
+
+const VERIFICATION_BADGE_STYLES = {
+  submitted: "bg-blue-100 text-blue-800 border-blue-200",
+  info_requested: "bg-amber-100 text-amber-800 border-amber-200",
+  approved: "bg-green-100 text-green-800 border-green-200",
+  rejected: "bg-red-100 text-red-800 border-red-200",
+  re_verified: "bg-emerald-100 text-emerald-800 border-emerald-200",
+};
+
+function isMentorRecord(user) {
+  const role = String(user?.role || "").toLowerCase();
+  return role === "educator" || role === "mentor";
+}
+
+function formatVerificationTimestamp(timestamp) {
+  if (!timestamp) return "Timestamp unavailable";
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "Timestamp unavailable";
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export default function AdminUserDetailPage({ params }) {
   const { userId } = use(params);
+  const [reelsDialogOpen, setReelsDialogOpen] = useState(false);
+  const [creatorReelsPaused, setCreatorReelsPaused] = useState(false);
   const [user, setUser] = useState(null);
+  const [verificationHistory, setVerificationHistory] = useState({
+    source: null,
+    events: [],
+    loading: true,
+    error: null,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isActive = true;
+
     async function loadUser() {
       setLoading(true);
       try {
         const res = await getUserById(userId);
+        if (!isActive) return;
+        let resolvedUser;
         if (res?.user) {
-          setUser(res.user);
+          resolvedUser = res.user;
         } else {
           // Mock fallback user record if backend endpoint is not connected
-          setUser({
+          resolvedUser = {
             _id: userId,
             name: "Amina Yusuf",
             email: "amina@deenbridge.org",
@@ -56,14 +95,45 @@ export default function AdminUserDetailPage({ params }) {
             bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
             coursesCount: 8,
             booksCount: 3,
+            verification: {
+              submittedAt: "2025-01-16T09:00:00Z",
+              reviewedAt: "2025-01-17T14:30:00Z",
+              approvedAt: "2025-01-17T14:30:00Z",
+              reviewedBy: "Admin review team",
+            },
             purchases: [
               { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
               { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
             ],
-          });
+          };
+        }
+        setUser(resolvedUser);
+
+        if (isMentorRecord(resolvedUser)) {
+          try {
+            const history = await fetchEducatorVerificationHistory(userId, resolvedUser);
+            if (!isActive) return;
+            setVerificationHistory({
+              source: history.source,
+              events: Array.isArray(history.events) ? history.events : [],
+              loading: false,
+              error: null,
+            });
+          } catch (err) {
+            if (!isActive) return;
+            setVerificationHistory({
+              source: null,
+              events: [],
+              loading: false,
+              error: err?.message || "Failed to load verification history",
+            });
+          }
+        } else {
+          setVerificationHistory({ source: null, events: [], loading: false, error: null });
         }
       } catch {
-        setUser({
+        if (!isActive) return;
+        const fallbackUser = {
           _id: userId,
           name: "Amina Yusuf",
           email: "amina@deenbridge.org",
@@ -74,16 +144,35 @@ export default function AdminUserDetailPage({ params }) {
           bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
           coursesCount: 8,
           booksCount: 3,
+          verification: {
+            submittedAt: "2025-01-16T09:00:00Z",
+            reviewedAt: "2025-01-17T14:30:00Z",
+            approvedAt: "2025-01-17T14:30:00Z",
+            reviewedBy: "Admin review team",
+          },
           purchases: [
             { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
             { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
           ],
+        };
+        setUser(fallbackUser);
+        const history = await fetchEducatorVerificationHistory(userId, fallbackUser);
+        if (!isActive) return;
+        setVerificationHistory({
+          source: history.source,
+          events: Array.isArray(history.events) ? history.events : [],
+          loading: false,
+          error: null,
         });
       } finally {
-        setLoading(false);
+        if (isActive) setLoading(false);
       }
     }
     loadUser();
+
+    return () => {
+      isActive = false;
+    };
   }, [userId]);
 
   const handlePrint = () => {
@@ -109,7 +198,7 @@ export default function AdminUserDetailPage({ params }) {
                 variant="outline"
                 size="sm"
                 onClick={handlePrint}
-                className="gap-2 font-semibold"
+                className="no-print gap-2 font-semibold"
                 aria-label="Print record"
               >
                 <Printer className="h-4 w-4" />
@@ -204,6 +293,69 @@ export default function AdminUserDetailPage({ params }) {
               </CardContent>
             </Card>
 
+            {isMentorRecord(user) && (
+              <Card className="border shadow-none">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <FileCheck className="h-4 w-4 text-primary" />
+                    Verification History
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Full audit trail of educator verification events, newest first
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  {verificationHistory.loading ? (
+                    <p className="text-xs text-muted-foreground">Loading verification history...</p>
+                  ) : verificationHistory.error ? (
+                    <p className="text-xs text-destructive">{verificationHistory.error}</p>
+                  ) : verificationHistory.events.length > 0 ? (
+                    <div className="space-y-3">
+                      {verificationHistory.source === "composed" && (
+                        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                          Backend history endpoint is not available yet; this timeline is composed from verification record fields.
+                        </p>
+                      )}
+                      <ol className="relative border-l pl-4">
+                        {verificationHistory.events.map((event) => (
+                          <li key={event.id} className="relative pb-5 last:pb-0">
+                            <span className="absolute -left-[21px] top-0 flex h-3 w-3 rounded-full border-2 border-background bg-primary" />
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "capitalize font-semibold",
+                                      VERIFICATION_BADGE_STYLES[event.type] || "bg-muted"
+                                    )}
+                                  >
+                                    {event.label}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    Actor: <span className="font-medium text-foreground">{event.actor}</span>
+                                  </span>
+                                </div>
+                                {event.note && (
+                                  <p className="text-xs text-muted-foreground">{event.note}</p>
+                                )}
+                              </div>
+                              <time className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {formatVerificationTimestamp(event.timestamp)}
+                              </time>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No verification events recorded yet.</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Wallet & Stellar Chain Information */}
             <Card className="border shadow-none">
               <CardHeader className="pb-2">
@@ -240,44 +392,91 @@ export default function AdminUserDetailPage({ params }) {
               </CardContent>
             </Card>
 
-            {/* User Activity & Purchase History */}
+            {/* Creator Reels Moderation & Controls (#263) */}
             <Card className="border shadow-none">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-primary" />
-                  Transaction & Purchase History
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Film className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-sm font-semibold">
+                      Short-Form Reels & Creator Moderation
+                    </CardTitle>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      creatorReelsPaused
+                        ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    }
+                  >
+                    {creatorReelsPaused ? "Reels Paused" : "Reels Active"}
+                  </Badge>
+                </div>
                 <CardDescription className="text-xs">
-                  Summary of transactions recorded for this user
+                  Bulk control over all reels published by this creator. Cross-linked with the moderation grid.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-4">
-                {user.purchases && user.purchases.length > 0 ? (
-                  <div className="rounded-md border overflow-x-auto">
-                    <table className="w-full text-xs text-left">
-                      <thead className="bg-muted/50 border-b font-semibold">
-                        <tr>
-                          <th className="p-2">Item</th>
-                          <th className="p-2">Amount</th>
-                          <th className="p-2">Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {user.purchases.map((p) => (
-                          <tr key={p.id} className="border-b last:border-0">
-                            <td className="p-2 font-medium">{p.title}</td>
-                            <td className="p-2 font-mono">{p.amount} USDC</td>
-                            <td className="p-2 text-muted-foreground">{p.date}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">No purchases recorded.</p>
-                )}
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>
+                    Published Reels:{" "}
+                    <span className="font-semibold text-foreground">
+                      {user.reelsCount || 6} reels
+                    </span>
+                  </p>
+                  <p>
+                    Status:{" "}
+                    <span className="font-medium text-foreground">
+                      {creatorReelsPaused
+                        ? "All reels currently hidden from public discovery feeds."
+                        : "All reels visible and active."}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/reels?creator=${userId}`}
+                    className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Film className="h-3.5 w-3.5" />
+                    View Reels Grid
+                    <ExternalLink className="h-3 w-3 ml-0.5" />
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant={creatorReelsPaused ? "default" : "destructive"}
+                    onClick={() => setReelsDialogOpen(true)}
+                    className="gap-1.5 text-xs"
+                  >
+                    {creatorReelsPaused ? (
+                      <>
+                        <PlayCircle className="h-3.5 w-3.5" />
+                        Resume Reels
+                      </>
+                    ) : (
+                      <>
+                        <PauseCircle className="h-3.5 w-3.5" />
+                        Pause All Reels
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
+
+            {/* Creator Controls Dialog */}
+            <CreatorReelsControlDialog
+              open={reelsDialogOpen}
+              onOpenChange={setReelsDialogOpen}
+              creator={user}
+              reelsCount={user.reelsCount || 6}
+              isCurrentlyPaused={creatorReelsPaused}
+              onConfirm={async ({ action }) => {
+                setCreatorReelsPaused(action === "pause");
+              }}
+            />
           </>
         )}
       </div>
