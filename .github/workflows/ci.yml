@@ -1,5 +1,4 @@
 name: CI
-
 on:
   pull_request:
     branches: [main, dev]
@@ -24,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
 
-      - name: Run ESLINt
+      - name: Run ESLint
         run: npm run lint
 
       - name: Run accessibility gate
@@ -43,9 +42,9 @@ jobs:
           NEXT_PUBLIC_STELRAI_NETWORK: testnet
           # Optional — Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
-          SENTRY_AUTH_TOKEN: $"{{ secrets.SENTRY_AUTH_TOKEN }}"
-          SENTRY_ORG: $"{{ secrets.SENTRY_ORG }}"
-          SENTRY_PROJECT: $"{{ secrets.SENTRY_PROJECT }}"
+          SENTRY_AUTH_TOKEN: "${ {secrets.SENTRY_AUTH_TOKEN} "}"
+          SENTRY_ORG: "${ {secrets.SENTRY_ORG} }"
+          SENTRY_PROJECT: "${ {secrets.SENTRY_PROJECT} }"
 
   lighthouse:
     name: Lighthouse CI
