@@ -1,5 +1,4 @@
 name: CI
-
 on:
   pull_request:
     branches: [main, dev]
@@ -13,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -43,9 +42,9 @@ jobs:
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           # Optional — Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${ secrets.SENTRY_AUTH_TOKEN }
+          SENTRY_ORG: ${ secrets.SENTRY_ORG }
+          SENTRY_PROJECT: ${ secrets.SENTRY_PROJECT }
 
   lighthouse:
     name: Lighthouse CI
@@ -53,10 +52,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
