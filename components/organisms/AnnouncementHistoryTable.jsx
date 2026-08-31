@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -55,7 +55,7 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import { format } from "date-fns";
 
 const STATE_CONFIG = {
@@ -361,9 +361,9 @@ export default function AnnouncementHistoryTable() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>
+              <span className={cn(poppins_500.className, "text-sm block")}>
                 State
-              </label>
+              </span>
               <div className="flex flex-wrap gap-2">
                 {["all", "draft", "scheduled", "sent", "cancelled"].map(
                   (state) => (
@@ -381,9 +381,9 @@ export default function AnnouncementHistoryTable() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className={cn(poppins_500.className, "text-sm")}>
+              <span className={cn(poppins_500.className, "text-sm block")}>
                 Audience
-              </label>
+              </span>
               <div className="flex flex-wrap gap-2">
                 {["all", "students", "educators", "admins"].map(
                   (audience) => (
