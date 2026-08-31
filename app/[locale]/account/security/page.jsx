@@ -17,6 +17,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   poppins_400,
   poppins_500,
@@ -163,27 +165,14 @@ export default function SecurityPage() {
   const otherCount = sessions.filter((s) => !s.isCurrent).length;
 
   return (
-    <div className="min-h-full bg-surface p-3 sm:p-6">
+    <PageShell>
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-            <ShieldCheck className="h-5 w-5 text-accent" />
-          </div>
-          <div>
-            <h1
-              className={cn(
-                poppins_600,
-                "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
-              )}
-            >
-              Security
-            </h1>
-            <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-              Keep your account safe — password, 2FA, and active devices
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          icon={ShieldCheck}
+          title="Security"
+          subtitle="Keep your account safe — password, 2FA, and active devices"
+        />
 
         {/* Change password */}
         <Panel>
@@ -365,6 +354,6 @@ export default function SecurityPage() {
           )}
         </Panel>
       </div>
-    </div>
+    </PageShell>
   );
 }

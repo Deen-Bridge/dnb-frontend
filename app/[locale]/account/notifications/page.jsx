@@ -19,6 +19,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   poppins_400,
   poppins_500,
@@ -116,43 +118,30 @@ export default function NotificationsPage() {
   const rangeEnd = Math.min(page * PAGE_SIZE, total);
 
   return (
-    <div className="min-h-full bg-surface p-3 sm:p-6">
+    <PageShell>
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-              <Bell className="h-5 w-5 text-accent" />
-            </div>
-            <div>
-              <h1
+        <PageHeader
+          icon={Bell}
+          title="Notifications"
+          subtitle={
+            unread > 0 ? `${unread} unread` : "You're all caught up"
+          }
+          actions={
+            unread > 0 && (
+              <button
+                onClick={handleMarkAll}
                 className={cn(
-                  poppins_600,
-                  "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
+                  poppins_500,
+                  "inline-flex items-center gap-1.5 rounded-full border border-accent/15 bg-surface px-4 py-2 text-sm text-ink transition-colors hover:border-secondary/40 hover:text-accent"
                 )}
               >
-                Notifications
-              </h1>
-              <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                {unread > 0
-                  ? `${unread} unread`
-                  : "You're all caught up"}
-              </p>
-            </div>
-          </div>
-          {unread > 0 && (
-            <button
-              onClick={handleMarkAll}
-              className={cn(
-                poppins_500,
-                "inline-flex items-center gap-1.5 rounded-full border border-accent/15 bg-surface px-4 py-2 text-sm text-ink transition-colors hover:border-secondary/40 hover:text-accent"
-              )}
-            >
-              <CheckCheck className="h-4 w-4 text-accent" />
-              Mark all read
-            </button>
-          )}
-        </div>
+                <CheckCheck className="h-4 w-4 text-accent" />
+                Mark all read
+              </button>
+            )
+          }
+        />
 
         {/* List */}
         <Panel className="overflow-hidden">
@@ -294,6 +283,6 @@ export default function NotificationsPage() {
           )}
         </Panel>
       </div>
-    </div>
+    </PageShell>
   );
 }

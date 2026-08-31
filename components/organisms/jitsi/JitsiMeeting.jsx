@@ -1,133 +1,181 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { JitsiMeeting } from '@jitsi/react-sdk';
+
+const INITIALIZATION_TIMEOUT_MS = 20000;
 
 const getNormalizedDomain = (domain = 'meet.jit.si') =>
-    domain.replace(/^https?:\/\//i, '').replace(/\/+$/g, '');
+  domain.replace(/^https?:\/\//i, '').replace(/\/+$/g, '');
 
-const loadExternalApi = (domain) =>
-    new Promise((resolve, reject) => {
-        if (typeof window === 'undefined') {
-            reject(new Error('Window is undefined'));
-            return;
-        }
+const getErrorMessage = (error) => {
+  const name = error?.name || error?.type;
 
-        if (window.JitsiMeetExternalAPI) {
-            resolve();
-            return;
-        }
+  if (name === 'conference.connectionError' || name === 'CONNECTION_ERROR') {
+    return 'We could not connect to the meeting. Check your connection and try again.';
+  }
 
-        const normalizedDomain = getNormalizedDomain(domain);
-        const script = document.createElement('script');
-        script.src = `https://${normalizedDomain}/external_api.js`;
-        script.async = true;
-        script.onload = resolve;
-        script.onerror = (err) => reject(err);
-        document.body.appendChild(script);
-    });
+  return 'The video room could not be loaded. Please try again or open it in a new window.';
+};
 
+/**
+ * Mounts Jitsi through its React SDK instead of manually injecting
+ * external_api.js. The SDK owns script loading and iframe teardown, which
+ * prevents duplicate-script races when a meeting is reopened.
+ */
 const JitsiMeetComponent = ({
-    roomName,
-    displayName = 'Guest User',
-    domain = 'meet.jit.si',
-    height = '80vh',
-    onReadyToClose,
-    className,
-    jwt,
-    requiresJwt = false,
+  roomName,
+  displayName = 'Guest User',
+  domain = 'meet.jit.si',
+  height = '80vh',
+  onReadyToClose,
+  className,
+  jwt,
+  requiresJwt = false,
 }) => {
-    const containerRef = useRef(null);
-    const apiRef = useRef(null);
-    const normalizedDomain = useMemo(() => getNormalizedDomain(domain), [domain]);
+  const apiRef = useRef(null);
+  const apiErrorListenerRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const [attempt, setAttempt] = useState(0);
+  const [status, setStatus] = useState('loading');
+  const [errorMessage, setErrorMessage] = useState('');
+  const normalizedDomain = getNormalizedDomain(domain);
 
-    useEffect(() => {
-        if (!roomName || typeof window === 'undefined') return undefined;
-        if (requiresJwt && !jwt) return undefined;
+  const clearInitializationTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
 
-        let isMounted = true;
+  const showError = useCallback(
+    (error) => {
+      clearInitializationTimeout();
+      setStatus('error');
+      setErrorMessage(getErrorMessage(error));
+    },
+    [clearInitializationTimeout]
+  );
 
-        const initializeMeeting = async () => {
-            try {
-                await loadExternalApi(normalizedDomain);
+  useEffect(() => {
+    if (!roomName || (requiresJwt && !jwt)) return undefined;
 
-                if (!isMounted || !containerRef.current || !window.JitsiMeetExternalAPI) {
-                    return;
-                }
+    setStatus('loading');
+    setErrorMessage('');
+    timeoutRef.current = window.setTimeout(() => showError(), INITIALIZATION_TIMEOUT_MS);
 
-                containerRef.current.innerHTML = '';
+    return () => {
+      clearInitializationTimeout();
+      if (apiRef.current && apiErrorListenerRef.current) {
+        apiRef.current.removeEventListener?.('errorOccurred', apiErrorListenerRef.current);
+      }
+      apiRef.current = null;
+      apiErrorListenerRef.current = null;
+    };
+  }, [attempt, roomName, normalizedDomain, jwt, requiresJwt, clearInitializationTimeout, showError]);
 
-                const options = {
-                    roomName,
-                    parentNode: containerRef.current,
-                    width: '100%',
-                    height: '100%',
-                    userInfo: {
-                        displayName,
-                    },
-                    configOverwrite: {
-                        prejoinPageEnabled: false,
-                        startWithAudioMuted: true,
-                        startWithVideoMuted: false,
-                    },
-                    interfaceConfigOverwrite: {
-                        DEFAULT_REMOTE_DISPLAY_NAME: 'Guest',
-                        SHOW_JITSI_WATERMARK: false,
-                        SHOW_BRAND_WATERMARK: false,
-                        SHOW_POWERED_BY: false,
-                        SHOW_CHROME_EXTENSION_BANNER: false,
-                        SUPPORT_URL: 'https://deenbridge.com/support',
-                    },
-                };
+  const handleApiReady = useCallback(
+    (api) => {
+      apiRef.current = api;
+      apiErrorListenerRef.current = showError;
+      clearInitializationTimeout();
+      setStatus('ready');
+      api.addEventListener?.('errorOccurred', showError);
+    },
+    [clearInitializationTimeout, showError]
+  );
 
-                if (jwt) {
-                    options.jwt = jwt;
-                }
+  const handleReadyToClose = useCallback(() => {
+    clearInitializationTimeout();
+    apiRef.current = null;
+    onReadyToClose?.();
+  }, [clearInitializationTimeout, onReadyToClose]);
 
-                const api = new window.JitsiMeetExternalAPI(normalizedDomain, options);
+  const retry = useCallback(() => {
+    apiRef.current?.dispose?.();
+    apiRef.current = null;
+    apiErrorListenerRef.current = null;
+    setStatus('loading');
+    setErrorMessage('');
+    setAttempt((value) => value + 1);
+  }, []);
 
-                apiRef.current = api;
-
-                const handleReadyToClose = () => {
-                    apiRef.current?.dispose();
-                    apiRef.current = null;
-                    onReadyToClose?.();
-                };
-
-                api.addEventListener('readyToClose', handleReadyToClose);
-
-                return () => {
-                    api.removeEventListener('readyToClose', handleReadyToClose);
-                };
-            } catch (error) {
-                console.error('Failed to initialize Jitsi meeting:', error);
-            }
-        };
-
-        initializeMeeting();
-
-        return () => {
-            isMounted = false;
-            if (apiRef.current) {
-                apiRef.current.dispose();
-                apiRef.current = null;
-            }
-        };
-    }, [roomName, displayName, normalizedDomain, onReadyToClose, jwt, requiresJwt]);
-
+  if (!roomName) {
     return (
-        <div
-            ref={containerRef}
-            className={className}
-            style={{
-                width: '100%',
-                height,
-                marginTop: '1rem',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                backgroundColor: '#0a0f14',
-            }}
-        />
+      <div className="mt-4 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-800" role="alert">
+        This live session does not have a meeting room yet. Please contact the host.
+      </div>
     );
+  }
+
+  if (requiresJwt && !jwt) {
+    return (
+      <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800" role="status">
+        Preparing your secure meeting session...
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="mt-4 rounded-xl border border-red-300 bg-red-50 p-5 text-sm text-red-800" role="alert">
+        <p>{errorMessage}</p>
+        <button
+          type="button"
+          className="mt-3 rounded-md bg-red-700 px-3 py-2 font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+          onClick={retry}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={className}
+      style={{
+        width: '100%',
+        height,
+        marginTop: '1rem',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        backgroundColor: '#0a0f14',
+      }}
+    >
+      <JitsiMeeting
+        key={attempt}
+        domain={normalizedDomain}
+        roomName={roomName}
+        jwt={jwt}
+        userInfo={{ displayName }}
+        configOverwrite={{
+          prejoinPageEnabled: false,
+          startWithAudioMuted: true,
+          startWithVideoMuted: false,
+        }}
+        interfaceConfigOverwrite={{
+          DEFAULT_REMOTE_DISPLAY_NAME: 'Guest',
+          SHOW_JITSI_WATERMARK: false,
+          SHOW_BRAND_WATERMARK: false,
+          SHOW_POWERED_BY: false,
+          SHOW_CHROME_EXTENSION_BANNER: false,
+          SUPPORT_URL: 'https://deenbridge.com/support',
+        }}
+        onApiReady={handleApiReady}
+        onReadyToClose={handleReadyToClose}
+        getIFrameRef={(iframe) => {
+          if (iframe) {
+            iframe.style.height = '100%';
+            iframe.style.width = '100%';
+          }
+        }}
+      />
+      {status === 'loading' && (
+        <div className="sr-only" role="status">Loading video room…</div>
+      )}
+    </div>
+  );
 };
 
 export default JitsiMeetComponent;
