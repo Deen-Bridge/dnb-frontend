@@ -16,11 +16,22 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.js"],
-    include: ["**/__tests__/**/*.{test,spec}.{js,jsx}"],
+    include: ["**/__tests__/**/*.{test,spec}.{js,jsx,ts,tsx}"],
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    server: {
+      deps: {
+        inline: ["date-fns"],
+      },
+    },
   },
   resolve: {
+    mainFields: ["module", "main"],
     alias: {
+      "@/app/account": resolve(__dirname, "app/[locale]/account"),
+      "@/app/dashboard": resolve(__dirname, "app/[locale]/dashboard"),
       "@": resolve(__dirname, "."),
+      "date-fns": resolve(__dirname, "node_modules/date-fns/index.js"),
     },
   },
 });

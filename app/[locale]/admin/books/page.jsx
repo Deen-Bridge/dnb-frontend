@@ -8,6 +8,7 @@
  * - Take-down action opens a reason-category confirmation dialog
  * - Restore action returns the book to its prior active state
  * - Status changes reflected immediately in the list
+ * - Payouts action opens a read-only author payout summary panel (#258)
  */
 
 import { useState, useCallback, useEffect, useMemo } from "react";
@@ -56,11 +57,15 @@ import {
   CheckCircle,
   Ban,
   Search,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import TakeDownBookDialog from "@/components/admin/TakeDownBookDialog";
 import RestoreBookDialog from "@/components/admin/RestoreBookDialog";
+import BlurImage from "@/components/ui/blur-image";
+import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
+import BookPayoutPanel from "@/components/admin/BookPayoutPanel";
 
 // Mock books data — replace with real API call
 const generateMockBooks = () => [
@@ -154,6 +159,8 @@ export default function AdminBooksPage() {
   const [takedownTarget, setTakedownTarget] = useState(null);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [restoreTarget, setRestoreTarget] = useState(null);
+  const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
+  const [payoutTarget, setPayoutTarget] = useState(null);
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -220,17 +227,20 @@ export default function AdminBooksPage() {
         title="Book Management"
         subtitle="Manage catalog visibility with take-down and restore controls"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchBooks}
-            disabled={loading}
-          >
-            <RefreshCw
-              className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
-            />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-3">
+            <MediaBlurToggle className="hidden lg:flex" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchBooks}
+              disabled={loading}
+            >
+              <RefreshCw
+                className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
+              />
+              Refresh
+            </Button>
+          </div>
         }
       />
 
@@ -317,12 +327,14 @@ export default function AdminBooksPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="relative h-10 w-8 rounded overflow-hidden flex-shrink-0">
-                            <Image
-                              src={book.image || "/images/placeholder.jpg"}
-                              alt=""
-                              fill
-                              className="object-cover"
-                            />
+                            <BlurImage forceBlur>
+                              <Image
+                                src={book.image || "/images/placeholder.jpg"}
+                                alt=""
+                                fill
+                                className="object-cover"
+                              />
+                            </BlurImage>
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium truncate">
@@ -388,6 +400,16 @@ export default function AdminBooksPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setPayoutTarget(book);
+                                setPayoutDialogOpen(true);
+                              }}
+                            >
+                              <Wallet className="h-4 w-4 mr-2" />
+                              Payouts
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             {book.status === "active" ? (
                               <DropdownMenuItem
                                 onClick={() => {
@@ -444,6 +466,17 @@ export default function AdminBooksPage() {
           }}
           book={restoreTarget}
           onRestored={handleRestored}
+        />
+      )}
+
+      {payoutTarget && (
+        <BookPayoutPanel
+          open={payoutDialogOpen}
+          onOpenChange={(open) => {
+            setPayoutDialogOpen(open);
+            if (!open) setPayoutTarget(null);
+          }}
+          book={payoutTarget}
         />
       )}
     </PageShell>
