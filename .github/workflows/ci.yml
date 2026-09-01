@@ -13,38 +13,38 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-
+      
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
-
+      
       - name: Run ESLint
         run: npm run lint
-
+      
       - name: Run accessibility gate
         run: npm run a11y
-
+      
       - name: Run type check
         run: npm run typecheck
-
+      
       - name: Run component tests
         run: npm test
-
+      
       - name: Build application
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELRAI_NETWORK: testnet
+          NEXT_PUBLIC_STELRAINETWORK: testnet
           # Optional — Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
-          SENTRY_AUTH_TOKEN: "${ {secrets.SENTRY_AUTH_TOKEN} "}"
-          SENTRY_ORG: "${ {secrets.SENTRY_ORG} }"
-          SENTRY_PROJECT: "${ {secrets.SENTRY_PROJECT} }"
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }
 
   lighthouse:
     name: Lighthouse CI
@@ -53,21 +53,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-
+      
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
-
+      
       - name: Build application
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELRAI_NETWORK: testnet
+          NEXT_PUBLIC_STELRAINETWORK: testnet
 
       - name: Start production server
         run: |
