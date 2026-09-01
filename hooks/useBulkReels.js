@@ -148,7 +148,7 @@ export default function useBulkReels({
       const { succeeded, failed, errors } = await sequentialFanOut(
         ids,
         async (id) => {
-          const result = await apiAction(id, action, reason || undefined);
+          const result = await apiAction(id, action, reason);
           if (result?.ok) {
             // Mutate local state on success
             setReels((prev) =>
