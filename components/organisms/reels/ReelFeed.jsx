@@ -44,7 +44,11 @@ const ReelFeedInner = () => {
       try {
         const response = await fetchReels({ page: targetPage, limit: 5 });
         if (response?.success) {
-          const incoming = response.reels || [];
+          // The API normally excludes moderated reels. Keep this guard as a
+          // defence in depth for cached or older API responses.
+          const incoming = (response.reels || []).filter(
+            (reel) => !reel.isHidden && reel.visibility !== "hidden"
+          );
           setReels((prev) => {
             if (!append) return incoming;
             const existing = new Set(prev.map((item) => item.id));

@@ -79,6 +79,8 @@ import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
 import DismissReportDialog from "@/components/admin/DismissReportDialog";
+import BlurImage from "@/components/ui/blur-image";
+import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 
 // Content type definitions with icons and colors
 const CONTENT_TYPES = {
@@ -376,7 +378,8 @@ export default function UnifiedReportsPage() {
         title="Reports Queue"
         subtitle="Unified moderation queue for all content types"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <MediaBlurToggle className="hidden lg:flex" />
             <kbd className="hidden lg:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
               j/k to navigate
             </kbd>
@@ -579,16 +582,19 @@ export default function UnifiedReportsPage() {
                             <TableCell>
                               {report.assignee ? (
                                 <div className="flex items-center gap-2">
-                                  <Avatar className="h-8 w-8">
-                                    <AvatarImage src={report.assignee.avatar} />
+                                  <Avatar className="h-6 w-6">
                                     <AvatarFallback className="text-xs">
                                       {report.assignee.name.charAt(0)}
                                     </AvatarFallback>
                                   </Avatar>
-                                  <span className="text-sm font-medium">{report.assignee.name}</span>
+                                  <span className="text-xs">
+                                    {report.assignee.name}
+                                  </span>
                                 </div>
                               ) : (
-                                <span className="text-xs text-muted-foreground">Unassigned</span>
+                                <span className="text-xs text-muted-foreground">
+                                  Unassigned
+                                </span>
                               )}
                             </TableCell>
 
@@ -644,7 +650,8 @@ export default function UnifiedReportsPage() {
                   </div>
                 ) : reports.length === 0 ? (
                   <div className="py-8 text-center text-muted-foreground">
-                    No reports found matching your filters
+                    <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p>No reports found</p>
                   </div>
                 ) : (
                   reports.map((report, index) => {
@@ -659,7 +666,7 @@ export default function UnifiedReportsPage() {
                         role="button"
                         tabIndex={0}
                         className={cn(
-                          "p-3 space-y-2 cursor-pointer transition-colors",
+                          "p-3 cursor-pointer transition-colors",
                           isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
                         )}
                         onClick={() => setSelectedIndex(index)}
@@ -672,22 +679,21 @@ export default function UnifiedReportsPage() {
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
-                            <Avatar className="h-6 w-6">
+                            <Avatar className="h-7 w-7 shrink-0">
                               <AvatarImage src={report.reporter.avatar} />
-                              <AvatarFallback className="text-[10px]">
-                                {report.reporter.name.charAt(0)}
-                              </AvatarFallback>
+                              <AvatarFallback className="text-xs">{report.reporter.name.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <span className="text-xs font-medium truncate">{report.reporter.name}</span>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">{report.reporter.name}</p>
+                              <p className="text-xs text-muted-foreground">{formatReportAge(report.createdAt)}</p>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <Badge className={cn("text-[10px]", status?.bgColor, status?.color)}>
-                              {status?.label}
-                            </Badge>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Badge className={cn("text-[10px]", status?.bgColor, status?.color)}>{status?.label}</Badge>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Report actions">
-                                  <MoreVertical className="h-3 w-3" />
+                                <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Report actions">
+                                  <MoreVertical className="h-3.5 w-3.5" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">

@@ -1,37 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { captureClientError } from "@/lib/sentry/captureClientError";
+import ErrorBoundaryUI from "@/components/molecules/errors/ErrorBoundaryUI";
 
 export default function CoursesError({ error, reset }) {
-  useEffect(() => {
-    captureClientError(error);
-  }, [error]);
-
   return (
-    <div
-      style={{
-        minHeight: "50vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "2rem",
-      }}
-    >
-      <h1 className="text-xl font-bold mb-2">Couldn&apos;t load this course</h1>
-      <p className="text-muted-foreground max-w-md mb-6">
-        The course content failed to load. Please retry — your progress is
-        saved.
-      </p>
-      <button
-        type="button"
-        onClick={() => reset()}
-        className="rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90"
-      >
-        Try again
-      </button>
-    </div>
+    <ErrorBoundaryUI
+      error={error}
+      reset={reset}
+      title="Couldn't load courses"
+      description="The course content failed to load. Please retry — your progress is saved."
+      homeHref="/dashboard/courses"
+    />
   );
 }
