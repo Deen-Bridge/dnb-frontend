@@ -39,6 +39,14 @@ function makeEngagement(overrides = {}) {
     sessionLength: { tracked: false, avgMinutes: null },
     lessonsCompleted: { tracked: false, buckets: [{ range: "1–5", value: 0 }] },
     readingDepth: { tracked: false, buckets: [{ range: "0–25%", value: 0 }] },
+    geographic: {
+      tracked: true,
+      coverage: { label: "Country Data Coverage", value: 68, tracked: true },
+      countries: [
+        { code: "US", name: "United States", learners: 214, revenue: 12840, tracked: true },
+        { code: "GB", name: "United Kingdom", learners: 156, revenue: 9360, tracked: true },
+      ],
+    },
     ...overrides,
   };
 }
@@ -93,5 +101,60 @@ describe("LearningAnalyticsPage — states", () => {
 
     expect(await screen.findByText(/failed to load analytics/i)).toBeInTheDocument();
     expect(screen.getByText("Service unavailable")).toBeInTheDocument();
+  });
+});
+
+describe("LearningAnalyticsPage — geographic distribution", () => {
+  it("renders the geographic distribution card with coverage percentage", async () => {
+    serviceState.current = () => Promise.resolve(makeEngagement());
+    render(<LearningAnalyticsPage />);
+
+    expect(await screen.findByText("Geographic Distribution")).toBeInTheDocument();
+    expect(screen.getByText("Country Data Coverage")).toBeInTheDocument();
+    expect(screen.getByText("68%")).toBeInTheDocument();
+    expect(screen.getByText("United States")).toBeInTheDocument();
+    expect(screen.getByText("United Kingdom")).toBeInTheDocument();
+  });
+
+  it("renders the top-countries table with learner counts and revenue", async () => {
+    serviceState.current = () => Promise.resolve(makeEngagement());
+    render(<LearningAnalyticsPage />);
+
+    expect(await screen.findByText("Top Countries")).toBeInTheDocument();
+    expect(screen.getByText("Learners")).toBeInTheDocument();
+    expect(screen.getByText("Revenue")).toBeInTheDocument();
+    expect(screen.getByText("214")).toBeInTheDocument();
+    expect(screen.getByText("$12,840")).toBeInTheDocument();
+    expect(screen.getByText("156")).toBeInTheDocument();
+    expect(screen.getByText("$9,360")).toBeInTheDocument();
+  });
+
+  it("shows a coverage note when country data is incomplete", async () => {
+    serviceState.current = () => Promise.resolve(makeEngagement());
+    render(<LearningAnalyticsPage />);
+
+    await screen.findByText("Geographic Distribution");
+    expect(
+      screen.getByText(/Country data is available for 68% of learners/i)
+    ).toBeInTheDocument();
+  });
+
+  it("renders a not-tracked placeholder when geographic data is unavailable", async () => {
+    serviceState.current = () =>
+      Promise.resolve(
+        makeEngagement({
+          geographic: {
+            tracked: false,
+            coverage: { label: "Country Data Coverage", value: 0, tracked: false },
+            countries: [],
+          },
+        })
+      );
+    render(<LearningAnalyticsPage />);
+
+    expect(await screen.findByText("Geographic Distribution")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Country data from learner profiles isn't instrumented yet/i)
+    ).toBeInTheDocument();
   });
 });
