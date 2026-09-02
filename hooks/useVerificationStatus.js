@@ -155,6 +155,16 @@ export function useVerificationStatus() {
     };
   }, [load]);
 
+  // ── Refresh (callable from SSE handlers or manual retry) ─────────────────
+  const refresh = useCallback(async () => {
+    await load();
+    // Also re-pull the user object so any verification flag on the user
+    // record (e.g. user.isVerified) reflects the new state immediately
+    if (user?._id) {
+      await refreshUser(user._id).catch(() => {});
+    }
+  }, [load, refreshUser, user?._id]);
+
   // ── Real-time SSE subscription ────────────────────────────────────────────
   // When the backend emits `verification_status_update` (dnb-backend#92),
   // refresh the status automatically — no manual reload needed.
@@ -166,15 +176,6 @@ export function useVerificationStatus() {
     return unsub;
   }, [isEducator, onVerificationUpdate, refresh]);
 
-  // ── Refresh (callable from SSE handlers or manual retry) ─────────────────
-  const refresh = useCallback(async () => {
-    await load();
-    // Also re-pull the user object so any verification flag on the user
-    // record (e.g. user.isVerified) reflects the new state immediately
-    if (user?._id) {
-      await refreshUser(user._id).catch(() => {});
-    }
-  }, [load, refreshUser, user?._id]);
 
   // ── Derived values ────────────────────────────────────────────────────────
   const status = data?.status ?? VERIFICATION_STATUS.NOT_STARTED;

@@ -35,15 +35,11 @@ export default function AppProviders({ children }) {
                  * public state and stay in sync within a session.
                  */}
                 <EmergencyBroadcastBanner />
-                <MaintenanceGate>{children}</MaintenanceGate>
-                {/* Idle-timeout auto-logout for admin sessions (#337).
-                    Self-noops for non-admins and non-admin routes. */}
-                <AdminIdleGuard />
                 {/* Power-admin keyboard shortcut layer (#336). Chord shortcuts
                     (g→key) + `?` cheatsheet; self-noops off admin routes and
                     for non-admins, and defers ⌘K to the CommandPalette. */}
                 <AdminShortcutsProvider />
-                {children}
+                <MaintenanceGate>{children}</MaintenanceGate>
               </StellarProvider>
             </FeatureFlagProvider>
           </AuthProvider>
