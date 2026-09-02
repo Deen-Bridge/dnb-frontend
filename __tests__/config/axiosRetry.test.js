@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import axiosInstance from "@/lib/config/axios.config";
@@ -259,10 +259,17 @@ describe("issue #75 — console noise", () => {
 
   it("no source file logs the API base URL", () => {
     // The base-URL banner the issue describes must not come back.
-    const sources = [
-      "lib/config/axios.config.js",
-      "lib/config/env.js",
-    ].map((relative) => readFileSync(resolve(REPO_ROOT, relative), "utf8"));
+    const targets = [
+      "lib/config/axios.config.ts",
+      "lib/config/env.ts",
+    ];
+
+    const sources = targets.map((relative) => {
+      const full = existsSync(resolve(REPO_ROOT, relative))
+        ? resolve(REPO_ROOT, relative)
+        : resolve(REPO_ROOT, relative.replace(/\.ts$/, ".js"));
+      return readFileSync(full, "utf8");
+    });
 
     for (const source of sources) {
       expect(source).not.toContain("API Base URL");

@@ -39,6 +39,8 @@ import {
 import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   poppins_400,
   poppins_500,
@@ -317,50 +319,36 @@ export default function VerificationPage() {
   }, [refresh]);
 
   return (
-    <div className="min-h-full bg-surface p-3 sm:p-6">
+    <PageShell>
       <div className="mx-auto max-w-3xl space-y-6">
 
         {/* ── Header ──────────────────────────────────────────────────── */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
-              <ShieldCheck className="h-5 w-5 text-accent" />
-            </div>
-            <div>
-              <h1
-                className={cn(
-                  poppins_600,
-                  "bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-2xl text-transparent"
-                )}
+        <PageHeader
+          icon={ShieldCheck}
+          title="Verification"
+          subtitle="Your educator identity and application status"
+          actions={
+            <div className="flex items-center gap-2">
+              {/* Live status badge */}
+              <Badge
+                data-testid="status-badge"
+                className={cn("rounded-full px-3 py-1 text-xs", badgeCfg.className)}
               >
-                Verification
-              </h1>
-              <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                Your educator identity and application status
-              </p>
+                {badgeCfg.label}
+              </Badge>
+
+              {/* Manual refresh */}
+              <button
+                onClick={handleRefresh}
+                aria-label="Refresh verification status"
+                data-testid="refresh-btn"
+                className="rounded-lg border border-accent/15 bg-surface p-2 text-ink-muted transition-colors hover:border-accent/30 hover:text-accent"
+              >
+                <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              </button>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Live status badge */}
-            <Badge
-              data-testid="status-badge"
-              className={cn("rounded-full px-3 py-1 text-xs", badgeCfg.className)}
-            >
-              {badgeCfg.label}
-            </Badge>
-
-            {/* Manual refresh */}
-            <button
-              onClick={handleRefresh}
-              aria-label="Refresh verification status"
-              data-testid="refresh-btn"
-              className="rounded-lg border border-accent/15 bg-surface p-2 text-ink-muted transition-colors hover:border-accent/30 hover:text-accent"
-            >
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* ── Loading skeleton ─────────────────────────────────────────── */}
         {loading && (
@@ -559,6 +547,6 @@ export default function VerificationPage() {
           </>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

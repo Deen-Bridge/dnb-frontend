@@ -12,6 +12,7 @@ import Loader from "@/components/molecules/loaders/rootLoader";
 import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_500 } from "@/lib/config/font.config";
+import { PageShell } from "@/components/ui/page-shell";
 const page = ({ params }) => {
   const { profileid } = use(params);
   const [selectedTab, setSelectedTab] = useState("courses");
@@ -56,7 +57,7 @@ const page = ({ params }) => {
   }
 
   return (
-    <div className="min-h-full bg-surface p-3 sm:p-6">
+    <PageShell>
       <div className="mx-auto max-w-5xl space-y-4">
         <div className="overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
           <ProfileHeader avatar={user?.avatar} />
@@ -77,7 +78,7 @@ const page = ({ params }) => {
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
         <ProfileContent selectedTab={selectedTab} profileId={user?._id} />
       </div>
-    </div>
+    </PageShell>
   );
 };
 export default page;

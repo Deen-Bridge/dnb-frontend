@@ -286,10 +286,10 @@ export default function AuditLogsPage() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <label htmlFor="date-range-picker" className={cn(poppins_500.className, "text-sm")}>Date Range</label>
+              <label htmlFor="date-range-filter" className={cn(poppins_500.className, "text-sm")}>Date Range</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button id="date-range-picker" variant="outline" className="w-full justify-start text-left font-normal">
+                  <Button id="date-range-filter" variant="outline" className="w-full justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange.from ? (
                       dateRange.to ? (
@@ -355,7 +355,7 @@ export default function AuditLogsPage() {
                       <TableHead className="w-[120px]">IP Address</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody aria-live="polite">
                     {loading ? (
                       <TableSkeleton rows={6} columns={6} />
                     ) : logs.length === 0 ? (
@@ -370,7 +370,9 @@ export default function AuditLogsPage() {
                         const CategoryIcon = category?.icon || FileText;
                         return (
                           <TableRow key={log.id}>
-                            <TableCell className="font-mono text-xs">{formatTimestamp(log.timestamp)}</TableCell>
+                            <TableCell className="font-mono text-xs">
+                              {formatTimestamp(log.timestamp)}
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4 text-muted-foreground" />
@@ -380,17 +382,26 @@ export default function AuditLogsPage() {
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <CategoryIcon className={cn("h-4 w-4", category?.color)} />
-                                <Badge variant="outline" className="text-xs">{log.action}</Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {log.action}
+                                </Badge>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Link href={getTargetLink(log.target)} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                              <Link
+                                href={getTargetLink(log.target)}
+                                className="flex items-center gap-1 text-sm text-blue-600 hover:underline dark:text-blue-400"
+                              >
                                 {log.target.name}
-                                <ExternalLink className="h-3 w-3" />
+                                <ExternalLink className="h-3 w-3" aria-hidden="true" />
                               </Link>
                             </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{log.summary}</TableCell>
-                            <TableCell className="font-mono text-xs text-muted-foreground">{log.ip}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {log.summary}
+                            </TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {log.ip}
+                            </TableCell>
                           </TableRow>
                         );
                       })
@@ -451,11 +462,23 @@ export default function AuditLogsPage() {
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1 || loading}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1 || loading}
+                  aria-label="Go to previous page"
+                >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || loading}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages || loading}
+                  aria-label="Go to next page"
+                >
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
