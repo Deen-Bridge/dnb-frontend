@@ -59,8 +59,10 @@ export default function CategoryLandingPage({ params }) {
     setError(false);
     try {
       const data = await fetchCourses();
+      if (!data) throw new Error("No data returned");
       setAllCourses(data);
-    } catch {
+    } catch (err) {
+      console.error("[CategoryLanding] Failed to load courses:", err);
       setError(true);
     } finally {
       setLoading(false);

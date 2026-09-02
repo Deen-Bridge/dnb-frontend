@@ -21,8 +21,10 @@ export default function CategoryHubPage() {
     setError(false);
     try {
       const data = await fetchCourses();
+      if (!data) throw new Error("No data returned");
       setCourses(data);
-    } catch {
+    } catch (err) {
+      console.error("[CategoryHub] Failed to load courses:", err);
       setError(true);
     } finally {
       setLoading(false);
