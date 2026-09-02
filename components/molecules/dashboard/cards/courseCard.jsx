@@ -1,4 +1,5 @@
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
 import { Ellipsis, CheckCircle } from "lucide-react";
@@ -7,7 +8,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useBookmark } from "@/hooks/useBookmark";
 import BookmarkButton from "@/components/atoms/BookmarkButton";
-import { resolveCategorySlug } from "@/lib/categories";
+import { resolveSlug } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -39,6 +40,12 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
     e.stopPropagation();
     await toggle();
   };
+
+  // Resolve the stored category string to a known slug.
+  // Unknown / legacy values get slug=null -> fallback to decorative badge only.
+  const categorySlug = resolveSlug(course.category);
+  const categoryLabel = course.category || "General";
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm transition-all hover:-translate-y-0.5 hover:border-secondary/30 hover:shadow-md">
       {/* Image */}
@@ -52,19 +59,22 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 to-transparent" />
 
-        {/* Category  */}
-        <div className="absolute left-3 right-3 top-3 z-20 flex justify-between">
-          <Link
-            href={`/dashboard/courses/category/${resolveCategorySlug(
-              course?.category
-            )}`}
-            className={cn(
-              poppins_600,
-              "rounded-full border border-accent/15 bg-surface-raised/90 px-3 py-1 text-xs uppercase tracking-wider text-ink shadow"
-            )}
-          >
-            {course.category || "General"}
-          </Link>
+        {/* Category badge — links to category landing page when slug is known */}
+        <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
+          {categorySlug ? (
+            <Link
+              href={`/dashboard/courses/category/${categorySlug}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider hover:bg-white transition-colors cursor-pointer">
+                {categoryLabel}
+              </Badge>
+            </Link>
+          ) : (
+            <Badge className="bg-white/80 text-accent font-bold px-3 py-1 rounded-full shadow border-0 text-xs uppercase tracking-wider">
+              {categoryLabel}
+            </Badge>
+          )}
           {user?._id === course?.createdBy?._id ? (
             <span
               className={cn(
