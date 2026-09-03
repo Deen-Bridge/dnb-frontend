@@ -7,7 +7,9 @@ import CacheProvider from "@/components/providers/CacheProvider";
 import FeatureFlagProvider from "@/components/providers/FeatureFlagProvider";
 import StellarProvider from "@/components/stellar/StellarProvider";
 import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
-import { MediaBlurProvider } from "@/contexts/MediaBlurContext";
+import MaintenanceGate from "@/components/maintenance/MaintenanceGate";
+import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastBanner";
+import AdminShortcutsProvider from "@/components/admin/AdminShortcutsProvider";
 
 export default function AppProviders({ children }) {
   return (
@@ -17,12 +19,27 @@ export default function AppProviders({ children }) {
           <AuthProvider>
             <FeatureFlagProvider>
               <StellarProvider>
-                <MediaBlurProvider>
-                  {/* Idle-timeout auto-logout for admin sessions (#337).
-                      Self-noops for non-admins and non-admin routes. */}
-                  <AdminIdleGuard />
-                  {children}
-                </MediaBlurProvider>
+                {/* Idle-timeout auto-logout for admin sessions (#337).
+                    Self-noops for non-admins and non-admin routes. */}
+                <AdminIdleGuard />
+                {/*
+                 * Mounted inside AuthProvider so the gate sees the decoded
+                 * client-side user; it wraps the whole app so maintenance mode
+                 * applies platform-wide on every render/navigation (#303).
+                 */}
+                {/*
+                 * Learner-side red alert banner for the emergency-broadcast
+                 * quick-action (#307). Renders nothing when no incident is
+                 * active; shown app-wide to every visitor when one is. Mounted
+                 * alongside the maintenance gate so both surfaces read their
+                 * public state and stay in sync within a session.
+                 */}
+                <EmergencyBroadcastBanner />
+                {/* Power-admin keyboard shortcut layer (#336). Chord shortcuts
+                    (g→key) + `?` cheatsheet; self-noops off admin routes and
+                    for non-admins, and defers ⌘K to the CommandPalette. */}
+                <AdminShortcutsProvider />
+                <MaintenanceGate>{children}</MaintenanceGate>
               </StellarProvider>
             </FeatureFlagProvider>
           </AuthProvider>

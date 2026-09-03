@@ -1,32 +1,30 @@
+/**
+ * Admin report-builder service — datasets, preview rows, saved queries (#329).
+ * ---------------------------------------------------------------------------
+ * **STUBBED.** Composes the custom report builder from the existing pieces the
+ * issue scopes it to: the three datasets (users / transactions / reports),
+ * each with its own filter set and column list. There is deliberately **no**
+ * cross-dataset join, no custom SQL, and no scheduling — the builder only
+ * composes existing filters and columns.
+ *
+ * Saved queries persist per admin user to `localStorage` (`dnb_admin_saved_queries_<userId>`)
+ * so the sidebar round-trips today. Swap for `axiosInstance` calls (see
+ * `lib/config/axios.config.js`) when the backend lands:
+ *
+ *   TODO(backend): GET    /api/admin/saved-queries
+ *   TODO(backend): POST   /api/admin/saved-queries   { name, datasetId, filters, columns }
+ *   TODO(backend): DELETE /api/admin/saved-queries/:id
+ *   TODO(backend): GET    /api/admin/report-rows?dataset=&filters...
+ *
+ * Saved query shape owned by the backend:
+ *   { id: string, name: string, datasetId: "users"|"transactions"|"reports",
+ *     filters: object, columns: string[], createdAt: string }
+ */
+
 const SAVED_QUERIES_PREFIX = "dnb_admin_saved_queries_";
 
-export interface ReportFilterOption {
-  value: string;
-  label: string;
-}
-
-export interface ReportFilterDef {
-  key: string;
-  label: string;
-  type: "select" | "date";
-  options?: readonly ReportFilterOption[];
-}
-
-export interface ReportColumnDef {
-  key: string;
-  label: string;
-}
-
-export interface ReportDatasetDef {
-  id: string;
-  label: string;
-  description: string;
-  filters: readonly ReportFilterDef[];
-  columns: readonly ReportColumnDef[];
-  dateColumn: string;
-}
-
-export const REPORT_DATASETS: readonly ReportDatasetDef[] = Object.freeze([
+/** The three report datasets and their filter/column definitions. */
+export const REPORT_DATASETS = Object.freeze([
   {
     id: "users",
     label: "Users",
@@ -140,7 +138,8 @@ export const REPORT_DATASETS: readonly ReportDatasetDef[] = Object.freeze([
   },
 ]);
 
-const SAMPLE_ROWS: Record<string, any[]> = Object.freeze({ // TODO(types): Sample row structures per dataset
+/** Fixed sample rows per dataset so previews are deterministic and filterable. */
+const SAMPLE_ROWS = Object.freeze({
   users: [
     { name: "Amina Yusuf", email: "amina@deenbridge.org", role: "student", status: "active", joinedAt: "2025-01-12" },
     { name: "Bilal Karim", email: "bilal@deenbridge.org", role: "educator", status: "active", joinedAt: "2025-02-03" },
@@ -164,21 +163,27 @@ const SAMPLE_ROWS: Record<string, any[]> = Object.freeze({ // TODO(types): Sampl
   ],
 });
 
-function getDataset(datasetId: string): ReportDatasetDef | undefined {
+function getDataset(datasetId) {
   return REPORT_DATASETS.find((dataset) => dataset.id === datasetId);
 }
 
-export function defaultFiltersFor(datasetId: string): Record<string, string> {
+/**
+ * Build the default (empty) filter object for a dataset.
+ *
+ * @param {string} datasetId
+ * @returns {Record<string, string>}
+ */
+export function defaultFiltersFor(datasetId) {
   const dataset = getDataset(datasetId);
   if (!dataset) return {};
-  const defaults: Record<string, string> = {};
+  const defaults = {};
   for (const filter of dataset.filters) {
     defaults[filter.key] = filter.type === "select" ? "all" : "";
   }
   return defaults;
 }
 
-function isInDateRange(value: unknown, from?: string, to?: string): boolean {
+function isInDateRange(value, from, to) {
   if (!from && !to) return true;
   const date = String(value ?? "").slice(0, 10);
   if (!date) return false;
@@ -187,15 +192,21 @@ function isInDateRange(value: unknown, from?: string, to?: string): boolean {
   return true;
 }
 
-export interface FetchReportRowsOptions {
-  limit?: number;
-}
-
-export async function fetchReportRows(
-  datasetId: string,
-  filters: Record<string, string> = {},
-  options: FetchReportRowsOptions = {}
-): Promise<{ rows: Array<Record<string, unknown>> }> {
+/**
+ * Fetch preview rows for a dataset, applying the composed filters. Only the
+ * dataset's own filters are honored — no joins across datasets.
+ *
+ * TODO(backend): GET /api/admin/report-rows?dataset=<id>&<filters...>
+ *   - Auth: admin only.
+ *   - 200 → { rows: Array<Record<string, unknown>> }
+ *   - 403 for non-admins; 422 for an unknown dataset id.
+ *
+ * @param {string} datasetId
+ * @param {Record<string, string>} [filters]
+ * @param {{limit?: number}} [options]
+ * @returns {Promise<{rows: Array<Record<string, unknown>>}>}
+ */
+export async function fetchReportRows(datasetId, filters = {}, options = {}) {
   const dataset = getDataset(datasetId);
   if (!dataset) {
     throw new Error(`Unknown report dataset: ${datasetId}`);
@@ -216,19 +227,10 @@ export async function fetchReportRows(
   }
 
   const limit = options.limit || rows.length;
-  return Promise.resolve({ rows: rows.slice(0, limit) });
+  return { rows: rows.slice(0, limit) };
 }
 
-export interface SavedQuery {
-  id: string;
-  name: string;
-  datasetId: string;
-  filters: Record<string, any>; // TODO(types): Filter key-value pairs
-  columns: string[];
-  createdAt: string;
-}
-
-function readSavedQueries(userId: string): SavedQuery[] {
+function readSavedQueries(userId) {
   if (typeof window === "undefined" || !userId) return [];
   try {
     const raw = window.localStorage.getItem(`${SAVED_QUERIES_PREFIX}${userId}`);
@@ -239,7 +241,7 @@ function readSavedQueries(userId: string): SavedQuery[] {
   }
 }
 
-function writeSavedQueries(userId: string, queries: SavedQuery[]): void {
+function writeSavedQueries(userId, queries) {
   if (typeof window === "undefined" || !userId) return;
   try {
     window.localStorage.setItem(
@@ -247,26 +249,43 @@ function writeSavedQueries(userId: string, queries: SavedQuery[]): void {
       JSON.stringify(queries)
     );
   } catch {
-    // Storage unavailable
+    // Storage unavailable (private mode / quota) — saving silently no-ops.
   }
 }
 
-function generateQueryId(): string {
+function generateQueryId() {
   return `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export async function listSavedQueries(userId: string): Promise<{ queries: SavedQuery[] }> {
-  return Promise.resolve({ queries: readSavedQueries(userId) });
+/**
+ * List the current admin's saved queries (newest first).
+ *
+ * TODO(backend): GET /api/admin/saved-queries
+ *   - Auth: admin only.
+ *   - 200 → { queries: SavedQuery[] }
+ *
+ * @param {string} userId
+ * @returns {Promise<{queries: Array<object>}>}
+ */
+export async function listSavedQueries(userId) {
+  return { queries: readSavedQueries(userId) };
 }
 
-export interface SaveQueryPayload {
-  name: string;
-  datasetId: string;
-  filters?: Record<string, any>; // TODO(types): Filter key-value pairs
-  columns: string[];
-}
-
-export async function saveQuery(userId: string, payload: SaveQueryPayload): Promise<{ query: SavedQuery }> {
+/**
+ * Save a named query for the current admin. Requires a non-empty name, a known
+ * dataset, and at least one selected column.
+ *
+ * TODO(backend): POST /api/admin/saved-queries
+ *   - Auth: admin only.
+ *   - Payload: { name, datasetId, filters, columns }
+ *   - 201 → { query: SavedQuery }
+ *   - 422 for a missing name / unknown dataset / empty columns.
+ *
+ * @param {string} userId
+ * @param {{name: string, datasetId: string, filters: object, columns: string[]}} payload
+ * @returns {Promise<{query: object}>}
+ */
+export async function saveQuery(userId, payload) {
   const name = String(payload?.name || "").trim();
   const datasetId = payload?.datasetId;
   const columns = Array.isArray(payload?.columns) ? payload.columns : [];
@@ -280,11 +299,11 @@ export async function saveQuery(userId: string, payload: SaveQueryPayload): Prom
     throw new Error("Select at least one column.");
   }
 
-  const query: SavedQuery = {
+  const query = {
     id: generateQueryId(),
     name,
     datasetId,
-    filters: { ...(payload.filters || {}) },
+    filters: { ...payload.filters },
     columns,
     createdAt: new Date().toISOString(),
   };
@@ -293,11 +312,314 @@ export async function saveQuery(userId: string, payload: SaveQueryPayload): Prom
   queries.unshift(query);
   writeSavedQueries(userId, queries);
 
-  return Promise.resolve({ query });
+  return { query };
 }
 
-export async function deleteSavedQuery(userId: string, queryId: string): Promise<{ deleted: boolean; queryId: string }> {
+/**
+ * Delete a saved query owned by the current admin.
+ *
+ * TODO(backend): DELETE /api/admin/saved-queries/:id
+ *   - Auth: admin only; queries are scoped per admin.
+ *   - 200 → { deleted: true, queryId: string }
+ *
+ * @param {string} userId
+ * @param {string} queryId
+ * @returns {Promise<{deleted: boolean, queryId: string}>}
+ */
+export async function deleteSavedQuery(userId, queryId) {
   const queries = readSavedQueries(userId).filter((query) => query.id !== queryId);
   writeSavedQueries(userId, queries);
-  return Promise.resolve({ deleted: true, queryId });
+  return { deleted: true, queryId };
+}
+
+/**
+ * Admin moderation-reports service — list, read, and act on user reports.
+ * ---------------------------------------------------------------------------
+ * **STUBBED (#289).** The moderation-reports backend does not exist yet, so
+ * this module serves deterministic in-memory seed data and mocks the mutations,
+ * backed by a module-level store so the reports list and the detail drawer stay
+ * in sync within a browser session (until a full reload re-seeds the module).
+ * Swap the mock bodies for `axiosInstance` calls (see `lib/config/axios.config.js`)
+ * when the backend lands.
+ *
+ * A report ties a **reporter** (who flagged something) to a **target** — a
+ * piece of content (reel / book / course) or the account that owns it — plus
+ * the context a moderator needs to decide well: the reporter's statement and
+ * trust signals (account age, how many prior reports they've filed), and the
+ * target's own history (prior reports against it, prior admin actions taken).
+ *
+ * Report shape owned by the backend:
+ *
+ *   {
+ *     id: string,
+ *     status: "open" | "escalated" | "dismissed" | "actioned",
+ *     reason: string,                       // short reason code/label
+ *     createdAt: string,                    // ISO 8601
+ *     reporter: {
+ *       id, name, avatar,
+ *       accountCreatedAt: string,           // ISO — drives "account age"
+ *       priorReportCount: number,           // serial-reporter signal
+ *       statement: string,                  // free-text why-they-reported
+ *     },
+ *     target: {
+ *       type: "reel" | "book" | "course",
+ *       id, title, author,
+ *       preview: { thumbnail?, cover?, poster?, ... },  // type-specific
+ *       ownerId, ownerName,
+ *       priorReports: Array<{ id, reason, createdAt, status }>,
+ *       priorActions: Array<{ id, action, at, by }>,     // admin actions
+ *     },
+ *   }
+ *
+ * TODO(backend):
+ *   - GET  /api/admin/reports                → 200 { reports: Report[] }         (admin session)
+ *   - GET  /api/admin/reports/:id            → 200 { report: Report } | 404
+ *   - POST /api/admin/reports/:id/escalate   → 200 { report } (status→escalated)
+ *   - POST /api/admin/reports/:id/dismiss    → 200 { report } (status→dismissed)
+ *   - POST /api/admin/reports/:id/action     → 200 { report } (status→actioned)
+ *       Payload: { action: "takedown" | "ban" | ..., reason?: string }
+ *     All are super-admin only (server-side tier check).
+ */
+
+import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
+
+const MOCK_DELAY_MS = 300;
+
+function withMockDelay(value) {
+  return new Promise((resolve) => setTimeout(() => resolve(value), MOCK_DELAY_MS));
+}
+
+/**
+ * Deterministic seed. Fixed ids and timestamps so the list, the drawer, and any
+ * test render identically every time (no randomness). Covers all three target
+ * content types the issue calls out: a reel, a book, and a course.
+ *
+ * @returns {Array<object>}
+ */
+function seedReports() {
+  return [
+    {
+      id: "rep_1001",
+      status: "open",
+      reason: "Inappropriate content",
+      createdAt: "2026-08-20T09:12:00.000Z",
+      reporter: {
+        id: "usr_5001",
+        name: "Aisha Bello",
+        avatar: "https://picsum.photos/seed/reporter-aisha/64/64",
+        accountCreatedAt: "2023-02-14T00:00:00.000Z",
+        priorReportCount: 2,
+        statement:
+          "This reel shows content that doesn't align with the community guidelines. The audio contains music over a naat which many members find inappropriate.",
+      },
+      target: {
+        type: "reel",
+        id: "reel_88",
+        title: "Evening Dhikr — 60s reel",
+        author: "Yusuf Adeyemi",
+        preview: {
+          thumbnail: "https://picsum.photos/seed/reel-88/640/360",
+          poster: "https://picsum.photos/seed/reel-88/640/360",
+          durationSeconds: 62,
+        },
+        ownerId: "usr_7001",
+        ownerName: "Yusuf Adeyemi",
+        priorReports: [
+          { id: "rep_0900", reason: "Copyright (audio)", createdAt: "2026-07-30T14:00:00.000Z", status: "dismissed" },
+        ],
+        priorActions: [],
+      },
+    },
+    {
+      id: "rep_1002",
+      status: "open",
+      reason: "Copyright violation",
+      createdAt: "2026-08-21T16:45:00.000Z",
+      reporter: {
+        id: "usr_5002",
+        name: "Ibrahim Sanni",
+        avatar: "https://picsum.photos/seed/reporter-ibrahim/64/64",
+        accountCreatedAt: "2025-11-01T00:00:00.000Z",
+        priorReportCount: 11,
+        statement:
+          "The uploaded book PDF is a scanned copy of a work still under copyright. The publisher's watermark is visible on several pages.",
+      },
+      target: {
+        type: "book",
+        id: "book_42",
+        title: "Riyad as-Salihin (annotated)",
+        author: "Imam an-Nawawi",
+        preview: {
+          cover: "https://picsum.photos/seed/book-42/320/440",
+        },
+        ownerId: "usr_7002",
+        ownerName: "Al-Furqan Publishers",
+        priorReports: [
+          { id: "rep_0811", reason: "Copyright violation", createdAt: "2026-06-11T10:00:00.000Z", status: "actioned" },
+          { id: "rep_0655", reason: "Low-quality scan", createdAt: "2026-05-02T08:30:00.000Z", status: "dismissed" },
+        ],
+        priorActions: [
+          { id: "act_311", action: "content.takedown", at: "2026-06-12T09:00:00.000Z", by: "Admin (Khadija)" },
+          { id: "act_312", action: "content.restore", at: "2026-06-20T09:00:00.000Z", by: "Admin (Khadija)" },
+        ],
+      },
+    },
+    {
+      id: "rep_1003",
+      status: "open",
+      reason: "Misleading information",
+      createdAt: "2026-08-22T11:05:00.000Z",
+      reporter: {
+        id: "usr_5003",
+        name: "Fatima Yusuf",
+        avatar: "https://picsum.photos/seed/reporter-fatima/64/64",
+        accountCreatedAt: "2024-09-19T00:00:00.000Z",
+        priorReportCount: 0,
+        statement:
+          "The course description promises an 'ijazah on completion' which the instructor is not authorized to grant. This could mislead new students.",
+      },
+      target: {
+        type: "course",
+        id: "course_17",
+        title: "Tajwid Foundations — 8 week intensive",
+        author: "Ustadh Kareem",
+        preview: {
+          thumbnail: "https://picsum.photos/seed/course-17/640/360",
+          lessons: 24,
+          enrolled: 512,
+        },
+        ownerId: "usr_7003",
+        ownerName: "Ustadh Kareem",
+        priorReports: [],
+        priorActions: [],
+      },
+    },
+  ];
+}
+
+/**
+ * In-memory store, seeded lazily on first access so mutations round-trip within
+ * a session.
+ *
+ * @type {Array<object>|null}
+ */
+let mockReports = null;
+
+function getStore() {
+  if (!mockReports) mockReports = seedReports();
+  return mockReports;
+}
+
+/** Deep-ish clone so callers can't mutate the store by reference. */
+function clone(value) {
+  return typeof structuredClone === "function"
+    ? structuredClone(value)
+    : JSON.parse(JSON.stringify(value));
+}
+
+/**
+ * List reports (newest first). Defaults to the moderation queue (open +
+ * escalated); pass `{ status: "all" }` to include resolved ones.
+ *
+ * @param {{ status?: "open" | "queue" | "all" }} [opts]
+ * @returns {Promise<{ reports: Array<object> }>}
+ */
+export async function listReports({ status = "queue" } = {}) {
+  const all = clone(getStore());
+  let filtered = all;
+  if (status === "open") {
+    filtered = all.filter((r) => r.status === "open");
+  } else if (status !== "all") {
+    filtered = all.filter((r) => r.status === "open" || r.status === "escalated");
+  }
+
+  filtered.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  return withMockDelay({ reports: filtered });
+}
+
+/**
+ * Fetch a single report with its full context, or `null` if not found.
+ *
+ * @param {string} id
+ * @returns {Promise<{ report: object | null }>}
+ */
+export async function getReport(id) {
+  const found = getStore().find((r) => r.id === id) || null;
+  return withMockDelay({ report: found ? clone(found) : null });
+}
+
+/** Mutate the stored report's status, or no-op if missing. Returns the clone. */
+function setStatus(id, nextStatus) {
+  const report = getStore().find((r) => r.id === id);
+  if (report) report.status = nextStatus;
+  return report ? clone(report) : null;
+}
+
+/**
+ * Escalate a report for senior review, then emit a non-blocking audit event.
+ *
+ * @param {string} id
+ * @returns {Promise<{ report: object | null }>}
+ */
+export async function escalateReport(id) {
+  const report = setStatus(id, "escalated");
+  const result = await withMockDelay({ report });
+  if (report) {
+    logAuditEvent({
+      action: AUDIT_ACTIONS.REPORT_ESCALATE,
+      target: { label: `Report ${id}`, href: `/dashboard/admin/reports?report=${id}` },
+      metadata: { reportId: id, targetType: report.target?.type, targetId: report.target?.id },
+    });
+  }
+  return result;
+}
+
+/**
+ * Dismiss a report as no-action, then emit a non-blocking audit event.
+ *
+ * @param {string} id
+ * @param {{ reason?: string }} [opts]
+ * @returns {Promise<{ report: object | null }>}
+ */
+export async function dismissReport(id, { reason } = {}) {
+  const report = setStatus(id, "dismissed");
+  const result = await withMockDelay({ report });
+  if (report) {
+    logAuditEvent({
+      action: AUDIT_ACTIONS.REPORT_DISMISS,
+      target: { label: `Report ${id}`, href: `/dashboard/admin/reports?report=${id}` },
+      metadata: { reportId: id, reason: reason || null },
+    });
+  }
+  return result;
+}
+
+/**
+ * Apply a moderation action to the report's target (e.g. take the content down),
+ * mark the report actioned, then emit a non-blocking audit event.
+ *
+ * @param {string} id
+ * @param {{ action?: string, reason?: string }} [opts]
+ * @returns {Promise<{ report: object | null }>}
+ */
+export async function applyActionToTarget(id, { action = "takedown", reason } = {}) {
+  const report = setStatus(id, "actioned");
+  const result = await withMockDelay({ report });
+  if (report) {
+    logAuditEvent({
+      action: AUDIT_ACTIONS.REPORT_ACTION,
+      target: {
+        label: report.target?.title || `Report ${id}`,
+        href: `/dashboard/admin/reports?report=${id}`,
+      },
+      metadata: {
+        reportId: id,
+        appliedAction: action,
+        targetType: report.target?.type,
+        targetId: report.target?.id,
+        reason: reason || null,
+      },
+    });
+  }
+  return result;
 }

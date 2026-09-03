@@ -1,3 +1,15 @@
+// Single source of truth for the course-category taxonomy.
+//
+// Every route, card, and picker that needs a category reads from this module:
+// the hub (/dashboard/courses/categories), the landing pages
+// (/dashboard/courses/category/[slug]), the course cards' badges, the create
+// forms' CategoryCombobox, and the main courses page chips.
+//
+// The taxonomy mirrors the values educators pick in the create form
+// (islamicCategories in lib/data.js). Stored courses may contain legacy or
+// free-text values that do not match a known slug; those are resolved through
+// resolveCategorySlug() into the FALLBACK bucket instead of crashing.
+
 import {
   Archive,
   Baby,
@@ -35,32 +47,10 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import React from "react";
-import { Course } from "@/types/api";
-
-export type LucideIcon = React.ComponentType<any>; // TODO(types): Lucide icon component type
 
 export const FALLBACK_SLUG = "other";
 
-export interface CategoryItem {
-  slug: string;
-  label: string;
-  shortLabel: string;
-  description: string;
-  icon: LucideIcon;
-  group?: string;
-  groupId?: string;
-}
-
-export interface CategoryGroup {
-  id: string;
-  label: string;
-  description: string;
-  icon: LucideIcon;
-  categories: CategoryItem[];
-}
-
-export const FALLBACK_CATEGORY: CategoryItem = {
+export const FALLBACK_CATEGORY = {
   slug: FALLBACK_SLUG,
   label: "Other",
   shortLabel: "Other",
@@ -70,7 +60,9 @@ export const FALLBACK_CATEGORY: CategoryItem = {
   icon: Puzzle,
 };
 
-export const CATEGORY_GROUPS: CategoryGroup[] = [
+// Each category keeps the exact label educators see/pick in the create form so
+// stored values stay stable. Slugs are short, URL-friendly identifiers.
+export const CATEGORY_GROUPS = [
   {
     id: "core-islamic-sciences",
     label: "Core Islamic Sciences",
@@ -112,7 +104,7 @@ export const CATEGORY_GROUPS: CategoryGroup[] = [
       },
       {
         slug: "seerah",
-        label: "Seerah (Life of the Prophet ﷺ)",
+        label: "Seerah (Life of the Prophet)",
         shortLabel: "Seerah",
         description:
           "The life, character, and mission of Prophet Muhammad (peace be upon him).",
@@ -375,7 +367,8 @@ export const CATEGORY_GROUPS: CategoryGroup[] = [
   },
 ];
 
-export const ISLAMIC_CATEGORIES: CategoryItem[] = CATEGORY_GROUPS.flatMap((group) =>
+// Flat index of every category with its group attached.
+export const ISLAMIC_CATEGORIES = CATEGORY_GROUPS.flatMap((group) =>
   group.categories.map((category) => ({
     ...category,
     group: group.label,
@@ -383,27 +376,35 @@ export const ISLAMIC_CATEGORIES: CategoryItem[] = CATEGORY_GROUPS.flatMap((group
   }))
 );
 
-export const CATEGORY_MAP: Record<string, CategoryItem> = Object.fromEntries(
+// Alias for backward compatibility — some pages import CATEGORIES directly.
+export const CATEGORIES = ISLAMIC_CATEGORIES;
+
+export const CATEGORY_MAP = Object.fromEntries(
   ISLAMIC_CATEGORIES.map((category) => [category.slug, category])
 );
 
 const PAREN_STRIP = /\s*\([^)]*\)/g;
 
-function normalize(value: unknown): string {
+function normalize(value) {
   return String(value ?? "")
     .normalize("NFKD")
     .replace(/[\u0300-\u036f\u0640]/g, "")
     .trim();
 }
 
-export function slugify(value: unknown): string {
+// Short, URL-safe slug (used for matching free-text stored values).
+export function slugify(value) {
   return normalize(value)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
 
-export function resolveCategorySlug(value: unknown): string {
+// Best-effort match of a stored course.category value to a taxonomy slug.
+// Handles exact slugs, labels (case-insensitive), and labels with their
+// parenthetical suffix stripped (e.g. "Fiqh (Islamic Jurisprudence)" -> fiqh).
+// Returns the FALLBACK slug when nothing matches.
+export function resolveCategorySlug(value) {
   const raw = String(value ?? "").trim();
   if (!raw) return FALLBACK_SLUG;
 
@@ -428,19 +429,68 @@ export function resolveCategorySlug(value: unknown): string {
   return FALLBACK_SLUG;
 }
 
-export function getCategoryBySlug(slug?: string | null): CategoryItem | null {
-  if (!slug) return null;
-  if (slug === FALLBACK_SLUG) return FALLBACK_CATEGORY;
-  return CATEGORY_MAP[slug] || null;
+/**
+ * Resolve a raw category string to a known slug or null.
+ * Returns null (not FALLBACK_SLUG) when no match is found, so callers can
+ * distinguish "no match" from "matched the fallback".
+ *
+ * @param {string | undefined | null} raw
+ * @returns {string | null}
+ */
+export function resolveSlug(raw) {
+  if (!raw) return null;
+  const normalised = raw.toLowerCase().trim();
+  if (!normalised) return null;
+
+  // Exact slug match
+  if (Object.hasOwn(CATEGORY_MAP, normalised)) return normalised;
+  // Exact label match
+  const byLabel = ISLAMIC_CATEGORIES.find(
+    (c) => c.label.toLowerCase().trim() === normalised
+  );
+  if (byLabel) return byLabel.slug;
+
+  // Partial label match — only return if EXACTLY ONE match (unambiguous)
+  const partialMatches = ISLAMIC_CATEGORIES.filter(
+    (c) =>
+      c.label.toLowerCase().includes(normalised) ||
+      normalised.includes(c.label.toLowerCase())
+  );
+  if (partialMatches.length === 1) return partialMatches[0].slug;
+
+  // Unknown value — log and return null
+  console.warn(`[resolveSlug] Unknown category value: "${raw}"`);
+  return null;
 }
 
-export function getCategoryLabel(slug?: string | null): string {
+export function getCategoryBySlug(slug) {
+  if (!slug) return null;
+  if (slug === FALLBACK_SLUG) return FALLBACK_CATEGORY;
+  return Object.hasOwn(CATEGORY_MAP, slug) ? CATEGORY_MAP[slug] : null;
+}
+
+export function getCategoryLabel(slug) {
   const category = getCategoryBySlug(slug);
   return category ? category.label : "General";
 }
 
-export function getCategoryCounts(courses?: Partial<Course>[] | null): Record<string, number> {
-  const counts: Record<string, number> = { [FALLBACK_SLUG]: 0 };
+/**
+ * Get categories grouped by their parent group, as an array of objects.
+ * Useful for building grouped UIs (ComboBox, category hub grid).
+ *
+ * @returns {{ group: string, categories: Category[] }[]}
+ */
+export function getGroupedCategories() {
+  return CATEGORY_GROUPS.map((group) => ({
+    group: group.label,
+    categories: group.categories,
+  }));
+}
+
+// Course list -> { slug: count }. Empty / legacy / free-text values count
+// toward the fallback bucket.
+export function getCategoryCounts(courses) {
+  const counts = { [FALLBACK_SLUG]: 0 };
   for (const category of ISLAMIC_CATEGORIES) counts[category.slug] = 0;
   for (const course of courses || []) {
     const slug = resolveCategorySlug(course?.category);
@@ -449,14 +499,16 @@ export function getCategoryCounts(courses?: Partial<Course>[] | null): Record<st
   return counts;
 }
 
-export function filterCoursesByCategory<T extends { category?: string }>(courses: T[] | null | undefined, slug?: string | null): T[] {
+export function filterCoursesByCategory(courses, slug) {
   const wanted = slug || FALLBACK_SLUG;
   return (courses || []).filter(
     (course) => resolveCategorySlug(course?.category) === wanted
   );
 }
 
-function createdAtOf(course?: any): number { // TODO(types): Partial course record
+// Mongo ObjectIds encode their creation time in the first 4 bytes, so recency
+// sorting still works when the API response omits createdAt.
+function createdAtOf(course) {
   if (course?.createdAt) {
     const parsed = new Date(course.createdAt).getTime();
     if (!Number.isNaN(parsed)) return parsed;
@@ -469,18 +521,19 @@ function createdAtOf(course?: any): number { // TODO(types): Partial course reco
   return 0;
 }
 
-function priceOf(course?: any): number { // TODO(types): Partial course record
+function priceOf(course) {
   return Number(course?.price) || 0;
 }
 
-function ratingOf(course?: any): number { // TODO(types): Partial course record with reviews
+function ratingOf(course) {
   const reviews = course?.reviews;
   if (!Array.isArray(reviews) || reviews.length === 0) return 0;
-  const sum = reviews.reduce((acc: number, review: any) => acc + (review.rating || 0), 0); // TODO(types): Course review item
+  const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0);
   return sum / reviews.length;
 }
 
-export function sortCourses<T extends Partial<Course>>(courses: T[] | null | undefined, sortKey?: string): T[] {
+// sortKey: "newest" (default), "price-asc", "price-desc", "rating".
+export function sortCourses(courses, sortKey) {
   const list = [...(courses || [])];
   if (sortKey === "price-asc") {
     list.sort((a, b) => priceOf(a) - priceOf(b));

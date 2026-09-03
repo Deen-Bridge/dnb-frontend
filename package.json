@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test e2e/i18n.spec.js"
+    "test:e2e": "playwright test e2e/i18n.spec.js",
+    "test:e2e:admin": "playwright test e2e/admin-smoke.spec.js"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.4.0",

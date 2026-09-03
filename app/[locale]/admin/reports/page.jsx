@@ -14,8 +14,9 @@
  * - Deep links to underlying entity admin pages
  */
 
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -67,20 +68,13 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Loader2,
   AlertTriangle,
   MessageSquare,
-  Loader2,
 } from "lucide-react";
-import { TableSkeleton } from "@/components/admin/table-skeleton";
-import { TableEmptyState } from "@/components/admin/table-empty-state";
-import { TableErrorState } from "@/components/admin/table-error-state";
-import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
-import DismissReportDialog from "@/components/admin/DismissReportDialog";
-import BlurImage from "@/components/ui/blur-image";
-import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 
 // Content type definitions with icons and colors
 const CONTENT_TYPES = {
@@ -209,6 +203,7 @@ const generateMockReports = () => {
       assignee,
       status,
       reason,
+      reportCount: 1 + Math.floor(Math.random() * 15),
       description: `Reported for ${REASON_CATEGORIES[reason].toLowerCase()} - ${target.name}`,
       createdAt: createdAt.toISOString(),
       updatedAt: createdAt.toISOString(),
@@ -232,21 +227,24 @@ const getTargetAdminLink = (target) => {
   return `${type.adminPath}/${target.id}`;
 };
 
-export default function UnifiedReportsPage() {
+function UnifiedReportsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isRefetching, setIsRefetching] = useState(false);
-  const [statusFilter, setStatusFilter] = useState("open");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const s = searchParams.get("status");
+    return s && Object.keys(REPORT_STATUSES).includes(s) ? s : "open";
+  });
+  const [typeFilter, setTypeFilter] = useState(() => {
+    const t = searchParams.get("type");
+    return t && Object.keys(CONTENT_TYPES).includes(t) ? t : "all";
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const tableRef = useRef(null);
   const pageSize = 15;
-  // Dismiss dialog state
-  const [isDismissDialogOpen, setIsDismissDialogOpen] = useState(false);
-  const [dismissTarget, setDismissTarget] = useState(null);
 
   // Keyboard navigation
   useEffect(() => {
@@ -285,9 +283,16 @@ export default function UnifiedReportsPage() {
         case "d":
           e.preventDefault();
           if (reports[selectedIndex]) {
-            setDismissTarget(reports[selectedIndex]);
-            setIsDismissDialogOpen(true);
+            handleStatusChange(reports[selectedIndex].id, "dismissed");
           }
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.max(prev - 1, 0));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((prev) => Math.min(prev + 1, reports.length - 1));
           break;
       }
     };
@@ -297,45 +302,28 @@ export default function UnifiedReportsPage() {
   }, [reports, selectedIndex]);
 
   // Fetch reports with filters
-  const fetchReports = useCallback(async (page, filters, isRefetch = false) => {
-    if (isRefetch) {
-      setIsRefetching(true);
-    } else {
-      setLoading(true);
+  const fetchReports = useCallback(async (page, filters) => {
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    let filtered = [...mockReports];
+
+    if (filters.status !== "all") {
+      filtered = filtered.filter((r) => r.status === filters.status);
     }
-    setError(null);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Simulate occasional error for demo
-      if (Math.random() < 0.05) {
-        throw new Error("Failed to fetch reports");
-      }
-
-      let filtered = [...mockReports];
-
-      if (filters.status !== "all") {
-        filtered = filtered.filter((r) => r.status === filters.status);
-      }
-
-      if (filters.type !== "all") {
-        filtered = filtered.filter((r) => r.target.type === filters.type);
-      }
-
-      const total = Math.ceil(filtered.length / pageSize);
-      const start = (page - 1) * pageSize;
-      const paginated = filtered.slice(start, start + pageSize);
-
-      setReports(paginated);
-      setTotalPages(total || 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      setIsRefetching(false);
-      setSelectedIndex(0);
+    if (filters.type !== "all") {
+      filtered = filtered.filter((r) => r.target.type === filters.type);
     }
+
+    const total = Math.ceil(filtered.length / pageSize);
+    const start = (page - 1) * pageSize;
+    const paginated = filtered.slice(start, start + pageSize);
+
+    setReports(paginated);
+    setTotalPages(total || 1);
+    setLoading(false);
+    setSelectedIndex(0);
   }, []);
 
   // Initial fetch and on filter change
@@ -348,6 +336,15 @@ export default function UnifiedReportsPage() {
     setCurrentPage(1);
   }, [statusFilter, typeFilter]);
 
+  // Keep URL in sync so filters are deep-linkable (?status=&type=)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (statusFilter !== "open") params.set("status", statusFilter);
+    if (typeFilter !== "all") params.set("type", typeFilter);
+    const qs = params.toString();
+    router.replace(qs ? `/admin/reports?${qs}` : "/admin/reports", { scroll: false });
+  }, [router, statusFilter, typeFilter]);
+
   // Handle status change
   const handleStatusChange = useCallback((reportId, newStatus) => {
     setReports((prev) =>
@@ -357,7 +354,7 @@ export default function UnifiedReportsPage() {
 
   // Handle refresh
   const handleRefresh = () => {
-    fetchReports(currentPage, { status: statusFilter, type: typeFilter }, true);
+    fetchReports(currentPage, { status: statusFilter, type: typeFilter });
   };
 
   // Status counts for tabs
@@ -378,14 +375,13 @@ export default function UnifiedReportsPage() {
         title="Reports Queue"
         subtitle="Unified moderation queue for all content types"
         actions={
-          <div className="flex items-center gap-3">
-            <MediaBlurToggle className="hidden lg:flex" />
-            <kbd className="hidden lg:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
+          <div className="flex items-center gap-2">
+            <kbd className="hidden sm:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
               j/k to navigate
             </kbd>
             <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
-              <RefreshCw className={cn("h-4 w-4 sm:mr-2", loading && "animate-spin")} />
-              <span className="hidden sm:inline">Refresh</span>
+              <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+              Refresh
             </Button>
           </div>
         }
@@ -394,45 +390,43 @@ export default function UnifiedReportsPage() {
       {/* Status Tabs */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col gap-4">
-            <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-              <Tabs value={statusFilter} onValueChange={setStatusFilter}>
-                <TabsList className="w-full sm:w-auto">
-                  <TabsTrigger value="open" className="gap-2">
-                    <AlertTriangle className="h-4 w-4" />
-                    Open
-                    <Badge variant="secondary" className="ml-1">
-                      {statusCounts.open}
-                    </Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="in-review" className="gap-2">
-                    <Eye className="h-4 w-4" />
-                    In Review
-                    <Badge variant="secondary" className="ml-1">
-                      {statusCounts["in-review"]}
-                    </Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="resolved" className="gap-2">
-                    <CheckCircle className="h-4 w-4" />
-                    Resolved
-                    <Badge variant="secondary" className="ml-1">
-                      {statusCounts.resolved}
-                    </Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="dismissed" className="gap-2">
-                    <XCircle className="h-4 w-4" />
-                    Dismissed
-                    <Badge variant="secondary" className="ml-1">
-                      {statusCounts.dismissed}
-                    </Badge>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+              <TabsList>
+                <TabsTrigger value="open" className="gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  Open
+                  <Badge variant="secondary" className="ml-1">
+                    {statusCounts.open}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="in-review" className="gap-2">
+                  <Eye className="h-4 w-4" />
+                  In Review
+                  <Badge variant="secondary" className="ml-1">
+                    {statusCounts["in-review"]}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="resolved" className="gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Resolved
+                  <Badge variant="secondary" className="ml-1">
+                    {statusCounts.resolved}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="dismissed" className="gap-2">
+                  <XCircle className="h-4 w-4" />
+                  Dismissed
+                  <Badge variant="secondary" className="ml-1">
+                    {statusCounts.dismissed}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Content Type Filter */}
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All content types" />
               </SelectTrigger>
               <SelectContent>
@@ -451,8 +445,6 @@ export default function UnifiedReportsPage() {
         </CardContent>
       </Card>
 
-      <RefetchBanner isRefetching={isRefetching} />
-
       {/* Reports Table */}
       <Card>
         <CardHeader>
@@ -464,200 +456,34 @@ export default function UnifiedReportsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error ? (
-            <TableErrorState message={error} onRetry={handleRefresh} />
-          ) : (
-            <div className="rounded-lg border" ref={tableRef}>
-              {/* Desktop Table */}
-              <div className="hidden md:block">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[200px]">Reporter</TableHead>
-                      <TableHead className="w-[250px]">Target</TableHead>
-                      <TableHead className="w-[150px]">Reason</TableHead>
-                      <TableHead className="w-[100px]">Age</TableHead>
-                      <TableHead className="w-[100px]">Status</TableHead>
-                      <TableHead className="w-[150px]">Assignee</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="py-8 text-center">
-                          <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
-                          <span className="sr-only">Loading reports</span>
-                        </TableCell>
-                      </TableRow>
-                    ) : reports.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                          No reports found matching your filters
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      reports.map((report, index) => {
-                        const contentType = CONTENT_TYPES[report.target.type];
-                        const ContentIcon = contentType?.icon || Flag;
-                        const status = REPORT_STATUSES[report.status];
-                        const isSelected = index === selectedIndex;
-
-                        return (
-                          <TableRow
-                            key={report.id}
-                            className={cn(
-                              "cursor-pointer transition-colors",
-                              isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
-                            )}
-                            onClick={() => setSelectedIndex(index)}
-                          >
-                            {/* Reporter */}
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarImage src={report.reporter.avatar} />
-                                  <AvatarFallback className="text-xs">
-                                    {report.reporter.name.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-sm font-medium">
-                                  {report.reporter.name}
-                                </span>
-                              </div>
-                            </TableCell>
-
-                            {/* Target */}
-                            <TableCell>
-                              <Link
-                                href={getTargetAdminLink(report.target)}
-                                className="flex items-center gap-2 hover:underline"
-                              >
-                                <div
-                                  className={cn(
-                                    "p-1.5 rounded",
-                                    contentType?.bgColor
-                                  )}
-                                >
-                                  <ContentIcon
-                                    className={cn("h-4 w-4", contentType?.color)}
-                                  />
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="text-sm font-medium truncate">
-                                    {report.target.name}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {contentType?.label}
-                                  </p>
-                                </div>
-                                <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" aria-hidden="true" />
-                              </Link>
-                            </TableCell>
-
-                            {/* Reason */}
-                            <TableCell>
-                              <Badge variant="outline" className="text-xs">
-                                {REASON_CATEGORIES[report.reason]}
-                              </Badge>
-                            </TableCell>
-
-                            {/* Age */}
-                            <TableCell>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                {formatReportAge(report.createdAt)}
-                              </div>
-                            </TableCell>
-
-                            {/* Status */}
-                            <TableCell>
-                              <Badge
-                                className={cn(
-                                  "text-xs",
-                                  status?.bgColor,
-                                  status?.color
-                                )}
-                              >
-                                {status?.label}
-                              </Badge>
-                            </TableCell>
-
-                            {/* Assignee */}
-                            <TableCell>
-                              {report.assignee ? (
-                                <div className="flex items-center gap-2">
-                                  <Avatar className="h-6 w-6">
-                                    <AvatarFallback className="text-xs">
-                                      {report.assignee.name.charAt(0)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span className="text-xs">
-                                    {report.assignee.name}
-                                  </span>
-                                </div>
-                              ) : (
-                                <span className="text-xs text-muted-foreground">
-                                  Unassigned
-                                </span>
-                              )}
-                            </TableCell>
-
-                            {/* Actions */}
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Report actions">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem asChild>
-                                    <Link href={getTargetAdminLink(report.target)}>
-                                      <ExternalLink className="h-4 w-4 mr-2" />
-                                      View Target
-                                    </Link>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onClick={() => handleStatusChange(report.id, "in-review")}>
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    Mark In Review
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleStatusChange(report.id, "resolved")}>
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    Mark Resolved
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setDismissTarget(report);
-                                      setIsDismissDialogOpen(true);
-                                    }}
-                                  >
-                                    <XCircle className="h-4 w-4 mr-2" />
-                                    Dismiss
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Mobile Card View */}
-              <div className="md:hidden divide-y">
+          <div className="rounded-lg border" ref={tableRef}>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Reporter</TableHead>
+                  <TableHead className="w-[250px]">Target</TableHead>
+                  <TableHead className="w-[150px]">Reason</TableHead>
+                  <TableHead className="w-[90px]">Reports</TableHead>
+                  <TableHead className="w-[100px]">Age</TableHead>
+                  <TableHead className="w-[100px]">Status</TableHead>
+                  <TableHead className="w-[150px]">Assignee</TableHead>
+                  <TableHead className="w-[50px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {loading ? (
-                  <div className="py-8 text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  </div>
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-8 text-center">
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                    </TableCell>
+                  </TableRow>
                 ) : reports.length === 0 ? (
-                  <div className="py-8 text-center text-muted-foreground">
-                    <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No reports found</p>
-                  </div>
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                      <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No reports found</p>
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   reports.map((report, index) => {
                     const contentType = CONTENT_TYPES[report.target.type];
@@ -666,96 +492,158 @@ export default function UnifiedReportsPage() {
                     const isSelected = index === selectedIndex;
 
                     return (
-                      <div
+                      <TableRow
                         key={report.id}
-                        role="button"
-                        tabIndex={0}
                         className={cn(
-                          "p-3 cursor-pointer transition-colors",
+                          "cursor-pointer transition-colors",
                           isSelected && "bg-muted/50 ring-2 ring-primary ring-inset"
                         )}
                         onClick={() => setSelectedIndex(index)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setSelectedIndex(index);
-                          }
-                        }}
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Avatar className="h-7 w-7 shrink-0">
+                        {/* Reporter */}
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
                               <AvatarImage src={report.reporter.avatar} />
-                              <AvatarFallback className="text-xs">{report.reporter.name.charAt(0)}</AvatarFallback>
+                              <AvatarFallback className="text-xs">
+                                {report.reporter.name.charAt(0)}
+                              </AvatarFallback>
                             </Avatar>
+                            <span className="text-sm font-medium">
+                              {report.reporter.name}
+                            </span>
+                          </div>
+                        </TableCell>
+
+                        {/* Target */}
+                        <TableCell>
+                          <Link
+                            href={getTargetAdminLink(report.target)}
+                            className="flex items-center gap-2 hover:underline"
+                          >
+                            <div
+                              className={cn(
+                                "p-1.5 rounded",
+                                contentType?.bgColor
+                              )}
+                            >
+                              <ContentIcon
+                                className={cn("h-4 w-4", contentType?.color)}
+                              />
+                            </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium truncate">{report.reporter.name}</p>
-                              <p className="text-xs text-muted-foreground">{formatReportAge(report.createdAt)}</p>
+                              <p className="text-sm font-medium truncate">
+                                {report.target.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {contentType?.label}
+                              </p>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <Badge className={cn("text-[10px]", status?.bgColor, status?.color)}>{status?.label}</Badge>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Report actions">
-                                  <MoreVertical className="h-3.5 w-3.5" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem asChild>
-                                  <Link href={getTargetAdminLink(report.target)}>
-                                    <ExternalLink className="h-4 w-4 mr-2" />
-                                    View Target
-                                  </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handleStatusChange(report.id, "in-review")}>
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  Mark In Review
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleStatusChange(report.id, "resolved")}>
-                                  <CheckCircle className="h-4 w-4 mr-2" />
-                                  Mark Resolved
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setDismissTarget(report);
-                                    setIsDismissDialogOpen(true);
-                                  }}
-                                >
-                                  <XCircle className="h-4 w-4 mr-2" />
-                                  Dismiss
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                        <div className="mt-2">
-                          <Link href={getTargetAdminLink(report.target)} className="flex items-center gap-2 hover:underline">
-                            <div className={cn("p-1 rounded shrink-0", contentType?.bgColor)}>
-                              <ContentIcon className={cn("h-3.5 w-3.5", contentType?.color)} />
-                            </div>
-                            <p className="text-sm font-medium truncate">{report.target.name}</p>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                           </Link>
-                        </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <Badge variant="outline" className="text-[10px]">{REASON_CATEGORIES[report.reason]}</Badge>
-                          {report.assignee && (
-                            <span className="text-[10px] text-muted-foreground">→ {report.assignee.name}</span>
+                        </TableCell>
+
+                        {/* Reason */}
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">
+                            {REASON_CATEGORIES[report.reason]}
+                          </Badge>
+                        </TableCell>
+
+                        {/* Report Count */}
+                        <TableCell className="text-xs text-muted-foreground">
+                          ×{report.reportCount}
+                        </TableCell>
+
+                        {/* Age */}
+                        <TableCell>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {formatReportAge(report.createdAt)}
+                          </div>
+                        </TableCell>
+
+                        {/* Status */}
+                        <TableCell>
+                          <Badge
+                            className={cn(
+                              "text-xs",
+                              status?.bgColor,
+                              status?.color
+                            )}
+                          >
+                            {status?.label}
+                          </Badge>
+                        </TableCell>
+
+                        {/* Assignee */}
+                        <TableCell>
+                          {report.assignee ? (
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-6 w-6">
+                                <AvatarFallback className="text-xs">
+                                  {report.assignee.name.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-xs">
+                                {report.assignee.name}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">
+                              Unassigned
+                            </span>
                           )}
-                        </div>
-                      </div>
+                        </TableCell>
+
+                        {/* Actions */}
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={getTargetAdminLink(report.target)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  View Target
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(report.id, "in-review")}
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                Mark In Review
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(report.id, "resolved")}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Mark Resolved
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleStatusChange(report.id, "dismissed")}
+                              >
+                                <XCircle className="h-4 w-4 mr-2" />
+                                Dismiss
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
                     );
                   })
                 )}
-              </div>
-            </div>
-          )}
+              </TableBody>
+            </Table>
+          </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="mt-4 flex items-center justify-between">
               <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
@@ -765,7 +653,6 @@ export default function UnifiedReportsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1 || loading}
-                  aria-label="Go to previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
@@ -775,7 +662,6 @@ export default function UnifiedReportsPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages || loading}
-                  aria-label="Go to next page"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />
@@ -784,8 +670,8 @@ export default function UnifiedReportsPage() {
             </div>
           )}
 
-          {/* Keyboard shortcuts help - hidden on mobile */}
-          <div className="mt-4 p-3 bg-muted/50 rounded-lg hidden sm:block">
+          {/* Keyboard shortcuts help */}
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <p className={cn(poppins_500.className, "text-xs text-muted-foreground mb-2")}>
               Keyboard Shortcuts
             </p>
@@ -806,21 +692,14 @@ export default function UnifiedReportsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Dismiss Report Dialog */}
-      {dismissTarget && (
-        <DismissReportDialog
-          open={isDismissDialogOpen}
-          onOpenChange={(open) => {
-            setIsDismissDialogOpen(open);
-            if (!open) setDismissTarget(null);
-          }}
-          report={dismissTarget}
-          onDismissed={(reportId) => {
-            handleStatusChange(reportId, "dismissed");
-          }}
-        />
-      )}
     </PageShell>
+  );
+}
+
+export default function UnifiedReportsPage() {
+  return (
+    <Suspense fallback={null}>
+      <UnifiedReportsContent />
+    </Suspense>
   );
 }

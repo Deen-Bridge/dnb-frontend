@@ -62,9 +62,11 @@ const CoursesPageContent = () => {
         setCourses(response.bookmarks || []);
       } else {
         const response = await fetchCourses();
+        if (!response) throw new Error("No data returned");
         setCourses(response);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("[CoursesPage] Failed to load courses:", err);
       setError(true);
     } finally {
       setLoading(false);

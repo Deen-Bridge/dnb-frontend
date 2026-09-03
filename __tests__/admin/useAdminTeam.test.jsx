@@ -11,32 +11,20 @@ import { renderHook, waitFor, act } from "@testing-library/react";
 
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
+const mockUser = { id: "me", role: "admin", tier: "super_admin" };
 // Authenticated super-admin so the hook's fail-closed guard lets it fetch.
-// The user object must be a stable reference: the hook's load effect keys off
-// `user`, so a fresh object every render would re-trigger the effect (and
-// consume a one-shot reject / overwrite an optimistic update).
-const authMock = vi.hoisted(() => ({
-  user: { id: "me", role: "admin", tier: "super_admin" },
-}));
 vi.mock("@/hooks/useAuth", () => ({
-  default: () => ({ user: authMock.user, loading: false }),
-  useAuth: () => ({ user: authMock.user, loading: false }),
+  default: () => ({ user: mockUser, loading: false }),
+  useAuth: () => ({ user: mockUser, loading: false }),
+}));
+
+vi.mock("@/lib/admin/audit", () => ({
+  logAuditEvent: vi.fn(),
+  AUDIT_ACTIONS: { ROLE_DEMOTE: "role_demote", ROLE_REVOKE: "role_revoke" },
 }));
 
 vi.mock("@/lib/auth/admin-tiers", () => ({
   canManageTeam: () => true,
-}));
-
-vi.mock("@/lib/admin/audit", () => ({
-  AUDIT_ACTIONS: {
-    ROLE_DEMOTE: "role.demote",
-    ROLE_REVOKE: "role.revoke",
-  },
-  logAuditEvent: vi.fn(),
-}));
-
-vi.mock("@/lib/utils/admin-toast", () => ({
-  adminToastSuccess: vi.fn(),
 }));
 
 const mocks = vi.hoisted(() => ({
@@ -61,6 +49,9 @@ const STAFF = { id: "a2", name: "Bilal", email: "bilal@x.org", tier: "staff" };
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.listAdmins.mockResolvedValue({ admins: [{ ...SUPER }, { ...STAFF }] });
+  mocks.demoteAdmin.mockResolvedValue({ admin: { id: "a1", tier: "staff" } });
+  mocks.revokeAdmin.mockResolvedValue({ revoked: true, adminId: "a2" });
+  mocks.createInvite.mockResolvedValue({ invite: { token: "inv_mock_x", url: "u", expiresAt: "e" } });
 });
 
 async function mountLoaded() {
@@ -89,12 +80,12 @@ describe("useAdminTeam — demote", () => {
     mocks.demoteAdmin.mockResolvedValue({ admin: { id: "a1", tier: "staff" } });
     const { result } = await mountLoaded();
 
-    await result.current.demoteMember("a1", { confirmation: "amina@x.org" });
+    await act(async () => {
+      await result.current.demoteMember("a1", { confirmation: "amina@x.org" });
+    });
 
     expect(mocks.demoteAdmin).toHaveBeenCalledWith("a1", { confirmation: "amina@x.org" });
-    await waitFor(() =>
-      expect(result.current.admins.find((m) => m.id === "a1").tier).toBe("staff")
-    );
+    expect(result.current.admins.find((m) => m.id === "a1").tier).toBe("staff");
   });
 
   it("leaves the list unchanged when the demote rejects (rollback)", async () => {
@@ -113,13 +104,15 @@ describe("useAdminTeam — demote", () => {
 
 describe("useAdminTeam — revoke", () => {
   it("removes the member from the list on success", async () => {
-    mocks.revokeAdmin.mockResolvedValue({ revoked: true, adminId: "a2" });
+    mocks.revokeAdmin.mockResolvedValueOnce({ revoked: true, adminId: "a2" });
     const { result } = await mountLoaded();
 
-    await result.current.revokeMember("a2", { confirmation: "bilal@x.org" });
+    await act(async () => {
+      await result.current.revokeMember("a2", { confirmation: "bilal@x.org" });
+    });
 
-    await waitFor(() => expect(result.current.admins.some((m) => m.id === "a2")).toBe(false));
-    await waitFor(() => expect(result.current.admins).toHaveLength(1));
+    expect(result.current.admins.some((m) => m.id === "a2")).toBe(false);
+    expect(result.current.admins).toHaveLength(1);
   });
 
   it("keeps the member when the revoke rejects (rollback)", async () => {
