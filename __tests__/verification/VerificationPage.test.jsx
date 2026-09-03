@@ -1,32 +1,33 @@
-﻿/**
+/**
  * VerificationPage - status center component tests
  */
 
-import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { VERIFICATION_STATUS } from "@/lib/actions/educators/fetchVerificationStatus";
-
 const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockPush }) }));
 
-vi.mock("react-ripples", () => ({
-  default: ({ children, onClick, className }) => (
-    <span className={className} onClick={onClick}>{children}</span>
-  ),
-}));
+const VERIFICATION_STATUS = {
+  NOT_STARTED: "not_started",
+  INCOMPLETE: "incomplete",
+  PENDING: "pending",
+  UNDER_REVIEW: "under_review",
+  REJECTED: "rejected",
+  VERIFIED: "verified",
+};
 
-vi.mock("@/lib/config/env", () => ({
-  config: { livenessProvider: "mock", livenessConsentVersion: "1.0.0", livenessTimeoutSeconds: 60 },
-}));
-
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
-
-// vi.hoisted ensures these are available before vi.mock factories run
 const mockFetchSignedUrl = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/actions/educators/fetchVerificationStatus", async () => {
-  const actual = await vi.importActual("@/lib/actions/educators/fetchVerificationStatus");
-  return { ...actual, fetchDocumentSignedUrl: mockFetchSignedUrl };
-});
+vi.mock("@/lib/actions/educators/fetchVerificationStatus", () => ({
+  VERIFICATION_STATUS: {
+    NOT_STARTED: "not_started",
+    INCOMPLETE: "incomplete",
+    PENDING: "pending",
+    UNDER_REVIEW: "under_review",
+    REJECTED: "rejected",
+    VERIFIED: "verified",
+  },
+  fetchDocumentSignedUrl: mockFetchSignedUrl,
+}));
 
 const _hookState = vi.hoisted(() => ({ current: null }));
 vi.mock("@/hooks/useVerificationStatus", () => ({
@@ -57,7 +58,7 @@ function makeHook(overrides = {}) {
   };
 }
 
-// Lazy-import so mocks are registered before the component module loads
+import VerificationPage from "@/app/[locale]/account/verification/page";
 
 // Click a Button component (onClick lives on the inner Ripples span)
 function clickBtn(testId) {
@@ -65,11 +66,6 @@ function clickBtn(testId) {
   const inner = btn && (btn.querySelector('span') || btn);
   if (inner) fireEvent.click(inner);
 }
-let _VerificationPage;
-beforeAll(async () => {
-  const mod = await import("@/app/[locale]/account/verification/page");
-  _VerificationPage = mod.default;
-}, 60000);
 
 beforeEach(() => {
   _hookState.current = makeHook();
@@ -82,20 +78,20 @@ afterEach(() => vi.clearAllMocks());
 
 describe("VerificationPage - header", () => {
   it("renders page title and status badge", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByText("Verification")).toBeInTheDocument();
     expect(screen.getByTestId("status-badge")).toBeInTheDocument();
   });
 
   it("status badge shows Incomplete", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByTestId("status-badge")).toHaveTextContent(/incomplete/i);
   });
 });
 
 describe("VerificationPage - status panels", () => {
   it("incomplete: Continue CTA routes to step 2", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     const cta = screen.getByTestId("status-cta-btn");
     expect(cta).toHaveTextContent(/continue verification/i);
     clickBtn("status-cta-btn");
@@ -108,7 +104,7 @@ describe("VerificationPage - status panels", () => {
       resumeStep: 1,
       data: { timeline: [], documents: [], rejectionReason: null },
     });
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     clickBtn("empty-panel-cta-btn");
     expect(mockPush).toHaveBeenCalledWith("/educator-onboarding?step=1");
   });
@@ -118,7 +114,7 @@ describe("VerificationPage - status panels", () => {
       status: VERIFICATION_STATUS.PENDING, isPending: true, isIncomplete: false,
       data: { timeline: TIMELINE, documents: [], rejectionReason: null },
     });
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.queryByTestId("status-cta-btn")).not.toBeInTheDocument();
     expect(screen.getByText(/application submitted/i)).toBeInTheDocument();
   });
@@ -128,7 +124,7 @@ describe("VerificationPage - status panels", () => {
       status: VERIFICATION_STATUS.UNDER_REVIEW, isPending: true, isIncomplete: false,
       data: { timeline: TIMELINE, documents: [], rejectionReason: null },
     });
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.queryByTestId("status-cta-btn")).not.toBeInTheDocument();
     expect(screen.getByText(/application under review/i)).toBeInTheDocument();
   });
@@ -138,7 +134,7 @@ describe("VerificationPage - status panels", () => {
       status: VERIFICATION_STATUS.VERIFIED, isVerified: true, isIncomplete: false,
       data: { timeline: TIMELINE, documents: [], rejectionReason: null },
     });
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByText(/verified educator/i)).toBeInTheDocument();
     expect(screen.queryByTestId("status-cta-btn")).not.toBeInTheDocument();
   });
@@ -153,12 +149,12 @@ describe("VerificationPage - rejected state", () => {
   });
 
   it("shows rejection panel with reason", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByText(/photo was not legible/i)).toBeInTheDocument();
   });
 
   it("resubmit CTA routes to step 1", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByTestId("status-cta-btn")).toHaveTextContent(/resubmit/i);
     clickBtn("status-cta-btn");
     expect(mockPush).toHaveBeenCalledWith("/educator-onboarding?step=1");
@@ -166,14 +162,14 @@ describe("VerificationPage - rejected state", () => {
 
   it("no rejection panel for non-rejected status", () => {
     _hookState.current = makeHook();
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.queryByTestId("rejection-panel")).not.toBeInTheDocument();
   });
 });
 
 describe("VerificationPage - timeline", () => {
   it("renders timeline panel with entries", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByText("Identity verification")).toBeInTheDocument();
   });
 });
@@ -184,7 +180,7 @@ describe("VerificationPage - documents (masked)", () => {
   });
 
   it("renders masked filename - no raw URL", () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     const fn = screen.getByText("passport.jpg");
     expect(fn).toBeInTheDocument();
     expect(fn.textContent).not.toMatch(/^https?:\/\//);
@@ -193,7 +189,7 @@ describe("VerificationPage - documents (masked)", () => {
   it("View button fetches signed URL and opens new tab with noopener", async () => {
     mockFetchSignedUrl.mockResolvedValue({ signedUrl: "https://cdn.example.com/signed?token=xyz", expiresAt: "2024-01-01T01:00:00Z" });
     const spy = vi.spyOn(window, "open").mockImplementation(() => null);
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     clickBtn("doc-view-btn");
     await waitFor(() => expect(mockFetchSignedUrl).toHaveBeenCalledWith("doc_1"));
     await waitFor(() => expect(spy).toHaveBeenCalledWith(expect.stringContaining("signed?token="), "_blank", "noopener,noreferrer"));
@@ -204,7 +200,7 @@ describe("VerificationPage - documents (masked)", () => {
 describe("VerificationPage - error state", () => {
   it("renders error message", () => {
     _hookState.current = makeHook({ loading: false, error: "Network timeout", data: null });
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     expect(screen.getByText(/could not load verification status/i)).toBeInTheDocument();
     expect(screen.getByText(/network timeout/i)).toBeInTheDocument();
   });
@@ -212,7 +208,7 @@ describe("VerificationPage - error state", () => {
 
 describe("VerificationPage - refresh button", () => {
   it("calls refresh() when clicked", async () => {
-    render(<_VerificationPage />);
+    render(<VerificationPage />);
     clickBtn("refresh-btn");
     await waitFor(() => expect(_hookState.current.refresh).toHaveBeenCalledOnce());
   });
