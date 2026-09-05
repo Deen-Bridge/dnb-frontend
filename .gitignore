@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# Generated service-worker source maps
+/public/sw.js.map
+/public/swe-worker-*.js.map
+
 # production
 /build
 /build.log
