@@ -730,7 +730,7 @@ export default function UnifiedReportsPage() {
           {error ? (
             <TableErrorState message={error} onRetry={handleRefresh} />
           ) : (
-            <div className="rounded-lg border overflow-x-auto" ref={tableRef}>
+            <div className="rounded-lg border" ref={tableRef}>
               {/* Desktop Table */}
               <div className="hidden md:block">
                 <Table>
@@ -747,13 +747,18 @@ export default function UnifiedReportsPage() {
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableSkeleton rows={5} columns={7} />
+                      <TableRow>
+                        <TableCell colSpan={7} className="py-8 text-center">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                          <span className="sr-only">Loading reports</span>
+                        </TableCell>
+                      </TableRow>
                     ) : reports.length === 0 ? (
-                      <TableEmptyState
-                        icon={Flag}
-                        title="No reports found"
-                        description="No reports match your current filters. Try adjusting the filters."
-                      />
+                      <TableRow>
+                        <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                          No reports found matching your filters
+                        </TableCell>
+                      </TableRow>
                     ) : (
                       reports.map((report, index) => {
                         const contentType = CONTENT_TYPES[report.target.type];
