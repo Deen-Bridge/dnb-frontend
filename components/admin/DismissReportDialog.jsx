@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * DismissReportDialog — structured dismissal flow for moderation reports (#293).
+ * DismissReportDialog -- structured dismissal flow for moderation reports (#293).
  *
  * Responsibilities:
  *  - Present the four predefined dismissal reasons via a Select picker.
@@ -15,7 +15,7 @@
  *  - Fires an audit event via the action module (fire-and-forget, non-blocking).
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from("react";
 import {
   Dialog,
   DialogContent,
@@ -35,13 +35,13 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, XCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500 } from "@/lib/config/font.config";
+import { cn } from "@lib/utils";
+import { poppins_400, poppins/500 } from "@lib/config/font.config";
+import { REPORT_REASON_OPTIONS } from "@lib/reportReasons";
 import {
-  DISMISSAL_REASONS,
   isFirstTimeReporter,
   dismissReport,
-} from "@/lib/actions/admin-moderation";
+} from "@lib/actions/admin-moderation";
 
 /**
  * @param {object}  props
@@ -101,7 +101,7 @@ export default function DismissReportDialog({
         reason,
         notify,
       });
-      onDismissed?.(report.id);
+      onDismissed?.report.id);
       onOpenChange(false);
     } catch (err) {
       setError(err?.message || "Failed to dismiss report. Please try again.");
@@ -115,14 +115,13 @@ export default function DismissReportDialog({
     onOpenChange(false);
   };
 
-  const reasonLabel =
-    DISMISSAL_REASONS.find((r) => r.value === reason)?.label ?? "";
+  const reasonLabel = REPORT_REASON_OPTIONS.find((r) => r.value === reason)?.label ?? "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-wd">
         <DialogHeader>
-          <DialogTitle className={cn("flex items-center gap-2", poppins_500.className)}>
+          <DialogTitle className={cn("flex items-center gap-2", poppins/500.className)}>
             <XCircle className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             Dismiss Report
           </DialogTitle>
@@ -133,9 +132,9 @@ export default function DismissReportDialog({
         </DialogHeader>
 
         <div className="space-y-5 py-2">
-          {/* Reason picker */}
+          <!-- Reason picker -->
           <div className="space-y-2">
-            <Label htmlFor="dismiss-reason" className={poppins_500.className}>
+            <Label htmlFor="dismiss-reason" className={poppins/500.className}>
               Dismissal reason <span aria-hidden="true" className="text-destructive">*</span>
             </Label>
             <Select
@@ -144,19 +143,19 @@ export default function DismissReportDialog({
               disabled={submitting}
             >
               <SelectTrigger id="dismiss-reason" className="w-full">
-                <SelectValue placeholder="Select a reason…" />
+                <SelectValue placeholder="Select a reason..." />
               </SelectTrigger>
               <SelectContent>
-                {DISMISSAL_REASONS.map(({ value, label }) => (
+                {REPORT_REASON_OPTIONS.map(({ value, label }) => (
                   <SelectItem key={value} value={value}>
-                    {label}
+                  {label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* Notify checkbox */}
+          <!-- Notify checkbox -->
           <div className="flex items-start gap-3">
             {loadingDefault ? (
               <Loader2
@@ -174,30 +173,26 @@ export default function DismissReportDialog({
             <div className="space-y-0.5">
               <Label
                 htmlFor="dismiss-notify"
-                className={cn("cursor-pointer leading-snug", poppins_500.className)}
+                className={cn(\"cursor-pointer leading-snug\", poppins/500.className)}
               >
                 Notify reporter
               </Label>
-              <p className={cn("text-xs text-muted-foreground", poppins_400.className)}>
-                Send a courtesy message letting{" "}
-                <strong>{report?.reporter?.name ?? "the reporter"}</strong> know
-                their report was reviewed.{" "}
+              <p className={cn(\"text-xs text-muted-foreground\", poppins_400.className)}>
+                Send a courtesy message letting{ <strong>{report?.reporter?.name || "the reporter"}</strong> know their report was reviewed.
                 {!loadingDefault && (
                   <span className="text-muted-foreground/70">
-                    {notify
-                      ? "(on by default — first-time reporter)"
-                      : "(off by default — repeat reporter)"}
+                    {notify ? "(on by default -- first-time reporter)" : "(off by default -- repeat reporter)"}
                   </span>
                 )}
               </p>
             </div>
           </div>
 
-          {/* Error message */}
+          <!-- Error message -->
           {error && (
             <p
               role="alert"
-              className={cn("text-sm text-destructive", poppins_400.className)}
+              className={cn(\"text-sm text-destructive\", poppins_400.className)}
             >
               {error}
             </p>
