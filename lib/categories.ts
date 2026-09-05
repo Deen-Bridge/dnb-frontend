@@ -60,6 +60,26 @@ export const FALLBACK_CATEGORY = {
   icon: Puzzle,
 };
 
+export type CategoryItem = {
+  slug: string;
+  label: string;
+  shortLabel: string;
+  description: string;
+  icon: typeof Puzzle;
+  group?: string;
+  groupId?: string;
+};
+
+export type CourseLike = {
+  category?: string | null;
+  createdAt?: string | null;
+  _id?: string;
+  price?: number | string | null;
+  reviews?: Array<{ rating?: number }>;
+  [key: string]: unknown;
+};
+
+
 // Each category keeps the exact label educators see/pick in the create form so
 // stored values stay stable. Slugs are short, URL-friendly identifiers.
 export const CATEGORY_GROUPS = [
@@ -385,7 +405,7 @@ export const CATEGORY_MAP = Object.fromEntries(
 
 const PAREN_STRIP = /\s*\([^)]*\)/g;
 
-function normalize(value) {
+function normalize(value: unknown): string {
   return String(value ?? "")
     .normalize("NFKD")
     .replace(/[\u0300-\u036f\u0640]/g, "")
@@ -393,7 +413,7 @@ function normalize(value) {
 }
 
 // Short, URL-safe slug (used for matching free-text stored values).
-export function slugify(value) {
+export function slugify(value: unknown): string {
   return normalize(value)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -404,7 +424,7 @@ export function slugify(value) {
 // Handles exact slugs, labels (case-insensitive), and labels with their
 // parenthetical suffix stripped (e.g. "Fiqh (Islamic Jurisprudence)" -> fiqh).
 // Returns the FALLBACK slug when nothing matches.
-export function resolveCategorySlug(value) {
+export function resolveCategorySlug(value: unknown): string {
   const raw = String(value ?? "").trim();
   if (!raw) return FALLBACK_SLUG;
 
@@ -437,7 +457,7 @@ export function resolveCategorySlug(value) {
  * @param {string | undefined | null} raw
  * @returns {string | null}
  */
-export function resolveSlug(raw) {
+export function resolveSlug(raw: string | undefined | null): string | null {
   if (!raw) return null;
   const normalised = raw.toLowerCase().trim();
   if (!normalised) return null;
@@ -463,13 +483,13 @@ export function resolveSlug(raw) {
   return null;
 }
 
-export function getCategoryBySlug(slug) {
+export function getCategoryBySlug(slug: string | undefined | null): CategoryItem | null {
   if (!slug) return null;
   if (slug === FALLBACK_SLUG) return FALLBACK_CATEGORY;
   return Object.hasOwn(CATEGORY_MAP, slug) ? CATEGORY_MAP[slug] : null;
 }
 
-export function getCategoryLabel(slug) {
+export function getCategoryLabel(slug: string | undefined | null): string {
   const category = getCategoryBySlug(slug);
   return category ? category.label : "General";
 }
@@ -489,8 +509,8 @@ export function getGroupedCategories() {
 
 // Course list -> { slug: count }. Empty / legacy / free-text values count
 // toward the fallback bucket.
-export function getCategoryCounts(courses) {
-  const counts = { [FALLBACK_SLUG]: 0 };
+export function getCategoryCounts(courses: CourseLike[] | null | undefined): Record<string, number> {
+  const counts: Record<string, number> = { [FALLBACK_SLUG]: 0 };
   for (const category of ISLAMIC_CATEGORIES) counts[category.slug] = 0;
   for (const course of courses || []) {
     const slug = resolveCategorySlug(course?.category);
@@ -499,7 +519,7 @@ export function getCategoryCounts(courses) {
   return counts;
 }
 
-export function filterCoursesByCategory(courses, slug) {
+export function filterCoursesByCategory(courses: CourseLike[] | null | undefined, slug: string): CourseLike[] {
   const wanted = slug || FALLBACK_SLUG;
   return (courses || []).filter(
     (course) => resolveCategorySlug(course?.category) === wanted
@@ -508,7 +528,7 @@ export function filterCoursesByCategory(courses, slug) {
 
 // Mongo ObjectIds encode their creation time in the first 4 bytes, so recency
 // sorting still works when the API response omits createdAt.
-function createdAtOf(course) {
+function createdAtOf(course: CourseLike): number {
   if (course?.createdAt) {
     const parsed = new Date(course.createdAt).getTime();
     if (!Number.isNaN(parsed)) return parsed;
@@ -521,11 +541,11 @@ function createdAtOf(course) {
   return 0;
 }
 
-function priceOf(course) {
+function priceOf(course: CourseLike): number {
   return Number(course?.price) || 0;
 }
 
-function ratingOf(course) {
+function ratingOf(course: CourseLike): number {
   const reviews = course?.reviews;
   if (!Array.isArray(reviews) || reviews.length === 0) return 0;
   const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0);
@@ -533,7 +553,7 @@ function ratingOf(course) {
 }
 
 // sortKey: "newest" (default), "price-asc", "price-desc", "rating".
-export function sortCourses(courses, sortKey) {
+export function sortCourses(courses: CourseLike[] | null | undefined, sortKey: string): CourseLike[] {
   const list = [...(courses || [])];
   if (sortKey === "price-asc") {
     list.sort((a, b) => priceOf(a) - priceOf(b));
