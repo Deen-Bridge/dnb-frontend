@@ -8,7 +8,7 @@
  * branching only.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 vi.mock("@/lib/config/font.config", () => ({
   poppins_400: { className: "" },
@@ -49,6 +49,13 @@ function makeEngagement(overrides = {}) {
     },
     ...overrides,
   };
+}
+
+function getCardScope(title) {
+  const headings = screen.getAllByText(title);
+  const card = headings[0].closest('[data-slot="card"]');
+  expect(card).not.toBeNull();
+  return within(card);
 }
 
 let LearningAnalyticsPage;
@@ -109,31 +116,34 @@ describe("LearningAnalyticsPage — geographic distribution", () => {
     serviceState.current = () => Promise.resolve(makeEngagement());
     render(<LearningAnalyticsPage />);
 
-    expect(await screen.findByText("Geographic Distribution")).toBeInTheDocument();
-    expect(screen.getByText("Country Data Coverage")).toBeInTheDocument();
-    expect(screen.getByText("68%")).toBeInTheDocument();
-    expect(screen.getByText("United States")).toBeInTheDocument();
-    expect(screen.getByText("United Kingdom")).toBeInTheDocument();
+    await screen.findAllByText("Geographic Distribution");
+    const card = getCardScope("Geographic Distribution");
+    expect(card.getByText("Country Data Coverage")).toBeInTheDocument();
+    expect(card.getByText("68%")).toBeInTheDocument();
+    expect(card.getByText("United States")).toBeInTheDocument();
+    expect(card.getByText("United Kingdom")).toBeInTheDocument();
   });
 
   it("renders the top-countries table with learner counts and revenue", async () => {
     serviceState.current = () => Promise.resolve(makeEngagement());
     render(<LearningAnalyticsPage />);
 
-    expect(await screen.findByText("Top Countries")).toBeInTheDocument();
-    expect(screen.getByText("Learners")).toBeInTheDocument();
-    expect(screen.getByText("Revenue")).toBeInTheDocument();
-    expect(screen.getByText("214")).toBeInTheDocument();
-    expect(screen.getByText("$12,840")).toBeInTheDocument();
-    expect(screen.getByText("156")).toBeInTheDocument();
-    expect(screen.getByText("$9,360")).toBeInTheDocument();
+    await screen.findAllByText("Top Countries");
+    const card = getCardScope("Top Countries");
+    expect(card.getByText("Learners")).toBeInTheDocument();
+    expect(card.getByText("Revenue")).toBeInTheDocument();
+    expect(card.getByText("214")).toBeInTheDocument();
+    expect(card.getByText("$12,840")).toBeInTheDocument();
+    expect(card.getByText("156")).toBeInTheDocument();
+    expect(card.getByText("$9,360")).toBeInTheDocument();
   });
 
   it("shows a coverage note when country data is incomplete", async () => {
     serviceState.current = () => Promise.resolve(makeEngagement());
     render(<LearningAnalyticsPage />);
 
-    await screen.findByText("Geographic Distribution");
+    await screen.findAllByText("Geographic Distribution");
+    getCardScope("Geographic Distribution");
     expect(
       screen.getByText(/Country data is available for 68% of learners/i)
     ).toBeInTheDocument();
@@ -149,10 +159,10 @@ describe("LearningAnalyticsPage — geographic distribution", () => {
             countries: [],
           },
         })
-      );
+    );
     render(<LearningAnalyticsPage />);
 
-    expect(await screen.findByText("Geographic Distribution")).toBeInTheDocument();
+    await screen.findAllByText("Geographic Distribution");
     expect(
       screen.getByText(/Country data from learner profiles isn't instrumented yet/i)
     ).toBeInTheDocument();
