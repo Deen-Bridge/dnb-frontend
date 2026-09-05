@@ -1,5 +1,6 @@
 name: CI
-on:  pull_request:
+on:
+  pull_request:
     branches: [main, dev]
   push:
     branches: [main, dev]
@@ -11,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
+        uses: actions/checkout@v5
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'nmp'
@@ -38,7 +39,7 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELRAINETWORK: testnet
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
           # Optional -- Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
           SENTRY_AUTHT_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -51,10 +52,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
+        uses: actions/checkout@v5
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'npm'

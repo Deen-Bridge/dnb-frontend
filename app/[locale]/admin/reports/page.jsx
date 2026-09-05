@@ -52,6 +52,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Flag,
   GraduationCap,
   BookOpen,
@@ -69,6 +75,12 @@ import {
   Clock,
   AlertTriangle,
   MessageSquare,
+  Plus,
+  Settings2,
+  ArrowUp,
+  ArrowDown,
+  Merge,
+  Trash2,
   Loader2,
 } from "lucide-react";
 import { TableSkeleton } from "@/components/admin/table-skeleton";
@@ -145,16 +157,67 @@ const REPORT_STATUSES = {
   },
 };
 
-// Report reason categories
-const REASON_CATEGORIES = {
-  spam: "Spam",
-  harassment: "Harassment",
-  inappropriate: "Inappropriate Content",
-  copyright: "Copyright Violation",
-  misinformation: "Misinformation",
-  hate_speech: "Hate Speech",
-  violence: "Violence",
-  other: "Other",
+// Report reason taxonomy management
+// Centralized source of truth for report reasons, consumed by admin and learner-facing dialogs.
+const REPORT_REASON_GROUPS = [
+  {
+    id: "harassment",
+    label: "Harassment",
+    description: "Content that harasses, intimidates, or bullies others.",
+    reasons: [
+      { id: "harassment", label: "Harassment" },
+      { id: "hate_speech", label: "Hate Speech" },
+      { id: "violence", label: "Violence or Threats" },
+    ],
+  },
+  {
+    id: "copyright",
+    label: "Copyright",
+    description: "Content that infringes on intellectual property rights.",
+    reasons: [{ id: "copyright", label: "Copyright Violation" }],
+  },
+  {
+    id: "misinformation",
+    label: "Misinformation",
+    description: "False or misleading information.",
+    reasons: [{ id: "misinformation", label: "Misinformation" }],
+  },
+  {
+    id: "spam",
+    label: "Spam",
+    description: "Unsolicited promotional or repetitive content.",
+    reasons: [{ id: "spam", label: "Spam" }],
+  },
+  {
+    id: "other",
+    label: "Other",
+    description: "Any other reason not covered by the above categories.",
+    reasons: [
+      { id: "other", label: "Other" },
+      { id: "inappropriate", label: "Inappropriate Content" },
+    ],
+  },
+];
+
+// Flat map for backward compatibility with the mock/report rendering.
+const REASON_CATEGORIES = Object.fromEntries(
+  REPORT_REASON_GROUPS.flatMap((group) =>
+    group.reasons.map((reason) => [reason.id, reason.label])
+  )
+);
+
+// Redirects map to preserve historical data when a reason is merged.
+const REASON_REDIRECTS = {};
+
+// Resolve a reason to its effective (non-redirected) ID.
+const getEffectiveReason = (reasonId) => {
+  let effective = reasonId;
+  const visited = new Set();
+  while (REASON_REDIRECTS[effective] && !visited.has(effective)) {
+    visited.add(effective);
+    effective = REASON_REDIRECTS[effective];
+  }
+  return effective;
 };
 
 // Generate mock reports for demo
@@ -209,7 +272,7 @@ const generateMockReports = () => {
       assignee,
       status,
       reason,
-      description: `Reported for ${REASON_CATEGORIES[reason].toLowerCase()} - ${target.name}`,
+      description: `Reported for ${REASON_CATEGORIES[getEffectiveReason(reason)].toLowerCase()} - ${target.name}`,
       createdAt: createdAt.toISOString(),
       updatedAt: createdAt.toISOString(),
     });
@@ -219,6 +282,196 @@ const generateMockReports = () => {
 };
 
 const mockReports = generateMockReports();
+
+const ReasonManagementDialog = ({ open, onClose }) => {
+  const [groups, setGroups] = useState(() =>
+    REPORT_REASON_GROUPS.map((group) => ({
+      ...group,
+      reasons: group.reasons.map((r) => ({ ...r })),
+    }))
+  );
+  const [redirects, setRedirects] = useState(REASON_REDIRECTS);
+
+  const handleUpdateReason = (groupId, reasonId, newLabel) => {
+    setGroups((prev) =>
+      prev.map((g) =>
+        g.id === groupId
+          ? {
+              ...g,
+              reasons: g.reasons.map((r) =>
+                r.id === reasonId ? { ...r, label: newLabel } : r
+              ),
+            }
+          : g
+      )
+    );
+  };
+
+  const handleAddReason = (groupId) => {
+    const newId = `custom_${Date.now()}`;
+    setGroups((prev) =>
+      prev.map((g) =>
+        g.id === groupId
+          ? { ...g, reasons: [...g.reasons, { id: newId, label: "New Reason" }] }
+          : g
+      )
+    );
+  };
+
+  const handleRemoveReason = (groupId, reasonId) => {
+    setGroups((prev) =>
+      prev.map((g) =>
+        g.id === groupId
+          ? { ...g, reasons: g.reasons.filter((r) => r.id !== reasonId) }
+          : g
+      )
+    );
+  };
+
+  const handleMoveReason = (groupId, index, direction) => {
+    setGroups((prev) =>
+      prev.map((g) => {
+        if (g.id !== groupId) return g;
+        const reasons = [...g.reasons];
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= reasons.length) return g;
+        [reasons[index], reasons[targetIndex]] = [reasons[targetIndex], reasons[index]];
+        return { ...g, reasons };
+      })
+    );
+  };
+
+  const handleMergeReason = (sourceId, targetId) => {
+    if (!sourceId || !targetId || sourceId === targetId) return;
+    setRedirects((prev) => ({ ...prev, [sourceId]: targetId }));
+  };
+
+  const handleSave = () => {
+    // Write changes back to global constants for use by the rest of the app.
+    REPORT_REASON_GROUPS.splice(0, REPORT_REASON_GROUPS.length, ...groups);
+    // Rebuild flat map
+    Object.keys(REASON_CATEGORIES).forEach((key) => delete REASON_CATEGORIES[key]);
+    groups.forEach((g) =>
+      g.reasons.forEach((r) => {
+        REASON_CATEGORIES[r.id] = r.label;
+      })
+    );
+    // Save redirects
+    Object.keys(redirects).forEach((key) => {
+      REASON_REDIRECTS[key] = redirects[key];
+    });
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Manage Report Reasons</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6">
+          {groups.map((group) => (
+            <div key={group.id} className="border rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">{group.label}</h3>
+                  <p className="text-sm text-muted-foreground">{group.description}</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => handleAddReason(group.id)}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <ul className="mt-2 space-y-2">
+                {group.reasons.map((reason, index) => (
+                  <li key={reason.id} className="flex items-center gap-2">
+                    <span className="text-sm">{index + 1}.</span>
+                    <input
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      value={reason.label}
+                      onChange={(e) => handleUpdateReason(group.id, reason.id, e.target.value)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleMoveReason(group.id, index, -1)}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleMoveReason(group.id, index, 1)}
+                      disabled={index === group.reasons.length - 1}
+                    >
+                      <ArrowDown className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveReason(group.id, reason.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 border-t pt-4">
+          <h4 className="font-medium mb-2">Merge Reasons</h4>
+          <div className="flex items-center gap-2">
+            <select
+              className="flex h-9 w-full rounded-md border border-input bg-background"
+              id="merge-source"
+            >
+              {groups.flatMap((g) =>
+                g.reasons.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)
+              )}
+            </select>
+            <span>into</span>
+            <select
+              className="flex h-9 w-full rounded-md border border-input bg-background"
+              id="merge-target"
+            >
+              {groups.flatMap((g) =>
+                g.reasons.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)
+              )}
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const source = document.getElementById("merge-source").value;
+                const target = document.getElementById("merge-target").value;
+                handleMergeReason(source, target);
+              }}
+            >
+              <Merge className="h-4 w-4" />
+            </Button>
+          </div>
+          {Object.keys(redirects).length > 0 && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              <strong>Active Redirects:</strong>
+              <ul className="list-disc pl-5">
+                {Object.entries(redirects).map(([from, to]) => (
+                  <li key={from}>
+                    {from} → {to}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={handleSave}>Save Changes</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 // Format report age
 const formatReportAge = (timestamp) => {
@@ -247,6 +500,8 @@ export default function UnifiedReportsPage() {
   // Dismiss dialog state
   const [isDismissDialogOpen, setIsDismissDialogOpen] = useState(false);
   const [dismissTarget, setDismissTarget] = useState(null);
+  // Reason management dialog state
+  const [isReasonManagerOpen, setIsReasonManagerOpen] = useState(false);
 
   // Keyboard navigation
   useEffect(() => {
@@ -373,12 +628,20 @@ export default function UnifiedReportsPage() {
 
   return (
     <PageShell>
+      <ReasonManagementDialog
+        open={isReasonManagerOpen}
+        onClose={() => setIsReasonManagerOpen(false)}
+      />
       <PageHeader
         icon={Flag}
         title="Reports Queue"
         subtitle="Unified moderation queue for all content types"
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setIsReasonManagerOpen(true)}>
+              <Settings2 className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Reasons</span>
+            </Button>
             <MediaBlurToggle className="hidden lg:flex" />
             <kbd className="hidden lg:inline-flex px-2 py-1 text-xs font-mono bg-muted rounded">
               j/k to navigate
