@@ -10,15 +10,17 @@ import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 import MaintenanceGate from "@/components/maintenance/MaintenanceGate";
 import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastBanner";
 import AdminShortcutsProvider from "@/components/admin/AdminShortcutsProvider";
+import { MediaBlurProvider } from "@/contexts/MediaBlurContext";
 
 export default function AppProviders({ children }) {
   return (
     <ThemeProvider>
       <AppearanceProvider>
-        <CacheProvider>
-          <AuthProvider>
-            <FeatureFlagProvider>
-              <StellarProvider>
+        <MediaBlurProvider>
+          <CacheProvider>
+            <AuthProvider>
+              <FeatureFlagProvider>
+                <StellarProvider>
                 {/* Idle-timeout auto-logout for admin sessions (#337).
                     Self-noops for non-admins and non-admin routes. */}
                 <AdminIdleGuard />
@@ -40,10 +42,11 @@ export default function AppProviders({ children }) {
                     for non-admins, and defers ⌘K to the CommandPalette. */}
                 <AdminShortcutsProvider />
                 <MaintenanceGate>{children}</MaintenanceGate>
-              </StellarProvider>
-            </FeatureFlagProvider>
-          </AuthProvider>
-        </CacheProvider>
+                </StellarProvider>
+              </FeatureFlagProvider>
+            </AuthProvider>
+          </CacheProvider>
+        </MediaBlurProvider>
       </AppearanceProvider>
     </ThemeProvider>
   );
