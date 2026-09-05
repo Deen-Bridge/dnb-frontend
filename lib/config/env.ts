@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-function warn(field, fallback) {
+function warn(field: string, fallback: string): void {
   if (process.env.NODE_ENV !== "production") {
     console.warn(
       `\u26a0\ufe0f  ${field} is not set. Using "${fallback}" as fallback.`
