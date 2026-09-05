@@ -357,13 +357,18 @@ export default function AuditLogsPage() {
                   </TableHeader>
                   <TableBody aria-live="polite">
                     {loading ? (
-                      <TableSkeleton rows={6} columns={6} />
+                      <TableRow>
+                        <TableCell colSpan={6} className="py-8 text-center">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
+                          <span className="sr-only">Loading audit logs</span>
+                        </TableCell>
+                      </TableRow>
                     ) : logs.length === 0 ? (
-                      <TableEmptyState
-                        icon={FileText}
-                        title="No audit logs found"
-                        description="No audit logs match your current filters. Try adjusting the filters."
-                      />
+                      <TableRow>
+                        <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                          No audit logs found matching your filters
+                        </TableCell>
+                      </TableRow>
                     ) : (
                       logs.map((log) => {
                         const category = ACTION_CATEGORIES[log.category];
