@@ -1,7 +1,7 @@
 // app/api/report-reasons/[id]/route.js
 import { NextResponse } from 'next/server';
-import { getReasonById, updateReason, mergeReason } from '@lib/report-reasons-store';
-import { REPORT_REASON_GROUPS } from '@lib/reportReasons';
+import { getReasonById, updateReason, mergeReason } from '@/lib/report-reasons-store';
+import { REPORT_REASON_GROUPS } from '@/lib/reportReasons';
 
 export async function PUT(request, { params }) {
   const { id } = params;

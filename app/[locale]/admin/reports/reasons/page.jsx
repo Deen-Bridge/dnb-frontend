@@ -1,4 +1,4 @@
-import ReportReasonManager from "@components/admin/ReportReasonManager";
+import ReportReasonManager from "@/components/admin/ReportReasonManager";
 
 export default function ReportReasonsPage() {
   return (

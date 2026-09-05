@@ -1,7 +1,7 @@
 // app/api/report-reasons/route.js
 import { NextResponse } from 'next/server';
-import { REPORT_REASON_GROUPS } from '@lib/reportReasons';
-import { getReasons, createReason } from '@lib/report-reasons-store';
+import { REPORT_REASON_GROUPS } from '@/lib/reportReasons';
+import { getReasons, createReason } from '@/lib/report-reasons-store';
 
 export async function GET() {
   const groups = Object.values(REPORT_REASON_GROUPS).map(({ id, label, description }) => ({
