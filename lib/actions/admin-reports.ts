@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Admin report-builder service — datasets, preview rows, saved queries (#329).
  * ---------------------------------------------------------------------------

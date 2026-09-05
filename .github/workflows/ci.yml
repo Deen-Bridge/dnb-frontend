@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: 'nmp'
+          cache: 'npm'
       
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
@@ -42,7 +42,7 @@ jobs:
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           # Optional -- Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
-          SENTRY_AUTHT_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
@@ -66,8 +66,8 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NEXX_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELRAINETWORK: testnet
+          NEXT_PUBLIC_API_URL: https://api.example.com
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
 
       - name: Start production server
         run: |
