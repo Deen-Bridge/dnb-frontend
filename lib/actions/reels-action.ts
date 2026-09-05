@@ -192,3 +192,37 @@ export const recordReelView = async (reelId: string): Promise<any | null> => { /
     return null;
   }
 };
+
+export interface UpdateReelPosterPayload {
+  posterUrl?: string;
+}
+
+/**
+ * Set a reel's poster (cover image) URL.
+ * Mirrors the moderation stub pattern so the poster-management UI can be
+ * exercised before the backend endpoint exists.
+ */
+const POSTER_MOCK_DELAY_MS = 400;
+const mockReelPosters = new Map<string, string>();
+
+export const updateReelPoster = async (
+  reelId: string,
+  { posterUrl }: UpdateReelPosterPayload = {}
+): Promise<{ reel: { id: string; poster: string; updatedAt: string } }> => {
+  if (!posterUrl || typeof posterUrl !== "string") {
+    throw new Error("A poster URL is required.");
+  }
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      mockReelPosters.set(reelId, posterUrl);
+      resolve({
+        reel: {
+          id: reelId,
+          poster: posterUrl,
+          updatedAt: new Date().toISOString(),
+        },
+      });
+    }, POSTER_MOCK_DELAY_MS);
+  });
+};
