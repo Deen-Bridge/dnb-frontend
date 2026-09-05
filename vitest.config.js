@@ -26,6 +26,8 @@ export default defineConfig({
     },
   },
   resolve: {
+    // Prefer TypeScript sources when both .ts and .js twins exist (partial migrations).
+    extensions: [".mjs", ".mts", ".ts", ".tsx", ".jsx", ".js", ".json"],
     mainFields: ["module", "main"],
     alias: {
       "@/app/account": resolve(__dirname, "app/[locale]/account"),

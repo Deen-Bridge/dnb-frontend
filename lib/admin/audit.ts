@@ -14,7 +14,9 @@ export const AUDIT_ACTIONS = Object.freeze({
   // Content moderation
   TAKEDOWN: "content.takedown",
   RESTORE: "content.restore",
+  REPORT_ESCALATE: "report.escalate",
   REPORT_DISMISS: "report.dismiss",
+  REPORT_ACTION: "report.action",
   COURSE_TAKEDOWN: "course.takedown",
   COURSE_UPDATED: "course.updated",
 
@@ -23,6 +25,7 @@ export const AUDIT_ACTIONS = Object.freeze({
 
   // Communications
   BROADCAST: "broadcast.send",
+  EMERGENCY_BROADCAST: "broadcast.emergency",
 
   // Platform / feature flags
   FLAG_TOGGLE: "flag.toggle",
@@ -59,11 +62,14 @@ const ACTION_CATEGORY: Record<string, AuditCategory> = Object.freeze({
   [AUDIT_ACTIONS.SUSPEND]: "user",
   [AUDIT_ACTIONS.TAKEDOWN]: "moderation",
   [AUDIT_ACTIONS.RESTORE]: "moderation",
+  [AUDIT_ACTIONS.REPORT_ESCALATE]: "moderation",
   [AUDIT_ACTIONS.REPORT_DISMISS]: "moderation",
+  [AUDIT_ACTIONS.REPORT_ACTION]: "moderation",
   [AUDIT_ACTIONS.COURSE_TAKEDOWN]: "course",
   [AUDIT_ACTIONS.COURSE_UPDATED]: "course",
   [AUDIT_ACTIONS.REFUND]: "payment",
   [AUDIT_ACTIONS.BROADCAST]: "system",
+  [AUDIT_ACTIONS.EMERGENCY_BROADCAST]: "system",
   [AUDIT_ACTIONS.FLAG_TOGGLE]: "system",
   [AUDIT_ACTIONS.FLAG_CREATE]: "system",
   [AUDIT_ACTIONS.VERIFICATION_APPROVE]: "user",
