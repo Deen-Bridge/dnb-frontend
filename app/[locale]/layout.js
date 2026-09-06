@@ -83,6 +83,10 @@ export async function generateMetadata({ params }) {
           },
         }
       : { index: false, follow: false },
+    verification: {
+      // Google Search Console site verification.
+      google: "5wgXR8dgVCB1WtRPLGaDkl02FzFdWAvjBao3VjiLqjY",
+    },
     manifest: "/manifest.webmanifest",
     icons: {
       icon: [
