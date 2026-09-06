@@ -31,7 +31,7 @@ const Button = React.forwardRef(function Button(
     variant || (outlined ? "outline" : undefined);
 
   const resolvedClassName = cn(
-    wide && "w-full",
+    wide && "w-full sm:w-auto",
     round && "rounded-full",
     className
   );
