@@ -13,6 +13,11 @@ export async function POST(req) {
 
     const AI_API_URL = config.aiApiUrl;
     const endpoint = `${AI_API_URL}/chat/stream`;
+    const serviceApiKey = process.env.AI_SERVICE_API_KEY;
+
+    if (!serviceApiKey) {
+      throw new Error("AI_SERVICE_API_KEY is not configured");
+    }
 
     // Make request to AI backend
     const response = await fetch(endpoint, {
@@ -20,6 +25,7 @@ export async function POST(req) {
       headers: {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
+        "X-API-Key": serviceApiKey,
       },
       body: JSON.stringify({
         prompt: message,
