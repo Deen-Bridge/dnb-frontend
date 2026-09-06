@@ -3,7 +3,6 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -109,17 +108,6 @@ const About = () => {
                 </li>
               ))}
             </ul>
-
-            <div className="pt-2">
-              <Button
-                wide
-                round
-                to="/signup"
-                className="text-white font-semibold py-4 px-8 text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              >
-                {t("cta")}
-              </Button>
-            </div>
           </motion.div>
 
           {/* Right — real image */}
