@@ -48,7 +48,7 @@ import {
 
 const ROLES = [
   { id: "student", label: "Student" },
-  { id: "educator", label: "Educator" },
+  { id: "mentor", label: "Educator" },
   { id: "admin", label: "Admin" },
   { id: "moderator", label: "Moderator" },
 ];

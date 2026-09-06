@@ -36,6 +36,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import {
   fetchVerificationStatus,
   VERIFICATION_STATUS,
@@ -112,7 +113,7 @@ export function useVerificationStatus() {
   // Tracks snooze/dismiss re-render without re-reading LS on every render
   const [bannerPrefsVersion, setBannerPrefsVersion] = useState(0);
 
-  const isEducator = user?.role === "educator";
+  const isEducator = normalizeRole(user?.role) === ROLES.EDUCATOR;
   const mountedRef = useRef(true);
 
   // ── Fetch ─────────────────────────────────────────────────────────────────

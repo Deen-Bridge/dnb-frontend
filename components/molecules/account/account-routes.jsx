@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { normalizeRole, ROLES } from '@/lib/auth/roles';
 import { poppins_500 } from '@/lib/config/font.config';
 import {
     LayoutDashboard,
@@ -56,7 +57,7 @@ const AccountRouter = () => {
             icon: BellDotIcon
         },
         // Only shown for educators — the page itself handles non-educator states gracefully
-        ...(currentUser?.role === "educator"
+        ...(normalizeRole(currentUser?.role) === ROLES.EDUCATOR
             ? [{
                 name: "Verification",
                 link: "/account/verification",

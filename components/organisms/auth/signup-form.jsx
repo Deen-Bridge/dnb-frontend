@@ -90,7 +90,7 @@ export function SignupForm({ className, ...props }) {
           We sent a verification link to <strong>{registeredEmail}</strong>.
           Click the link to activate your account.
         </p>
-        {registeredRole === "educator" && (
+        {registeredRole === "mentor" && (
           <p className="text-xs text-muted-foreground max-w-sm rounded-lg border border-border bg-muted/40 px-4 py-3">
             As an educator, you will be guided through a quick identity
             verification step after confirming your email. This is required
@@ -165,8 +165,7 @@ export function SignupForm({ className, ...props }) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="mentor">Mentor</SelectItem>
-                      <SelectItem value="educator">Educator</SelectItem>
+                      <SelectItem value="mentor">Educator</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
