@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { config } from "@/lib/config/env";
+import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import { persistSession } from "@/hooks/useAuth";
 
 export default function VerifyEmailPage() {
@@ -47,7 +48,7 @@ export default function VerifyEmailPage() {
    *   everyone else → /dashboard
    */
   const handleContinue = () => {
-    if (verifiedUser?.role === "educator") {
+    if (normalizeRole(verifiedUser?.role) === ROLES.EDUCATOR) {
       router.push("/educator-onboarding");
     } else {
       router.push("/dashboard");
@@ -73,7 +74,7 @@ export default function VerifyEmailPage() {
             </div>
             <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
             <p className="text-muted-foreground">{message}</p>
-            {verifiedUser?.role === "educator" && (
+            {normalizeRole(verifiedUser?.role) === ROLES.EDUCATOR && (
               <p className="text-sm text-muted-foreground rounded-lg border border-border bg-muted/40 px-4 py-3 text-left">
                 Next step: complete a quick identity verification so your
                 educator application can be reviewed.
@@ -83,7 +84,7 @@ export default function VerifyEmailPage() {
               onClick={handleContinue}
               className="inline-block px-6 py-3 bg-accent text-white rounded-lg hover:bg-highlight transition-colors"
             >
-              {verifiedUser?.role === "educator"
+              {normalizeRole(verifiedUser?.role) === ROLES.EDUCATOR
                 ? "Continue to verification"
                 : "Go to Dashboard"}
             </button>

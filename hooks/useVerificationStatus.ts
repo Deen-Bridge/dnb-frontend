@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import {
   fetchVerificationStatus,
   VERIFICATION_STATUS,
@@ -70,7 +71,7 @@ export function useVerificationStatus(): UseVerificationStatusResult {
   const [error, setError] = useState<string | null>(null);
   const [bannerPrefsVersion, setBannerPrefsVersion] = useState<number>(0);
 
-  const isEducator = user?.role === "educator";
+  const isEducator = normalizeRole(user?.role) === ROLES.EDUCATOR;
   const mountedRef = useRef<boolean>(true);
 
   const load = useCallback(async () => {
