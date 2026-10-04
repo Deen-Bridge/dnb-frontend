@@ -37,8 +37,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
-import { REPORT_REASON_OPTIONS } from "@/lib/reportReasons";
 import {
+  DISMISSAL_REASONS,
   isFirstTimeReporter,
   dismissReport,
 } from "@/lib/actions/admin-moderation";
@@ -115,7 +115,7 @@ export default function DismissReportDialog({
     onOpenChange(false);
   };
 
-  const reasonLabel = REPORT_REASON_OPTIONS.find((r) => r.value === reason)?.label ?? "";
+  const reasonLabel = DISMISSAL_REASONS.find((r) => r.value === reason)?.label ?? "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -146,7 +146,7 @@ export default function DismissReportDialog({
                 <SelectValue placeholder="Select a reason..." />
               </SelectTrigger>
               <SelectContent>
-                {REPORT_REASON_OPTIONS.map(({ value, label }) => (
+                {DISMISSAL_REASONS.map(({ value, label }) => (
                   <SelectItem key={value} value={value}>
                   {label}
                   </SelectItem>
