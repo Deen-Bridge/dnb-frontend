@@ -2,36 +2,14 @@
 
 Thank you for your interest in contributing to Deen Bridge! We welcome contributions from the community to help make Islamic education more accessible.
 
-## Drips Wave Program
+## Contribution Workflow
 
-This repository participates in the **Stellar Drips Wave** bounty program. Contributors can earn rewards by resolving issues during Wave cycles. Everyone is welcome to contribute — no religious background or knowledge is required; our issues are regular engineering tasks.
+1. Find or open an issue describing the change.
+2. Create a focused branch from `dev` and implement the change.
+3. Run the relevant checks described below.
+4. Open a pull request against `dev`, link the issue, and summarize the changes and checks.
 
-### How It Works
-
-1. **Find an Issue**: During an active Wave, browse this repo's issues in the [Drips Wave app](https://www.drips.network/wave)
-2. **Apply**: Apply to work on the issue through the Drips Wave app; the maintainer reviews applications and assigns one contributor
-3. **Submit a PR**: Complete the work and open a pull request (base branch `dev`) before the Wave ends
-4. **Earn Points**: Once the issue is marked resolved during the Wave, you earn its Points, which convert to rewards from the Wave pool
-
-### Complexity & Points
-
-Points are assigned per issue by the maintainer in the Drips Wave dashboard using Drips' three complexity tiers:
-
-| Complexity | Points | Typical Scope                              |
-|------------|--------|--------------------------------------------|
-| Trivial    | 100    | Typos, small bug fixes, minor copy changes |
-| Medium     | 150    | Standard features or involved bug fixes    |
-| High       | 200    | Complex features, refactors, integrations  |
-
-Issues carry `complexity:trivial`, `complexity:medium`, or `complexity:high` labels that mirror these tiers.
-
-### Wave Rules
-
-- One contributor per issue — apply through the Drips Wave app; the maintainer reviews all applications and selects who is assigned
-- PRs must be linked to the issue
-- **PRs must target the `dev` branch** (not `main`)
-- Code must pass all tests and linting
-- Follow the coding standards below
+Everyone is welcome to contribute to the platform's engineering work.
 
 ## Getting Started
 

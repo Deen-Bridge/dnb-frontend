@@ -133,7 +133,7 @@ export default function TransparencyPage() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
               {[
                 { icon: ShieldCheck, text: "Verified on stellar.expert" },
-                { icon: HeartHandshake, text: "Funds scholarships" },
+                { icon: HeartHandshake, text: "Direct Sadaqah giving" },
                 { icon: Radio, text: "Updates within seconds" },
               ].map((chip) => (
                 <span

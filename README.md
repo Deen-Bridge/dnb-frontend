@@ -46,6 +46,7 @@ This repository is the web client. The platform is composed of three services:
 - ✉️ **Direct Messaging** — real-time chat between students and mentors
 - 🤖 **AI Assistant** — Islamic-knowledge chatbot with conversation history
 - ⭐ **Stellar Payments** — buy courses and books with USDC; creators are paid directly
+- 🎓 **Stellar Scholarship Escrow** — private scholarship applications with two-review selection, Soroban USDC funding, and arbiter-reviewed milestone releases
 - 👛 **Multi-Wallet Support** — Freighter, xBull, and Albedo via Stellar Wallets Kit
 - 🔒 **Role-Based Access** — student, mentor, and admin experiences
 - 🛡️ **Admin Area** — role-tiered admin access (staff / super-admin) with isolated gating logic ([architecture guide](docs/admin-architecture.md))
@@ -105,15 +106,13 @@ See `.env.example` for the full variable list with example values.
 | `npm run start` | Serve the production build |
 | `npm run lint` | Run ESLint |
 
-## 🌊 Contributing & Drips Wave
-
-This repository is hoping to  participates in the **[Stellar Drips Wave](https://www.drips.network/wave/stellar)** bounty program — contributors earn Points (and real rewards) for resolving this repo's issues during a Wave, with complexity tiers set in the Drips Wave app.
+## Contributing
 
 - All pull requests target the **`dev`** branch (`main` is releases only)
 - CI (lint + build) must pass before review
-- One contributor per issue — request it through the campaign (Drips Wave / GrantFox OSS); the maintainer assigns it. Please don't open a PR for an issue you haven't been assigned.
+- Claim or confirm an issue with the maintainers before starting substantial work.
 
-Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full workflow, coding standards, and Wave rules.
+Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full workflow and coding standards.
 
 ## 📜 License
 
