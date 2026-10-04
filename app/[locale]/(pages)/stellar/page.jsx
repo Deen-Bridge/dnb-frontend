@@ -21,9 +21,12 @@ import {
   FaSearchDollar,
   FaGlobeAfrica,
   FaLink,
+  FaGraduationCap,
+  FaRobot,
 } from "react-icons/fa";
 
-// What the network is actually used for on DeenBridge today.
+// Stellar product capabilities on DeenBridge. Scholarship escrow is campaign-configured;
+// do not imply a live campaign until a contract is initialized on the selected network.
 const uses = [
   {
     icon: <FaWallet className="w-6 h-6 text-ink-inverse" />,
@@ -33,12 +36,22 @@ const uses = [
   {
     icon: <FaHandHoldingHeart className="w-6 h-6 text-ink-inverse" />,
     title: "Sadaqah & charity",
-    desc: "Sadaqah Jariyah donations flow into a transparent on-chain USDC fund that pays scholarships for students of knowledge. Every contribution is publicly verifiable, from your wallet to the pool.",
+    desc: "Sadaqah Jariyah is a direct USDC donation to the Sadaqah fund. Each contribution is signed from your wallet and publicly verifiable on Stellar.",
   },
   {
     icon: <FaBookOpen className="w-6 h-6 text-ink-inverse" />,
     title: "Courses & books",
     desc: "Buying a course or a book is a signed payment from your own wallet. You approve the exact amount, and the educator receives it directly.",
+  },
+  {
+    icon: <FaGraduationCap className="w-6 h-6 text-ink-inverse" />,
+    title: "Scholarship escrow",
+    desc: "Scholarships have a separate Soroban USDC escrow. Private applications are reviewed by a panel; an arbiter reviews milestone progress before approving an on-chain release. Sadaqah remains a separate direct payment.",
+  },
+  {
+    icon: <FaRobot className="w-6 h-6 text-ink-inverse" />,
+    title: "Stellar-aware AI tools",
+    desc: "Ask the assistant about Stellar USDC and convert USDC amounts to stroops, calculate a percentage or fee, and get a read-only zakat estimate from a public Stellar wallet balance.",
   },
 ];
 
@@ -181,7 +194,7 @@ export default function StellarPage() {
                   "mx-auto max-w-2xl text-lg text-ink-muted font-stretch-110%"
                 )}
               >
-                Three places the network does real work on this platform
+                Stellar supports payments, scholarship funding, and practical USDC tools
               </p>
             </div>
 
@@ -369,6 +382,15 @@ export default function StellarPage() {
                 className="px-10 py-3.5 text-base font-bold transition-all"
               >
                 Give Sadaqah
+              </Button>
+              <Button
+                wide
+                round
+                outlined
+                to="/dashboard/scholarships"
+                className="px-10 py-3.5 text-base font-bold transition-all"
+              >
+                Scholarship escrow
               </Button>
             </div>
           </div>

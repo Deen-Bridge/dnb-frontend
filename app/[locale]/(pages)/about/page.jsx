@@ -85,7 +85,7 @@ const offerings = [
   {
     icon: <FaHandHoldingHeart className="size-5 text-accent" />,
     title: "Transparent sadaqah",
-    desc: "An on-chain scholarship fund where every contribution can be verified by anyone.",
+    desc: "A direct USDC Sadaqah fund where every contribution can be verified on Stellar.",
   },
 ];
 
