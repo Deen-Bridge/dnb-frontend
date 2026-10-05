@@ -9,6 +9,8 @@ jobs:
   lint-and-build:
     name: Lint and Build
     runs-on: ubuntu-latest
+    # A hung test run used to burn the full 6-hour default before cancelling.
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
