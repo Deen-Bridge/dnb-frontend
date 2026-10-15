@@ -5,9 +5,9 @@ Thank you for your interest in contributing to Deen Bridge! We welcome contribut
 ## Contribution Workflow
 
 1. Find or open an issue describing the change.
-2. Create a focused branch from `dev` and implement the change.
+2. Create a focused branch from `main` and implement the change.
 3. Run the relevant checks described below.
-4. Open a pull request against `dev`, link the issue, and summarize the changes and checks.
+4. Open a pull request against `main`, link the issue, and summarize the changes and checks.
 
 Everyone is welcome to contribute to the platform's engineering work.
 
@@ -41,17 +41,17 @@ npm run dev
 
 | Branch | Purpose                                                        |
 |--------|----------------------------------------------------------------|
-| `main` | Stable, production-ready code — releases only                  |
-| `dev`  | Active development — **all pull requests must target `dev`**   |
+| `main` | Active integration and production branch — pull requests target here |
+| `dev`  | Legacy development branch; target only when a maintainer directs |
 
-Maintainers periodically merge `dev` into `main` for releases. Pull requests opened against `main` will be asked to retarget `dev`.
+Changes merged to `main` may be deployed to production. Keep pull requests focused and ensure their required checks pass.
 
 ### Making Changes
 
-1. Create a branch from the latest `dev`:
+1. Create a branch from the latest `main`:
    ```bash
    git fetch upstream
-   git checkout -b feature/your-feature-name upstream/dev
+   git checkout -b feature/your-feature-name upstream/main
    ```
 
 2. Make your changes following our coding standards
@@ -67,7 +67,7 @@ Maintainers periodically merge `dev` into `main` for releases. Pull requests ope
    git commit -m "feat: add wallet connection status indicator"
    ```
 
-5. Push and create a PR **with `dev` as the base branch**:
+5. Push and create a PR **with `main` as the base branch**:
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -107,12 +107,13 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Pull Request Guidelines
 
-1. **Base Branch**: open the PR against `dev`, never `main`
+1. **Base Branch**: open the PR against `main`
 2. **Title**: Use conventional commit format
 3. **Description**: Explain what and why
-4. **Link Issue**: Reference the issue number (`Closes #123`)
+4. **Link Issue**: Include a closing reference such as `Closes #123`; the issue is closed as completed after merge
 5. **Screenshots**: Include for UI changes
 6. **Testing**: Describe how you tested
+7. **Auto-merge gates**: eligible, non-draft PRs are squash-merged when CI and all reported statuses pass, the branch has no conflicts, review requests and threads are resolved, and no `hold`, `do-not-merge`, or `manual-review` label is present.
 
 ## Admin Area Development
 

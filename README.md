@@ -108,7 +108,7 @@ See `.env.example` for the full variable list with example values.
 
 ## Contributing
 
-- All pull requests target the **`dev`** branch (`main` is releases only)
+- Pull requests target **`main`** and are squash-merged automatically when repository checks and review gates pass.
 - CI (lint + build) must pass before review
 - Claim or confirm an issue with the maintainers before starting substantial work.
 
