@@ -25,11 +25,7 @@ on:
         type: string
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  checks: read
-  statuses: read
+  contents: read
 
 concurrency:
   group: auto-merge-${{ github.event.pull_request.number || github.event.workflow_run.head_sha || github.event.check_run.head_sha || github.event.sha || github.run_id }}
@@ -39,6 +35,12 @@ jobs:
   merge-when-ready:
     name: Merge when ready
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      checks: read
+      statuses: read
     steps:
       # Checkout only the trusted default branch; never execute pull request code here.
       - name: Checkout trusted automation
@@ -47,7 +49,17 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
+      - name: Check whether automation is installed on the default branch
+        id: automation
+        run: |
+          if [[ -f .github/scripts/auto-merge.cjs ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Evaluate gates and merge
+        if: steps.automation.outputs.available == 'true'
         uses: actions/github-script@v9
         with:
           script: |
