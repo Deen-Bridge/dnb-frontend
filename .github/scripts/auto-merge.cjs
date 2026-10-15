@@ -92,10 +92,9 @@ async function headChecks(github, owner, repo, sha, expectedChecks) {
     per_page: 100,
   });
 
-  // Actions created checks can cause additional check_run notifications. Ignore
-  // this workflow's own result while requiring all other reported checks to pass.
+  // Ignore this workflow's own check while requiring all other reported checks to pass.
   const externalChecks = latestBy(
-    checks.filter((check) => !check.name.toLowerCase().startsWith("auto-merge")),
+    checks.filter((check) => check.name !== "Merge when ready"),
     (check) => `${check.name}:${check.app?.id || "unknown"}`,
     (check) => check.started_at || check.completed_at,
   );
@@ -212,8 +211,8 @@ async function run({ github, context, core }) {
       skip(`GitHub reports merge state ${review.mergeStateStatus}, not CLEAN.`);
       continue;
     }
-    if (["CHANGES_REQUESTED", "REVIEW_REQUIRED"].includes(review.decision)) {
-      skip(`review decision is ${review.decision}.`);
+    if (review.decision !== "APPROVED") {
+      skip(`review decision is ${review.decision || "not approved"}.`);
       continue;
     }
     if (review.unresolved > 0) {
