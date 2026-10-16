@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -39,6 +39,8 @@ import {
   Info,
   HelpCircle,
   Calendar,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
@@ -93,44 +95,6 @@ const TIMEFRAMES = [
   { value: "6m", label: "Last 6 Months" },
   { value: "1y", label: "Last Year" },
 ];
-
-const MOCK_DATA = {
-  all: {
-    "7d":   { visitor: 12400, signup: 3720, first_purchase: 890, repeat_buyer: 215 },
-    "30d":  { visitor: 48200, signup: 14460, first_purchase: 3470, repeat_buyer: 830 },
-    "90d":  { visitor: 134000, signup: 40200, first_purchase: 9650, repeat_buyer: 2310 },
-    "6m":   { visitor: 261000, signup: 78300, first_purchase: 18790, repeat_buyer: 4510 },
-    "1y":   { visitor: 498000, signup: 149400, first_purchase: 35860, repeat_buyer: 8610 },
-  },
-  student: {
-    "7d":   { visitor: 8700, signup: 2910, first_purchase: 710, repeat_buyer: 175 },
-    "30d":  { visitor: 33800, signup: 11590, first_purchase: 2830, repeat_buyer: 690 },
-    "90d":  { visitor: 94000, signup: 32640, first_purchase: 7920, repeat_buyer: 1920 },
-    "6m":   { visitor: 183000, signup: 63420, first_purchase: 15500, repeat_buyer: 3750 },
-    "1y":   { visitor: 349000, signup: 120800, first_purchase: 29520, repeat_buyer: 7170 },
-  },
-  teacher: {
-    "7d":   { visitor: 2100, signup: 520, first_purchase: 120, repeat_buyer: 28 },
-    "30d":  { visitor: 8200, signup: 2050, first_purchase: 470, repeat_buyer: 110 },
-    "90d":  { visitor: 22800, signup: 5700, first_purchase: 1310, repeat_buyer: 310 },
-    "6m":   { visitor: 44400, signup: 11100, first_purchase: 2550, repeat_buyer: 600 },
-    "1y":   { visitor: 84600, signup: 21150, first_purchase: 4860, repeat_buyer: 1150 },
-  },
-  admin: {
-    "7d":   { visitor: 320, signup: 45, first_purchase: 8, repeat_buyer: 2 },
-    "30d":  { visitor: 1200, signup: 170, first_purchase: 30, repeat_buyer: 7 },
-    "90d":  { visitor: 3400, signup: 480, first_purchase: 85, repeat_buyer: 20 },
-    "6m":   { visitor: 6600, signup: 930, first_purchase: 165, repeat_buyer: 40 },
-    "1y":   { visitor: 12600, signup: 1770, first_purchase: 315, repeat_buyer: 76 },
-  },
-  guest: {
-    "7d":   { visitor: 1280, signup: 245, first_purchase: 52, repeat_buyer: 10 },
-    "30d":  { visitor: 5000, signup: 650, first_purchase: 140, repeat_buyer: 23 },
-    "90d":  { visitor: 13800, signup: 1380, first_purchase: 335, repeat_buyer: 60 },
-    "6m":   { visitor: 27000, signup: 2850, first_purchase: 575, repeat_buyer: 120 },
-    "1y":   { visitor: 51800, signup: 5680, first_purchase: 1165, repeat_buyer: 214 },
-  },
-};
 
 function getDropOff(from, to) {
   if (from === 0) return 0;
@@ -332,226 +296,197 @@ const chartConfig = {
   repeat_buyer: { label: "Repeat Buyer", color: "#265902" },
 };
 
+const EMPTY_FUNNEL = {
+  visitor: 0,
+  signup: 0,
+  first_purchase: 0,
+  repeat_buyer: 0,
+};
+
 export default function FunnelAnalyticsPage() {
   const [role, setRole] = useState("all");
   const [timeframe, setTimeframe] = useState("30d");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const data = useMemo(
-    () => MOCK_DATA[role]?.[timeframe] || MOCK_DATA.all["30d"],
-    [role, timeframe]
-  );
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchFunnel() {
+      setLoading(true);
+      setError(null);
+      try {
+        const params = new URLSearchParams({ role, timeframe });
+        const res = await fetch(`/api/admin/analytics/funnel?${params.toString()}`, {
+          signal: controller.signal,
+          credentials: "include",
+        });
+        if (!res.ok) {
+          throw new Error(`Failed to load funnel data (${res.status})`);
+        }
+        const json = await res.json();
+        setData(json?.data ?? json ?? EMPTY_FUNNEL);
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        setError(err.message || "Unable to load funnel data");
+        setData(EMPTY_FUNNEL);
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }
+
+    fetchFunnel();
+    return () => controller.abort();
+  }, [role, timeframe]);
+
+  const funnelData = data ?? EMPTY_FUNNEL;
 
   const chartData = useMemo(
     () =>
       FUNNEL_STAGES.map((stage) => ({
         name: stage.label,
-        value: data[stage.key],
-        fill: stage.color,
+        value: funnelData[stage.key] || 0,
+        color: stage.color,
       })),
-    [data]
+    [funnelData]
   );
+
+  const hasData = FUNNEL_STAGES.some((stage) => (funnelData[stage.key] || 0) > 0);
 
   return (
     <PageShell>
       <PageHeader
-        icon={Filter}
-        title="Conversion Funnel"
-        subtitle="Visitor-to-purchase conversion tracking across signup, purchase, and retention stages"
-        actions={
-          <div className="flex items-center gap-2">
-            <Select value={role} onValueChange={setRole}>
-              <SelectTrigger className="w-[150px]">
-                <Users className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Role" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLES.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={timeframe} onValueChange={setTimeframe}>
-              <SelectTrigger className="w-[160px]">
-                <Calendar className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Timeframe" />
-              </SelectTrigger>
-              <SelectContent>
-                {TIMEFRAMES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        }
+        title="Funnel Analytics"
+        description="Track user journey from visit to repeat purchase"
       />
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {FUNNEL_STAGES.map((stage) => {
-          const Icon = stage.icon;
-          return (
-            <StatCard
-              key={stage.key}
-              icon={Icon}
-              label={stage.label}
-              value={data[stage.key]}
-              subtext={`${getConversionRate(
-                data.visitor,
-                data[stage.key]
-              ).toFixed(1)}% of visitors`}
-            />
-          );
-        })}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ROLES.map((r) => (
+                <SelectItem key={r.value} value={r.value}>
+                  {r.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Select value={timeframe} onValueChange={setTimeframe}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TIMEFRAMES.map((t) => (
+                <SelectItem key={t.value} value={t.value}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Funnel Visual + Chart */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Visual Funnel */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Funnel Stages</CardTitle>
-            <CardDescription>
-              User progression from visitor to repeat buyer
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FunnelVisual stages={FUNNEL_STAGES} data={data} />
+      {error && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardContent className="flex items-center gap-3 p-5">
+            <AlertCircle className="h-5 w-5 text-destructive" />
+            <p className={cn(poppins_500.className, "text-sm text-destructive")}>
+              {error}
+            </p>
           </CardContent>
         </Card>
+      )}
 
-        {/* Bar Chart */}
+      {loading ? (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Stage Comparison</CardTitle>
-            <CardDescription>
-              Absolute user counts at each funnel stage
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[380px] w-full">
-              <BarChart
-                data={chartData}
-                layout="vertical"
-                margin={{ left: 20, right: 20 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  horizontal={true}
-                  vertical={false}
-                  stroke="#265902"
-                  strokeOpacity={0.12}
-                />
-                <XAxis
-                  type="number"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={(val) =>
-                    val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val
-                  }
-                />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  width={120}
-                />
-                <ChartTooltip
-                  cursor={{ fill: "rgba(0,153,0,0.06)" }}
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value) => value.toLocaleString()}
-                    />
-                  }
-                />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ChartContainer>
+          <CardContent className="flex items-center justify-center gap-3 p-16">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <span className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
+              Loading funnel data …
+            </span>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Conversion Rate Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Conversion Rates</CardTitle>
-          <CardDescription>
-            Drop-off and conversion between each funnel stage
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FUNNEL_STAGES.slice(0, -1).map((stage, index) => {
-              const next = FUNNEL_STAGES[index + 1];
-              const fromValue = data[stage.key];
-              const toValue = data[next.key];
-              const stageDropOff = getDropOff(fromValue, toValue);
-              const overallConversion = getConversionRate(data.visitor, toValue);
-
-              return (
-                <div
-                  key={`${stage.key}-${next.key}`}
-                  className="rounded-lg border p-4 space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className={cn(poppins_500.className, "text-xs text-muted-foreground")}>
-                      {stage.label} → {next.label}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className={cn(poppins_600.className, "text-2xl tabular-nums")}>
-                      {stageDropOff.toFixed(1)}%
-                    </span>
-                    <span
-                      className={cn(poppins_400.className, "text-xs text-muted-foreground")}
-                    >
-                      drop-off
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{stage.label}:</span>
-                      <span className="tabular-nums">{fromValue.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{next.label}:</span>
-                      <span className="tabular-nums">{toValue.toLocaleString()}</span>
-                    </div>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-secondary/80 to-accent transition-all"
-                      style={{ width: `${100 - stageDropOff}%` }}
-                    />
-                  </div>
-                  <p
-                    className={cn(
-                      poppins_400.className,
-                      "text-xs text-muted-foreground"
-                    )}
-                  >
-                    {overallConversion.toFixed(1)}% of all visitors reach {next.label}
-                  </p>
-                </div>
-              );
-            })}
+      ) : hasData ? (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FUNNEL_STAGES.map((stage) => (
+              <StatCard
+                key={stage.key}
+                icon={stage.icon}
+                label={stage.label}
+                value={funnelData[stage.key] || 0}
+                subtext={
+                  stage.key === "visitor"
+                    ? "Top of funnel"
+                    : `${getConversionRate(
+                        funnelData.visitor,
+                        funnelData[stage.key] || 0
+                      ).toFixed(1)}% of visitors`
+                }
+              />
+            ))}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Metric Definitions */}
-      <MetricDefinitions />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Conversion Funnel</CardTitle>
+              <CardDescription>
+                Stage-by-stage volumes and drop-off rates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FunnelVisual stages={FUNNEL_STAGES} data={funnelData} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Funnel Volumes</CardTitle>
+              <CardDescription>
+                Comparative volume across each funnel stage
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <MetricDefinitions />
+        </>
+      ) : (
+        <Card>
+          <CardContent className="flex flex-column items-center justify-center gap-2 p-16">
+            <Info className="h-6 w-6 text-muted-foreground" />
+            <p className={cn(poppins_500.className, "text-sm")}>
+              No funnel data for this selection
+            </p>
+            <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
+              Try a different role or timeframe.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </PageShell>
   );
 }

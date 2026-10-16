@@ -84,72 +84,6 @@ const DISPUTE_STATES = {
   },
 };
 
-const mockDisputes = [
-  {
-    id: "dsp_001",
-    openedAt: "2026-08-22T10:15:00Z",
-    buyer: { id: "usr_b1", name: "Ahmad Patel", email: "ahmad@example.com" },
-    educator: { id: "usr_e1", name: "Sheikh Ibrahim", email: "ibrahim@example.com" },
-    item: { type: "course", name: "Advanced Tajweed Course", id: "crs_101" },
-    amount: 49.99,
-    transactionId: "PLT-10042",
-    state: "open",
-    buyerStatement: "I purchased this course but the video lectures won't load. Requesting a full refund.",
-    educatorStatement: "The course content is fully functional. The buyer may have connectivity issues.",
-    evidenceList: [
-      {
-        id: "ev_001_1",
-        fileName: "playback_error_screenshot.png",
-        fileType: "image/png",
-        uploadedAt: "2026-08-22T10:20:00Z",
-        senderRole: "buyer",
-        note: "Screenshot of black video player error.",
-        signedUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-      },
-    ],
-  },
-  {
-    id: "dsp_002",
-    openedAt: "2026-08-20T08:30:00Z",
-    buyer: { id: "usr_b2", name: "Fatima Al-Rashid", email: "fatima@example.com" },
-    educator: { id: "usr_e2", name: "Dr. Amina Yusuf", email: "amina@example.com" },
-    item: { type: "book", name: "Seerah Illustrated", id: "bk_205" },
-    amount: 12.50,
-    transactionId: "PLT-10038",
-    state: "awaiting-evidence",
-    buyerStatement: "The book description said 300 pages but the downloaded PDF is only 50 pages.",
-    educatorStatement: "The 300-page count includes appendices and index. The main content is complete.",
-    evidenceRequest: { target: "buyer", requestedAt: "2026-08-21T14:00:00Z", message: "Please provide a screenshot of the misleading listing." },
-    evidenceList: [
-      {
-        id: "ev_002_1",
-        fileName: "book_toc_sample.pdf",
-        fileType: "application/pdf",
-        uploadedAt: "2026-08-21T15:00:00Z",
-        senderRole: "educator",
-        note: "Original table of contents document.",
-        signedUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-      },
-    ],
-  },
-  {
-    id: "dsp_003",
-    openedAt: "2026-08-18T16:45:00Z",
-    buyer: { id: "usr_b3", name: "Yusuf Khan", email: "yusuf@example.com" },
-    educator: { id: "usr_e3", name: "Ustadh Omar Ali", email: "omar@example.com" },
-    item: { type: "course", name: "Quran Memorization Plan", id: "crs_112" },
-    amount: 75.00,
-    transactionId: "PLT-10035",
-    state: "resolved-refund",
-    buyerStatement: "The educator never responded to my questions and the course hasn't been updated.",
-    educatorStatement: "I have been on medical leave. I apologize for the lack of communication.",
-    resolution: "Full refund issued. Course delisted pending educator return.",
-    evidenceList: [],
-  },
-];
-
 function formatAge(timestamp) {
   return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 }
@@ -165,7 +99,7 @@ function formatDate(timestamp) {
 }
 
 export default function DisputesPage() {
-  const [disputes, setDisputes] = useState(mockDisputes);
+  const [disputes, setDisputes] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDispute, setSelectedDispute] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -175,6 +109,9 @@ export default function DisputesPage() {
   // Viewer state for secure evidence viewing
   const [viewingEvidence, setViewingEvidence] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const filteredDisputes = useMemo(() => {
     if (statusFilter === "all") return disputes;
@@ -261,6 +198,13 @@ export default function DisputesPage() {
     setDetailOpen(false);
   }, []);
 
+  const handleRefresh = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
+    setDisputes([]);
+    setIsLoading(false);
+  }, []);
+
   return (
     <PageShell>
       <PageHeader
@@ -271,7 +215,7 @@ export default function DisputesPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setDisputes([...mockDisputes])}
+            onClick={handleRefresh}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -349,7 +293,27 @@ export default function DisputesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedDisputes.length === 0 ? (
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="py-8 text-center text-muted-foreground"
+                    >
+                      <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin opacity-50" />
+                      <p>Loading disputes…</p>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="py-8 text-center text-destructive"
+                    >
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>{error}</p>
+                    </TableCell>
+                  </TableRow>
+                ) : paginatedDisputes.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={8}
