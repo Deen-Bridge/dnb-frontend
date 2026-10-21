@@ -60,5 +60,5 @@ export function appearanceInitScript(): string {
 x=s.getItem("${k.surface}");if(x)d.style.setProperty("${v.surface}",x);
 x=s.getItem("${k.textLight}");if(x)d.style.setProperty("${v.textLight}",x);
 x=s.getItem("${k.textDark}");if(x)d.style.setProperty("${v.textDark}",x);
-x=s.getItem("${k.fontSizeValue}");if(x)d.style.fontSize=x;}catch(e){}})();`;
+x=s.getItem("${k.fontSizeValue}");if(x)d.style.fontSize=x;}catch(e){/* intentional: theme restore must never throw during hydration */}})();`;
 }
