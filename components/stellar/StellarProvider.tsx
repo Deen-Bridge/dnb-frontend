@@ -25,6 +25,7 @@ import {
   StellarErrorDetail,
 } from "@/lib/stellar/stellarErrors";
 import { StellarWalletInfo } from "@/types/stellar";
+import { captureClientError } from "@/lib/sentry/captureClientError";
 
 const NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
 const EXPECTED_PASSPHRASE =
@@ -105,7 +106,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
           setHasWalletExtension(false);
         }
       } catch (error) {
-        console.error("Failed to initialize Stellar Wallets Kit:", error);
+        captureClientError(error);
       }
     }
 
@@ -127,7 +128,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
           setWalletInfo(res.data.wallet);
         }
       } catch (error) {
-        console.error("Failed to fetch wallet info:", error);
+        captureClientError(error);
       } finally {
         setIsLoading(false);
       }
@@ -223,7 +224,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
       } else if (isUserRejection(error)) {
         // Silent — user cancelled
       } else {
-        console.error("Wallet connection error:", error);
+        captureClientError(error);
         toast.error(error.message || "Failed to connect wallet");
       }
     } finally {
@@ -248,7 +249,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
         await refreshUser(user._id);
       }
     } catch (error: any) { // TODO(types): Disconnect error
-      console.error("Disconnect wallet error:", error);
+      captureClientError(error);
       toast.error("Failed to disconnect wallet");
     }
   }, [user, refreshUser]);
@@ -265,7 +266,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
         setWalletInfo((prev) => (prev ? { ...prev, ...res.data } : res.data));
       }
     } catch (error) {
-      console.error("Failed to refresh balance:", error);
+      captureClientError(error);
     }
   }, [connectedWallet]);
 
