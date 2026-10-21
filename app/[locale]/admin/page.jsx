@@ -22,6 +22,8 @@ import { fetchAdminOverview } from "@/lib/actions/admin-overview";
 import { fetchInternalTransactions } from "@/lib/actions/admin-reconciliation";
 import { downloadCsv } from "@/lib/utils/csv";
 import { toast } from "sonner";
+import SystemHealthWidget from "@/components/admin/SystemHealthWidget";
+import RecentActivityFeed from "@/components/admin/RecentActivityFeed";
 import {
   LayoutDashboard,
   Users,
@@ -450,6 +452,10 @@ export default function AdminOverviewPage() {
       />
 
       {isEmpty && guided && <WelcomeBanner />}
+
+      <SystemHealthWidget />
+
+      <RecentActivityFeed />
 
       {/* Overview widgets — guided hints instead of zeros on a fresh database */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
