@@ -206,7 +206,8 @@
   animation: scroll 30s linear infinite;
 }
 
-.animate-scroll:hover {
+.animate-scroll:hover,
+.animate-scroll:focus-within {
   animation-play-state: paused;
 }
 
@@ -281,6 +282,13 @@
   animation: marquee-reverse 30s linear infinite;
 }
 
+.animate-marquee:hover,
+.animate-marquee:focus-within,
+.animate-marquee-reverse:hover,
+.animate-marquee-reverse:focus-within {
+  animation-play-state: paused;
+}
+
 /* Variable-speed marquee driven by components/ui/marquee.jsx.
    Kept separate from the fixed-speed .animate-marquee above, which
    Testimonials relies on. */
@@ -336,6 +344,14 @@ html[dir="rtl"] body {
  * calm and accessible.
  */
 @media (prefers-reduced-motion: reduce) {
+  .animate-scroll,
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-marquee-x,
+  .animate-marquee-y {
+    animation: none !important;
+  }
+
   .group\/media-blur [data-slot="image"],
   .group\/media-blur img,
   .group\/media-blur video {
