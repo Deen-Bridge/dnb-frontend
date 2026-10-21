@@ -117,7 +117,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Admin Area Development
 
-Work on admin-facing pages has a few extra requirements beyond the general workflow above. Read [`docs/rbac.md`](docs/rbac.md) and [`docs/admin-architecture.md`](docs/admin-architecture.md) before picking up your first admin issue.
+Work on admin-facing pages has a few extra requirements beyond the general workflow above. Read [`docs/rbac.md`](docs/rbac.md) and [`docs/admin-architecture.md`](docs/admin-architecture.md) before picking up your first admin issue. Check [`docs/admin-routes.md`](docs/admin-routes.md) for the current route inventory, wiring status, and related endpoint issues before changing an admin page.
 
 ### Where things live
 
