@@ -150,6 +150,7 @@ axiosInstance.interceptors.response.use(
         Cookies.remove("userInfo", { path: "/" });
 
         if (typeof window !== "undefined") {
+          // Axios runs outside React; this hard redirect handles an expired session.
           window.location.href = "/login";
         }
 
