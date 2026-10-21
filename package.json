@@ -7,7 +7,7 @@
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint --dir app --dir components --dir lib --dir hooks --dir contexts --dir types --dir __tests__ --dir e2e",
+    "lint": "eslint app components lib hooks contexts types __tests__ e2e",
     "lint:any": "node scripts/check-explicit-any.mjs",
     "a11y": "eslint --config eslint.config.a11y.mjs components app",
     "typecheck": "tsc --noEmit",
