@@ -65,7 +65,7 @@ export default function useMediaBlur({
     }
 
     setLoaded(true);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [overrideDefault]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
