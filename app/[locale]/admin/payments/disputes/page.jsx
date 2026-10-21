@@ -84,6 +84,73 @@ const DISPUTE_STATES = {
   },
 };
 
+// TODO: Replace these UI fixtures with disputes from the admin API. Evidence
+// links must come from the authenticated, short-lived signed-URL endpoint; do
+// not put third-party or permanent file URLs in this page.
+const mockDisputes = [
+  {
+    id: "dsp_001",
+    openedAt: "2026-08-22T10:15:00Z",
+    buyer: { id: "usr_b1", name: "Ahmad Patel", email: "ahmad@example.com" },
+    educator: { id: "usr_e1", name: "Sheikh Ibrahim", email: "ibrahim@example.com" },
+    item: { type: "course", name: "Advanced Tajweed Course", id: "crs_101" },
+    amount: 49.99,
+    transactionId: "PLT-10042",
+    state: "open",
+    buyerStatement: "I purchased this course but the video lectures won't load. Requesting a full refund.",
+    educatorStatement: "The course content is fully functional. The buyer may have connectivity issues.",
+    evidenceList: [
+      {
+        id: "ev_001_1",
+        fileName: "playback_error_screenshot.png",
+        fileType: "image/png",
+        uploadedAt: "2026-08-22T10:20:00Z",
+        senderRole: "buyer",
+        note: "Screenshot of black video player error.",
+        availability: "pending",
+      },
+    ],
+  },
+  {
+    id: "dsp_002",
+    openedAt: "2026-08-20T08:30:00Z",
+    buyer: { id: "usr_b2", name: "Fatima Al-Rashid", email: "fatima@example.com" },
+    educator: { id: "usr_e2", name: "Dr. Amina Yusuf", email: "amina@example.com" },
+    item: { type: "book", name: "Seerah Illustrated", id: "bk_205" },
+    amount: 12.50,
+    transactionId: "PLT-10038",
+    state: "awaiting-evidence",
+    buyerStatement: "The book description said 300 pages but the downloaded PDF is only 50 pages.",
+    educatorStatement: "The 300-page count includes appendices and index. The main content is complete.",
+    evidenceRequest: { target: "buyer", requestedAt: "2026-08-21T14:00:00Z", message: "Please provide a screenshot of the misleading listing." },
+    evidenceList: [
+      {
+        id: "ev_002_1",
+        fileName: "book_toc_sample.pdf",
+        fileType: "application/pdf",
+        uploadedAt: "2026-08-21T15:00:00Z",
+        senderRole: "educator",
+        note: "Original table of contents document.",
+        availability: "pending",
+      },
+    ],
+  },
+  {
+    id: "dsp_003",
+    openedAt: "2026-08-18T16:45:00Z",
+    buyer: { id: "usr_b3", name: "Yusuf Khan", email: "yusuf@example.com" },
+    educator: { id: "usr_e3", name: "Ustadh Omar Ali", email: "omar@example.com" },
+    item: { type: "course", name: "Quran Memorization Plan", id: "crs_112" },
+    amount: 75.00,
+    transactionId: "PLT-10035",
+    state: "resolved-refund",
+    buyerStatement: "The educator never responded to my questions and the course hasn't been updated.",
+    educatorStatement: "I have been on medical leave. I apologize for the lack of communication.",
+    resolution: "Full refund issued. Course delisted pending educator return.",
+    evidenceList: [],
+  },
+];
+
 function formatAge(timestamp) {
   return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 }
@@ -679,6 +746,11 @@ export default function DisputesPage() {
                             <p className="text-[10px] text-muted-foreground">
                               Uploaded {new Date(item.uploadedAt).toLocaleDateString()}
                             </p>
+                            {item.availability === "pending" && (
+                              <p className="text-[10px] text-muted-foreground">
+                                Evidence URL pending secure retrieval.
+                              </p>
+                            )}
                           </div>
 
                           <div className="pt-3">

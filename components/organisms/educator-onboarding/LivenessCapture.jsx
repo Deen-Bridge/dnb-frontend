@@ -57,6 +57,37 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
   const adapterRef = useRef(null);
   const timeoutRef = useRef(null);
 
+  // ── Submit token to backend ───────────────────────────────────────────────
+  const handleSuccess = useCallback(
+    async (token, session) => {
+      setPhase(Phase.SUCCESS);
+      setSubmitting(true);
+
+      try {
+        await submitLiveness({
+          userId: session.userId,
+          verificationToken: token,
+          consentAt: session.consentAt,
+          consentVersion: session.consentVersion,
+        });
+
+        toast.success("Identity verified successfully!");
+        onSuccess();
+      } catch (err) {
+        toast.error(err?.message ?? "Failed to submit verification. Please retry.");
+        setPhase(Phase.FAILURE);
+        setErrorMessage(
+          err?.message ?? "Could not submit your verification. Please try again."
+        );
+      } finally {
+        // SECURITY: clear the token from context as soon as the backend has it.
+        clearVerificationToken();
+        setSubmitting(false);
+      }
+    },
+    [onSuccess, clearVerificationToken]
+  );
+
   // ── Start / restart capture ───────────────────────────────────────────────
   const startCapture = useCallback(() => {
     // Clean up any previous adapter instance
@@ -124,39 +155,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       );
       setError({ phase: newPhase, message: err?.message });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, consentRecord, retryCount]);
-
-  // ── Submit token to backend ───────────────────────────────────────────────
-  const handleSuccess = useCallback(
-    async (token, session) => {
-      setPhase(Phase.SUCCESS);
-      setSubmitting(true);
-
-      try {
-        await submitLiveness({
-          userId: session.userId,
-          verificationToken: token,
-          consentAt: session.consentAt,
-          consentVersion: session.consentVersion,
-        });
-
-        toast.success("Identity verified successfully!");
-        onSuccess();
-      } catch (err) {
-        toast.error(err?.message ?? "Failed to submit verification. Please retry.");
-        setPhase(Phase.FAILURE);
-        setErrorMessage(
-          err?.message ?? "Could not submit your verification. Please try again."
-        );
-      } finally {
-        // SECURITY: clear the token from context as soon as the backend has it.
-        clearVerificationToken();
-        setSubmitting(false);
-      }
-    },
-    [onSuccess, clearVerificationToken]
-  );
+  }, [user, consentRecord, retryCount, handleSuccess, setError, setVerificationToken]);
 
   // ── Retry ─────────────────────────────────────────────────────────────────
   const handleRetry = () => {
@@ -181,8 +180,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       adapterRef.current?.cancel();
       clearTimeout(timeoutRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [retryCount]); // re-run on retry
+  }, [startCapture]);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
