@@ -36,7 +36,13 @@ import {
   X,
   Rocket,
   AlertTriangle,
+  ArrowUp,
+  ArrowDown,
+  Eye,
+  EyeOff,
+  RotateCcw,
 } from "lucide-react";
+import useOverviewLayout from "@/hooks/useOverviewLayout";
 
 // Persisted in localStorage so the bootstrap guidance can be dismissed
 // permanently once the team is actively using the platform.
@@ -49,6 +55,7 @@ const DISMISS_STORAGE_KEY = "dnb-bootstrap-dismissed";
 const OVERVIEW_WIDGETS = [
   {
     key: "mentors",
+    label: "Mentors",
     icon: Users,
     href: "/dashboard/admin/team",
     hint: "Invite your first mentor",
@@ -57,6 +64,7 @@ const OVERVIEW_WIDGETS = [
   },
   {
     key: "categories",
+    label: "Categories",
     icon: FolderTree,
     href: "/dashboard/courses/categories",
     hint: "Create a category",
@@ -65,6 +73,7 @@ const OVERVIEW_WIDGETS = [
   },
   {
     key: "courses",
+    label: "Courses",
     icon: GraduationCap,
     href: "/dashboard/courses/create",
     hint: "Publish your first course",
@@ -73,6 +82,7 @@ const OVERVIEW_WIDGETS = [
   },
   {
     key: "books",
+    label: "Books",
     icon: BookOpen,
     href: "/admin/books",
     hint: "Add books to the library",
@@ -81,6 +91,7 @@ const OVERVIEW_WIDGETS = [
   },
   {
     key: "students",
+    label: "Students",
     icon: Sparkles,
     href: "/dashboard",
     hint: "Invite your first students",
@@ -89,6 +100,7 @@ const OVERVIEW_WIDGETS = [
   },
   {
     key: "transactions",
+    label: "Transactions",
     icon: ArrowRightLeft,
     href: "/admin/transactions",
     hint: "Complete your first sale",
@@ -96,6 +108,80 @@ const OVERVIEW_WIDGETS = [
     cta: "View transactions",
   },
 ];
+
+const OVERVIEW_WIDGET_KEYS = OVERVIEW_WIDGETS.map((widget) => widget.key);
+
+// Customize panel: show/hide and reorder the overview widgets, plus reset.
+function LayoutCustomizer({ widgets, isHidden, onToggle, onMove, onReset }) {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-base">Customize overview</CardTitle>
+            <CardDescription>
+              Show, hide, or reorder these widgets. Saved on this device only.
+            </CardDescription>
+          </div>
+          <Button variant="outline" size="sm" onClick={onReset}>
+            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+            Reset layout
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-1">
+          {widgets.map((widget, index) => {
+            const hidden = isHidden(widget.key);
+            return (
+              <li
+                key={widget.key}
+                className="flex items-center gap-2 rounded-lg p-2"
+              >
+                <span
+                  className={cn(
+                    poppins_400.className,
+                    "min-w-0 flex-1 truncate text-sm",
+                    hidden ? "text-muted-foreground line-through" : "text-foreground"
+                  )}
+                >
+                  {widget.label}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Move ${widget.label} up`}
+                  disabled={index === 0}
+                  onClick={() => onMove(widget.key, -1)}
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Move ${widget.label} down`}
+                  disabled={index === widgets.length - 1}
+                  onClick={() => onMove(widget.key, 1)}
+                >
+                  <ArrowDown className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={hidden ? `Show ${widget.label}` : `Hide ${widget.label}`}
+                  aria-pressed={!hidden}
+                  onClick={() => onToggle(widget.key)}
+                >
+                  {hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </li>
+            );
+          })}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
 
 // Setup checklist. Completion is data-driven: either a settings value is
 // configured or a real count is above zero, so items complete on their own as
@@ -303,6 +389,7 @@ export default function AdminOverviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dismissed, setDismissed] = useState(false);
+  const layout = useOverviewLayout(OVERVIEW_WIDGET_KEYS);
 
   useEffect(() => {
     let active = true;
@@ -409,17 +496,44 @@ export default function AdminOverviewPage() {
 
       <RecentActivityFeed />
 
+      <LayoutCustomizer
+        widgets={layout.order.map((key) =>
+          OVERVIEW_WIDGETS.find((widget) => widget.key === key)
+        )}
+        isHidden={layout.isHidden}
+        onToggle={layout.toggleHidden}
+        onMove={layout.move}
+        onReset={layout.reset}
+      />
+
       {/* Overview widgets — guided hints instead of zeros on a fresh database */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {OVERVIEW_WIDGETS.map((widget) => (
-          <OverviewWidget
-            key={widget.key}
-            widget={widget}
-            metric={data.counts[widget.key]}
-            guided={guided}
-          />
-        ))}
-      </div>
+      {layout.order.every((key) => layout.isHidden(key)) ? (
+        <div className="flex flex-col items-start gap-3 rounded-2xl border border-dashed p-6">
+          <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
+            All overview widgets are hidden.
+          </p>
+          <Button variant="outline" size="sm" onClick={layout.reset}>
+            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+            Reset layout
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {layout.order
+            .filter((key) => !layout.isHidden(key))
+            .map((key) => {
+              const widget = OVERVIEW_WIDGETS.find((item) => item.key === key);
+              return (
+                <OverviewWidget
+                  key={widget.key}
+                  widget={widget}
+                  metric={data.counts[widget.key]}
+                  guided={guided}
+                />
+              );
+            })}
+        </div>
+      )}
 
       {/* Setup checklist — completion derived from data + settings values */}
       {guided && (
