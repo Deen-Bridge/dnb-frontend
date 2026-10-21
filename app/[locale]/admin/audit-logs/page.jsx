@@ -47,6 +47,7 @@ import {
   RefreshCw,
   ExternalLink,
   Loader2,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
@@ -210,6 +211,40 @@ export default function AuditLogsPage() {
     });
   };
 
+  // Export the currently loaded page of logs to CSV (merged from the removed audit-log page)
+  const exportToCSV = () => {
+    const headers = ["Timestamp", "Action", "Actor", "Target", "IP Address", "Summary"];
+    const rows = logs.map((log) => [
+      log.timestamp,
+      log.action,
+      log.actor,
+      log.target?.name ?? "",
+      log.ip,
+      log.summary,
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `audit-logs-${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <PageShell>
       <PageHeader
@@ -217,10 +252,16 @@ export default function AuditLogsPage() {
         title="Audit Logs"
         subtitle="Track all administrative actions across the platform"
         actions={
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
-            <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={exportToCSV} disabled={loading || logs.length === 0}>
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
+              <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+              Refresh
+            </Button>
+          </div>
         }
       />
 

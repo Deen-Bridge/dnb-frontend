@@ -12,7 +12,6 @@ This inventory records the route files currently present under `app/[locale]/adm
 | `/admin/analytics/search` | Search analytics | Stub | Helper documents intended `/api/admin/analytics/search`; issue #483 specifies `/api/analytics/search` |
 | `/admin/announcements` | Create and manage announcements | Stub + local draft | Drafts use localStorage; admin announcement action is mock-backed; #500 |
 | `/admin/announcements/history` | Announcement send history | Stub / unverified | Component has no verified endpoint wiring; #500 |
-| `/admin/audit-log` | Audit log (duplicate route) | Mock | Duplicate of `/admin/audit-logs`; canonical route planned by #482; duplicate tracked in #494 |
 | `/admin/audit-logs` | Audit logs with filters | Mock | GET `/api/admin/audit`; wiring + canonical route in #482; duplicate tracked in #494 |
 | `/admin/books` | Books catalog moderation | Mock | #500 |
 | `/admin/books/approval-queue` | Book approval queue | Mock | #500 |
@@ -46,7 +45,7 @@ This inventory records the route files currently present under `app/[locale]/adm
 
 ## Known duplicate routes
 
-- `/admin/audit-log` and `/admin/audit-logs` overlap; #494 tracks consolidation and #482 tracks the canonical API-backed route.
+- `/admin/audit-log` was removed in favor of `/admin/audit-logs` (#494); #482 tracks wiring the canonical route to the API.
 - `/admin/verification` and `/admin/verifications` overlap; #495 tracks consolidation and #484 tracks the real verification queue/SLA API.
 
 ## Related wiring work
