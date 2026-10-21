@@ -12,7 +12,7 @@ import CTA from "./(pages)/(landingPage)/CTA";
 import Sources from "./(pages)/(landingPage)/Sources";
 // import Stats from "./(pages)/(landingPage)/Stats"; // hidden until real numbers
 import FeaturedContent from "./(pages)/(landingPage)/FeaturedContent";
-import StellarSection from "./(pages)/(landingPage)/StellarSection";
+import StellarPaymentFlow from "@/components/stellar/StellarPaymentFlow";
 import { siteUrl, siteName, siteDescription } from "@/lib/config/site.config";
 
 export const metadata = {
@@ -58,7 +58,7 @@ const page = () => {
         {/* Hidden until we have real numbers — Stats shows placeholder traction (12K+ learners, etc.) */}
         {/* <Stats /> */}
         <HowItWorks />
-        <StellarSection />
+        <StellarPaymentFlow />
         {/* Hidden until we have real users — Testimonials are placeholder quotes from fictional people */}
         {/* <Testimonials /> */}
         <Sources />
