@@ -19,6 +19,7 @@ export interface OverviewSettingItem {
 export interface AdminOverviewSnapshot {
   generatedAt: string;
   empty: boolean;
+  registrations: Array<{ createdAt: string; role: string }>;
   counts: {
     mentors: OverviewMetricCount;
     categories: OverviewMetricCount;
@@ -46,6 +47,8 @@ export async function fetchAdminOverview(): Promise<AdminOverviewSnapshot> {
   return withResolved({
     generatedAt: new Date().toISOString(),
     empty: true,
+    // The overview endpoint does not expose registration timestamps yet.
+    registrations: [],
     counts: {
       mentors: { label: "Mentors", value: 0 },
       categories: { label: "Categories", value: 0 },

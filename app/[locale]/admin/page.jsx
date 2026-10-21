@@ -19,6 +19,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { fetchAdminOverview } from "@/lib/actions/admin-overview";
+import RegistrationTrendChart from "@/components/admin/RegistrationTrendChart";
 import SystemHealthWidget from "@/components/admin/SystemHealthWidget";
 import RecentActivityFeed from "@/components/admin/RecentActivityFeed";
 import {
@@ -420,6 +421,8 @@ export default function AdminOverviewPage() {
           />
         ))}
       </div>
+
+      <RegistrationTrendChart registrations={data.registrations || []} />
 
       {/* Setup checklist — completion derived from data + settings values */}
       {guided && (
