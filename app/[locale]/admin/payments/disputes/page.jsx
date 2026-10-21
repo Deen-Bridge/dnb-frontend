@@ -84,6 +84,9 @@ const DISPUTE_STATES = {
   },
 };
 
+// TODO: Replace these UI fixtures with disputes from the admin API. Evidence
+// links must come from the authenticated, short-lived signed-URL endpoint; do
+// not put third-party or permanent file URLs in this page.
 const mockDisputes = [
   {
     id: "dsp_001",
@@ -104,8 +107,7 @@ const mockDisputes = [
         uploadedAt: "2026-08-22T10:20:00Z",
         senderRole: "buyer",
         note: "Screenshot of black video player error.",
-        signedUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        availability: "pending",
       },
     ],
   },
@@ -129,8 +131,7 @@ const mockDisputes = [
         uploadedAt: "2026-08-21T15:00:00Z",
         senderRole: "educator",
         note: "Original table of contents document.",
-        signedUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        availability: "pending",
       },
     ],
   },
@@ -715,6 +716,11 @@ export default function DisputesPage() {
                             <p className="text-[10px] text-muted-foreground">
                               Uploaded {new Date(item.uploadedAt).toLocaleDateString()}
                             </p>
+                            {item.availability === "pending" && (
+                              <p className="text-[10px] text-muted-foreground">
+                                Evidence URL pending secure retrieval.
+                              </p>
+                            )}
                           </div>
 
                           <div className="pt-3">

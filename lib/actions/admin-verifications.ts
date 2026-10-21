@@ -432,7 +432,7 @@ export async function fetchVerificationDetail(
   applicationId: string
 ): Promise<{ application: VerificationApplication }> {
   try {
-    const res = await axiosInstance.get(`/api/admin/educators/verifications/${applicationId}`, {
+    const res = await axiosInstance.get(`/api/admin/educator-verification/${applicationId}`, {
       timeout: 2000,
       retryOnServerError: false,
     });
@@ -456,10 +456,31 @@ export interface VerificationContext {
   email?: string;
 }
 
+function statusFromDecisionConflict(error: any): string | undefined { // TODO(types): Axios error from a verification decision
+  const data = error?.response?.data;
+  const status =
+    data?.application?.status ??
+    data?.currentApplication?.status ??
+    data?.currentStatus ??
+    data?.status ??
+    data?.details?.status;
+  return Object.values(VERIFICATION_STATUS).includes(status) ? status : undefined;
+}
+
+async function getCurrentVerificationStatus(applicationId: string): Promise<string> {
+  const response = await axiosInstance.get(
+    `/api/admin/educator-verification/${applicationId}`,
+    { timeout: 2000, retryOnServerError: false }
+  );
+  const status = response?.data?.application?.status;
+  if (!status) throw new Error("The current verification status was not returned.");
+  return status;
+}
+
 export async function approveVerification(
   applicationId: string,
   context: VerificationContext = {}
-): Promise<{ application: { id: string; status: string } }> {
+): Promise<{ application: { id: string; status: string }; conflict?: boolean }> {
   if (applicationId === "fail_item" || applicationId.startsWith("error_")) {
     throw new Error("Backend validation failed for " + applicationId);
   }
@@ -467,12 +488,16 @@ export async function approveVerification(
   let result: { application: { id: string; status: string } };
   try {
     const res = await axiosInstance.post(
-      `/api/admin/educators/verifications/${applicationId}/approve`,
+      `/api/admin/educator-verification/${applicationId}/approve`,
       {},
       { timeout: 2000, retryOnServerError: false }
     );
     result = res?.data ?? { application: { id: applicationId, status: "approved" } };
   } catch (err: any) { // TODO(types): Error from verification approve
+    if (err?.response?.status === 409) {
+      const status = statusFromDecisionConflict(err) || await getCurrentVerificationStatus(applicationId);
+      return { application: { id: applicationId, status }, conflict: true };
+    }
     if (err?.response?.status && err.response.status !== 404) {
       throw err;
     }
@@ -508,7 +533,7 @@ export async function rejectVerification(
   applicationId: string,
   payload: RejectVerificationPayload = {},
   context: VerificationContext = {}
-): Promise<{ application: { id: string; status: string; reasonCategory?: string; notes?: string } }> {
+): Promise<{ application: { id: string; status: string; reasonCategory?: string; notes?: string }; conflict?: boolean }> {
   const { reasonCategory, notes } = payload;
   if (!reasonCategory) {
     throw new Error("A reason category is required to reject an application.");
@@ -521,7 +546,7 @@ export async function rejectVerification(
   let result: { application: { id: string; status: string; reasonCategory?: string; notes?: string } };
   try {
     const res = await axiosInstance.post(
-      `/api/admin/educators/verifications/${applicationId}/reject`,
+      `/api/admin/educator-verification/${applicationId}/reject`,
       { reasonCategory, notes: notes || "" },
       { timeout: 2000, retryOnServerError: false }
     );
@@ -529,6 +554,10 @@ export async function rejectVerification(
       application: { id: applicationId, status: "rejected", reasonCategory, notes },
     };
   } catch (err: any) { // TODO(types): Error from verification reject
+    if (err?.response?.status === 409) {
+      const status = statusFromDecisionConflict(err) || await getCurrentVerificationStatus(applicationId);
+      return { application: { id: applicationId, status }, conflict: true };
+    }
     if (err?.response?.status && err.response.status !== 404) {
       throw err;
     }

@@ -1,0 +1,67 @@
+name: Auto-merge eligible pull requests
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, synchronize, ready_for_review, edited, labeled, unlabeled, review_requested, review_request_removed]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+  workflow_run:
+    workflows:
+      - "CI"
+    types: [completed]
+  check_run:
+    types: [completed]
+  status:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Optional open PR number to re-evaluate"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number || github.event.workflow_run.head_sha || github.event.check_run.head_sha || github.event.sha || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  merge-when-ready:
+    name: Merge when ready
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      checks: read
+      statuses: read
+    steps:
+      # Checkout only the trusted default branch; never execute pull request code here.
+      - name: Checkout trusted automation
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Check whether automation is installed on the default branch
+        id: automation
+        run: |
+          if [[ -f .github/scripts/auto-merge.cjs ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Evaluate gates and merge
+        if: steps.automation.outputs.available == 'true'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { run } = require("./.github/scripts/auto-merge.cjs");
+            await run({ github, context, core });
