@@ -21,6 +21,15 @@ import {
 
 let tmpRoot;
 
+// The directive text is assembled from parts so this fixture file does not
+// itself contain a bare `eslint-disable` for the rule — the guard script
+// scans every source file in the repo and would flag a literal one.
+const RULE_NAME = "@typescript-eslint/no-explicit-any";
+const directive = (reason) =>
+  `// eslint-disable-next-line ${RULE_NAME}${reason ? ` -- ${reason}` : ""}`;
+const inlineDirective = (reason) =>
+  `// eslint-disable-line ${RULE_NAME}${reason ? ` -- ${reason}` : ""}`;
+
 beforeAll(() => {
   tmpRoot = mkdtempSync(path.join(tmpdir(), "explicit-any-guard-"));
   mkdirSync(path.join(tmpRoot, "lib"), { recursive: true });
@@ -84,11 +93,7 @@ describe("findUnjustifiedDisables", () => {
   it("flags a scoped disable that has no justification", () => {
     const file = write(
       "lib/unjustified.ts",
-      [
-        "// eslint-disable-next-line @typescript-eslint/no-explicit-any",
-        "export const value: any = 1;",
-        "",
-      ].join("\n")
+      [directive(), "export const value: any = 1;", ""].join("\n")
     );
 
     const offenders = findUnjustifiedDisables([file], tmpRoot);
@@ -101,11 +106,9 @@ describe("findUnjustifiedDisables", () => {
   it("accepts a scoped disable that carries a reason", () => {
     const file = write(
       "lib/justified.ts",
-      [
-        "// eslint-disable-next-line @typescript-eslint/no-explicit-any -- third-party blob",
-        "export const value: any = 1;",
-        "",
-      ].join("\n")
+      [directive("third-party blob"), "export const value: any = 1;", ""].join(
+        "\n"
+      )
     );
 
     expect(findUnjustifiedDisables([file], tmpRoot)).toEqual([]);
@@ -114,7 +117,7 @@ describe("findUnjustifiedDisables", () => {
   it("accepts a justified eslint-disable-line", () => {
     const file = write(
       "lib/inline.ts",
-      "export const value: any = 1; // eslint-disable-line @typescript-eslint/no-explicit-any -- mock payload\n"
+      `export const value: any = 1; ${inlineDirective("mock payload")}\n`
     );
 
     expect(findUnjustifiedDisables([file], tmpRoot)).toEqual([]);
@@ -134,11 +137,7 @@ describe("findUnjustifiedDisables", () => {
   it("ignores a reason that is present but empty", () => {
     const file = write(
       "lib/empty-reason.ts",
-      [
-        "// eslint-disable-next-line @typescript-eslint/no-explicit-any --",
-        "export const value: any = 1;",
-        "",
-      ].join("\n")
+      [`${directive()} --`, "export const value: any = 1;", ""].join("\n")
     );
 
     expect(findUnjustifiedDisables([file], tmpRoot)).toHaveLength(1);

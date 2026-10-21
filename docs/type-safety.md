@@ -73,6 +73,12 @@ Rules:
 > forces a narrowing step at every use site, while `any` disables checking for
 > the whole expression.
 
+> **Writing a test fixture?** The guard script scans every source file for
+> bare `eslint-disable` directives for this rule, so a fixture that needs the
+> literal directive text should build it from a constant instead of writing it
+> out inline — see `__tests__/tooling/explicit-any-guard.test.js` for the
+> pattern.
+
 ---
 
 ## 3. The tracked count
