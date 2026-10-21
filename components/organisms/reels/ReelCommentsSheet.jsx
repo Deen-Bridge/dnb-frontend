@@ -1,5 +1,6 @@
 "use client";
 
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Sheet,
@@ -87,7 +88,7 @@ const ReelCommentsSheet = ({
       setPage(response.page);
       setHasMore(response.hasMore);
     } catch (error) {
-      console.error("Failed to load comments:", error);
+      captureClientError(error);
     } finally {
       setLoading(false);
     }
@@ -120,7 +121,7 @@ const ReelCommentsSheet = ({
         onCommentAdded?.(mapped, response?.stats);
       }
     } catch (error) {
-      console.error("Failed to post comment:", error);
+      captureClientError(error);
     } finally {
       setPosting(false);
     }
@@ -138,7 +139,7 @@ const ReelCommentsSheet = ({
         onCommentDeleted?.(commentId, response?.stats);
       }
     } catch (error) {
-      console.error("Failed to delete comment:", error);
+      captureClientError(error);
     } finally {
       setDeleting((prev) => {
         const next = { ...prev };
