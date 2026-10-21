@@ -115,7 +115,98 @@ describe("GlobalTransactionExplorer Component", () => {
     expect(
       screen.queryByText("Invalid Stellar address format (must start with G and be 56 characters)")
     ).not.toBeInTheDocument();
-    expect(applyButton).not.toBeDisabled();
+    // Correcting the address kicks off a refetch, so the apply button only
+    // becomes available again once that request settled.
+    await waitFor(() => expect(applyButton).not.toBeDisabled());
+  });
+
+  it("refetches the transactions when a filter value changes", async () => {
+    render(<GlobalTransactionExplorer />);
+    await screen.findByText("Tafsir of Surah Al-Fatihah");
+
+    const callsBefore = serviceMocks.fetchGlobalTransactions.mock.calls.length;
+
+    const dateFromInput = screen.getByLabelText("Filter by start date");
+    fireEvent.change(dateFromInput, { target: { value: "2026-01-01" } });
+
+    await waitFor(() => {
+      expect(serviceMocks.fetchGlobalTransactions.mock.calls.length).toBeGreaterThan(callsBefore);
+    });
+
+    expect(serviceMocks.fetchGlobalTransactions.mock.calls.at(-1)[0]).toMatchObject({
+      dateFrom: "2026-01-01",
+      page: 1,
+      limit: 10,
+    });
+  });
+
+  it("does not query while a wallet filter is invalid", async () => {
+    render(<GlobalTransactionExplorer />);
+    await screen.findByText("Tafsir of Surah Al-Fatihah");
+
+    const callsBefore = serviceMocks.fetchGlobalTransactions.mock.calls.length;
+
+    const buyerInput = screen.getByLabelText("Search by buyer wallet address");
+    fireEvent.change(buyerInput, { target: { value: "invalid_address" } });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Invalid Stellar address format (must start with G and be 56 characters)")
+      ).toBeInTheDocument();
+    });
+
+    expect(serviceMocks.fetchGlobalTransactions.mock.calls.length).toBe(callsBefore);
+  });
+
+  it("requests the next page when the pagination changes", async () => {
+    serviceMocks.fetchGlobalTransactions.mockResolvedValue({
+      success: true,
+      transactions: MOCK_TRANSACTIONS,
+      pagination: { page: 1, limit: 10, total: 30, pages: 3 },
+    });
+
+    render(<GlobalTransactionExplorer />);
+    await screen.findByText("Tafsir of Surah Al-Fatihah");
+
+    fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+
+    await waitFor(() => {
+      expect(serviceMocks.fetchGlobalTransactions.mock.calls.at(-1)[0]).toMatchObject({
+        page: 2,
+        limit: 10,
+      });
+    });
+  });
+
+  it("returns to the first page when the filters are applied", async () => {
+    serviceMocks.fetchGlobalTransactions.mockResolvedValue({
+      success: true,
+      transactions: MOCK_TRANSACTIONS,
+      pagination: { page: 1, limit: 10, total: 30, pages: 3 },
+    });
+
+    render(<GlobalTransactionExplorer />);
+    await screen.findByText("Tafsir of Surah Al-Fatihah");
+
+    fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+
+    await waitFor(() => {
+      expect(serviceMocks.fetchGlobalTransactions.mock.calls.at(-1)[0]).toMatchObject({ page: 2 });
+    });
+
+    const dateFromInput = screen.getByLabelText("Filter by start date");
+    fireEvent.change(dateFromInput, { target: { value: "2026-01-01" } });
+
+    const applyButton = screen.getByRole("button", { name: "Apply filters" });
+    await waitFor(() => expect(applyButton).not.toBeDisabled());
+    fireEvent.click(applyButton);
+
+    await waitFor(() => {
+      expect(serviceMocks.fetchGlobalTransactions.mock.calls.at(-1)[0]).toMatchObject({
+        page: 1,
+        dateFrom: "2026-01-01",
+      });
+    });
   });
 
   it("copies transaction hash to clipboard on clicking copy button", async () => {

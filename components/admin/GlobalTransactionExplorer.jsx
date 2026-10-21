@@ -82,6 +82,10 @@ export default function GlobalTransactionExplorer() {
   const [buyerWalletError, setBuyerWalletError] = useState("");
   const [creatorWalletError, setCreatorWalletError] = useState("");
 
+  // Bumped by "Apply filters" so the button always re-runs the query, even
+  // when neither the page nor the filters changed since the last fetch.
+  const [reloadToken, setReloadToken] = useState(0);
+
   const validateWallets = useCallback((buyerWallet, creatorWallet) => {
     let valid = true;
     if (buyerWallet && buyerWallet.trim() !== "") {
@@ -113,12 +117,9 @@ export default function GlobalTransactionExplorer() {
     return valid;
   }, []);
 
-  // Fetch transactions from server with current page & filters
+  // Fetch transactions from server with the given page & filters
   const loadTransactions = useCallback(
-    async (pageOverride, limitOverride) => {
-      const pageToFetch = pageOverride !== undefined ? pageOverride : pagination.page;
-      const limitToFetch = limitOverride !== undefined ? limitOverride : pagination.limit;
-
+    async (pageToFetch, limitToFetch) => {
       // Validate wallet formats before querying
       const isWalletValid = validateWallets(filters.buyerWallet, filters.creatorWallet);
       if (!isWalletValid) {
@@ -137,9 +138,17 @@ export default function GlobalTransactionExplorer() {
 
       if (result.success) {
         setTransactions(result.transactions || []);
-        setPagination(
-          result.pagination || { page: pageToFetch, limit: limitToFetch, total: 0, pages: 1 }
-        );
+        // Only the totals come back from the API - the page and the limit stay
+        // under the control of this component so the refetch effect below can
+        // never feed its own result back into another request.
+        setPagination((prev) => {
+          const next = result.pagination || {};
+          return {
+            ...prev,
+            total: next.total ?? 0,
+            pages: next.pages ?? 1,
+          };
+        });
       } else {
         setError(result.error || "Failed to fetch transactions");
         setTransactions([]);
@@ -147,13 +156,20 @@ export default function GlobalTransactionExplorer() {
 
       setIsLoading(false);
     },
-    [filters, pagination.page, pagination.limit, validateWallets]
+    [filters, validateWallets]
   );
 
+  // A wallet filter that does not parse as a Stellar address cannot be
+  // queried, and the inline error already tells the user what to fix.
+  const hasInvalidWallet = Boolean(buyerWalletError || creatorWalletError);
+
+  // Single source of truth for fetching: the table is reloaded whenever the
+  // filters or the pagination change, so the rows always match the filters
+  // that are currently applied.
   useEffect(() => {
-    loadTransactions();
-    // eslint-disable-next-deps
-  }, [pagination.page, pagination.limit]);
+    if (hasInvalidWallet) return;
+    loadTransactions(pagination.page, pagination.limit);
+  }, [loadTransactions, pagination.page, pagination.limit, hasInvalidWallet, reloadToken]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -181,8 +197,10 @@ export default function GlobalTransactionExplorer() {
 
   const handleApplySearch = (e) => {
     if (e) e.preventDefault();
+    // The filters already re-run the query, so applying only has to move the
+    // table back to the first page of the (possibly narrower) result set.
     setPagination((prev) => ({ ...prev, page: 1 }));
-    loadTransactions(1);
+    setReloadToken((token) => token + 1);
   };
 
   const handleResetFilters = () => {
@@ -199,18 +217,8 @@ export default function GlobalTransactionExplorer() {
     setFilters(emptyFilters);
     setBuyerWalletError("");
     setCreatorWalletError("");
+    // Resetting the filters re-runs the refetch effect above.
     setPagination((prev) => ({ ...prev, page: 1 }));
-
-    setIsLoading(true);
-    fetchGlobalTransactions({ page: 1, limit: pagination.limit, ...emptyFilters }).then(
-      (result) => {
-        if (result.success) {
-          setTransactions(result.transactions || []);
-          setPagination(result.pagination);
-        }
-        setIsLoading(false);
-      }
-    );
   };
 
   const handleCopyHash = (txHash) => {
@@ -545,7 +553,7 @@ export default function GlobalTransactionExplorer() {
             variant="outline"
             size="sm"
             className="mt-4"
-            onClick={() => loadTransactions()}
+            onClick={() => loadTransactions(pagination.page, pagination.limit)}
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
@@ -740,8 +748,8 @@ export default function GlobalTransactionExplorer() {
                   value={String(pagination.limit)}
                   onValueChange={(val) => {
                     const newLimit = Number(val);
+                    // The refetch effect picks the new limit up.
                     setPagination((prev) => ({ ...prev, limit: newLimit, page: 1 }));
-                    loadTransactions(1, newLimit);
                   }}
                 >
                   <SelectTrigger className="h-8 w-[70px] text-xs" aria-label="Select rows per page">
@@ -763,8 +771,8 @@ export default function GlobalTransactionExplorer() {
                 size="sm"
                 onClick={() => {
                   const newPage = pagination.page - 1;
+                  // The refetch effect picks the new page up.
                   setPagination((p) => ({ ...p, page: newPage }));
-                  loadTransactions(newPage);
                 }}
                 disabled={pagination.page <= 1 || isLoading}
                 aria-label="Previous page"
@@ -779,8 +787,8 @@ export default function GlobalTransactionExplorer() {
                 size="sm"
                 onClick={() => {
                   const newPage = pagination.page + 1;
+                  // The refetch effect picks the new page up.
                   setPagination((p) => ({ ...p, page: newPage }));
-                  loadTransactions(newPage);
                 }}
                 disabled={pagination.page >= pagination.pages || isLoading}
                 aria-label="Next page"
