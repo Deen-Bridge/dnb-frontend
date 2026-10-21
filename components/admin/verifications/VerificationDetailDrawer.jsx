@@ -71,7 +71,8 @@ export default function VerificationDetailDrawer({
   const handleApprove = async () => {
     setSubmitting(true);
     try {
-      await onApprove(application);
+      const result = await onApprove(application);
+      if (result?.success === false) return;
       onOpenChange(false);
     } catch {
       toast.error("Failed to approve application.");
@@ -87,7 +88,8 @@ export default function VerificationDetailDrawer({
     }
     setSubmitting(true);
     try {
-      await onReject(application, { reasonCategory, notes });
+      const result = await onReject(application, { reasonCategory, notes });
+      if (result?.success === false) return;
       onOpenChange(false);
     } catch {
       toast.error("Failed to reject application.");
