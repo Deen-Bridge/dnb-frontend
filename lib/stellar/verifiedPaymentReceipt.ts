@@ -123,14 +123,14 @@ export function buildVerifiedPaymentReceipt(
 
   let state: PaymentReceiptState;
   let statusLabel: string;
-  if (isLoading) {
-    state = "pending_verification";
-    statusLabel = "Loading Verification Status";
-  } else if (networkMismatch || status === "failed" || errorMessage) {
+  if (networkMismatch || status === "failed" || errorMessage) {
     state = "failed_verification";
     statusLabel = networkMismatch
       ? "Network Mismatch — Verification Failed"
       : "Payment Verification Failed";
+  } else if (isLoading) {
+    state = "pending_verification";
+    statusLabel = "Loading Verification Status";
   } else if (isConfirmed) {
     state = "verified_on_chain";
     statusLabel = "Confirmed on Stellar Ledger";
