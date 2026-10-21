@@ -30,7 +30,14 @@ const ProfileContent = ({ selectedTab, profileId }) => {
     case "following":
       return <FollowingTab key="following" profileId={profileId} />;
     default:
-      return <div>Coming soon...</div>;
+      return (
+        <div
+          className="rounded-xl border border-accent/10 bg-surface-raised p-6 text-center text-sm text-ink-muted"
+          role="status"
+        >
+          No profile content is available for this section.
+        </div>
+      );
   }
 };
 

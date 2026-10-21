@@ -238,22 +238,34 @@ export default function AdminEducatorsVerificationPage() {
   // Single Approve
   const handleSingleApprove = async (app) => {
     try {
-      await approveVerification(app.id, { name: app.name, email: app.email });
-      toast.success(`Approved ${app.name || "educator"}`);
-      loadQueue(true);
+      const result = await approveVerification(app.id, { name: app.name, email: app.email });
+      if (result.conflict) {
+        toast.info(`This application was already decided. Current status: ${result.application.status}.`);
+      } else {
+        toast.success(`Approved ${app.name || "educator"}`);
+      }
+      await loadQueue(true);
+      return { ...result, success: true };
     } catch {
-      toast.error(`Failed to approve ${app.name}`);
+      toast.error(`Failed to approve ${app.name || "educator"}`);
+      return { success: false };
     }
   };
 
   // Single Reject
   const handleSingleReject = async (app, { reasonCategory, notes }) => {
     try {
-      await rejectVerification(app.id, { reasonCategory, notes }, { name: app.name, email: app.email });
-      toast.success(`Rejected ${app.name || "educator"}`);
-      loadQueue(true);
+      const result = await rejectVerification(app.id, { reasonCategory, notes }, { name: app.name, email: app.email });
+      if (result.conflict) {
+        toast.info(`This application was already decided. Current status: ${result.application.status}.`);
+      } else {
+        toast.success(`Rejected ${app.name || "educator"}`);
+      }
+      await loadQueue(true);
+      return { ...result, success: true };
     } catch {
-      toast.error(`Failed to reject ${app.name}`);
+      toast.error(`Failed to reject ${app.name || "educator"}`);
+      return { success: false };
     }
   };
 
