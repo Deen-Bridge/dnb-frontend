@@ -54,6 +54,62 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://api.example.com
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+
+      - name: Start production server
+        run: |
+          npx next start -p 3123 > /tmp/next-e2e.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3123 > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/next-e2e.log
+          exit 1
+
+      - name: Run i18n E2E specs
+        run: npm run test:e2e
+        env:
+          E2E_PORT: 3123
+
+      - name: Run admin E2E specs
+        run: npm run test:e2e:admin
+        env:
+          E2E_PORT: 3123
+
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
