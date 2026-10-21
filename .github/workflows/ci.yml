@@ -34,6 +34,12 @@ jobs:
       - name: Run type check
         run: npm run typecheck
       
+      # #523 — explicit-`any` guardrail. Fails when the tracked count of
+      # explicit `any` sites grows, or when an eslint-disable for the rule
+      # loses its `-- <reason>` justification.
+      - name: Guard explicit-any count
+        run: npm run lint:any
+      
       - name: Run component tests
         run: npm test
       
