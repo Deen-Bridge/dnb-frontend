@@ -69,18 +69,35 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-${{ runner.os }}-
-
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
 
+      # #489 -- Browser binaries are cached per installed Playwright version
+      # (read from the resolved node_modules/@playwright/test entry, i.e. the
+      # version pinned in package-lock.json), so unrelated lockfile changes
+      # do not invalidate the cache. No restore-keys: a stale browser build
+      # must never be reused with a different Playwright version.
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      # Cache miss: download browsers and install OS dependencies.
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
+
+      # Cache hit: browsers are restored, but OS packages live outside the
+      # cached path, so they still need installing.
+      - name: Install Playwright OS dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       - name: Build application
         run: npm run build
