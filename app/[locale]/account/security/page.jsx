@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   ShieldCheck,
   KeyRound,
@@ -245,7 +246,16 @@ export default function SecurityPage() {
                 Not enabled
               </span>
               <span className={cn(poppins_400, "text-sm text-ink-muted")}>
-                Coming soon — authenticator-app (TOTP) support.
+                Authenticator-app support is tracked in{" "}
+                <Link
+                  href="https://github.com/Deen-Bridge/dnb-frontend/issues/175"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-secondary underline-offset-4 hover:underline"
+                >
+                  issue #175
+                </Link>
+                .
               </span>
             </div>
             <Button round disabled className="px-5 text-sm opacity-60">

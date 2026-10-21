@@ -470,7 +470,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    Attach File (Coming Soon)
+                    File attachments are not available yet
                   </TooltipContent>
                 </Tooltip>
                 <Tooltip>
@@ -481,7 +481,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    Attach Image (Coming Soon)
+                    Image attachments are not available yet
                   </TooltipContent>
                 </Tooltip>
 
@@ -493,7 +493,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    Use Microphone (Coming Soon)
+                    Voice input is not available yet
                   </TooltipContent>
                 </Tooltip>
               </div>
