@@ -24,6 +24,7 @@ import {
   Film,
   PauseCircle,
   PlayCircle,
+  ShieldAlert,
 } from "lucide-react";
 import { getUserById } from "@/lib/actions/users/getUserById";
 import { fetchEducatorVerificationHistory } from "@/lib/actions/admin-verification-history";
@@ -31,8 +32,10 @@ import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
 import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
-import { changeUserRole } from "@/lib/actions/admin-users";
+import { changeUserRole, suspendUser, banUser, reinstateUser } from "@/lib/actions/admin-users";
 import { toast } from "sonner";
+import useAuth from "@/hooks/useAuth";
+import { canModerateUser } from "@/lib/admin/role-hierarchy";
 
 const VERIFICATION_BADGE_STYLES = {
   submitted: "bg-blue-100 text-blue-800 border-blue-200",
@@ -67,6 +70,11 @@ export default function AdminUserDetailPage({ params }) {
   const [selectedRole, setSelectedRole] = useState("student");
   const [roleSaving, setRoleSaving] = useState(false);
   const [user, setUser] = useState(null);
+  const { user: actor } = useAuth();
+  const [modAction, setModAction] = useState(null); // "suspend" | "ban" | null
+  const [suspendDuration, setSuspendDuration] = useState("7");
+  const [banReason, setBanReason] = useState("");
+  const [modSaving, setModSaving] = useState(false);
   const [verificationHistory, setVerificationHistory] = useState({
     source: null,
     events: [],
@@ -181,6 +189,59 @@ export default function AdminUserDetailPage({ params }) {
     };
   }, [userId]);
 
+  const refetchUser = async () => {
+    const res = await getUserById(userId);
+    if (!res?.user) throw new Error("Could not reload the user from the server.");
+    setUser(res.user);
+    setSelectedRole(res.user.role === "educator" ? "mentor" : res.user.role || "student");
+  };
+
+  const runModeration = async (fn, successMessage) => {
+    setModSaving(true);
+    try {
+      await fn();
+      await refetchUser();
+      setModAction(null);
+      setBanReason("");
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error(error?.message || "The moderation action failed.");
+    } finally {
+      setModSaving(false);
+    }
+  };
+
+  const handleSuspend = () => {
+    const days = suspendDuration === "indefinite" ? null : Number(suspendDuration);
+    if (days !== null && !(days > 0)) {
+      toast.error("Choose a suspension duration.");
+      return;
+    }
+    runModeration(
+      () => suspendUser(user._id || userId, days, { email: user.email }),
+      "User suspended."
+    );
+  };
+
+  const handleBan = () => {
+    if (!banReason.trim()) {
+      toast.error("A reason is required to ban a user.");
+      return;
+    }
+    runModeration(
+      () => banUser(user._id || userId, { email: user.email, reason: banReason }),
+      "User banned."
+    );
+  };
+
+  const handleReinstate = () => {
+    if (!window.confirm(`Reinstate ${user.name}? Their previous role will be restored.`)) return;
+    runModeration(
+      () => reinstateUser(user._id || userId, { email: user.email }),
+      "User reinstated."
+    );
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -262,6 +323,18 @@ export default function AdminUserDetailPage({ params }) {
           <div className="p-8 text-center text-muted-foreground">User record not found.</div>
         ) : (
           <>
+            {user.status === "banned" && (
+              <div role="alert" className="flex items-start gap-3 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+                <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-semibold">This user is banned.</p>
+                  {(user.banReason || user.statusReason) && (
+                    <p className="text-xs">Reason: {user.banReason || user.statusReason}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* User Primary Overview Card */}
             <Card className="border shadow-none">
               <CardContent className="p-6">
@@ -366,6 +439,79 @@ export default function AdminUserDetailPage({ params }) {
                 <Button onClick={handleRoleChange} disabled={roleSaving || selectedRole === (user.role === "educator" ? "mentor" : user.role || "student")}>
                   {roleSaving ? "Saving…" : "Save role"}
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none no-print">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Account moderation</CardTitle>
+                <CardDescription className="text-xs">
+                  Status is reloaded from the server after every action. You cannot moderate users with an equal or higher role.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {!canModerateUser(actor?.role, user.role) ? (
+                  <p className="text-xs text-muted-foreground">
+                    You do not have permission to moderate this account.
+                  </p>
+                ) : user.status === "banned" || user.status === "suspended" ? (
+                  <Button size="sm" onClick={handleReinstate} disabled={modSaving}>
+                    {modSaving ? "Working…" : "Reinstate user"}
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" disabled={modSaving} onClick={() => setModAction("suspend")}>
+                      Suspend
+                    </Button>
+                    <Button size="sm" variant="destructive" disabled={modSaving} onClick={() => setModAction("ban")}>
+                      Ban
+                    </Button>
+                  </div>
+                )}
+
+                {modAction === "suspend" && (
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                    <div>
+                      <label htmlFor="suspend-duration" className="mb-1.5 block text-sm font-medium">Duration</label>
+                      <select
+                        id="suspend-duration"
+                        value={suspendDuration}
+                        onChange={(e) => setSuspendDuration(e.target.value)}
+                        className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                      >
+                        <option value="1">1 day</option>
+                        <option value="7">7 days</option>
+                        <option value="30">30 days</option>
+                        <option value="90">90 days</option>
+                        <option value="indefinite">Indefinite</option>
+                      </select>
+                    </div>
+                    <Button size="sm" onClick={handleSuspend} disabled={modSaving}>
+                      {modSaving ? "Suspending…" : "Confirm suspend"}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
+                  </div>
+                )}
+
+                {modAction === "ban" && (
+                  <div className="space-y-2">
+                    <label htmlFor="ban-reason" className="block text-sm font-medium">Reason (required)</label>
+                    <textarea
+                      id="ban-reason"
+                      value={banReason}
+                      onChange={(e) => setBanReason(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      placeholder="Explain why this user is being banned"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="destructive" onClick={handleBan} disabled={modSaving || !banReason.trim()}>
+                        {modSaving ? "Banning…" : "Confirm ban"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
