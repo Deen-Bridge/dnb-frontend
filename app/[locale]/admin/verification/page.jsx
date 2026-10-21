@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -13,7 +13,9 @@ import {
   ShieldCheck,
   TimerReset,
   UserCheck,
+  Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -46,6 +48,12 @@ import {
   getVerificationAgeDays,
   getVerificationSlaBucket,
 } from "@/lib/admin/verification-sla";
+import {
+  REJECTION_REASON_CATEGORIES,
+  approveVerification,
+  fetchVerificationQueue,
+  rejectVerification,
+} from "@/lib/actions/admin-verifications";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import { AdminEmptyState } from "@/components/molecules/admin/empty-state";
@@ -56,62 +64,25 @@ const SLA_ICONS = {
   overdue: AlertTriangle,
 };
 
-const mockVerificationQueue = [
-  {
-    id: "evq_101",
-    educator: "Amina Yusuf",
-    email: "amina.yusuf@example.com",
-    submittedAt: "2026-08-27T08:30:00Z",
-    documents: 3,
-    status: "Under review",
-    track: "Quran Studies",
-  },
-  {
-    id: "evq_102",
-    educator: "Bilal Kareem",
-    email: "bilal.kareem@example.com",
-    submittedAt: "2026-08-25T11:15:00Z",
-    documents: 2,
-    status: "Pending document check",
-    track: "Arabic",
-  },
-  {
-    id: "evq_103",
-    educator: "Maryam Bello",
-    email: "maryam.bello@example.com",
-    submittedAt: "2026-08-23T09:45:00Z",
-    documents: 4,
-    status: "Liveness review",
-    track: "Hadith",
-  },
-  {
-    id: "evq_104",
-    educator: "Ibrahim Sani",
-    email: "ibrahim.sani@example.com",
-    submittedAt: "2026-08-20T14:00:00Z",
-    documents: 3,
-    status: "Admin review",
-    track: "Fiqh",
-  },
-  {
-    id: "evq_105",
-    educator: "Khadija Noor",
-    email: "khadija.noor@example.com",
-    submittedAt: "2026-08-18T07:20:00Z",
-    documents: 2,
-    status: "Needs escalation",
-    track: "Seerah",
-  },
-  {
-    id: "evq_106",
-    educator: "Omar Ali",
-    email: "omar.ali@example.com",
-    submittedAt: "2026-08-16T15:10:00Z",
-    documents: 5,
-    status: "Needs escalation",
-    track: "Islamic Finance",
-  },
-];
+const OPEN_STATUSES = ["pending", "under_review"];
+
+const STATUS_LABELS = {
+  pending: "Pending",
+  under_review: "Under review",
+};
+
+function normalizeApplication(app) {
+  const subjects = Array.isArray(app.subjects) ? app.subjects : [];
+  return {
+    id: app.id,
+    educator: app.name || "Unknown",
+    email: app.email || "",
+    submittedAt: app.submittedAt,
+    documents: Array.isArray(app.documents) ? app.documents.length : 0,
+    status: app.status,
+    track: subjects.length > 0 ? subjects.join(", ") : "General",
+  };
+}
 
 function formatSubmittedAt(timestamp) {
   return new Date(timestamp).toLocaleString("en-US", {
@@ -175,7 +146,11 @@ function SlaSummaryStrip({ queue, now }) {
 }
 
 export default function AdminVerificationQueuePage() {
-  const [queue, setQueue] = useState(mockVerificationQueue);
+  const [queue, setQueue] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [busyId, setBusyId] = useState(null);
+  const [reasons, setReasons] = useState({});
   const [bucketFilter, setBucketFilter] = useState("all");
   const [search, setSearch] = useState("");
   const now = useMemo(() => new Date(), []);
@@ -196,8 +171,46 @@ export default function AdminVerificationQueuePage() {
     });
   }, [bucketFilter, now, queue, search]);
 
-  const refreshQueue = () => {
-    setQueue([...mockVerificationQueue]);
+  const loadQueue = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchVerificationQueue({ limit: 100 });
+      setQueue(
+        (data?.applications ?? [])
+          .filter((app) => OPEN_STATUSES.includes(app.status))
+          .map(normalizeApplication)
+      );
+    } catch (err) {
+      setError(err?.message || "Failed to load the verification queue.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadQueue();
+  }, [loadQueue]);
+
+  const refreshQueue = loadQueue;
+
+  const decide = async (item, decision) => {
+    setBusyId(item.id);
+    try {
+      if (decision === "approve") {
+        await approveVerification(item.id);
+      } else {
+        await rejectVerification(item.id, { reasonCategory: reasons[item.id] });
+      }
+      setQueue((prev) => prev.filter((entry) => entry.id !== item.id));
+      toast.success(
+        decision === "approve" ? "Application approved" : "Application rejected"
+      );
+    } catch (err) {
+      toast.error(err?.message || "Could not record the decision.");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -207,7 +220,7 @@ export default function AdminVerificationQueuePage() {
         title="Verification Queue"
         subtitle="Prioritize educator applications by SLA age"
         actions={
-          <Button variant="outline" size="sm" onClick={refreshQueue}>
+          <Button variant="outline" size="sm" onClick={refreshQueue} disabled={loading}>
             <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
             Refresh
           </Button>
@@ -268,12 +281,58 @@ export default function AdminVerificationQueuePage() {
                   <TableHead>Track</TableHead>
                   <TableHead>Documents</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Decision</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredQueue.length === 0 ? (
+                {loading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="py-10 text-center text-muted-foreground"
+                      role="status"
+                    >
+                      <Loader2
+                        className="mx-auto mb-2 h-6 w-6 animate-spin"
+                        aria-hidden="true"
+                      />
+                      <p>Loading verification queue...</p>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="py-10 text-center text-destructive"
+                      role="alert"
+                    >
+                      <p>{error}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3"
+                        onClick={refreshQueue}
+                      >
+                        Retry
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ) : filteredQueue.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="py-10 text-center text-muted-foreground"
+                    >
+                      <UserCheck
+                        className="mx-auto mb-2 h-8 w-8 opacity-50"
+                        aria-hidden="true"
+                      />
+                      <p>No verification applications match this view.</p>
+                    </TableCell>
+                  </TableRow>
+                ) : filteredQueue.length === 0 ? (
                   <AdminEmptyState
-                    colSpan={6}
+                    colSpan={7}
                     icon={UserCheck}
                     title="No verification applications"
                     description="There are no applications that match the selected view."
@@ -334,8 +393,45 @@ export default function AdminVerificationQueuePage() {
                               className={cn("h-4 w-4", bucket.iconClass)}
                               aria-hidden="true"
                             />
-                            {item.status}
+                            {STATUS_LABELS[item.status] || item.status}
                           </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                              size="sm"
+                              disabled={busyId === item.id}
+                              onClick={() => decide(item, "approve")}
+                            >
+                              Approve
+                            </Button>
+                            <select
+                              aria-label={`Rejection reason for ${item.educator}`}
+                              value={reasons[item.id] || ""}
+                              onChange={(event) =>
+                                setReasons((prev) => ({
+                                  ...prev,
+                                  [item.id]: event.target.value,
+                                }))
+                              }
+                              className="h-8 rounded-md border bg-background px-2 text-xs"
+                            >
+                              <option value="">Reason...</option>
+                              {REJECTION_REASON_CATEGORIES.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                  {c.label}
+                                </option>
+                              ))}
+                            </select>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              disabled={busyId === item.id || !reasons[item.id]}
+                              onClick={() => decide(item, "reject")}
+                            >
+                              Reject
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
