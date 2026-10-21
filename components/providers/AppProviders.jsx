@@ -10,6 +10,7 @@ import AdminIdleGuard from "@/components/auth/AdminIdleGuard";
 import MaintenanceGate from "@/components/maintenance/MaintenanceGate";
 import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastBanner";
 import AdminShortcutsProvider from "@/components/admin/AdminShortcutsProvider";
+import AdminRouteGuard from "@/components/auth/AdminRouteGuard";
 import { MediaBlurProvider } from "@/contexts/MediaBlurContext";
 
 export default function AppProviders({ children }) {
@@ -41,7 +42,9 @@ export default function AppProviders({ children }) {
                     (g→key) + `?` cheatsheet; self-noops off admin routes and
                     for non-admins, and defers ⌘K to the CommandPalette. */}
                 <AdminShortcutsProvider />
-                <MaintenanceGate>{children}</MaintenanceGate>
+                <MaintenanceGate>
+                  <AdminRouteGuard>{children}</AdminRouteGuard>
+                </MaintenanceGate>
                 </StellarProvider>
               </FeatureFlagProvider>
             </AuthProvider>
