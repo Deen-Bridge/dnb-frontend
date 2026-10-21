@@ -16,7 +16,8 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -524,7 +525,7 @@ function UnifiedReportsContent() {
           e.preventDefault();
           if (reports[selectedIndex]) {
             const target = reports[selectedIndex].target;
-            window.location.href = getTargetAdminLink(target);
+            router.push(getTargetAdminLink(target));
           }
           break;
         case "o":
