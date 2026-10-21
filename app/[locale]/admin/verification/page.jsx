@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import {
   AlertTriangle,
@@ -291,9 +292,12 @@ export default function AdminVerificationQueuePage() {
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                              <p className={cn(poppins_500.className, "text-sm")}>
+                              <Link
+                                href={`/admin/verification/${item.id}`}
+                                className={cn(poppins_500.className, "text-sm hover:underline")}
+                              >
                                 {item.educator}
-                              </p>
+                              </Link>
                               <p className="truncate text-xs text-muted-foreground">
                                 {item.email}
                               </p>
