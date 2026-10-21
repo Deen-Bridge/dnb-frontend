@@ -118,7 +118,7 @@ const adminDestinations = [
   ["Payment Disputes", "/admin/payments/disputes"],
   ["Reconciliation", "/admin/reconciliation"],
   ["Activity Monitor", "/admin/activity-monitor"],
-  ["Audit Log", "/admin/audit-log"],
+  ["Audit Log", "/admin/audit-logs"],
   ["Audit Logs", "/admin/audit-logs"],
   ["Privacy", "/admin/privacy"],
   ["Analytics: Funnel", "/admin/analytics/funnel"],
