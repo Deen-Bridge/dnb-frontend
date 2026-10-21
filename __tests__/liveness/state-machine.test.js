@@ -223,9 +223,7 @@ describe("No biometric data written to persistent storage", () => {
 
   it("recordConsent never writes to localStorage, sessionStorage, or cookies", () => {
     const { result } = setup();
-    act(() =>
-      result.current.recordConsent({ consentAt: Date.now(), consentVersion: "1.0.0" })
-    );
+    act(() => result.current.recordConsent({ consentAt: Date.now(), consentVersion: "1.0.0" }));
 
     expect(lsSpy).not.toHaveBeenCalled();
     expect(ssSpy).not.toHaveBeenCalled();
@@ -234,9 +232,7 @@ describe("No biometric data written to persistent storage", () => {
 
   it("a full success flow (consent → token → clear) never writes to storage", () => {
     const { result } = setup();
-    act(() =>
-      result.current.recordConsent({ consentAt: Date.now(), consentVersion: "1.0.0" })
-    );
+    act(() => result.current.recordConsent({ consentAt: Date.now(), consentVersion: "1.0.0" }));
     act(() => result.current.setVerificationToken("tok_full_flow"));
     act(() => result.current.clearVerificationToken());
 

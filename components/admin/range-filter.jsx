@@ -5,11 +5,7 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 /**
@@ -54,17 +50,11 @@ function RangeFilter({ value, onChange, className }) {
         <Calendar
           mode="range"
           selected={range}
-          onSelect={(next) =>
-            onChange({ from: next?.from || null, to: next?.to || null })
-          }
+          onSelect={(next) => onChange({ from: next?.from || null, to: next?.to || null })}
           numberOfMonths={2}
         />
         <div className="border-t p-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onChange({ from: null, to: null })}
-          >
+          <Button variant="outline" size="sm" onClick={() => onChange({ from: null, to: null })}>
             Clear
           </Button>
         </div>

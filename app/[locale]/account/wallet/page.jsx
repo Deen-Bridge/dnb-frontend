@@ -19,22 +19,13 @@ import {
 } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 
 /* ── building blocks (design-system consistent) ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -48,11 +39,7 @@ const CardHeading = ({ icon: Icon, title, subtitle }) => (
     )}
     <div>
       <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
-      {subtitle && (
-        <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-          {subtitle}
-        </p>
-      )}
+      {subtitle && <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>{subtitle}</p>}
     </div>
   </div>
 );
@@ -175,9 +162,7 @@ export default function WalletPage() {
                   </p>
                   <p className={cn(poppins_600, "mt-1 text-3xl text-ink")}>
                     {parseFloat(walletInfo?.xlmBalance || 0).toFixed(4)}{" "}
-                    <span className={cn(poppins_500, "text-lg text-ink-muted")}>
-                      XLM
-                    </span>
+                    <span className={cn(poppins_500, "text-lg text-ink-muted")}>XLM</span>
                   </p>
                 </div>
               </div>
@@ -191,9 +176,8 @@ export default function WalletPage() {
                       USDC Trustline Required
                     </h4>
                     <p className={cn(poppins_400, "mt-1 text-sm text-amber-700")}>
-                      To send or receive USDC payments, you need to add a USDC
-                      trustline to your wallet. Open your wallet app (like
-                      Freighter) and add the USDC asset.
+                      To send or receive USDC payments, you need to add a USDC trustline to your
+                      wallet. Open your wallet app (like Freighter) and add the USDC asset.
                     </p>
                   </div>
                 </div>
@@ -205,12 +189,9 @@ export default function WalletPage() {
                 <Wallet className="h-7 w-7 text-accent" />
               </div>
               <div>
-                <h3 className={cn(poppins_600, "text-lg text-ink")}>
-                  No Wallet Connected
-                </h3>
+                <h3 className={cn(poppins_600, "text-lg text-ink")}>No Wallet Connected</h3>
                 <p className={cn(poppins_400, "mx-auto mt-1 max-w-sm text-sm text-ink-muted")}>
-                  Connect your Stellar wallet to make purchases and receive
-                  payments
+                  Connect your Stellar wallet to make purchases and receive payments
                 </p>
               </div>
               <WalletConnectButton variant="default" />
@@ -239,9 +220,7 @@ export default function WalletPage() {
           />
           <div className="space-y-4">
             <div>
-              <h4 className={cn(poppins_600, "text-sm text-ink")}>
-                Getting Started with Stellar
-              </h4>
+              <h4 className={cn(poppins_600, "text-sm text-ink")}>Getting Started with Stellar</h4>
               <ol className="mt-3 space-y-2">
                 <li className="flex items-start gap-3">
                   <span
@@ -258,7 +237,10 @@ export default function WalletPage() {
                       href="https://www.freighter.app/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn(poppins_500, "text-secondary hover:text-highlight hover:underline")}
+                      className={cn(
+                        poppins_500,
+                        "text-secondary hover:text-highlight hover:underline"
+                      )}
                     >
                       Freighter Wallet
                     </a>{" "}
@@ -313,16 +295,17 @@ export default function WalletPage() {
                   <ArrowRight className="h-4 w-4 text-accent" />
                 </div>
                 <div>
-                  <h4 className={cn(poppins_600, "text-sm text-ink")}>
-                    Testnet Mode
-                  </h4>
+                  <h4 className={cn(poppins_600, "text-sm text-ink")}>Testnet Mode</h4>
                   <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
                     You are on testnet. Get free test XLM from the{" "}
                     <a
                       href="https://laboratory.stellar.org/#account-creator?network=test"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={cn(poppins_500, "text-secondary hover:text-highlight hover:underline")}
+                      className={cn(
+                        poppins_500,
+                        "text-secondary hover:text-highlight hover:underline"
+                      )}
                     >
                       Stellar Laboratory
                     </a>

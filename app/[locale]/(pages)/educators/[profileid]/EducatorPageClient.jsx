@@ -7,12 +7,7 @@ import { getUserById } from "@/lib/actions/users/getUserById";
 import { fetchUserCourses } from "@/lib/actions/courses/fetch-user-id-courses";
 import { fetchUserBooks } from "@/lib/actions/library/fetch-user-id-books";
 import { fetchUserSpaces } from "@/lib/actions/spaces/fetchUserSpaces";
-import {
-  getFollowersCount,
-  checkIfFollowing,
-  followUser,
-  unfollowUser,
-} from "@/hooks/useFollow";
+import { getFollowersCount, checkIfFollowing, followUser, unfollowUser } from "@/hooks/useFollow";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import EducatorProfileHeader from "@/components/organisms/educators/EducatorProfileHeader";
 import PublicCourseCard from "@/components/molecules/dashboard/cards/educators/PublicCourseCard";
@@ -26,11 +21,7 @@ import Navbar from "@/components/molecules/ladingpage/Navbar";
 import { Copy, Share2, Users, BookOpen, GraduationCap, Star } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
 
 export default function PublicEducatorPage({ params, educator: educatorProp }) {
@@ -66,13 +57,12 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
         }
         setEducator(u);
 
-        const [coursesData, booksData, spacesData, followersRes] =
-          await Promise.allSettled([
-            fetchUserCourses(profileid),
-            fetchUserBooks(profileid),
-            fetchUserSpaces(profileid),
-            getFollowersCount(profileid),
-          ]);
+        const [coursesData, booksData, spacesData, followersRes] = await Promise.allSettled([
+          fetchUserCourses(profileid),
+          fetchUserBooks(profileid),
+          fetchUserSpaces(profileid),
+          getFollowersCount(profileid),
+        ]);
 
         if (coursesData.status === "fulfilled") {
           setCourses(Array.isArray(coursesData.value) ? coursesData.value : []);
@@ -85,9 +75,7 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
           setSpaces(sd?.spaces || (Array.isArray(sd) ? sd : []));
         }
         if (followersRes.status === "fulfilled" && followersRes.value?.success) {
-          setFollowersCount(
-            followersRes.value.followersCount || followersRes.value.count || 0
-          );
+          setFollowersCount(followersRes.value.followersCount || followersRes.value.count || 0);
         }
 
         if (currentUser?._id && currentUser._id !== profileid) {
@@ -112,9 +100,7 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
     }
     setFollowLoading(true);
     try {
-      const result = isFollowing
-        ? await unfollowUser(profileid)
-        : await followUser(profileid);
+      const result = isFollowing ? await unfollowUser(profileid) : await followUser(profileid);
       if (result.success) {
         setIsFollowing(!isFollowing);
         setFollowersCount((c) => (isFollowing ? c - 1 : c + 1));
@@ -162,8 +148,7 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
     );
   }
 
-  const hasContent =
-    courses.length > 0 || books.length > 0 || spaces.length > 0;
+  const hasContent = courses.length > 0 || books.length > 0 || spaces.length > 0;
 
   if (!hasContent) {
     return (
@@ -187,8 +172,7 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
               No public content yet
             </h3>
             <p className={cn(poppins_400, "text-ink-inverse-muted")}>
-              This educator hasn&apos;t published any courses, books, or spaces
-              yet.
+              This educator hasn&apos;t published any courses, books, or spaces yet.
             </p>
           </div>
         </main>

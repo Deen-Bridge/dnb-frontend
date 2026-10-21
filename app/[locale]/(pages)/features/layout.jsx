@@ -1,17 +1,17 @@
 import { siteName } from "@/lib/config/site.config";
 
-const title = 'Features';
+const title = "Features";
 const description =
-  'Courses, a curated Islamic library, live community spaces, an AI assistant, transparent sadaqah, and USDC payments on Stellar.';
+  "Courses, a curated Islamic library, live community spaces, an AI assistant, transparent sadaqah, and USDC payments on Stellar.";
 
 export const metadata = {
   title,
   description,
-  alternates: { canonical: '/features' },
+  alternates: { canonical: "/features" },
   openGraph: {
     title: `${title} | ${siteName}`,
     description,
-    url: '/features',
+    url: "/features",
     siteName,
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: title }],

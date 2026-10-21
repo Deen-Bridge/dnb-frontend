@@ -22,22 +22,18 @@ describe("updateReelPoster()", () => {
     const result = await promise;
 
     expect(result.reel.id).toBe("reel-1");
-    expect(result.reel.poster).toBe(
-      "https://res.cloudinary.com/demo/image/upload/reel-1.jpg"
-    );
+    expect(result.reel.poster).toBe("https://res.cloudinary.com/demo/image/upload/reel-1.jpg");
     expect(typeof result.reel.updatedAt).toBe("string");
   });
 
   it("rejects when posterUrl is missing", async () => {
-    await expect(updateReelPoster("reel-1", {})).rejects.toThrow(
-      /poster url is required/i
-    );
+    await expect(updateReelPoster("reel-1", {})).rejects.toThrow(/poster url is required/i);
   });
 
   it("rejects when posterUrl is not a string", async () => {
-    await expect(
-      updateReelPoster("reel-1", { posterUrl: 12345 })
-    ).rejects.toThrow(/poster url is required/i);
+    await expect(updateReelPoster("reel-1", { posterUrl: 12345 })).rejects.toThrow(
+      /poster url is required/i
+    );
   });
 
   it("keeps separate reels' posters independent", async () => {

@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  toggleCourseBookmark,
-  checkIfBookmarked,
-} from "@/lib/actions/courses/bookmark-course";
-import {
-  toggleBookBookmark,
-  checkIfBookBookmarked,
-} from "@/lib/actions/library/bookmark-book";
+import { toggleCourseBookmark, checkIfBookmarked } from "@/lib/actions/courses/bookmark-course";
+import { toggleBookBookmark, checkIfBookBookmarked } from "@/lib/actions/library/bookmark-book";
 import { toast } from "sonner";
 import useAuth from "./useAuth";
 
@@ -96,7 +90,8 @@ export const useBookmarkCore = (
       if (result?.message) {
         toast.success(result.message);
       }
-    } catch (error: any) { // TODO(types): Error shape from bookmark toggle
+    } catch (error: any) {
+      // TODO(types): Error shape from bookmark toggle
       setIsBookmarked(previousState);
       if (onToggle) {
         onToggle(previousState);

@@ -19,13 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ExternalLink,
@@ -45,10 +39,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchGlobalTransactions } from "@/lib/actions/admin-transactions";
-import {
-  getExplorerTransactionUrl,
-  isValidStellarAddress,
-} from "@/lib/utils/stellarExplorer";
+import { getExplorerTransactionUrl, isValidStellarAddress } from "@/lib/utils/stellarExplorer";
 import { downloadCsv } from "@/lib/utils/csv";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
@@ -91,11 +82,17 @@ export default function GlobalTransactionExplorer() {
   const [buyerWalletError, setBuyerWalletError] = useState("");
   const [creatorWalletError, setCreatorWalletError] = useState("");
 
+  // Bumped by "Apply filters" so the button always re-runs the query, even
+  // when neither the page nor the filters changed since the last fetch.
+  const [reloadToken, setReloadToken] = useState(0);
+
   const validateWallets = useCallback((buyerWallet, creatorWallet) => {
     let valid = true;
     if (buyerWallet && buyerWallet.trim() !== "") {
       if (!isValidStellarAddress(buyerWallet.trim())) {
-        setBuyerWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setBuyerWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
         valid = false;
       } else {
         setBuyerWalletError("");
@@ -106,7 +103,9 @@ export default function GlobalTransactionExplorer() {
 
     if (creatorWallet && creatorWallet.trim() !== "") {
       if (!isValidStellarAddress(creatorWallet.trim())) {
-        setCreatorWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setCreatorWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
         valid = false;
       } else {
         setCreatorWalletError("");
@@ -118,12 +117,9 @@ export default function GlobalTransactionExplorer() {
     return valid;
   }, []);
 
-  // Fetch transactions from server with current page & filters
+  // Fetch transactions from server with the given page & filters
   const loadTransactions = useCallback(
-    async (pageOverride, limitOverride) => {
-      const pageToFetch = pageOverride !== undefined ? pageOverride : pagination.page;
-      const limitToFetch = limitOverride !== undefined ? limitOverride : pagination.limit;
-
+    async (pageToFetch, limitToFetch) => {
       // Validate wallet formats before querying
       const isWalletValid = validateWallets(filters.buyerWallet, filters.creatorWallet);
       if (!isWalletValid) {
@@ -142,9 +138,17 @@ export default function GlobalTransactionExplorer() {
 
       if (result.success) {
         setTransactions(result.transactions || []);
-        setPagination(
-          result.pagination || { page: pageToFetch, limit: limitToFetch, total: 0, pages: 1 }
-        );
+        // Only the totals come back from the API - the page and the limit stay
+        // under the control of this component so the refetch effect below can
+        // never feed its own result back into another request.
+        setPagination((prev) => {
+          const next = result.pagination || {};
+          return {
+            ...prev,
+            total: next.total ?? 0,
+            pages: next.pages ?? 1,
+          };
+        });
       } else {
         setError(result.error || "Failed to fetch transactions");
         setTransactions([]);
@@ -152,20 +156,29 @@ export default function GlobalTransactionExplorer() {
 
       setIsLoading(false);
     },
-    [filters, pagination.page, pagination.limit, validateWallets]
+    [filters, validateWallets]
   );
 
+  // A wallet filter that does not parse as a Stellar address cannot be
+  // queried, and the inline error already tells the user what to fix.
+  const hasInvalidWallet = Boolean(buyerWalletError || creatorWalletError);
+
+  // Single source of truth for fetching: the table is reloaded whenever the
+  // filters or the pagination change, so the rows always match the filters
+  // that are currently applied.
   useEffect(() => {
-    loadTransactions();
-    // eslint-disable-next-deps
-  }, [pagination.page, pagination.limit]);
+    if (hasInvalidWallet) return;
+    loadTransactions(pagination.page, pagination.limit);
+  }, [loadTransactions, pagination.page, pagination.limit, hasInvalidWallet, reloadToken]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
 
     if (key === "buyerWallet") {
       if (value && !isValidStellarAddress(value.trim())) {
-        setBuyerWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setBuyerWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
       } else {
         setBuyerWalletError("");
       }
@@ -173,7 +186,9 @@ export default function GlobalTransactionExplorer() {
 
     if (key === "creatorWallet") {
       if (value && !isValidStellarAddress(value.trim())) {
-        setCreatorWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setCreatorWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
       } else {
         setCreatorWalletError("");
       }
@@ -182,8 +197,10 @@ export default function GlobalTransactionExplorer() {
 
   const handleApplySearch = (e) => {
     if (e) e.preventDefault();
+    // The filters already re-run the query, so applying only has to move the
+    // table back to the first page of the (possibly narrower) result set.
     setPagination((prev) => ({ ...prev, page: 1 }));
-    loadTransactions(1);
+    setReloadToken((token) => token + 1);
   };
 
   const handleResetFilters = () => {
@@ -200,18 +217,8 @@ export default function GlobalTransactionExplorer() {
     setFilters(emptyFilters);
     setBuyerWalletError("");
     setCreatorWalletError("");
+    // Resetting the filters re-runs the refetch effect above.
     setPagination((prev) => ({ ...prev, page: 1 }));
-
-    setIsLoading(true);
-    fetchGlobalTransactions({ page: 1, limit: pagination.limit, ...emptyFilters }).then(
-      (result) => {
-        if (result.success) {
-          setTransactions(result.transactions || []);
-          setPagination(result.pagination);
-        }
-        setIsLoading(false);
-      }
-    );
   };
 
   const handleCopyHash = (txHash) => {
@@ -308,7 +315,8 @@ export default function GlobalTransactionExplorer() {
             Global Transaction Explorer
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Platform-wide transaction history with real-time filters and network-aware chain verification ({network}).
+            Platform-wide transaction history with real-time filters and network-aware chain
+            verification ({network}).
           </p>
         </div>
 
@@ -377,7 +385,11 @@ export default function GlobalTransactionExplorer() {
                   value={filters.status}
                   onValueChange={(val) => handleFilterChange("status", val)}
                 >
-                  <SelectTrigger id="statusFilter" className="h-9 text-sm" aria-label="Filter by status">
+                  <SelectTrigger
+                    id="statusFilter"
+                    className="h-9 text-sm"
+                    aria-label="Filter by status"
+                  >
                     <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,14 +405,21 @@ export default function GlobalTransactionExplorer() {
 
               {/* Item Type Filter */}
               <div className="space-y-1.5">
-                <label htmlFor="itemTypeFilter" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="itemTypeFilter"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Item Type
                 </label>
                 <Select
                   value={filters.itemType}
                   onValueChange={(val) => handleFilterChange("itemType", val)}
                 >
-                  <SelectTrigger id="itemTypeFilter" className="h-9 text-sm" aria-label="Filter by item type">
+                  <SelectTrigger
+                    id="itemTypeFilter"
+                    className="h-9 text-sm"
+                    aria-label="Filter by item type"
+                  >
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
@@ -471,7 +490,10 @@ export default function GlobalTransactionExplorer() {
 
               {/* Creator Wallet */}
               <div className="space-y-1.5 md:col-span-2">
-                <label htmlFor="creatorWallet" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="creatorWallet"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Creator Wallet Search
                 </label>
                 <Input
@@ -531,7 +553,7 @@ export default function GlobalTransactionExplorer() {
             variant="outline"
             size="sm"
             className="mt-4"
-            onClick={() => loadTransactions()}
+            onClick={() => loadTransactions(pagination.page, pagination.limit)}
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
@@ -555,14 +577,10 @@ export default function GlobalTransactionExplorer() {
           <CreditCard className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
           <p className="font-semibold text-foreground text-base">No transactions found</p>
           <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
-            No transactions match the selected filter criteria. Try adjusting your date range, amount, or wallet address filters.
+            No transactions match the selected filter criteria. Try adjusting your date range,
+            amount, or wallet address filters.
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4 text-xs"
-            onClick={handleResetFilters}
-          >
+          <Button variant="outline" size="sm" className="mt-4 text-xs" onClick={handleResetFilters}>
             Clear Filters
           </Button>
         </div>
@@ -730,8 +748,8 @@ export default function GlobalTransactionExplorer() {
                   value={String(pagination.limit)}
                   onValueChange={(val) => {
                     const newLimit = Number(val);
+                    // The refetch effect picks the new limit up.
                     setPagination((prev) => ({ ...prev, limit: newLimit, page: 1 }));
-                    loadTransactions(1, newLimit);
                   }}
                 >
                   <SelectTrigger className="h-8 w-[70px] text-xs" aria-label="Select rows per page">
@@ -753,8 +771,8 @@ export default function GlobalTransactionExplorer() {
                 size="sm"
                 onClick={() => {
                   const newPage = pagination.page - 1;
+                  // The refetch effect picks the new page up.
                   setPagination((p) => ({ ...p, page: newPage }));
-                  loadTransactions(newPage);
                 }}
                 disabled={pagination.page <= 1 || isLoading}
                 aria-label="Previous page"
@@ -769,8 +787,8 @@ export default function GlobalTransactionExplorer() {
                 size="sm"
                 onClick={() => {
                   const newPage = pagination.page + 1;
+                  // The refetch effect picks the new page up.
                   setPagination((p) => ({ ...p, page: newPage }));
-                  loadTransactions(newPage);
                 }}
                 disabled={pagination.page >= pagination.pages || isLoading}
                 aria-label="Next page"

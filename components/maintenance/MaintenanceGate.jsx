@@ -82,9 +82,7 @@ function MaintenanceAdminBar({ onTurnedOff }) {
           disabled={isSaving}
           className="inline-flex items-center gap-1.5 rounded-full bg-amber-950 px-3 py-1 text-xs font-semibold text-amber-50 transition hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSaving ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-          ) : null}
+          {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : null}
           {isSaving ? "Turning off…" : "Turn off"}
         </button>
         <Link
@@ -153,10 +151,5 @@ export default function MaintenanceGate({ children }) {
     );
   }
 
-  return (
-    <MaintenanceScreen
-      message={maintenance?.message}
-      etaAt={maintenance?.etaAt}
-    />
-  );
+  return <MaintenanceScreen message={maintenance?.message} etaAt={maintenance?.etaAt} />;
 }

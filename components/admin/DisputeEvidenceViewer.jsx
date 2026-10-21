@@ -31,12 +31,7 @@ import { fetchDisputeEvidenceSignedUrl } from "@/lib/actions/admin-disputes";
 import { formatBytes } from "@/lib/verification/documents/policy";
 import { cn } from "@/lib/utils";
 
-export default function DisputeEvidenceViewer({
-  disputeId,
-  evidence,
-  open,
-  onOpenChange,
-}) {
+export default function DisputeEvidenceViewer({ disputeId, evidence, open, onOpenChange }) {
   const [signedUrl, setSignedUrl] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
@@ -114,8 +109,7 @@ export default function DisputeEvidenceViewer({
   };
 
   const isPdf =
-    evidence?.fileType === "application/pdf" ||
-    evidence?.fileName?.toLowerCase().endsWith(".pdf");
+    evidence?.fileType === "application/pdf" || evidence?.fileName?.toLowerCase().endsWith(".pdf");
 
   const isImage =
     evidence?.fileType?.startsWith("image/") ||
@@ -156,9 +150,7 @@ export default function DisputeEvidenceViewer({
                   {evidence?.senderRole || "Party"}
                 </Badge>
                 {evidence?.uploadedAt && (
-                  <span>
-                    &middot; {new Date(evidence.uploadedAt).toLocaleString()}
-                  </span>
+                  <span>&middot; {new Date(evidence.uploadedAt).toLocaleString()}</span>
                 )}
               </DialogDescription>
             </div>
@@ -192,9 +184,7 @@ export default function DisputeEvidenceViewer({
         {/* Note context if provided */}
         {evidence?.note && (
           <div className="px-4 py-2.5 bg-muted/20 border-b text-xs text-foreground flex items-start gap-2">
-            <span className="font-semibold text-muted-foreground shrink-0">
-              Note:
-            </span>
+            <span className="font-semibold text-muted-foreground shrink-0">Note:</span>
             <p className="italic">{evidence.note}</p>
           </div>
         )}
@@ -250,7 +240,12 @@ export default function DisputeEvidenceViewer({
               </p>
               {signedUrl && (
                 <Button asChild variant="default" size="sm">
-                  <a href={signedUrl} download={evidence?.fileName} target="_blank" rel="noreferrer">
+                  <a
+                    href={signedUrl}
+                    download={evidence?.fileName}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download File
                   </a>
@@ -319,7 +314,12 @@ export default function DisputeEvidenceViewer({
           {signedUrl && (
             <div className="flex items-center gap-2 ml-auto">
               <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5" asChild>
-                <a href={signedUrl} target="_blank" rel="noopener noreferrer" download={evidence?.fileName}>
+                <a
+                  href={signedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={evidence?.fileName}
+                >
                   <Download className="h-3.5 w-3.5" />
                   Download
                 </a>

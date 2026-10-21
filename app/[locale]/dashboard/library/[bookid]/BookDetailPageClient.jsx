@@ -24,21 +24,12 @@ import { useHasBook, usePurchaseBook } from "@/hooks/usePurchase";
 import PaymentModal from "@/components/stellar/PaymentModal";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /* ── building blocks (design-system consistent) ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -52,11 +43,7 @@ const SectionHeading = ({ icon: Icon, title, subtitle }) => (
     )}
     <div>
       <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
-      {subtitle && (
-        <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-          {subtitle}
-        </p>
-      )}
+      {subtitle && <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>{subtitle}</p>}
     </div>
   </div>
 );
@@ -67,12 +54,7 @@ const MetaChip = ({ icon: Icon, label, value }) => (
       <Icon className="h-4 w-4 text-accent" />
     </div>
     <div className="min-w-0">
-      <p
-        className={cn(
-          poppins_400,
-          "text-[11px] uppercase tracking-wider text-ink-muted"
-        )}
-      >
+      <p className={cn(poppins_400, "text-[11px] uppercase tracking-wider text-ink-muted")}>
         {label}
       </p>
       <p className={cn(poppins_600, "truncate text-sm text-ink")}>{value}</p>
@@ -90,17 +72,13 @@ export default function BookDetailPage({ book }) {
   const [error, setError] = useState("");
   const hasBook = useHasBook(book?._id);
   const [loading, setLoading] = useState(false);
-  const [purchased, setPurchased] = useState(
-    () => hasBook || book?.price === 0
-  );
+  const [purchased, setPurchased] = useState(() => hasBook || book?.price === 0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Check if the current user has already reviewed
   const userReview = useMemo(() => {
     if (!user?._id || !book?.reviews) return null;
-    return book.reviews.find(
-      (r) => r.user?._id === user._id || r.user?.id === user._id
-    );
+    return book.reviews.find((r) => r.user?._id === user._id || r.user?.id === user._id);
   }, [user, book?.reviews]);
 
   useEffect(() => {
@@ -113,9 +91,9 @@ export default function BookDetailPage({ book }) {
     () =>
       Boolean(
         book?.price === 0 ||
-          hasBook ||
-          purchased ||
-          (user?._id && user._id === book?.author?._id?.toString?.())
+        hasBook ||
+        purchased ||
+        (user?._id && user._id === book?.author?._id?.toString?.())
       ),
     [book?.author?._id, book?.price, hasBook, purchased, user?._id]
   );
@@ -196,12 +174,7 @@ export default function BookDetailPage({ book }) {
                 {book.category}
               </span>
 
-              <h1
-                className={cn(
-                  poppins_600,
-                  "mt-4 text-3xl leading-tight text-ink sm:text-4xl"
-                )}
-              >
+              <h1 className={cn(poppins_600, "mt-4 text-3xl leading-tight text-ink sm:text-4xl")}>
                 {book.title}
               </h1>
 
@@ -219,9 +192,7 @@ export default function BookDetailPage({ book }) {
                       {book.author.name}
                     </Link>
                   ) : (
-                    <span className={cn(poppins_500, "text-sm text-ink")}>
-                      {book.author.name}
-                    </span>
+                    <span className={cn(poppins_500, "text-sm text-ink")}>{book.author.name}</span>
                   )}
                 </div>
               )}
@@ -251,13 +222,9 @@ export default function BookDetailPage({ book }) {
 
               {/* Price */}
               <div className="mt-5 flex items-baseline gap-2">
-                <span className={cn(poppins_600, "text-3xl text-ink")}>
-                  {priceLabel}
-                </span>
+                <span className={cn(poppins_600, "text-3xl text-ink")}>{priceLabel}</span>
                 {book?.price ? (
-                  <span className={cn(poppins_400, "text-sm text-ink-muted")}>
-                    USDC
-                  </span>
+                  <span className={cn(poppins_400, "text-sm text-ink-muted")}>USDC</span>
                 ) : null}
               </div>
 
@@ -273,13 +240,7 @@ export default function BookDetailPage({ book }) {
                     >
                       <BookOpen className="mr-2 h-4 w-4" /> Read now
                     </Button>
-                    <Button
-                      outlined
-                      round
-                      to={book.fileUrl}
-                      download
-                      target="_blank"
-                    >
+                    <Button outlined round to={book.fileUrl} download target="_blank">
                       <DownloadCloud className="mr-2 h-4 w-4" /> Download
                     </Button>
                   </div>
@@ -314,12 +275,7 @@ export default function BookDetailPage({ book }) {
               title="About this book"
               subtitle="What you'll find inside"
             />
-            <p
-              className={cn(
-                poppins_400,
-                "leading-relaxed text-ink-muted"
-              )}
-            >
+            <p className={cn(poppins_400, "leading-relaxed text-ink-muted")}>
               {book.description || "No description available for this book yet."}
             </p>
           </Panel>
@@ -329,11 +285,7 @@ export default function BookDetailPage({ book }) {
             <div className="space-y-3">
               <MetaChip icon={Tag} label="Category" value={book.category || "—"} />
               {book?.pages ? (
-                <MetaChip
-                  icon={FileText}
-                  label="Pages"
-                  value={`${book.pages} pages`}
-                />
+                <MetaChip icon={FileText} label="Pages" value={`${book.pages} pages`} />
               ) : null}
               <MetaChip icon={Wallet} label="Price" value={priceLabel} />
             </div>
@@ -371,9 +323,7 @@ export default function BookDetailPage({ book }) {
               )}
               {!submitted && !userReview && (
                 <div className="mb-8 rounded-xl border border-accent/10 bg-surface p-5">
-                  <h3 className={cn(poppins_600, "text-base text-ink")}>
-                    Leave a Review
-                  </h3>
+                  <h3 className={cn(poppins_600, "text-base text-ink")}>Leave a Review</h3>
                   <form onSubmit={handleSubmit} className="mt-4 space-y-4">
                     <StarRate
                       value={rating}
@@ -382,9 +332,7 @@ export default function BookDetailPage({ book }) {
                       editable={!submitting && !submitted}
                       label={
                         rating > 0
-                          ? `Your rating: ${rating} star${
-                              rating > 1 ? "s" : ""
-                            }`
+                          ? `Your rating: ${rating} star${rating > 1 ? "s" : ""}`
                           : undefined
                       }
                     />
@@ -397,17 +345,13 @@ export default function BookDetailPage({ book }) {
                       disabled={submitting || submitted}
                     />
                     {error && (
-                      <div className={cn(poppins_400, "text-sm text-red-600")}>
-                        {error}
-                      </div>
+                      <div className={cn(poppins_400, "text-sm text-red-600")}>{error}</div>
                     )}
                     <Button
                       round
                       className="bg-accent text-white transition hover:bg-highlight"
                       type="submit"
-                      disabled={
-                        submitting || rating === 0 || review.trim() === ""
-                      }
+                      disabled={submitting || rating === 0 || review.trim() === ""}
                       loading={submitting}
                     >
                       Submit Review

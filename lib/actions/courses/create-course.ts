@@ -12,7 +12,13 @@ export interface CreateCourseParams {
   category?: string;
 }
 
-export async function createCourse({ form, thumbnailUrl, videoUrl, category }: CreateCourseParams): Promise<any> { // TODO(types): Course API response
+export async function createCourse({
+  form,
+  thumbnailUrl,
+  videoUrl,
+  category,
+}: CreateCourseParams): Promise<any> {
+  // TODO(types): Course API response
   const courseData = {
     title: form.title,
     description: form.description,

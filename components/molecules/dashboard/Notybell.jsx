@@ -28,11 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const NotificationBell = () => {
   const router = useRouter();
@@ -162,10 +158,7 @@ const NotificationBell = () => {
           className="w-80 max-h-96 overflow-y-auto rounded-2xl border border-accent/10 bg-surface-raised shadow-sm"
         >
           <DropdownMenuLabel
-            className={cn(
-              poppins_600,
-              "flex items-center justify-between text-ink"
-            )}
+            className={cn(poppins_600, "flex items-center justify-between text-ink")}
           >
             <span>Notifications</span>
             <div className="flex items-center gap-2">
@@ -191,10 +184,7 @@ const NotificationBell = () => {
                     e.stopPropagation();
                     markAllAsRead();
                   }}
-                  className={cn(
-                    poppins_500,
-                    "h-6 text-xs text-secondary hover:text-highlight"
-                  )}
+                  className={cn(poppins_500, "h-6 text-xs text-secondary hover:text-highlight")}
                 >
                   Mark all read
                 </Button>
@@ -205,12 +195,7 @@ const NotificationBell = () => {
           <DropdownMenuSeparator className="bg-accent/10" />
 
           {isLoading ? (
-            <div
-              className={cn(
-                poppins_400,
-                "p-4 text-center text-ink-muted"
-              )}
-            >
+            <div className={cn(poppins_400, "p-4 text-center text-ink-muted")}>
               Loading notifications...
             </div>
           ) : error ? (
@@ -229,12 +214,7 @@ const NotificationBell = () => {
               </Button>
             </div>
           ) : notifications.length === 0 ? (
-            <div
-              className={cn(
-                poppins_400,
-                "p-4 text-center text-ink-muted"
-              )}
-            >
+            <div className={cn(poppins_400, "p-4 text-center text-ink-muted")}>
               {" "}
               <Bell className="h-8 w-8 mx-auto mb-2 text-accent" />
               <p className="text-sm">No notifications yet</p>
@@ -254,9 +234,7 @@ const NotificationBell = () => {
                     {notification.sender?.avatar ? (
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={notification.sender.avatar} alt="" />
-                        <AvatarFallback
-                          className={cn(poppins_500, "bg-surface text-ink")}
-                        >
+                        <AvatarFallback className={cn(poppins_500, "bg-surface text-ink")}>
                           {notification.sender.name?.charAt(0) || "U"}
                         </AvatarFallback>
                       </Avatar>
@@ -290,19 +268,12 @@ const NotificationBell = () => {
                       </Badge>
                     </div>
 
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "text-xs text-ink-muted line-clamp-2 mt-1"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "text-xs text-ink-muted line-clamp-2 mt-1")}>
                       {notification.message}
                     </p>
 
                     <div className="flex items-center justify-between mt-2">
-                      <span
-                        className={cn(poppins_400, "text-xs text-ink-muted")}
-                      >
+                      <span className={cn(poppins_400, "text-xs text-ink-muted")}>
                         {formatTime(notification.createdAt)}
                       </span>
 
@@ -367,20 +338,15 @@ const NotificationBell = () => {
       {/* Delete Confirmation Dialog */}
       <AlertDialog
         open={deleteDialog.show}
-        onOpenChange={(open) =>
-          setDeleteDialog({ show: open, notificationId: null })
-        }
+        onOpenChange={(open) => setDeleteDialog({ show: open, notificationId: null })}
       >
         <AlertDialogContent className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className={cn(poppins_600, "text-ink")}>
               Delete Notification
             </AlertDialogTitle>
-            <AlertDialogDescription
-              className={cn(poppins_400, "text-ink-muted")}
-            >
-              Are you sure you want to delete this notification? This action
-              cannot be undone.
+            <AlertDialogDescription className={cn(poppins_400, "text-ink-muted")}>
+              Are you sure you want to delete this notification? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

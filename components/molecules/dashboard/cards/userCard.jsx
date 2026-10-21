@@ -16,12 +16,7 @@ const UserCard = ({ user, showFollowButton = true }) => {
   // Check if current user is following this user
   useEffect(() => {
     const checkFollowStatus = async () => {
-      if (
-        !currentUser?._id ||
-        !user?._id ||
-        currentUser._id === user._id ||
-        !showFollowButton
-      )
+      if (!currentUser?._id || !user?._id || currentUser._id === user._id || !showFollowButton)
         return;
 
       try {
@@ -65,15 +60,10 @@ const UserCard = ({ user, showFollowButton = true }) => {
 
   return (
     <Card className="flex items-start gap-4 p-4 hover:shadow-md transition-shadow bg-accent text-white cursor-pointer">
-      <Link
-        href={`/account/profile/${user._id}`}
-        className="flex items-center gap-4 flex-1"
-      >
+      <Link href={`/account/profile/${user._id}`} className="flex items-center gap-4 flex-1">
         <Avatar className="h-12 w-12">
           <AvatarImage src={user.avatar || "/images/man.jpg"} alt={user.name} />
-          <AvatarFallback>
-            {user.name?.charAt(0)?.toUpperCase() || "U"}
-          </AvatarFallback>
+          <AvatarFallback>{user.name?.charAt(0)?.toUpperCase() || "U"}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center gap-2">

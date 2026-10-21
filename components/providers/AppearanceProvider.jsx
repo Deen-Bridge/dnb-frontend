@@ -79,9 +79,7 @@ export default function AppearanceProvider({ children }) {
   };
 
   return (
-    <AppearanceContext.Provider
-      value={{ accent, fontSize, setAccent, setFontSize, mounted }}
-    >
+    <AppearanceContext.Provider value={{ accent, fontSize, setAccent, setFontSize, mounted }}>
       {children}
     </AppearanceContext.Provider>
   );

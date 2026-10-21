@@ -19,10 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { normalizeRole, ROLES } from "@/lib/auth/roles";
-import {
-  getMaintenanceState,
-  setMaintenanceState,
-} from "@/lib/actions/admin-maintenance";
+import { getMaintenanceState, setMaintenanceState } from "@/lib/actions/admin-maintenance";
 
 /** Whether the user holds the admin role (any tier). Fails closed. */
 function isAdminUser(user) {

@@ -26,9 +26,7 @@ export default function WizardStepBasics({ control, errors, register }) {
           {...register("title")}
           className={errors.title ? "border-red-500" : ""}
         />
-        {errors.title && (
-          <p className="text-xs text-red-500 font-medium">{errors.title.message}</p>
-        )}
+        {errors.title && <p className="text-xs text-red-500 font-medium">{errors.title.message}</p>}
       </div>
 
       <div className="space-y-2">

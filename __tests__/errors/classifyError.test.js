@@ -16,13 +16,17 @@ import { classifyError } from "@/components/molecules/errors/ErrorBoundaryUI";
 describe("classifyError", () => {
   it("classifies network errors", () => {
     expect(classifyError(new Error("Failed to fetch"))).toBe("network");
-    expect(classifyError(new Error("NetworkError when attempting to fetch resource"))).toBe("network");
+    expect(classifyError(new Error("NetworkError when attempting to fetch resource"))).toBe(
+      "network"
+    );
     expect(classifyError(new Error("load failed"))).toBe("network");
     expect(classifyError(new Error("socket hang up"))).toBe("network");
   });
 
   it("classifies server errors by status", () => {
-    expect(classifyError({ response: { status: 500 }, message: "Internal Server Error" })).toBe("server");
+    expect(classifyError({ response: { status: 500 }, message: "Internal Server Error" })).toBe(
+      "server"
+    );
     expect(classifyError({ status: 502 })).toBe("server");
     expect(classifyError({ statusCode: 503 })).toBe("server");
   });

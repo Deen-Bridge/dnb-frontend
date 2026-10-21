@@ -6,30 +6,32 @@ import { z } from "zod";
 export const UserRoleSchema = z.enum(["student", "educator", "admin", "superadmin", "creator"]);
 export type UserRole = z.infer<typeof UserRoleSchema>;
 
-export const UserSchema = z.object({
-  _id: z.string().optional(),
-  id: z.string().optional(),
-  name: z.string(),
-  email: z.string().email(),
-  role: z.string().default("student"),
-  avatar: z.string().optional(),
-  bio: z.string().optional(),
-  gender: z.string().optional(),
-  age: z.union([z.number(), z.string()]).optional(),
-  country: z.string().optional(),
-  language: z.string().optional(),
-  interests: z.array(z.string()).optional(),
-  headline: z.string().optional(),
-  walletAddress: z.string().optional(),
-  stellarWallet: z.string().optional(),
-  isEmailVerified: z.boolean().optional(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
-}).transform((user) => ({
-  ...user,
-  _id: user._id || user.id || "",
-  id: user.id || user._id || "",
-}));
+export const UserSchema = z
+  .object({
+    _id: z.string().optional(),
+    id: z.string().optional(),
+    name: z.string(),
+    email: z.string().email(),
+    role: z.string().default("student"),
+    avatar: z.string().optional(),
+    bio: z.string().optional(),
+    gender: z.string().optional(),
+    age: z.union([z.number(), z.string()]).optional(),
+    country: z.string().optional(),
+    language: z.string().optional(),
+    interests: z.array(z.string()).optional(),
+    headline: z.string().optional(),
+    walletAddress: z.string().optional(),
+    stellarWallet: z.string().optional(),
+    isEmailVerified: z.boolean().optional(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+  })
+  .transform((user) => ({
+    ...user,
+    _id: user._id || user.id || "",
+    id: user.id || user._id || "",
+  }));
 
 export type User = z.infer<typeof UserSchema>;
 
@@ -75,10 +77,12 @@ export type StellarPaymentInitResponse = z.infer<typeof StellarPaymentInitRespon
 
 export const StellarPaymentSubmitResponseSchema = z.object({
   success: z.boolean(),
-  transaction: z.object({
-    hash: z.string(),
-    explorerUrl: z.string().optional(),
-  }).optional(),
+  transaction: z
+    .object({
+      hash: z.string(),
+      explorerUrl: z.string().optional(),
+    })
+    .optional(),
   message: z.string().optional(),
 });
 export type StellarPaymentSubmitResponse = z.infer<typeof StellarPaymentSubmitResponseSchema>;
@@ -109,15 +113,17 @@ export type StellarTransaction = z.infer<typeof StellarTransactionSchema>;
 // ---------------------------------------------------------------------------
 export const ReviewSchema = z.object({
   _id: z.string().optional(),
-  user: z.union([
-    z.string(),
-    z.object({
-      _id: z.string().optional(),
-      id: z.string().optional(),
-      name: z.string().optional(),
-      avatar: z.string().optional(),
-    }),
-  ]).optional(),
+  user: z
+    .union([
+      z.string(),
+      z.object({
+        _id: z.string().optional(),
+        id: z.string().optional(),
+        name: z.string().optional(),
+        avatar: z.string().optional(),
+      }),
+    ])
+    .optional(),
   rating: z.number().min(1).max(5),
   comment: z.string().optional(),
   review: z.string().optional(),
@@ -148,16 +154,18 @@ export const CourseSchema = z.object({
   thumbnail: z.string().optional(),
   category: z.string().optional(),
   level: z.string().optional(),
-  instructor: z.union([
-    z.string(),
-    z.object({
-      _id: z.string().optional(),
-      id: z.string().optional(),
-      name: z.string().optional(),
-      avatar: z.string().optional(),
-      bio: z.string().optional(),
-    }),
-  ]).optional(),
+  instructor: z
+    .union([
+      z.string(),
+      z.object({
+        _id: z.string().optional(),
+        id: z.string().optional(),
+        name: z.string().optional(),
+        avatar: z.string().optional(),
+        bio: z.string().optional(),
+      }),
+    ])
+    .optional(),
   sections: z.array(CourseSectionSchema).optional(),
   reviews: z.array(ReviewSchema).optional(),
   ratings: z.number().optional(),
@@ -176,15 +184,17 @@ export const BookSchema = z.object({
   coverImage: z.string().optional(),
   thumbnail: z.string().optional(),
   fileUrl: z.string().optional(),
-  author: z.union([
-    z.string(),
-    z.object({
-      _id: z.string().optional(),
-      id: z.string().optional(),
-      name: z.string().optional(),
-      avatar: z.string().optional(),
-    }),
-  ]).optional(),
+  author: z
+    .union([
+      z.string(),
+      z.object({
+        _id: z.string().optional(),
+        id: z.string().optional(),
+        name: z.string().optional(),
+        avatar: z.string().optional(),
+      }),
+    ])
+    .optional(),
   category: z.string().optional(),
   pages: z.number().optional(),
   reviews: z.array(ReviewSchema).optional(),
@@ -204,15 +214,17 @@ export const SpaceSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   category: z.string().optional(),
-  host: z.union([
-    z.string(),
-    z.object({
-      _id: z.string().optional(),
-      id: z.string().optional(),
-      name: z.string().optional(),
-      avatar: z.string().optional(),
-    }),
-  ]).optional(),
+  host: z
+    .union([
+      z.string(),
+      z.object({
+        _id: z.string().optional(),
+        id: z.string().optional(),
+        name: z.string().optional(),
+        avatar: z.string().optional(),
+      }),
+    ])
+    .optional(),
   scheduledFor: z.string().optional(),
   durationMinutes: z.number().optional(),
   maxCapacity: z.number().optional(),
@@ -241,7 +253,8 @@ export interface PaginationMeta {
   pages: number;
 }
 
-export interface ApiResponse<T = any> { // TODO(types): Generic fallback for unspecialized payloads
+export interface ApiResponse<T = any> {
+  // TODO(types): Generic fallback for unspecialized payloads
   success: boolean;
   message?: string;
   data?: T;

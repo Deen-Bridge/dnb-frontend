@@ -13,9 +13,7 @@ const ProfileHeader = ({ avatar }) => {
       <div className="absolute -bottom-12 left-6">
         <Avatar className="h-28 w-28 border-4 border-surface-raised shadow-xl">
           <AvatarImage src={avatar} alt="Profile avatar" />
-          <AvatarFallback className="bg-accent text-xl text-white">
-            CN
-          </AvatarFallback>
+          <AvatarFallback className="bg-accent text-xl text-white">CN</AvatarFallback>
         </Avatar>
       </div>
     </div>

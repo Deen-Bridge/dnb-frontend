@@ -53,7 +53,7 @@ export interface EngagementAnalyticsResult {
 // Keep in sync with admin-learning-analytics.js (the app resolves the .js twin;
 // vitest prefers this .ts one).
 export async function fetchEngagementAnalytics(
-  _options: EngagementAnalyticsOptions = {},
+  _options: EngagementAnalyticsOptions = {}
 ): Promise<EngagementAnalyticsResult> {
   return Promise.resolve({
     generatedAt: new Date().toISOString(),

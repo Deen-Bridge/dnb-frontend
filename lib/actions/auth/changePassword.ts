@@ -10,7 +10,10 @@ export interface ChangePasswordResult {
   message: string;
 }
 
-export const changePassword = async ({ currentPassword, newPassword }: ChangePasswordParams): Promise<ChangePasswordResult> => {
+export const changePassword = async ({
+  currentPassword,
+  newPassword,
+}: ChangePasswordParams): Promise<ChangePasswordResult> => {
   try {
     const res = await axiosInstance.put("/api/auth/change-password", {
       currentPassword,
@@ -20,13 +23,11 @@ export const changePassword = async ({ currentPassword, newPassword }: ChangePas
       success: true,
       message: res.data?.message || "Password changed successfully.",
     };
-  } catch (error: any) { // TODO(types): Axios error from change password
+  } catch (error: any) {
+    // TODO(types): Axios error from change password
     return {
       success: false,
-      message:
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to change password.",
+      message: error?.response?.data?.message || error?.message || "Failed to change password.",
     };
   }
 };

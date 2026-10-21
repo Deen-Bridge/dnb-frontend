@@ -24,15 +24,15 @@ export default function Layout({ children }) {
       />
       <ProtectedRoute>
         <PresenceProvider>
-        <SidebarProvider>
-          <SidebarLeft />
-          <SidebarInset>
-            <NavHeader />
-            <PushNotificationPrompt />
-            {children}
-          </SidebarInset>
-          <CommandPalette />
-        </SidebarProvider>
+          <SidebarProvider>
+            <SidebarLeft />
+            <SidebarInset>
+              <NavHeader />
+              <PushNotificationPrompt />
+              {children}
+            </SidebarInset>
+            <CommandPalette />
+          </SidebarProvider>
         </PresenceProvider>
       </ProtectedRoute>
     </>

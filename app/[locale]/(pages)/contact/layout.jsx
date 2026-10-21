@@ -1,17 +1,17 @@
 import { siteName } from "@/lib/config/site.config";
 
-const title = 'Contact';
+const title = "Contact";
 const description =
-  'Questions, feedback, partnerships, or applying to teach — get in touch with the Deen Bridge team.';
+  "Questions, feedback, partnerships, or applying to teach — get in touch with the Deen Bridge team.";
 
 export const metadata = {
   title,
   description,
-  alternates: { canonical: '/contact' },
+  alternates: { canonical: "/contact" },
   openGraph: {
     title: `${title} | ${siteName}`,
     description,
-    url: '/contact',
+    url: "/contact",
     siteName,
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: title }],

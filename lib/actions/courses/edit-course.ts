@@ -17,8 +17,10 @@ export interface EditCourseParams {
 export async function editCourse(
   courseId: string,
   { form, thumbnailUrl, videoUrl, category }: EditCourseParams
-): Promise<any> { // TODO(types): Course API response
-  const courseData: Record<string, any> = { // TODO(types): Course update payload
+): Promise<any> {
+  // TODO(types): Course API response
+  const courseData: Record<string, any> = {
+    // TODO(types): Course update payload
     title: form.title,
     description: form.description,
     category: category || form.category,

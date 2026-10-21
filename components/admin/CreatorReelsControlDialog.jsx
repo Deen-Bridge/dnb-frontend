@@ -67,9 +67,7 @@ export function CreatorReelsControlDialog({
               <PauseCircle className="h-5 w-5 text-amber-500" />
             )}
             <DialogTitle>
-              {isCurrentlyPaused
-                ? "Resume Creator's Reels"
-                : "Pause All Reels by Creator"}
+              {isCurrentlyPaused ? "Resume Creator's Reels" : "Pause All Reels by Creator"}
             </DialogTitle>
           </div>
           <DialogDescription>
@@ -137,9 +135,7 @@ export function CreatorReelsControlDialog({
                   <SelectItem value="copyright">
                     Copyright & Intellectual Property Dispute
                   </SelectItem>
-                  <SelectItem value="inappropriate_audio">
-                    Inappropriate Audio / Content
-                  </SelectItem>
+                  <SelectItem value="inappropriate_audio">Inappropriate Audio / Content</SelectItem>
                   <SelectItem value="investigation">
                     Account Under Security / Quality Audit
                   </SelectItem>
@@ -152,7 +148,8 @@ export function CreatorReelsControlDialog({
             <div className="flex items-start gap-2 rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
               <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
-                Pausing will immediately hide <strong>{reelsCount}</strong> reels from student feeds, search results, and the mobile discovery app.
+                Pausing will immediately hide <strong>{reelsCount}</strong> reels from student
+                feeds, search results, and the mobile discovery app.
               </span>
             </div>
           )}

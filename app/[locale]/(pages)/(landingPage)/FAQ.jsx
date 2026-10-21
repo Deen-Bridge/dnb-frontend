@@ -27,15 +27,15 @@ export default function FAQ() {
     <section id="faq" className="py-24 px-4 sm:px-6 bg-basic overflow-hidden relative">
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="text-center mb-16">
-          <h2 className={cn(
-            poppins_600,
-            "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-secondary via-highlight to-secondary text-transparent bg-clip-text font-stretch-125%"
-          )}>
+          <h2
+            className={cn(
+              poppins_600,
+              "text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-secondary via-highlight to-secondary text-transparent bg-clip-text font-stretch-125%"
+            )}
+          >
             {t("title")}
           </h2>
-          <p className="text-xl text-ink-inverse-muted font-stretch-110%">
-            {t("subtitle")}
-          </p>
+          <p className="text-xl text-ink-inverse-muted font-stretch-110%">{t("subtitle")}</p>
         </div>
 
         <div className="space-y-4">
@@ -50,11 +50,15 @@ export default function FAQ() {
                   onClick={() => toggleFaq(index)}
                   className="w-full flex items-center justify-between p-6 text-start focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
                 >
-                  <span className="text-lg font-semibold text-ink font-stretch-110%">{t(`items.${faq.id}.question`)}</span>
-                  <span className={cn(
-                    "ms-6 flex-shrink-0 w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-accent transition-transform duration-300",
-                    isOpen ? "rotate-180 bg-accent text-ink-inverse" : ""
-                  )}>
+                  <span className="text-lg font-semibold text-ink font-stretch-110%">
+                    {t(`items.${faq.id}.question`)}
+                  </span>
+                  <span
+                    className={cn(
+                      "ms-6 flex-shrink-0 w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-accent transition-transform duration-300",
+                      isOpen ? "rotate-180 bg-accent text-ink-inverse" : ""
+                    )}
+                  >
                     <FaChevronDown className="w-4 h-4" />
                   </span>
                 </button>

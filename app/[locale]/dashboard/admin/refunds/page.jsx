@@ -69,11 +69,7 @@ import AdminTierGuard from "@/components/auth/AdminTierGuard";
 import useRefunds from "@/hooks/useRefunds";
 import { REFUND_STATUSES } from "@/lib/actions/admin-refunds";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /** Visual + copy config per refund status. */
 const STATUS_META = {
@@ -157,9 +153,7 @@ function InitiatorLabel({ initiatedBy }) {
       <span className={cn(poppins_500.className, "text-sm text-ink")}>
         {initiatedBy?.label || meta.label}
       </span>
-      <span className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-        ({meta.label})
-      </span>
+      <span className={cn(poppins_400.className, "text-xs text-ink-muted")}>({meta.label})</span>
     </span>
   );
 }
@@ -186,14 +180,12 @@ function RetryRefundDialog({ refund, onConfirm, isRetrying }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className={poppins_600.className}>
-            Retry this refund?
-          </AlertDialogTitle>
+          <AlertDialogTitle className={poppins_600.className}>Retry this refund?</AlertDialogTitle>
           <AlertDialogDescription className={poppins_400.className}>
             This will re-submit refund{" "}
-            <span className="font-medium">{refund.transaction?.reference}</span>{" "}
-            for {amountLabel(refund.amount, refund.currency)} to{" "}
-            {refund.buyer?.name}. The refund returns to the processing state.
+            <span className="font-medium">{refund.transaction?.reference}</span> for{" "}
+            {amountLabel(refund.amount, refund.currency)} to {refund.buyer?.name}. The refund
+            returns to the processing state.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -226,9 +218,7 @@ function AuditTrail({ audit }) {
         <li key={`${entry.at}-${index}`} className="flex gap-3">
           <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent/60" aria-hidden="true" />
           <div className="space-y-0.5">
-            <p className={cn(poppins_500.className, "text-sm text-ink")}>
-              {entry.note}
-            </p>
+            <p className={cn(poppins_500.className, "text-sm text-ink")}>{entry.note}</p>
             <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
               {entry.actor} · {dateLabel(entry.at)}
             </p>
@@ -250,9 +240,7 @@ function RefundRow({ refund, isExpanded, onToggle, onRetry, isRetrying }) {
             size="sm"
             onClick={() => onToggle(refund.id)}
             aria-expanded={isExpanded}
-            aria-label={
-              isExpanded ? "Hide audit trail" : "Show audit trail"
-            }
+            aria-label={isExpanded ? "Hide audit trail" : "Show audit trail"}
             className="h-7 w-7 rounded-full p-0"
           >
             {isExpanded ? (
@@ -281,9 +269,7 @@ function RefundRow({ refund, isExpanded, onToggle, onRetry, isRetrying }) {
           </Link>
         </TableCell>
         <TableCell className={cn(poppins_500.className, "text-sm text-ink")}>
-          <span className="tabular-nums">
-            {amountLabel(refund.amount, refund.currency)}
-          </span>
+          <span className="tabular-nums">{amountLabel(refund.amount, refund.currency)}</span>
         </TableCell>
         <TableCell>
           <StatusBadge status={refund.status} />
@@ -293,15 +279,9 @@ function RefundRow({ refund, isExpanded, onToggle, onRetry, isRetrying }) {
         </TableCell>
         <TableCell className="text-right">
           {refund.status === "failed" ? (
-            <RetryRefundDialog
-              refund={refund}
-              onConfirm={onRetry}
-              isRetrying={isRetrying}
-            />
+            <RetryRefundDialog refund={refund} onConfirm={onRetry} isRetrying={isRetrying} />
           ) : (
-            <span className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-              —
-            </span>
+            <span className={cn(poppins_400.className, "text-xs text-ink-muted")}>—</span>
           )}
         </TableCell>
       </TableRow>
@@ -393,11 +373,9 @@ function RefundsContent() {
 
   const [expandedId, setExpandedId] = useState(null);
 
-  const toggleExpanded = (id) =>
-    setExpandedId((current) => (current === id ? null : id));
+  const toggleExpanded = (id) => setExpandedId((current) => (current === id ? null : id));
 
-  const hasActiveFilters =
-    status !== "all" || initiator !== "all" || from !== "" || to !== "";
+  const hasActiveFilters = status !== "all" || initiator !== "all" || from !== "" || to !== "";
   const showTable = isLoading || refunds.length > 0;
 
   return (
@@ -501,12 +479,7 @@ function RefundsContent() {
           />
         </div>
         {hasActiveFilters && (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={resetFilters}
-            className="rounded-full"
-          >
+          <Button type="button" variant="ghost" onClick={resetFilters} className="rounded-full">
             Clear filters
           </Button>
         )}
@@ -532,12 +505,7 @@ function RefundsContent() {
           title="Couldn’t load refunds"
           description={error}
           action={
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-full"
-              onClick={refresh}
-            >
+            <Button type="button" variant="outline" className="rounded-full" onClick={refresh}>
               Try again
             </Button>
           }
@@ -557,12 +525,7 @@ function RefundsContent() {
           title="No refunds match these filters"
           description="Try clearing or widening the status, initiator or date filters."
           action={
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-full"
-              onClick={resetFilters}
-            >
+            <Button type="button" variant="outline" className="rounded-full" onClick={resetFilters}>
               Clear filters
             </Button>
           }

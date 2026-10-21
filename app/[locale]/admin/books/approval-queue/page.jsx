@@ -3,13 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -93,7 +87,8 @@ const mockBooks = [
     price: 14.99,
     pages: 320,
     category: "Worship",
-    description: "A comprehensive guide covering every aspect of daily prayers, from wudu to the sunnah acts.",
+    description:
+      "A comprehensive guide covering every aspect of daily prayers, from wudu to the sunnah acts.",
   },
   {
     id: "bk_302",
@@ -104,7 +99,8 @@ const mockBooks = [
     price: 9.99,
     pages: 180,
     category: "Children",
-    description: "Beautifully illustrated stories of the prophets designed for young readers ages 7-12.",
+    description:
+      "Beautifully illustrated stories of the prophets designed for young readers ages 7-12.",
   },
   {
     id: "bk_303",
@@ -138,7 +134,8 @@ const mockBooks = [
     pages: 450,
     category: "Seerah",
     description: "Continuation of the prophetic biography covering the Medinan period.",
-    rejectionReason: "Content overlaps significantly with Volume 1. Please revise to focus on unique events.",
+    rejectionReason:
+      "Content overlaps significantly with Volume 1. Please revise to focus on unique events.",
   },
   {
     id: "bk_306",
@@ -150,7 +147,8 @@ const mockBooks = [
     pages: 120,
     category: "Spirituality",
     description: "A pocket-sized collection of morning and evening adhkar with translations.",
-    changeNotes: "Please include transliteration alongside the Arabic text and add pronunciation guides.",
+    changeNotes:
+      "Please include transliteration alongside the Arabic text and add pronunciation guides.",
   },
   {
     id: "bk_307",
@@ -161,7 +159,8 @@ const mockBooks = [
     price: 12.99,
     pages: 210,
     category: "Youth",
-    description: "Addressing the challenges Muslim youth face in maintaining identity in Western societies.",
+    description:
+      "Addressing the challenges Muslim youth face in maintaining identity in Western societies.",
   },
   {
     id: "bk_308",
@@ -258,8 +257,10 @@ export default function BookApprovalQueuePage() {
     setSelectedBook((prev) => {
       if (!prev) return prev;
       if (actionType === "approve") return { ...prev, status: "approved" };
-      if (actionType === "reject") return { ...prev, status: "rejected", rejectionReason: actionNotes };
-      if (actionType === "changes-requested") return { ...prev, status: "changes-requested", changeNotes: actionNotes };
+      if (actionType === "reject")
+        return { ...prev, status: "rejected", rejectionReason: actionNotes };
+      if (actionType === "changes-requested")
+        return { ...prev, status: "changes-requested", changeNotes: actionNotes };
       return prev;
     });
 
@@ -277,11 +278,7 @@ export default function BookApprovalQueuePage() {
         actions={
           <div className="flex items-center gap-3">
             <MediaBlurToggle className="hidden lg:flex" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setBooks([...mockBooks])}
-            >
+            <Button variant="outline" size="sm" onClick={() => setBooks([...mockBooks])}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
@@ -336,9 +333,7 @@ export default function BookApprovalQueuePage() {
       {/* Books Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            Submissions ({filteredBooks.length})
-          </CardTitle>
+          <CardTitle className="text-lg">Submissions ({filteredBooks.length})</CardTitle>
           <CardDescription>
             New book submissions awaiting review or already processed
           </CardDescription>
@@ -360,10 +355,7 @@ export default function BookApprovalQueuePage() {
               <TableBody>
                 {paginatedBooks.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
                       <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No submissions found</p>
                     </TableCell>
@@ -391,9 +383,7 @@ export default function BookApprovalQueuePage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className={cn(poppins_500.className, "text-sm")}>
-                            {book.title}
-                          </span>
+                          <span className={cn(poppins_500.className, "text-sm")}>{book.title}</span>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs">
@@ -406,11 +396,7 @@ export default function BookApprovalQueuePage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={cn(
-                              "text-xs",
-                              statusConf.color,
-                              statusConf.bgColor
-                            )}
+                            className={cn("text-xs", statusConf.color, statusConf.bgColor)}
                           >
                             {statusConf.label}
                           </Badge>
@@ -486,12 +472,7 @@ export default function BookApprovalQueuePage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
-              <p
-                className={cn(
-                  poppins_400.className,
-                  "text-sm text-muted-foreground"
-                )}
-              >
+              <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
@@ -507,9 +488,7 @@ export default function BookApprovalQueuePage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                 >
                   Next
@@ -549,9 +528,7 @@ export default function BookApprovalQueuePage() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">Email:</span>{" "}
-                      <span className="font-mono text-xs">
-                        {selectedBook.uploader.email}
-                      </span>
+                      <span className="font-mono text-xs">{selectedBook.uploader.email}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Category:</span>{" "}
@@ -593,7 +570,12 @@ export default function BookApprovalQueuePage() {
               {selectedBook.rejectionReason && (
                 <Card className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-900/20">
                   <CardContent className="py-4">
-                    <p className={cn(poppins_500.className, "text-sm text-red-800 dark:text-red-300 mb-1")}>
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-red-800 dark:text-red-300 mb-1"
+                      )}
+                    >
                       <XCircle className="h-4 w-4 inline mr-1" />
                       Rejection Reason
                     </p>
@@ -608,7 +590,12 @@ export default function BookApprovalQueuePage() {
               {selectedBook.changeNotes && (
                 <Card className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20">
                   <CardContent className="py-4">
-                    <p className={cn(poppins_500.className, "text-sm text-blue-800 dark:text-blue-300 mb-1")}>
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-blue-800 dark:text-blue-300 mb-1"
+                      )}
+                    >
                       <MessageSquare className="h-4 w-4 inline mr-1" />
                       Requested Changes
                     </p>
@@ -623,7 +610,12 @@ export default function BookApprovalQueuePage() {
               {selectedBook.status === "pending-review" && actionType && (
                 <Card className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-900/20">
                   <CardContent className="py-4 space-y-3">
-                    <p className={cn(poppins_500.className, "text-sm text-amber-800 dark:text-amber-300")}>
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-amber-800 dark:text-amber-300"
+                      )}
+                    >
                       {actionType === "approve" && (
                         <>
                           <CheckCircle className="h-4 w-4 inline mr-1" />
@@ -708,7 +700,12 @@ export default function BookApprovalQueuePage() {
                         ) : (
                           <Send className="h-4 w-4 mr-2" />
                         )}
-                        Confirm {actionType === "approve" ? "Approval" : actionType === "reject" ? "Rejection" : "Changes Request"}
+                        Confirm{" "}
+                        {actionType === "approve"
+                          ? "Approval"
+                          : actionType === "reject"
+                            ? "Rejection"
+                            : "Changes Request"}
                       </Button>
                       <Button
                         variant="outline"

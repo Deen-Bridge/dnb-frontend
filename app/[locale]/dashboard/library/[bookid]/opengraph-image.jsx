@@ -1,8 +1,5 @@
 import { getBookById } from "@/lib/actions/library/get-book";
-import {
-  renderOgCard,
-  OG_IMAGE_SIZE,
-} from "@/components/seo/renderOgCard";
+import { renderOgCard, OG_IMAGE_SIZE } from "@/components/seo/renderOgCard";
 
 export const runtime = "nodejs";
 export const alt = "Deen Bridge book";
@@ -23,11 +20,7 @@ export default async function Image({ params }) {
   const subtitle = book?.author?.name
     ? `By ${book.author.name}`
     : "A curated library of authentic Islamic books — on Deen Bridge.";
-  const badge = book
-    ? book.price
-      ? `$${book.price} USDC`
-      : "Free"
-    : "Deen Bridge";
+  const badge = book ? (book.price ? `$${book.price} USDC` : "Free") : "Deen Bridge";
 
   return renderOgCard({ title, subtitle, badge });
 }

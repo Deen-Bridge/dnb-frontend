@@ -44,10 +44,7 @@ export default function BulkActionBar({
       <div className="flex items-center gap-2.5 flex-wrap">
         <span
           data-testid="selected-count-text"
-          className={cn(
-            poppins_600,
-            "text-sm text-ink flex items-center gap-1.5"
-          )}
+          className={cn(poppins_600, "text-sm text-ink flex items-center gap-1.5")}
         >
           <span className="flex items-center justify-center size-6 rounded-full bg-accent text-accent-foreground text-xs font-bold">
             {selectedCount}

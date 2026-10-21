@@ -4,13 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,11 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   FileText,
   User,
@@ -72,18 +62,78 @@ const ADMIN_ACTORS = [
 // Mock audit log data
 const generateMockLogs = () => {
   const actions = [
-    { category: "user", action: "user.create", target: { type: "user", id: "usr_123", name: "john@example.com" }, summary: "Created new user account" },
-    { category: "user", action: "user.ban", target: { type: "user", id: "usr_456", name: "spammer@example.com" }, summary: "Banned user for TOS violation" },
-    { category: "user", action: "user.verify", target: { type: "user", id: "usr_789", name: "educator@example.com" }, summary: "Verified educator account" },
-    { category: "course", action: "course.approve", target: { type: "course", id: "crs_123", name: "Intro to Tajweed" }, summary: "Approved course for publishing" },
-    { category: "course", action: "course.reject", target: { type: "course", id: "crs_456", name: "Draft Course" }, summary: "Rejected course - content issues" },
-    { category: "course", action: "course.feature", target: { type: "course", id: "crs_789", name: "Arabic 101" }, summary: "Featured course on homepage" },
-    { category: "payment", action: "payment.refund", target: { type: "transaction", id: "txn_123", name: "TXN-12345" }, summary: "Processed refund for $29.99" },
-    { category: "payment", action: "payment.payout", target: { type: "payout", id: "pay_456", name: "PAY-67890" }, summary: "Released payout to educator" },
-    { category: "moderation", action: "moderation.review", target: { type: "review", id: "rev_123", name: "Review #123" }, summary: "Removed inappropriate review" },
-    { category: "moderation", action: "moderation.flag", target: { type: "content", id: "cnt_456", name: "Forum Post" }, summary: "Flagged content for review" },
-    { category: "system", action: "system.config", target: { type: "setting", id: "set_123", name: "Platform Fee" }, summary: "Updated platform fee to 4.5%" },
-    { category: "system", action: "system.backup", target: { type: "backup", id: "bkp_789", name: "Daily Backup" }, summary: "Initiated manual backup" },
+    {
+      category: "user",
+      action: "user.create",
+      target: { type: "user", id: "usr_123", name: "john@example.com" },
+      summary: "Created new user account",
+    },
+    {
+      category: "user",
+      action: "user.ban",
+      target: { type: "user", id: "usr_456", name: "spammer@example.com" },
+      summary: "Banned user for TOS violation",
+    },
+    {
+      category: "user",
+      action: "user.verify",
+      target: { type: "user", id: "usr_789", name: "educator@example.com" },
+      summary: "Verified educator account",
+    },
+    {
+      category: "course",
+      action: "course.approve",
+      target: { type: "course", id: "crs_123", name: "Intro to Tajweed" },
+      summary: "Approved course for publishing",
+    },
+    {
+      category: "course",
+      action: "course.reject",
+      target: { type: "course", id: "crs_456", name: "Draft Course" },
+      summary: "Rejected course - content issues",
+    },
+    {
+      category: "course",
+      action: "course.feature",
+      target: { type: "course", id: "crs_789", name: "Arabic 101" },
+      summary: "Featured course on homepage",
+    },
+    {
+      category: "payment",
+      action: "payment.refund",
+      target: { type: "transaction", id: "txn_123", name: "TXN-12345" },
+      summary: "Processed refund for $29.99",
+    },
+    {
+      category: "payment",
+      action: "payment.payout",
+      target: { type: "payout", id: "pay_456", name: "PAY-67890" },
+      summary: "Released payout to educator",
+    },
+    {
+      category: "moderation",
+      action: "moderation.review",
+      target: { type: "review", id: "rev_123", name: "Review #123" },
+      summary: "Removed inappropriate review",
+    },
+    {
+      category: "moderation",
+      action: "moderation.flag",
+      target: { type: "content", id: "cnt_456", name: "Forum Post" },
+      summary: "Flagged content for review",
+    },
+    {
+      category: "system",
+      action: "system.config",
+      target: { type: "setting", id: "set_123", name: "Platform Fee" },
+      summary: "Updated platform fee to 4.5%",
+    },
+    {
+      category: "system",
+      action: "system.backup",
+      target: { type: "backup", id: "bkp_789", name: "Daily Backup" },
+      summary: "Initiated manual backup",
+    },
   ];
 
   const logs = [];
@@ -173,9 +223,7 @@ export default function AuditLogsPage() {
     }
 
     if (filters.dateRange?.to) {
-      filteredLogs = filteredLogs.filter(
-        (log) => new Date(log.timestamp) <= filters.dateRange.to
-      );
+      filteredLogs = filteredLogs.filter((log) => new Date(log.timestamp) <= filters.dateRange.to);
     }
 
     // Paginate

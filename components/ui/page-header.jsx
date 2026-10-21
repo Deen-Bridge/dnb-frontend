@@ -68,9 +68,7 @@ function PageHeader({
           )}
         </div>
       </div>
-      {actionContent && (
-        <div className="flex items-center gap-2 flex-wrap">{actionContent}</div>
-      )}
+      {actionContent && <div className="flex items-center gap-2 flex-wrap">{actionContent}</div>}
     </div>
   );
 }

@@ -19,7 +19,8 @@ export async function bulkPublishCourses(courseIds: string[]): Promise<BulkPubli
     try {
       await axiosInstance.post(`/api/courses/${id}/publish`);
       results.success.push(id);
-    } catch (e: any) { // TODO(types): Error from course publish request
+    } catch (e: any) {
+      // TODO(types): Error from course publish request
       results.errors.push({ id, message: e?.message || "Publish failed" });
     }
   }

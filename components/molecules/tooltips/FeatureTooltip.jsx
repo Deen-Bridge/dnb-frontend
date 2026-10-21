@@ -181,9 +181,11 @@ export default function FeatureTooltip({ highlight, onDismiss, className }) {
 
   const arrowClasses = {
     top: "before:absolute before:-top-2 before:left-1/2 before:-translate-x-1/2 before:border-8 before:border-transparent before:border-b-emerald-600",
-    bottom: "before:absolute before:-bottom-2 before:left-1/2 before:-translate-x-1/2 before:border-8 before:border-transparent before:border-t-emerald-600",
+    bottom:
+      "before:absolute before:-bottom-2 before:left-1/2 before:-translate-x-1/2 before:border-8 before:border-transparent before:border-t-emerald-600",
     left: "before:absolute before:top-1/2 before:-left-2 before:-translate-y-1/2 before:border-8 before:border-transparent before:border-r-emerald-600",
-    right: "before:absolute before:top-1/2 before:-right-2 before:-translate-y-1/2 before:border-8 before:border-transparent before:border-l-emerald-600",
+    right:
+      "before:absolute before:top-1/2 before:-right-2 before:-translate-y-1/2 before:border-8 before:border-transparent before:border-l-emerald-600",
   };
 
   return (
@@ -209,9 +211,7 @@ export default function FeatureTooltip({ highlight, onDismiss, className }) {
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            {title && (
-              <h4 className="font-semibold text-sm mb-1">{title}</h4>
-            )}
+            {title && <h4 className="font-semibold text-sm mb-1">{title}</h4>}
             <p className="text-sm text-emerald-50">{message}</p>
           </div>
           <button

@@ -6,12 +6,10 @@ export async function markMessagesAsRead(convoId: string, userId: string): Promi
   const snapshot = await getDocs(messagesRef);
 
   const batch = writeBatch(db);
-  snapshot.forEach((doc: any) => { // TODO(types): Firestore message document snapshot
+  snapshot.forEach((doc: any) => {
+    // TODO(types): Firestore message document snapshot
     const data = doc.data();
-    if (
-      data.sender !== userId &&
-      (!data.readBy || !data.readBy.includes(userId))
-    ) {
+    if (data.sender !== userId && (!data.readBy || !data.readBy.includes(userId))) {
       batch.update(doc.ref, {
         readBy: [...(data.readBy || []), userId],
       });

@@ -23,7 +23,9 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockPush }) }));
 
 vi.mock("react-ripples", () => ({
   default: ({ children, onClick, className }) => (
-    <span className={className} onClick={onClick}>{children}</span>
+    <span className={className} onClick={onClick}>
+      {children}
+    </span>
   ),
 }));
 
@@ -61,7 +63,13 @@ function makeHookReturn(overrides = {}) {
 beforeEach(() => {
   _hookReturn = makeHookReturn();
   mockPush.mockClear();
-  try { try { try { localStorage.removeItem("dnb_verification_banner"); } catch (_e) { } } catch (_e) { } } catch (_e) { }
+  try {
+    try {
+      try {
+        localStorage.removeItem("dnb_verification_banner");
+      } catch (_e) {}
+    } catch (_e) {}
+  } catch (_e) {}
 });
 
 afterEach(() => vi.clearAllMocks());

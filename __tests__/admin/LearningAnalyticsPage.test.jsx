@@ -144,9 +144,7 @@ describe("LearningAnalyticsPage — geographic distribution", () => {
 
     await screen.findAllByText("Geographic Distribution");
     getCardScope("Geographic Distribution");
-    expect(
-      screen.getByText(/Country data is available for 68% of learners/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Country data is available for 68% of learners/i)).toBeInTheDocument();
   });
 
   it("renders a not-tracked placeholder when geographic data is unavailable", async () => {
@@ -159,7 +157,7 @@ describe("LearningAnalyticsPage — geographic distribution", () => {
             countries: [],
           },
         })
-    );
+      );
     render(<LearningAnalyticsPage />);
 
     await screen.findAllByText("Geographic Distribution");

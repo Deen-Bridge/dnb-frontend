@@ -89,9 +89,7 @@ function mockCanvas(fakeCanvas) {
 describe("captureVideoFrame()", () => {
   it("rejects when the video has no dimensions yet", async () => {
     const video = { videoWidth: 0, videoHeight: 0 };
-    await expect(captureVideoFrame(video)).rejects.toThrow(
-      /isn't ready to capture/i
-    );
+    await expect(captureVideoFrame(video)).rejects.toThrow(/isn't ready to capture/i);
   });
 
   it("draws the current video frame and resolves a Blob", async () => {
@@ -112,7 +110,6 @@ describe("captureVideoFrame()", () => {
     expect(fakeCanvas.height).toBe(1136);
     expect(drawImage).toHaveBeenCalledWith(video, 0, 0, 640, 1136);
     expect(blob).toBe(fakeBlob);
-
   });
 
   it("rejects when toBlob yields nothing", async () => {
@@ -126,7 +123,6 @@ describe("captureVideoFrame()", () => {
 
     const video = { videoWidth: 640, videoHeight: 1136 };
     await expect(captureVideoFrame(video)).rejects.toThrow(/couldn't capture/i);
-
   });
 });
 
@@ -147,14 +143,7 @@ describe("<ReelPosterDialog /> - pick-a-frame tab", () => {
 
     const onUpdated = vi.fn();
     const onOpenChange = vi.fn();
-    render(
-      <ReelPosterDialog
-        open
-        onOpenChange={onOpenChange}
-        reel={reel}
-        onUpdated={onUpdated}
-      />
-    );
+    render(<ReelPosterDialog open onOpenChange={onOpenChange} reel={reel} onUpdated={onUpdated} />);
 
     // Simulate the video reporting its duration/dimensions once metadata loads.
     const video = document.querySelector("video");
@@ -179,7 +168,6 @@ describe("<ReelPosterDialog /> - pick-a-frame tab", () => {
     );
     expect(toast.success).toHaveBeenCalled();
     expect(onOpenChange).toHaveBeenCalledWith(false);
-
   });
 
   it("keeps the dialog open and toasts an error if the upload fails", async () => {
@@ -194,9 +182,7 @@ describe("<ReelPosterDialog /> - pick-a-frame tab", () => {
     mocks.uploadFrameFile.mockRejectedValue(new Error("Upload failed"));
 
     const onOpenChange = vi.fn();
-    render(
-      <ReelPosterDialog open onOpenChange={onOpenChange} reel={reel} onUpdated={vi.fn()} />
-    );
+    render(<ReelPosterDialog open onOpenChange={onOpenChange} reel={reel} onUpdated={vi.fn()} />);
 
     const video = document.querySelector("video");
     Object.defineProperty(video, "videoWidth", { value: 640, configurable: true });
@@ -212,7 +198,6 @@ describe("<ReelPosterDialog /> - pick-a-frame tab", () => {
     await waitFor(() => expect(mocks.uploadFrameFile).toHaveBeenCalled());
     expect(mocks.setPoster).not.toHaveBeenCalled();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
-
   });
 });
 
@@ -221,20 +206,11 @@ describe("<ReelPosterDialog /> - upload-image tab", () => {
     mocks.uploadCustomFile.mockResolvedValue(
       "https://res.cloudinary.com/demo/image/upload/custom.jpg"
     );
-    mocks.setPoster.mockResolvedValue(
-      "https://res.cloudinary.com/demo/image/upload/custom.jpg"
-    );
+    mocks.setPoster.mockResolvedValue("https://res.cloudinary.com/demo/image/upload/custom.jpg");
 
     const onUpdated = vi.fn();
     const onOpenChange = vi.fn();
-    render(
-      <ReelPosterDialog
-        open
-        onOpenChange={onOpenChange}
-        reel={reel}
-        onUpdated={onUpdated}
-      />
-    );
+    render(<ReelPosterDialog open onOpenChange={onOpenChange} reel={reel} onUpdated={onUpdated} />);
 
     await userEvent.click(screen.getByRole("tab", { name: /upload image/i }));
 

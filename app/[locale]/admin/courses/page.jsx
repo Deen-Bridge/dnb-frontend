@@ -31,11 +31,7 @@ import {
 import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
 import { ISLAMIC_CATEGORIES, resolveCategorySlug } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const PAGE_SIZE = 20;
 const STATUS_OPTIONS = ["draft", "published", "unpublished", "taken-down"];
@@ -48,9 +44,7 @@ const statusStyles = {
 };
 
 function normalizeStatus(course) {
-  const value = String(
-    course?.moderationStatus || course?.status || ""
-  )
+  const value = String(course?.moderationStatus || course?.status || "")
     .trim()
     .toLowerCase()
     .replaceAll("_", "-")
@@ -137,9 +131,7 @@ export default function AdminCoursesPage() {
     setError(false);
     try {
       const response = await fetchCourses();
-      const list = Array.isArray(response)
-        ? response
-        : response?.courses || response?.data || [];
+      const list = Array.isArray(response) ? response : response?.courses || response?.data || [];
       setCourses(Array.isArray(list) ? list : []);
     } catch {
       setError(true);
@@ -160,10 +152,7 @@ export default function AdminCoursesPage() {
     return courses
       .filter((course) => {
         if (status !== "all" && normalizeStatus(course) !== status) return false;
-        if (
-          category !== "all" &&
-          resolveCategorySlug(course?.category) !== category
-        ) {
+        if (category !== "all" && resolveCategorySlug(course?.category) !== category) {
           return false;
         }
         if (flaggedOnly && getFlagCount(course) === 0) return false;
@@ -178,9 +167,7 @@ export default function AdminCoursesPage() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
-  const firstResult = filteredCourses.length
-    ? (currentPage - 1) * PAGE_SIZE + 1
-    : 0;
+  const firstResult = filteredCourses.length ? (currentPage - 1) * PAGE_SIZE + 1 : 0;
   const lastResult = Math.min(currentPage * PAGE_SIZE, filteredCourses.length);
   const hasFilters = status !== "all" || category !== "all" || flaggedOnly;
 
@@ -197,12 +184,7 @@ export default function AdminCoursesPage() {
         title="Courses moderation"
         subtitle="Review every course on the platform"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={loadCourses}
-            disabled={loading}
-          >
+          <Button variant="outline" size="sm" onClick={loadCourses} disabled={loading}>
             <RotateCcw
               className={cn("mr-2 h-4 w-4", loading && "animate-spin")}
               aria-hidden="true"
@@ -255,11 +237,7 @@ export default function AdminCoursesPage() {
         </div>
 
         <div className="flex h-10 items-center gap-3 rounded-md border border-accent/10 px-3">
-          <Switch
-            id="flagged-only"
-            checked={flaggedOnly}
-            onCheckedChange={setFlaggedOnly}
-          />
+          <Switch id="flagged-only" checked={flaggedOnly} onCheckedChange={setFlaggedOnly} />
           <Label
             htmlFor="flagged-only"
             className={cn(poppins_500, "whitespace-nowrap text-sm text-ink")}
@@ -268,12 +246,7 @@ export default function AdminCoursesPage() {
           </Label>
         </div>
 
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={clearFilters}
-          disabled={!hasFilters}
-        >
+        <Button type="button" variant="ghost" onClick={clearFilters} disabled={!hasFilters}>
           Clear filters
         </Button>
       </section>
@@ -308,9 +281,7 @@ export default function AdminCoursesPage() {
                 <TableRow>
                   <TableCell colSpan={7} className="h-48 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <p className={cn(poppins_500, "text-ink")}>
-                        Courses could not be loaded.
-                      </p>
+                      <p className={cn(poppins_500, "text-ink")}>Courses could not be loaded.</p>
                       <Button variant="outline" size="sm" onClick={loadCourses}>
                         Try again
                       </Button>

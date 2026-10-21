@@ -11,19 +11,75 @@ const byteLength = (value: string): number =>
     : Buffer.byteLength(value, "utf8");
 
 const COMMON_PASSWORDS = new Set([
-  "password", "password1", "password12", "password123", "password1234",
-  "passw0rd", "p@ssword", "p@ssw0rd", "mypassword", "passwordpassword",
-  "12345678", "123456789", "1234567890", "123123123", "111111111",
-  "qwerty", "qwerty123", "qwertyuiop", "qwerty1234", "1qaz2wsx",
-  "asdfghjkl", "zxcvbnm", "abc12345", "abcd1234", "a1b2c3d4",
-  "iloveyou", "letmein", "welcome", "welcome1", "welcome123",
-  "admin", "admin123", "administrator", "root", "guest", "test1234",
-  "monkey", "dragon", "sunshine", "princess", "football", "baseball",
-  "superman", "batman", "trustno1", "starwars", "pokemon", "computer",
-  "michael", "jennifer", "jordan23", "master", "shadow", "freedom",
-  "whatever", "qazwsxedc", "changeme", "secret", "login", "passcode",
-  "deenbridge", "deenbridge1", "deenbridge123", "islam123", "muslim123",
-  "bismillah", "alhamdulillah", "assalamualaikum", "allahuakbar",
+  "password",
+  "password1",
+  "password12",
+  "password123",
+  "password1234",
+  "passw0rd",
+  "p@ssword",
+  "p@ssw0rd",
+  "mypassword",
+  "passwordpassword",
+  "12345678",
+  "123456789",
+  "1234567890",
+  "123123123",
+  "111111111",
+  "qwerty",
+  "qwerty123",
+  "qwertyuiop",
+  "qwerty1234",
+  "1qaz2wsx",
+  "asdfghjkl",
+  "zxcvbnm",
+  "abc12345",
+  "abcd1234",
+  "a1b2c3d4",
+  "iloveyou",
+  "letmein",
+  "welcome",
+  "welcome1",
+  "welcome123",
+  "admin",
+  "admin123",
+  "administrator",
+  "root",
+  "guest",
+  "test1234",
+  "monkey",
+  "dragon",
+  "sunshine",
+  "princess",
+  "football",
+  "baseball",
+  "superman",
+  "batman",
+  "trustno1",
+  "starwars",
+  "pokemon",
+  "computer",
+  "michael",
+  "jennifer",
+  "jordan23",
+  "master",
+  "shadow",
+  "freedom",
+  "whatever",
+  "qazwsxedc",
+  "changeme",
+  "secret",
+  "login",
+  "passcode",
+  "deenbridge",
+  "deenbridge1",
+  "deenbridge123",
+  "islam123",
+  "muslim123",
+  "bismillah",
+  "alhamdulillah",
+  "assalamualaikum",
+  "allahuakbar",
 ]);
 
 export interface CharacterClasses {
@@ -61,8 +117,17 @@ function hasSequence(password: string): boolean {
 }
 
 const LEET: Record<string, string> = {
-  "0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "8": "b",
-  "@": "a", "$": "s", "!": "i", "+": "t",
+  "0": "o",
+  "1": "i",
+  "3": "e",
+  "4": "a",
+  "5": "s",
+  "7": "t",
+  "8": "b",
+  "@": "a",
+  $: "s",
+  "!": "i",
+  "+": "t",
 };
 
 const leet = (value: string): string => value.replace(/[0134578@$!+]/g, (c) => LEET[c] || c);
@@ -101,12 +166,12 @@ export interface PasswordContext {
   email?: string;
 }
 
-function containsPersonalInfo(password: string, { name = "", email = "" }: PasswordContext = {}): boolean {
+function containsPersonalInfo(
+  password: string,
+  { name = "", email = "" }: PasswordContext = {}
+): boolean {
   const haystack = password.toLowerCase();
-  const fragments = [
-    ...String(name).split(/\s+/),
-    String(email).split("@")[0] || "",
-  ]
+  const fragments = [...String(name).split(/\s+/), String(email).split("@")[0] || ""]
     .map((f) => f.toLowerCase().replace(/[^a-z0-9]/g, ""))
     .filter((f) => f.length >= 4);
 
@@ -119,7 +184,10 @@ export interface PasswordRequirement {
   met: boolean;
 }
 
-export function passwordRequirements(password: string = "", context: PasswordContext = {}): PasswordRequirement[] {
+export function passwordRequirements(
+  password: string = "",
+  context: PasswordContext = {}
+): PasswordRequirement[] {
   return [
     {
       id: "length",
@@ -185,7 +253,10 @@ export interface PasswordStrengthResult {
   percent: number;
 }
 
-export function passwordStrength(password: string = "", context: PasswordContext = {}): PasswordStrengthResult {
+export function passwordStrength(
+  password: string = "",
+  context: PasswordContext = {}
+): PasswordStrengthResult {
   if (!password) return { score: 0, label: "", percent: 0 };
 
   let score = 0;
@@ -212,8 +283,12 @@ export function passwordStrength(password: string = "", context: PasswordContext
   };
 }
 
-export function refinePassword<T extends z.ZodTypeAny>(schema: T, { field = "password" } = {}): z.ZodEffects<T> {
-  return schema.superRefine((data: any, ctx: z.RefinementCtx) => { // TODO(types): Sibling fields inference on dynamic zod schema
+export function refinePassword<T extends z.ZodTypeAny>(
+  schema: T,
+  { field = "password" } = {}
+): z.ZodEffects<T> {
+  return schema.superRefine((data: any, ctx: z.RefinementCtx) => {
+    // TODO(types): Sibling fields inference on dynamic zod schema
     const issues = passwordIssues(data?.[field] ?? "", {
       name: data?.name ?? "",
       email: data?.email ?? "",

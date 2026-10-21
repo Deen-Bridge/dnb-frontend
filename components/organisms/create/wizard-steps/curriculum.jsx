@@ -15,7 +15,10 @@ export default function WizardStepCurriculum({ control, errors, register }) {
 
   const handleAddLesson = () => {
     append({
-      id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      id:
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Date.now()),
       title: "",
       description: "",
       duration: "",
@@ -124,9 +127,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
                     className={lessonError?.title ? "border-red-500" : ""}
                   />
                   {lessonError?.title && (
-                    <p className="text-xs text-red-500 font-medium">
-                      {lessonError.title.message}
-                    </p>
+                    <p className="text-xs text-red-500 font-medium">{lessonError.title.message}</p>
                   )}
                 </div>
 
@@ -164,11 +165,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
           <p className="text-sm text-muted-foreground">
             No lessons added yet. Click "Add Lesson" to start building your curriculum.
           </p>
-          <ShadcnButton
-            type="button"
-            onClick={handleAddLesson}
-            className="bg-accent text-white"
-          >
+          <ShadcnButton type="button" onClick={handleAddLesson} className="bg-accent text-white">
             <Plus className="w-4 h-4 mr-1" /> Add First Lesson
           </ShadcnButton>
         </div>

@@ -53,11 +53,13 @@ function ReelPreview({ target }) {
   return (
     <figure className="overflow-hidden rounded-lg border border-border bg-surface-raised">
       <div className="relative aspect-video w-full bg-muted">
-        <SafeImage src={preview.thumbnail || preview.poster} alt={`Thumbnail for reel: ${title}`} fill className="object-cover" />
-        <span
-          className="absolute inset-0 flex items-center justify-center"
-          aria-hidden="true"
-        >
+        <SafeImage
+          src={preview.thumbnail || preview.poster}
+          alt={`Thumbnail for reel: ${title}`}
+          fill
+          className="object-cover"
+        />
+        <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/55 text-white ring-1 ring-white/30">
             <Play className="ml-0.5 h-6 w-6" fill="currentColor" />
           </span>
@@ -69,7 +71,9 @@ function ReelPreview({ target }) {
           </span>
         ) : null}
       </div>
-      <figcaption className={cn(poppins_400.className, "flex items-center justify-between gap-2 px-3 py-2")}>
+      <figcaption
+        className={cn(poppins_400.className, "flex items-center justify-between gap-2 px-3 py-2")}
+      >
         <span className={cn(poppins_500.className, "truncate text-sm text-ink")}>{title}</span>
         <Badge variant="secondary">Reel</Badge>
       </figcaption>
@@ -83,7 +87,12 @@ function BookPreview({ target }) {
   return (
     <figure className="flex gap-3 rounded-lg border border-border bg-surface-raised p-3">
       <div className="relative h-40 w-28 shrink-0 overflow-hidden rounded-md bg-muted shadow-sm">
-        <SafeImage src={preview.cover} alt={`Cover of book: ${title}`} fill className="object-cover" />
+        <SafeImage
+          src={preview.cover}
+          alt={`Cover of book: ${title}`}
+          fill
+          className="object-cover"
+        />
       </div>
       <figcaption className="flex min-w-0 flex-col justify-center gap-1">
         <Badge variant="secondary" className="w-fit gap-1">
@@ -101,14 +110,23 @@ function CoursePreview({ target }) {
   return (
     <figure className="overflow-hidden rounded-lg border border-border bg-surface-raised">
       <div className="relative aspect-video w-full bg-muted">
-        <SafeImage src={preview.thumbnail} alt={`Thumbnail for course: ${title}`} fill className="object-cover" />
+        <SafeImage
+          src={preview.thumbnail}
+          alt={`Thumbnail for course: ${title}`}
+          fill
+          className="object-cover"
+        />
         <Badge variant="secondary" className="absolute left-2 top-2 gap-1">
           <GraduationCap className="h-3 w-3" aria-hidden="true" /> Course
         </Badge>
       </div>
       <figcaption className="space-y-1 px-3 py-2">
-        <span className={cn(poppins_600.className, "block truncate text-sm text-ink")}>{title}</span>
-        <span className={cn(poppins_400.className, "block text-xs text-ink-muted")}>by {author}</span>
+        <span className={cn(poppins_600.className, "block truncate text-sm text-ink")}>
+          {title}
+        </span>
+        <span className={cn(poppins_400.className, "block text-xs text-ink-muted")}>
+          by {author}
+        </span>
         <div className={cn(poppins_400.className, "flex gap-3 pt-1 text-xs text-ink-muted")}>
           {typeof preview.lessons === "number" ? <span>{preview.lessons} lessons</span> : null}
           {typeof preview.enrolled === "number" ? <span>{preview.enrolled} enrolled</span> : null}
@@ -129,7 +147,12 @@ export default function ReportedContentPreview({ target }) {
       return <CoursePreview target={target} />;
     default:
       return (
-        <div className={cn(poppins_400.className, "rounded-lg border border-border bg-surface-raised p-4 text-sm text-ink-muted")}>
+        <div
+          className={cn(
+            poppins_400.className,
+            "rounded-lg border border-border bg-surface-raised p-4 text-sm text-ink-muted"
+          )}
+        >
           No preview available for this content type.
         </div>
       );

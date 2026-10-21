@@ -4,13 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -69,7 +63,10 @@ const settingsSections = [
     bgColor: "bg-amber-500/10",
     settings: [
       { label: "Auto-moderation", description: "Enable AI-powered content moderation" },
-      { label: "Review Queue Threshold", description: "Set confidence threshold for manual review" },
+      {
+        label: "Review Queue Threshold",
+        description: "Set confidence threshold for manual review",
+      },
       { label: "Profanity Filter", description: "Configure profanity detection levels" },
       { label: "Spam Detection", description: "Set spam detection sensitivity" },
       { label: "User Report Threshold", description: "Auto-flag content after X reports" },
@@ -152,7 +149,10 @@ const settingsSections = [
     color: "text-rose-500",
     bgColor: "bg-rose-500/10",
     settings: [
-      { label: "Max Concurrent Spaces", description: "Set the ceiling for simultaneous live spaces" },
+      {
+        label: "Max Concurrent Spaces",
+        description: "Set the ceiling for simultaneous live spaces",
+      },
       { label: "Default Max Participants", description: "Default participant cap for new rooms" },
       { label: "Minimum Lead Time", description: "Required notice before a session goes live" },
       { label: "Enforcement Mode", description: "Strict enforcement or advisory warnings" },
@@ -193,15 +193,15 @@ const getSettingIcon = (label) => {
     "Tax Settings": Percent,
     "AI Assistant": Zap,
     "Live Sessions": Users,
-    "Gamification": Flag,
+    Gamification: Flag,
     "Social Features": Users,
     "Stellar Payments": CreditCard,
     "Dark Mode": Palette,
     "Stellar Network": Plug,
-    "Cloudinary": Database,
+    Cloudinary: Database,
     "Email Provider": Mail,
-    "Analytics": FileText,
-    "Webhooks": Webhook,
+    Analytics: FileText,
+    Webhooks: Webhook,
     "OAuth Providers": Lock,
     "Default Landing Page": Globe,
     "Timezone Override": Clock,
@@ -242,7 +242,10 @@ export default function AdminSettingsHub() {
 
       {/* Search */}
       <div className="relative max-w-md" role="search" aria-label="Search settings">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+        <Search
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+          aria-hidden="true"
+        />
         <Input
           type="text"
           placeholder="Search settings..."
@@ -257,9 +260,7 @@ export default function AdminSettingsHub() {
       {showSearchResults && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">
-              Search Results ({filteredSettings.length})
-            </CardTitle>
+            <CardTitle className="text-lg">Search Results ({filteredSettings.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {filteredSettings.length === 0 ? (
@@ -352,9 +353,7 @@ export default function AdminSettingsHub() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Quick Overview</CardTitle>
-            <CardDescription>
-              Current configuration status across all settings
-            </CardDescription>
+            <CardDescription>Current configuration status across all settings</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

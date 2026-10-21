@@ -6,11 +6,7 @@ import Link from "next/link";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import StarRate from "@/components/atoms/form/StarRate";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const REVIEWS_PER_PAGE = 5;
 
@@ -89,10 +85,7 @@ export default function ReviewsSection({
       {totalReviews > 0 && (
         <div className="space-y-1.5 max-w-sm">
           {distribution.map(({ star, count, percentage }) => (
-            <div
-              key={star}
-              className={cn(poppins_400, "flex items-center gap-2 text-sm")}
-            >
+            <div key={star} className={cn(poppins_400, "flex items-center gap-2 text-sm")}>
               <span className="w-6 text-right text-ink-muted">{star}</span>
               <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
               <div className="flex-1 h-2.5 overflow-hidden rounded-full bg-accent/10">
@@ -101,9 +94,7 @@ export default function ReviewsSection({
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <span className="w-6 text-right tabular-nums text-ink-muted">
-                {count}
-              </span>
+              <span className="w-6 text-right tabular-nums text-ink-muted">{count}</span>
             </div>
           ))}
         </div>
@@ -114,12 +105,7 @@ export default function ReviewsSection({
 
       {/* Review List */}
       {totalReviews === 0 ? (
-        <p
-          className={cn(
-            poppins_400,
-            "py-8 text-center text-ink-muted"
-          )}
-        >
+        <p className={cn(poppins_400, "py-8 text-center text-ink-muted")}>
           No reviews yet — be the first!
         </p>
       ) : (
@@ -128,8 +114,7 @@ export default function ReviewsSection({
             const isOwner =
               enableEditDelete &&
               currentUserId &&
-              (review.user?._id === currentUserId ||
-                review.user?.id === currentUserId);
+              (review.user?._id === currentUserId || review.user?.id === currentUserId);
 
             return (
               <div key={review._id} className="space-y-2">
@@ -140,29 +125,19 @@ export default function ReviewsSection({
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={review.user?.avatar} alt="" />
-                      <AvatarFallback>
-                        {review.user?.name?.charAt(0) || "U"}
-                      </AvatarFallback>
+                      <AvatarFallback>{review.user?.name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p
-                        className={cn(
-                          poppins_600,
-                          "text-sm text-ink group-hover:underline"
-                        )}
-                      >
+                      <p className={cn(poppins_600, "text-sm text-ink group-hover:underline")}>
                         {review.user?.name || "Anonymous"}
                       </p>
                       <p className={cn(poppins_400, "text-xs text-ink-muted")}>
                         {review.createdAt
-                          ? new Date(review.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              }
-                            )
+                          ? new Date(review.createdAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
                           : ""}
                       </p>
                     </div>
@@ -200,21 +175,14 @@ export default function ReviewsSection({
                       key={i}
                       size={14}
                       className={
-                        i <= review.rating
-                          ? "fill-amber-500 text-amber-500"
-                          : "text-accent/20"
+                        i <= review.rating ? "fill-amber-500 text-amber-500" : "text-accent/20"
                       }
                     />
                   ))}
                 </div>
 
                 {review.comment && (
-                  <p
-                    className={cn(
-                      poppins_400,
-                      "text-sm leading-relaxed text-ink-muted"
-                    )}
-                  >
+                  <p className={cn(poppins_400, "text-sm leading-relaxed text-ink-muted")}>
                     {review.comment}
                   </p>
                 )}

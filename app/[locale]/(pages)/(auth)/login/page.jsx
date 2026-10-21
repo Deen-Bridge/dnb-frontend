@@ -1,11 +1,11 @@
-import LoginForm from '@/components/organisms/auth/login-form'
-import ForgetPassword from '@/components/organisms/auth/forget-password'
-import { GalleryVerticalEnd } from 'lucide-react'
-import React, { Suspense } from 'react'
-import Image from "next/image"
-import Link from 'next/link'
-import { siteUrl, siteName } from "@/lib/config/site.config"
-import SessionEndedNotice from "@/components/auth/SessionEndedNotice"
+import LoginForm from "@/components/organisms/auth/login-form";
+import ForgetPassword from "@/components/organisms/auth/forget-password";
+import { GalleryVerticalEnd } from "lucide-react";
+import React, { Suspense } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { siteUrl, siteName } from "@/lib/config/site.config";
+import SessionEndedNotice from "@/components/auth/SessionEndedNotice";
 
 export const metadata = {
   title: { absolute: "Sign in | Deen Bridge" },
@@ -29,7 +29,7 @@ export const metadata = {
       "Sign in to your Deen Bridge account to access your courses, books, community spaces, and AI assistant.",
     images: ["/og.png"],
   },
-}
+};
 const page = () => {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
@@ -61,7 +61,7 @@ const page = () => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;

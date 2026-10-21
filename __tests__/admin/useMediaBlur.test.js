@@ -200,7 +200,7 @@ describe("useMediaBlur", () => {
 
     // Simulate the user toggling prefers-reduced-motion at runtime
     const changeHandler = mql.addEventListener.mock.calls.find(
-      ([event]) => event === "change",
+      ([event]) => event === "change"
     )?.[1];
 
     expect(changeHandler).toBeDefined();

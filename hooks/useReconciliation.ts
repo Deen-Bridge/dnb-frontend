@@ -35,7 +35,9 @@ export interface UseReconciliationResult {
   run: (range?: UseReconciliationRange) => Promise<void>;
 }
 
-export default function useReconciliation(initialRange: UseReconciliationRange = {}): UseReconciliationResult {
+export default function useReconciliation(
+  initialRange: UseReconciliationRange = {}
+): UseReconciliationResult {
   const { user, loading: authLoading } = useAuth();
 
   const [from, setFrom] = useState<string>(initialRange.from || "");
@@ -74,7 +76,8 @@ export default function useReconciliation(initialRange: UseReconciliationRange =
         ]);
         setRows(reconcile(transactions, claims));
         setHasRun(true);
-      } catch (err: any) { // TODO(types): Reconciliation error
+      } catch (err: any) {
+        // TODO(types): Reconciliation error
         const message = err?.message || "Failed to load reconciliation data";
         setError(message);
         adminToastError({

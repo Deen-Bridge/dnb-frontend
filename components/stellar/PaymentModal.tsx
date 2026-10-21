@@ -63,10 +63,11 @@ export default function PaymentModal({
     networkMismatch,
     validateForPayment,
   } = useStellar();
-  const { initializePayment, executePayment, isProcessing, cancelPayment } =
-    useStellarPayment();
+  const { initializePayment, executePayment, isProcessing, cancelPayment } = useStellarPayment();
 
-  const [step, setStep] = useState<"preview" | "confirm" | "processing" | "success" | "error">("preview");
+  const [step, setStep] = useState<"preview" | "confirm" | "processing" | "success" | "error">(
+    "preview"
+  );
   const [paymentData, setPaymentData] = useState<PaymentInitializationResponse | null>(null);
   const [result, setResult] = useState<any | null>(null); // TODO(types): Execution result
   const [error, setError] = useState<string | null>(null);
@@ -130,7 +131,8 @@ export default function PaymentModal({
         setStep("error");
         setError("Transaction failed. Please try again.");
       }
-    } catch (err: any) { // TODO(types): Error from payment execution
+    } catch (err: any) {
+      // TODO(types): Error from payment execution
       const mapped = mapStellarError(err);
       if (mapped) {
         setError(mapped.message);
@@ -178,11 +180,10 @@ export default function PaymentModal({
     return `${addr.slice(0, 8)}...${addr.slice(-8)}`;
   };
 
-  const numPrice = typeof item?.price === "string" ? parseFloat(item.price) : (item?.price || 0);
+  const numPrice = typeof item?.price === "string" ? parseFloat(item.price) : item?.price || 0;
 
   const hasInsufficientBalance =
-    connectedWallet &&
-    parseFloat(walletInfo?.usdcBalance || "0") < numPrice;
+    connectedWallet && parseFloat(walletInfo?.usdcBalance || "0") < numPrice;
 
   const hasBlockingIssues = preCheckIssues.some(
     (i) => i.type === "no_wallet" || i.type === "network" || i.type === "trustline"
@@ -192,10 +193,12 @@ export default function PaymentModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
         className="sm:max-w-md"
-        onPointerDownOutside={(e: any) => { // TODO(types): Radix pointer down outside event
+        onPointerDownOutside={(e: any) => {
+          // TODO(types): Radix pointer down outside event
           if (step === "processing") e.preventDefault();
         }}
-        onEscapeKeyDown={(e: any) => { // TODO(types): Radix escape key down event
+        onEscapeKeyDown={(e: any) => {
+          // TODO(types): Radix escape key down event
           if (step === "processing") e.preventDefault();
         }}
       >
@@ -219,12 +222,8 @@ export default function PaymentModal({
           <div className="p-4 bg-muted rounded-lg">
             <h4 className="font-semibold line-clamp-2">{item?.title}</h4>
             <div className="flex justify-between items-center mt-2">
-              <Badge variant="outline">
-                {itemType === "book" ? "Book" : "Course"}
-              </Badge>
-              <span className="text-2xl font-bold text-primary">
-                ${item?.price} USDC
-              </span>
+              <Badge variant="outline">{itemType === "book" ? "Book" : "Course"}</Badge>
+              <span className="text-2xl font-bold text-primary">${item?.price} USDC</span>
             </div>
           </div>
 
@@ -234,12 +233,9 @@ export default function PaymentModal({
               <div className="flex items-start gap-2">
                 <WifiOff className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-orange-800">
-                    No Stellar wallet detected
-                  </p>
+                  <p className="text-sm font-medium text-orange-800">No Stellar wallet detected</p>
                   <p className="text-sm text-orange-700 mt-1">
-                    Install a Stellar wallet extension to make purchases on
-                    DeenBridge.
+                    Install a Stellar wallet extension to make purchases on DeenBridge.
                   </p>
                 </div>
               </div>
@@ -281,11 +277,7 @@ export default function PaymentModal({
               <p className="text-sm text-orange-700 mb-3">
                 Connect your Stellar wallet to continue
               </p>
-              <Button
-                onClick={connectWallet}
-                className="w-full"
-                disabled={isConnecting}
-              >
+              <Button onClick={connectWallet} className="w-full" disabled={isConnecting}>
                 {isConnecting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -307,13 +299,10 @@ export default function PaymentModal({
               <div className="flex items-start gap-2">
                 <ShieldAlert className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-red-800">
-                    Wrong Network
-                  </p>
+                  <p className="text-sm font-medium text-red-800">Wrong Network</p>
                   <p className="text-sm text-red-700 mt-1">
                     Your wallet is on a different network. Please switch to{" "}
-                    <strong>{network}</strong> in your wallet settings and try
-                    again.
+                    <strong>{network}</strong> in your wallet settings and try again.
                   </p>
                 </div>
               </div>
@@ -339,57 +328,45 @@ export default function PaymentModal({
                   >
                     <p className="font-medium">{issue.title}</p>
                     <p className="mt-1 text-xs opacity-80">{issue.message}</p>
-                    {issue.nextStep && (
-                      <p className="mt-1 text-xs font-medium">
-                        {issue.nextStep}
-                      </p>
-                    )}
+                    {issue.nextStep && <p className="mt-1 text-xs font-medium">{issue.nextStep}</p>}
                   </div>
                 ))}
               </div>
             )}
 
           {/* Wallet Connected - Preview */}
-          {connectedWallet &&
-            !networkMismatch &&
-            step === "preview" && (
-              <div className="p-4 border rounded-lg space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    Your Wallet
-                  </span>
-                  <span className="font-mono text-sm">
-                    {truncateAddress(connectedWallet)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    USDC Balance
-                  </span>
-                  <span
-                    className={`font-semibold ${
-                      hasInsufficientBalance ? "text-red-500" : "text-green-600"
-                    }`}
-                  >
-                    {parseFloat(walletInfo?.usdcBalance || "0").toFixed(2)} USDC
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Network</span>
-                  <Badge variant="secondary">{network}</Badge>
-                </div>
-                {!walletInfo?.hasTrustline && (
-                  <p className="text-sm text-orange-500 mt-2">
-                    ⚠ No USDC trustline. Add USDC asset in your wallet first.
-                  </p>
-                )}
-                {hasInsufficientBalance && (
-                  <p className="text-sm text-red-500 mt-2">
-                    Insufficient USDC balance. Please add funds to your wallet.
-                  </p>
-                )}
+          {connectedWallet && !networkMismatch && step === "preview" && (
+            <div className="p-4 border rounded-lg space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Your Wallet</span>
+                <span className="font-mono text-sm">{truncateAddress(connectedWallet)}</span>
               </div>
-            )}
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">USDC Balance</span>
+                <span
+                  className={`font-semibold ${
+                    hasInsufficientBalance ? "text-red-500" : "text-green-600"
+                  }`}
+                >
+                  {parseFloat(walletInfo?.usdcBalance || "0").toFixed(2)} USDC
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Network</span>
+                <Badge variant="secondary">{network}</Badge>
+              </div>
+              {!walletInfo?.hasTrustline && (
+                <p className="text-sm text-orange-500 mt-2">
+                  ⚠ No USDC trustline. Add USDC asset in your wallet first.
+                </p>
+              )}
+              {hasInsufficientBalance && (
+                <p className="text-sm text-red-500 mt-2">
+                  Insufficient USDC balance. Please add funds to your wallet.
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Confirm Step */}
           {step === "confirm" && paymentData && (
@@ -401,19 +378,22 @@ export default function PaymentModal({
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Sending:</span>
                   <span className="font-semibold">
-                    ${(paymentData as any).item?.price ?? item?.price} USDC {/* // TODO(types): Payment nested item price */}
+                    ${(paymentData as any).item?.price ?? item?.price} USDC{" "}
+                    {/* // TODO(types): Payment nested item price */}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">To:</span>
                   <span className="font-mono text-xs">
-                    {truncateAddress((paymentData as any).creator?.wallet)} {/* // TODO(types): Payment nested creator wallet */}
+                    {truncateAddress((paymentData as any).creator?.wallet)}{" "}
+                    {/* // TODO(types): Payment nested creator wallet */}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Creator:</span>
                   <span className="font-semibold">
-                    {(paymentData as any).creator?.name} {/* // TODO(types): Payment nested creator name */}
+                    {(paymentData as any).creator?.name}{" "}
+                    {/* // TODO(types): Payment nested creator name */}
                   </span>
                 </div>
               </div>
@@ -446,9 +426,7 @@ export default function PaymentModal({
             <div className="flex flex-col items-center py-8">
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="mt-4 text-muted-foreground">
-                {isProcessing
-                  ? "Waiting for wallet confirmation…"
-                  : "Preparing transaction..."}
+                {isProcessing ? "Waiting for wallet confirmation…" : "Preparing transaction..."}
               </p>
               <p className="text-xs text-muted-foreground mt-2">
                 Please check your wallet for the signing request
@@ -471,8 +449,7 @@ export default function PaymentModal({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm text-primary mt-4 hover:underline"
                 >
-                  View on Stellar Explorer{" "}
-                  <ExternalLink className="h-3 w-3" />
+                  View on Stellar Explorer <ExternalLink className="h-3 w-3" />
                 </a>
               )}
             </div>
@@ -487,9 +464,7 @@ export default function PaymentModal({
               </h3>
               <p className="text-muted-foreground mt-2">{error}</p>
               {errorDetail?.nextStep && (
-                <p className="text-sm text-accent font-medium mt-2">
-                  {errorDetail.nextStep}
-                </p>
+                <p className="text-sm text-accent font-medium mt-2">{errorDetail.nextStep}</p>
               )}
             </div>
           )}
@@ -498,11 +473,7 @@ export default function PaymentModal({
           <div className="flex gap-3">
             {step === "preview" && (
               <>
-                <Button
-                  variant="outline"
-                  onClick={handleClose}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={handleClose} className="flex-1">
                   Cancel
                 </Button>
                 {connectedWallet && !networkMismatch ? (
@@ -523,11 +494,7 @@ export default function PaymentModal({
                     )}
                   </Button>
                 ) : !connectedWallet ? (
-                  <Button
-                    onClick={connectWallet}
-                    className="flex-1"
-                    disabled={isConnecting}
-                  >
+                  <Button onClick={connectWallet} className="flex-1" disabled={isConnecting}>
                     {isConnecting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -541,11 +508,7 @@ export default function PaymentModal({
 
             {step === "confirm" && (
               <>
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={handleBack} className="flex-1">
                   Back
                 </Button>
                 <Button onClick={handleConfirm} className="flex-1">

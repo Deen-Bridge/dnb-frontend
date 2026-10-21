@@ -76,15 +76,23 @@ export interface DemoteContext {
   confirmation?: string;
 }
 
-export async function demoteAdmin(adminId: string, context: DemoteContext = {}): Promise<{ admin: { id: string; tier: "staff"; confirmation?: string } }> {
-  return withMockDelay({ admin: { id: adminId, tier: "staff", confirmation: context.confirmation } });
+export async function demoteAdmin(
+  adminId: string,
+  context: DemoteContext = {}
+): Promise<{ admin: { id: string; tier: "staff"; confirmation?: string } }> {
+  return withMockDelay({
+    admin: { id: adminId, tier: "staff", confirmation: context.confirmation },
+  });
 }
 
 export interface RevokeContext {
   confirmation?: string;
 }
 
-export async function revokeAdmin(adminId: string, context: RevokeContext = {}): Promise<{ revoked: boolean; adminId: string }> {
+export async function revokeAdmin(
+  adminId: string,
+  context: RevokeContext = {}
+): Promise<{ revoked: boolean; adminId: string }> {
   void context;
   return withMockDelay({ revoked: true, adminId });
 }

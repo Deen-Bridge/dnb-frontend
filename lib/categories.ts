@@ -55,8 +55,7 @@ export const FALLBACK_CATEGORY = {
   label: "Other",
   shortLabel: "Other",
   group: "Other Categories",
-  description:
-    "Courses filed under categories that don't match the standard taxonomy.",
+  description: "Courses filed under categories that don't match the standard taxonomy.",
   icon: Puzzle,
 };
 
@@ -79,7 +78,6 @@ export type CourseLike = {
   [key: string]: unknown;
 };
 
-
 // Each category keeps the exact label educators see/pick in the create form so
 // stored values stay stable. Slugs are short, URL-friendly identifiers.
 export const CATEGORY_GROUPS = [
@@ -94,48 +92,42 @@ export const CATEGORY_GROUPS = [
         slug: "quran-tafsir",
         label: "Qur'an & Tafsir",
         shortLabel: "Qur'an & Tafsir",
-        description:
-          "Understanding the Qur'an: recitation, memorisation, and exegesis.",
+        description: "Understanding the Qur'an: recitation, memorisation, and exegesis.",
         icon: BookOpenText,
       },
       {
         slug: "hadith-sunnah",
         label: "Hadith & Sunnah",
         shortLabel: "Hadith & Sunnah",
-        description:
-          "The sayings, actions, and approvals of the Prophet (peace be upon him).",
+        description: "The sayings, actions, and approvals of the Prophet (peace be upon him).",
         icon: ScrollText,
       },
       {
         slug: "fiqh",
         label: "Fiqh (Islamic Jurisprudence)",
         shortLabel: "Fiqh",
-        description:
-          "Practical rulings and Islamic law across the schools of jurisprudence.",
+        description: "Practical rulings and Islamic law across the schools of jurisprudence.",
         icon: Scale,
       },
       {
         slug: "aqeedah",
         label: "Aqeedah (Islamic Creed/Belief)",
         shortLabel: "Aqeedah",
-        description:
-          "The fundamentals of Islamic belief and theology.",
+        description: "The fundamentals of Islamic belief and theology.",
         icon: Landmark,
       },
       {
         slug: "seerah",
         label: "Seerah (Life of the Prophet)",
         shortLabel: "Seerah",
-        description:
-          "The life, character, and mission of Prophet Muhammad (peace be upon him).",
+        description: "The life, character, and mission of Prophet Muhammad (peace be upon him).",
         icon: Footprints,
       },
       {
         slug: "usul-fiqh",
         label: "Usul al-Fiqh (Principles of Jurisprudence)",
         shortLabel: "Usul al-Fiqh",
-        description:
-          "The methodology used to derive legal rulings from their sources.",
+        description: "The methodology used to derive legal rulings from their sources.",
         icon: LibraryBig,
       },
     ],
@@ -143,48 +135,42 @@ export const CATEGORY_GROUPS = [
   {
     id: "personal-development-spirituality",
     label: "Personal Development & Spirituality",
-    description:
-      "Tending to the heart: self-purification, character, and spiritual growth.",
+    description: "Tending to the heart: self-purification, character, and spiritual growth.",
     icon: Sparkles,
     categories: [
       {
         slug: "tazkiyah",
         label: "Tazkiyah (Self-Purification)",
         shortLabel: "Tazkiyah",
-        description:
-          "Purifying the soul and refining one's character and sincerity.",
+        description: "Purifying the soul and refining one's character and sincerity.",
         icon: Flower2,
       },
       {
         slug: "adab",
         label: "Islamic Manners (Adab)",
         shortLabel: "Adab",
-        description:
-          "Etiquette and proper conduct in daily life and worship.",
+        description: "Etiquette and proper conduct in daily life and worship.",
         icon: Handshake,
       },
       {
         slug: "duas-dhikr",
         label: "Duas & Dhikr",
         shortLabel: "Duas & Dhikr",
-        description:
-          "Supplications and remembrance of Allah for every occasion.",
+        description: "Supplications and remembrance of Allah for every occasion.",
         icon: Feather,
       },
       {
         slug: "islamic-mindfulness",
         label: "Islamic Mindfulness",
         shortLabel: "Islamic Mindfulness",
-        description:
-          "Presence, gratitude, and reflection from an Islamic perspective.",
+        description: "Presence, gratitude, and reflection from an Islamic perspective.",
         icon: Brain,
       },
       {
         slug: "islamic-psychology",
         label: "Islamic Psychology",
         shortLabel: "Islamic Psychology",
-        description:
-          "Mental wellbeing and psychology rooted in Islamic principles.",
+        description: "Mental wellbeing and psychology rooted in Islamic principles.",
         icon: BrainCircuit,
       },
     ],
@@ -192,48 +178,42 @@ export const CATEGORY_GROUPS = [
   {
     id: "daily-practice-worship",
     label: "Daily Practice & Worship",
-    description:
-      "The acts of worship that structure a Muslim's day and year.",
+    description: "The acts of worship that structure a Muslim's day and year.",
     icon: MoonStar,
     categories: [
       {
         slug: "salah",
         label: "Salah (Prayer)",
         shortLabel: "Salah",
-        description:
-          "The five daily prayers: learning, perfecting, and preserving them.",
+        description: "The five daily prayers: learning, perfecting, and preserving them.",
         icon: MoonStar,
       },
       {
         slug: "fasting",
         label: "Fasting (Sawm)",
         shortLabel: "Fasting",
-        description:
-          "Fasting in Ramadan and beyond: rulings, benefits, and spirituality.",
+        description: "Fasting in Ramadan and beyond: rulings, benefits, and spirituality.",
         icon: Sunrise,
       },
       {
         slug: "zakah-charity",
         label: "Zakah & Charity",
         shortLabel: "Zakah & Charity",
-        description:
-          "Obligatory alms and the spirit of giving in Islam.",
+        description: "Obligatory alms and the spirit of giving in Islam.",
         icon: Gift,
       },
       {
         slug: "hajj-umrah",
         label: "Hajj & Umrah",
         shortLabel: "Hajj & Umrah",
-        description:
-          "The pilgrimage: rituals, rulings, and spiritual preparation.",
+        description: "The pilgrimage: rituals, rulings, and spiritual preparation.",
         icon: Compass,
       },
       {
         slug: "taharah",
         label: "Purification (Taharah)",
         shortLabel: "Taharah",
-        description:
-          "Ritual purity, wudu, and ghusl in daily worship.",
+        description: "Ritual purity, wudu, and ghusl in daily worship.",
         icon: Droplets,
       },
     ],
@@ -241,48 +221,42 @@ export const CATEGORY_GROUPS = [
   {
     id: "lifestyle-society",
     label: "Lifestyle & Society",
-    description:
-      "Living Islam in the family, marketplace, and wider society.",
+    description: "Living Islam in the family, marketplace, and wider society.",
     icon: Users,
     categories: [
       {
         slug: "marriage-family",
         label: "Marriage & Family",
         shortLabel: "Marriage & Family",
-        description:
-          "Marriage, rights, and building a family upon Islamic values.",
+        description: "Marriage, rights, and building a family upon Islamic values.",
         icon: Heart,
       },
       {
         slug: "parenting",
         label: "Parenting",
         shortLabel: "Parenting",
-        description:
-          "Raising children with love, discipline, and imaan.",
+        description: "Raising children with love, discipline, and imaan.",
         icon: Baby,
       },
       {
         slug: "islamic-finance",
         label: "Business & Finance (Islamic)",
         shortLabel: "Islamic Finance",
-        description:
-          "Halal earning, Islamic finance, and mindful money management.",
+        description: "Halal earning, Islamic finance, and mindful money management.",
         icon: Briefcase,
       },
       {
         slug: "modesty-hijab",
         label: "Modesty & Hijab",
         shortLabel: "Modesty & Hijab",
-        description:
-          "Modesty in dress and conduct for both men and women.",
+        description: "Modesty in dress and conduct for both men and women.",
         icon: Shirt,
       },
       {
         slug: "halal-haram",
         label: "Halal & Haram",
         shortLabel: "Halal & Haram",
-        description:
-          "Distinguishing the permissible from the impermissible.",
+        description: "Distinguishing the permissible from the impermissible.",
         icon: ShieldCheck,
       },
     ],
@@ -290,48 +264,42 @@ export const CATEGORY_GROUPS = [
   {
     id: "ummah-global-topics",
     label: "Ummah & Global Topics",
-    description:
-      "The global Muslim community, its history, and today's big questions.",
+    description: "The global Muslim community, its history, and today's big questions.",
     icon: Globe,
     categories: [
       {
         slug: "islamic-history",
         label: "Islamic History",
         shortLabel: "Islamic History",
-        description:
-          "The rich history of the Ummah, from the Prophet to the present.",
+        description: "The rich history of the Ummah, from the Prophet to the present.",
         icon: Archive,
       },
       {
         slug: "contemporary-issues",
         label: "Contemporary Issues",
         shortLabel: "Contemporary Issues",
-        description:
-          "Applying Islamic guidance to the issues Muslims face today.",
+        description: "Applying Islamic guidance to the issues Muslims face today.",
         icon: Newspaper,
       },
       {
         slug: "muslim-youth",
         label: "Muslim Youth",
         shortLabel: "Muslim Youth",
-        description:
-          "Identity, purpose, and growth for young Muslims.",
+        description: "Identity, purpose, and growth for young Muslims.",
         icon: Rocket,
       },
       {
         slug: "dawah-outreach",
         label: "Dawah & Outreach",
         shortLabel: "Dawah & Outreach",
-        description:
-          "Inviting others to Islam with wisdom and beautiful conduct.",
+        description: "Inviting others to Islam with wisdom and beautiful conduct.",
         icon: Megaphone,
       },
       {
         slug: "islam-technology",
         label: "Islam & Technology",
         shortLabel: "Islam & Technology",
-        description:
-          "Faith and ethics at the intersection of technology and innovation.",
+        description: "Faith and ethics at the intersection of technology and innovation.",
         icon: Cpu,
       },
     ],
@@ -339,48 +307,42 @@ export const CATEGORY_GROUPS = [
   {
     id: "audience-based",
     label: "Audience-Based",
-    description:
-      "Courses tailored to specific groups and stages of life.",
+    description: "Courses tailored to specific groups and stages of life.",
     icon: HeartHandshake,
     categories: [
       {
         slug: "new-muslims",
         label: "For New Muslims",
         shortLabel: "For New Muslims",
-        description:
-          "Foundational knowledge for those new to Islam.",
+        description: "Foundational knowledge for those new to Islam.",
         icon: UserPlus,
       },
       {
         slug: "youth",
         label: "For Youth",
         shortLabel: "For Youth",
-        description:
-          "Engaging Islamic learning designed for young people.",
+        description: "Engaging Islamic learning designed for young people.",
         icon: Rocket,
       },
       {
         slug: "sisters",
         label: "For Sisters",
         shortLabel: "For Sisters",
-        description:
-          "Courses curated for Muslim sisters.",
+        description: "Courses curated for Muslim sisters.",
         icon: Heart,
       },
       {
         slug: "brothers",
         label: "For Brothers",
         shortLabel: "For Brothers",
-        description:
-          "Courses curated for Muslim brothers.",
+        description: "Courses curated for Muslim brothers.",
         icon: Shield,
       },
       {
         slug: "children",
         label: "For Children",
         shortLabel: "For Children",
-        description:
-          "Fun, age-appropriate Islamic learning for kids.",
+        description: "Fun, age-appropriate Islamic learning for kids.",
         icon: CircleCheck,
       },
     ],
@@ -438,9 +400,7 @@ export function resolveCategorySlug(value: unknown): string {
   }
 
   const lower = raw.toLowerCase();
-  const byLabel = ISLAMIC_CATEGORIES.find(
-    (category) => category.label.toLowerCase() === lower
-  );
+  const byLabel = ISLAMIC_CATEGORIES.find((category) => category.label.toLowerCase() === lower);
   if (byLabel) return byLabel.slug;
 
   console.warn(
@@ -465,16 +425,12 @@ export function resolveSlug(raw: string | undefined | null): string | null {
   // Exact slug match
   if (Object.hasOwn(CATEGORY_MAP, normalised)) return normalised;
   // Exact label match
-  const byLabel = ISLAMIC_CATEGORIES.find(
-    (c) => c.label.toLowerCase().trim() === normalised
-  );
+  const byLabel = ISLAMIC_CATEGORIES.find((c) => c.label.toLowerCase().trim() === normalised);
   if (byLabel) return byLabel.slug;
 
   // Partial label match — only return if EXACTLY ONE match (unambiguous)
   const partialMatches = ISLAMIC_CATEGORIES.filter(
-    (c) =>
-      c.label.toLowerCase().includes(normalised) ||
-      normalised.includes(c.label.toLowerCase())
+    (c) => c.label.toLowerCase().includes(normalised) || normalised.includes(c.label.toLowerCase())
   );
   if (partialMatches.length === 1) return partialMatches[0].slug;
 
@@ -509,7 +465,9 @@ export function getGroupedCategories() {
 
 // Course list -> { slug: count }. Empty / legacy / free-text values count
 // toward the fallback bucket.
-export function getCategoryCounts(courses: CourseLike[] | null | undefined): Record<string, number> {
+export function getCategoryCounts(
+  courses: CourseLike[] | null | undefined
+): Record<string, number> {
   const counts: Record<string, number> = { [FALLBACK_SLUG]: 0 };
   for (const category of ISLAMIC_CATEGORIES) counts[category.slug] = 0;
   for (const course of courses || []) {
@@ -519,11 +477,12 @@ export function getCategoryCounts(courses: CourseLike[] | null | undefined): Rec
   return counts;
 }
 
-export function filterCoursesByCategory(courses: CourseLike[] | null | undefined, slug: string): CourseLike[] {
+export function filterCoursesByCategory(
+  courses: CourseLike[] | null | undefined,
+  slug: string
+): CourseLike[] {
   const wanted = slug || FALLBACK_SLUG;
-  return (courses || []).filter(
-    (course) => resolveCategorySlug(course?.category) === wanted
-  );
+  return (courses || []).filter((course) => resolveCategorySlug(course?.category) === wanted);
 }
 
 // Mongo ObjectIds encode their creation time in the first 4 bytes, so recency
@@ -553,7 +512,10 @@ function ratingOf(course: CourseLike): number {
 }
 
 // sortKey: "newest" (default), "price-asc", "price-desc", "rating".
-export function sortCourses(courses: CourseLike[] | null | undefined, sortKey: string): CourseLike[] {
+export function sortCourses(
+  courses: CourseLike[] | null | undefined,
+  sortKey: string
+): CourseLike[] {
   const list = [...(courses || [])];
   if (sortKey === "price-asc") {
     list.sort((a, b) => priceOf(a) - priceOf(b));

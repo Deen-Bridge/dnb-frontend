@@ -18,22 +18,23 @@ export function useUnreadMessages(): Record<string, number> {
       where("participants", "array-contains", user._id)
     );
 
-    const unsubscribeConversations = onSnapshot(q, (snapshot: any) => { // TODO(types): Firestore query snapshot
+    const unsubscribeConversations = onSnapshot(q, (snapshot: any) => {
+      // TODO(types): Firestore query snapshot
       const activeConversationIds = new Set<string>();
 
-      snapshot.docs.forEach((doc: any) => { // TODO(types): Firestore document snapshot
+      snapshot.docs.forEach((doc: any) => {
+        // TODO(types): Firestore document snapshot
         const convoId = doc.id;
         activeConversationIds.add(convoId);
 
         if (!messageListenersRef.current[convoId]) {
-          const messagesRef = collection(
-            db,
-            `conversations/${convoId}/messages`
-          );
+          const messagesRef = collection(db, `conversations/${convoId}/messages`);
 
-          const unsubscribeMessages = onSnapshot(messagesRef, (messagesSnap: any) => { // TODO(types): Firestore messages query snapshot
+          const unsubscribeMessages = onSnapshot(messagesRef, (messagesSnap: any) => {
+            // TODO(types): Firestore messages query snapshot
             let count = 0;
-            messagesSnap.forEach((messageDoc: any) => { // TODO(types): Firestore message document snapshot
+            messagesSnap.forEach((messageDoc: any) => {
+              // TODO(types): Firestore message document snapshot
               const data = messageDoc.data();
               const senderId = data.senderId || data.sender;
               const readBy = data.readBy || [];

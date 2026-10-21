@@ -22,12 +22,8 @@ vi.mock("@/lib/config/env", () => ({
 
 const explorerMock = vi.hoisted(() => ({
   isValidStellarAddress: vi.fn(),
-  getExplorerTransactionUrl: vi.fn(
-    (hash) => `https://stellar.expert/explorer/testnet/tx/${hash}`
-  ),
-  getExplorerUrl: vi.fn(
-    (pubkey) => `https://stellar.expert/explorer/testnet/account/${pubkey}`
-  ),
+  getExplorerTransactionUrl: vi.fn((hash) => `https://stellar.expert/explorer/testnet/tx/${hash}`),
+  getExplorerUrl: vi.fn((pubkey) => `https://stellar.expert/explorer/testnet/account/${pubkey}`),
 }));
 vi.mock("@/lib/utils/stellarExplorer", () => explorerMock);
 
@@ -95,9 +91,7 @@ const MOCK_SUMMARY = {
 };
 
 function renderPanel() {
-  return render(
-    <BookPayoutPanel book={BOOK} open={true} onOpenChange={vi.fn()} />
-  );
+  return render(<BookPayoutPanel book={BOOK} open={true} onOpenChange={vi.fn()} />);
 }
 
 function deferred() {
@@ -184,12 +178,8 @@ describe("BookPayoutPanel", () => {
       price: 5.0,
     };
 
-    const { rerender } = render(
-      <BookPayoutPanel book={BOOK} open={true} onOpenChange={vi.fn()} />
-    );
-    rerender(
-      <BookPayoutPanel book={otherBook} open={true} onOpenChange={vi.fn()} />
-    );
+    const { rerender } = render(<BookPayoutPanel book={BOOK} open={true} onOpenChange={vi.fn()} />);
+    rerender(<BookPayoutPanel book={otherBook} open={true} onOpenChange={vi.fn()} />);
 
     fresh.resolve({
       success: true,
@@ -251,8 +241,6 @@ describe("BookPayoutPanel", () => {
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(WALLET);
     });
-    expect(toastMock.success).toHaveBeenCalledWith(
-      "Creator wallet copied to clipboard!"
-    );
+    expect(toastMock.success).toHaveBeenCalledWith("Creator wallet copied to clipboard!");
   });
 });

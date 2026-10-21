@@ -1,1 +1,1 @@
-export default function ReportReasonManager(){}
+export default function ReportReasonManager() {}

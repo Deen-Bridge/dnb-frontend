@@ -79,9 +79,9 @@ describe("admin-verifications service", () => {
 
   describe("rejectVerification", () => {
     it("throws an error if reasonCategory is missing", async () => {
-      await expect(
-        rejectVerification("app_v02", {})
-      ).rejects.toThrow("A reason category is required");
+      await expect(rejectVerification("app_v02", {})).rejects.toThrow(
+        "A reason category is required"
+      );
     });
 
     it("rejects an application with reasonCategory and emits audit event", async () => {

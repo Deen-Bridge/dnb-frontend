@@ -14,16 +14,15 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
   courseId: string | null = null
 ): UseDraftAutosaveResult<T> {
   const { user } = useAuth();
-  const storageKey = `${DRAFT_KEY_PREFIX}${user?._id || "anon"}${
-    courseId ? `_${courseId}` : ""
-  }`;
+  const storageKey = `${DRAFT_KEY_PREFIX}${user?._id || "anon"}${courseId ? `_${courseId}` : ""}`;
 
   useEffect(() => {
     if (!watch) return;
 
     let timer: ReturnType<typeof setTimeout> | null = null;
 
-    const subscription = watch((formValues: any) => { // TODO(types): React hook form values
+    const subscription = watch((formValues: any) => {
+      // TODO(types): React hook form values
       if (timer) clearTimeout(timer);
 
       timer = setTimeout(() => {

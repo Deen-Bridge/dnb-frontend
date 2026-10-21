@@ -37,11 +37,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { VERIFICATION_STATUS } from "@/lib/actions/educators/fetchVerificationStatus";
 import { useVerificationStatus } from "@/hooks/useVerificationStatus";
 
@@ -134,15 +130,8 @@ const STATUS_CONFIG = {
 
 export default function VerificationBanner() {
   const router = useRouter();
-  const {
-    status,
-    data,
-    loading,
-    isBannerVisible,
-    resumeStep,
-    snooze,
-    dismiss,
-  } = useVerificationStatus();
+  const { status, data, loading, isBannerVisible, resumeStep, snooze, dismiss } =
+    useVerificationStatus();
 
   const cfg = STATUS_CONFIG[status];
 
@@ -201,12 +190,8 @@ export default function VerificationBanner() {
 
         {/* Content */}
         <div className="min-w-0 flex-1 space-y-1">
-          <p className={cn(poppins_600, "text-sm leading-snug", palette.title)}>
-            {title}
-          </p>
-          <p className={cn(poppins_400, "text-sm leading-relaxed", palette.body)}>
-            {body}
-          </p>
+          <p className={cn(poppins_600, "text-sm leading-snug", palette.title)}>{title}</p>
+          <p className={cn(poppins_400, "text-sm leading-relaxed", palette.body)}>{body}</p>
 
           {/* Rejection reason inline preview */}
           {status === VERIFICATION_STATUS.REJECTED && data?.rejectionReason && (

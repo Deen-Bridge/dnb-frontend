@@ -28,9 +28,7 @@ describe("mentor credential expiry", () => {
       status: CREDENTIAL_EXPIRY_STATUS.EXPIRING,
       daysRemaining: 30,
     });
-    expect(computeCredentialExpiry("2026-08-01", now).status).toBe(
-      CREDENTIAL_EXPIRY_STATUS.VALID
-    );
+    expect(computeCredentialExpiry("2026-08-01", now).status).toBe(CREDENTIAL_EXPIRY_STATUS.VALID);
     expect(computeCredentialExpiry(null, now)).toEqual({
       status: CREDENTIAL_EXPIRY_STATUS.MISSING,
       daysRemaining: null,
@@ -92,10 +90,9 @@ describe("mentor credential expiry", () => {
 
     const result = await fetchExpiringMentorCredentials({ now });
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/admin/mentors/credentials",
-      { params: {} }
-    );
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/admin/mentors/credentials", {
+      params: {},
+    });
     expect(result.source).toBe("api");
     expect(result.credentials).toHaveLength(1);
     expect(result.credentials[0]).toMatchObject({

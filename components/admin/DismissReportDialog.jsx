@@ -52,12 +52,7 @@ import {
  * @param {(reportId: string) => void} props.onDismissed
  *   Called after a successful dismissal so the parent can update list state.
  */
-export default function DismissReportDialog({
-  open,
-  onOpenChange,
-  report,
-  onDismissed,
-}) {
+export default function DismissReportDialog({ open, onOpenChange, report, onDismissed }) {
   const [reason, setReason] = useState("");
   const [notify, setNotify] = useState(false);
   const [loadingDefault, setLoadingDefault] = useState(false);
@@ -126,8 +121,8 @@ export default function DismissReportDialog({
             Dismiss Report
           </DialogTitle>
           <DialogDescription className={poppins_400.className}>
-            Select a reason for dismissal. The reason is recorded in the audit
-            log and optionally shared with the reporter.
+            Select a reason for dismissal. The reason is recorded in the audit log and optionally
+            shared with the reporter.
           </DialogDescription>
         </DialogHeader>
 
@@ -135,20 +130,19 @@ export default function DismissReportDialog({
           {/* Reason picker */}
           <div className="space-y-2">
             <Label htmlFor="dismiss-reason" className={poppins_500.className}>
-              Dismissal reason <span aria-hidden="true" className="text-destructive">*</span>
+              Dismissal reason{" "}
+              <span aria-hidden="true" className="text-destructive">
+                *
+              </span>
             </Label>
-            <Select
-              value={reason}
-              onValueChange={setReason}
-              disabled={submitting}
-            >
+            <Select value={reason} onValueChange={setReason} disabled={submitting}>
               <SelectTrigger id="dismiss-reason" className="w-full">
                 <SelectValue placeholder="Select a reason..." />
               </SelectTrigger>
               <SelectContent>
                 {DISMISSAL_REASONS.map(({ value, label }) => (
                   <SelectItem key={value} value={value}>
-                  {label}
+                    {label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -178,10 +172,14 @@ export default function DismissReportDialog({
                 Notify reporter
               </Label>
               <p className={cn("text-xs text-muted-foreground", poppins_400.className)}>
-                Send a courtesy message letting <strong>{report?.reporter?.name || "the reporter"}</strong> know their report was reviewed.
+                Send a courtesy message letting{" "}
+                <strong>{report?.reporter?.name || "the reporter"}</strong> know their report was
+                reviewed.
                 {!loadingDefault && (
                   <span className="text-muted-foreground/70">
-                    {notify ? "(on by default -- first-time reporter)" : "(off by default -- repeat reporter)"}
+                    {notify
+                      ? "(on by default -- first-time reporter)"
+                      : "(off by default -- repeat reporter)"}
                   </span>
                 )}
               </p>
@@ -190,21 +188,14 @@ export default function DismissReportDialog({
 
           {/* Error message */}
           {error && (
-            <p
-              role="alert"
-              className={cn("text-sm text-destructive", poppins_400.className)}
-            >
+            <p role="alert" className={cn("text-sm text-destructive", poppins_400.className)}>
               {error}
             </p>
           )}
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={submitting}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={submitting}>
             Cancel
           </Button>
           <Button

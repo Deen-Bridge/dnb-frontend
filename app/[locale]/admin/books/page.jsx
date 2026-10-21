@@ -15,13 +15,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -183,9 +177,7 @@ export default function AdminBooksPage() {
     const term = search.trim().toLowerCase();
     if (term) {
       result = result.filter(
-        (b) =>
-          b.title.toLowerCase().includes(term) ||
-          b.author?.name?.toLowerCase().includes(term)
+        (b) => b.title.toLowerCase().includes(term) || b.author?.name?.toLowerCase().includes(term)
       );
     }
 
@@ -203,20 +195,14 @@ export default function AdminBooksPage() {
   const handleTakenDown = (bookId, { reason }) => {
     setBooks((prev) =>
       prev.map((b) =>
-        b._id === bookId
-          ? { ...b, status: "taken-down", takenDownReason: reason }
-          : b
+        b._id === bookId ? { ...b, status: "taken-down", takenDownReason: reason } : b
       )
     );
   };
 
   const handleRestored = (bookId) => {
     setBooks((prev) =>
-      prev.map((b) =>
-        b._id === bookId
-          ? { ...b, status: "active", takenDownReason: null }
-          : b
-      )
+      prev.map((b) => (b._id === bookId ? { ...b, status: "active", takenDownReason: null } : b))
     );
   };
 
@@ -229,15 +215,8 @@ export default function AdminBooksPage() {
         actions={
           <div className="flex items-center gap-3">
             <MediaBlurToggle className="hidden lg:flex" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchBooks}
-              disabled={loading}
-            >
-              <RefreshCw
-                className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
-              />
+            <Button variant="outline" size="sm" onClick={fetchBooks} disabled={loading}>
+              <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
               Refresh
             </Button>
           </div>
@@ -280,8 +259,7 @@ export default function AdminBooksPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            {STATUS_TABS.find((t) => t.value === statusFilter)?.label ?? "All"}{" "}
-            Books
+            {STATUS_TABS.find((t) => t.value === statusFilter)?.label ?? "All"} Books
           </CardTitle>
           <CardDescription>
             {filteredBooks.length} book{filteredBooks.length !== 1 && "s"}
@@ -304,19 +282,13 @@ export default function AdminBooksPage() {
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="py-8 text-center">
-                      <Loader2
-                        className="h-6 w-6 animate-spin mx-auto"
-                        aria-hidden="true"
-                      />
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
                       <span className="sr-only">Loading books</span>
                     </TableCell>
                   </TableRow>
                 ) : filteredBooks.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                       <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No books found</p>
                     </TableCell>
@@ -337,14 +309,11 @@ export default function AdminBooksPage() {
                             </BlurImage>
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium truncate">
-                              {book.title}
-                            </p>
+                            <p className="text-sm font-medium truncate">{book.title}</p>
                             {book.takenDownReason && (
                               <p className="text-xs text-destructive">
                                 Reason:{" "}
-                                {REASON_LABELS[book.takenDownReason] ??
-                                  book.takenDownReason}
+                                {REASON_LABELS[book.takenDownReason] ?? book.takenDownReason}
                               </p>
                             )}
                           </div>

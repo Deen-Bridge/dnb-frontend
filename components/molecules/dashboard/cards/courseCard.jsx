@@ -10,11 +10,7 @@ import { useBookmark } from "@/hooks/useBookmark";
 import BookmarkButton from "@/components/atoms/BookmarkButton";
 import { resolveSlug } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress }) => {
   const { user } = useAuth();
@@ -24,13 +20,12 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
     initialIsBookmarked
   );
 
-  const hasPurchased = user?.purchasedCourses?.some(
-    (c) =>
-      c.courseId?.toString?.() === course._id?.toString?.() ||
-      c._id?.toString?.() === course._id?.toString?.()
-  ) || user?.enrolledCourses?.some(
-    (c) => c?.toString?.() === course._id?.toString?.()
-  );
+  const hasPurchased =
+    user?.purchasedCourses?.some(
+      (c) =>
+        c.courseId?.toString?.() === course._id?.toString?.() ||
+        c._id?.toString?.() === course._id?.toString?.()
+    ) || user?.enrolledCourses?.some((c) => c?.toString?.() === course._id?.toString?.());
 
   const showProgress = hasPurchased && progress && progress.percent > 0;
   const isCompleted = progress?.completed || false;
@@ -116,9 +111,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
 
       {/* Header */}
       <div className="space-y-1.5 p-6 pb-3">
-        <h3 className={cn(poppins_600, "line-clamp-1 text-lg text-ink")}>
-          {course.title}
-        </h3>
+        <h3 className={cn(poppins_600, "line-clamp-1 text-lg text-ink")}>{course.title}</h3>
         <p className={cn(poppins_400, "line-clamp-2 text-sm text-ink-muted")}>
           {course.description}
         </p>
@@ -132,24 +125,14 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
           </div>
         )}
         <div className="flex items-center justify-between gap-3">
-          <Link
-            href={`/educators/${course.createdBy?._id}`}
-            className="flex items-center gap-2"
-          >
+          <Link href={`/educators/${course.createdBy?._id}`} className="flex items-center gap-2">
             <Avatar className="h-10 w-10 rounded-lg">
-              <AvatarImage
-                src={course.createdBy?.avatar || "/images/placeholder.jpg"}
-                alt=""
-              />
+              <AvatarImage src={course.createdBy?.avatar || "/images/placeholder.jpg"} alt="" />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
             <div className="text-sm">
-              <p className={cn(poppins_500, "text-ink")}>
-                {course.createdBy?.name || "Ali Jamal"}
-              </p>
-              <p className={cn(poppins_400, "text-xs text-ink-muted")}>
-                Instructor
-              </p>
+              <p className={cn(poppins_500, "text-ink")}>{course.createdBy?.name || "Ali Jamal"}</p>
+              <p className={cn(poppins_400, "text-xs text-ink-muted")}>Instructor</p>
             </div>
           </Link>
           <div className="flex items-center justify-between gap-4">
@@ -178,10 +161,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
         <Button
           wide
           round
-          className={cn(
-            poppins_600,
-            "w-full bg-accent text-sm text-white hover:bg-accent/90"
-          )}
+          className={cn(poppins_600, "w-full bg-accent text-sm text-white hover:bg-accent/90")}
           to={`/dashboard/courses/${course._id}`}
         >
           {isCompleted ? "Review Course" : showProgress ? "Continue Learning" : "View Course"}

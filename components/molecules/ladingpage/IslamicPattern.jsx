@@ -1,10 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export default function IslamicPattern({
-  className = "",
-  opacity = 0.06,
-  color = "#265902",
-}) {
+export default function IslamicPattern({ className = "", opacity = 0.06, color = "#265902" }) {
   return (
     <div
       className={cn("absolute inset-0 pointer-events-none overflow-hidden", className)}

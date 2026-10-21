@@ -67,19 +67,14 @@ export default function BlurImage({
 
   return (
     <div
-      className={cn(
-        "relative inline-block overflow-hidden group/media-blur",
-        className,
-      )}
+      className={cn("relative inline-block overflow-hidden group/media-blur", className)}
       onMouseEnter={handleReveal}
       onMouseLeave={handleHide}
       onFocus={handleReveal}
       onBlur={handleHide}
       role={shouldBlur ? "button" : undefined}
       tabIndex={shouldBlur ? 0 : undefined}
-      aria-label={
-        shouldBlur && !revealed ? "Click or hover to reveal media" : undefined
-      }
+      aria-label={shouldBlur && !revealed ? "Click or hover to reveal media" : undefined}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -94,10 +89,7 @@ export default function BlurImage({
           alt={alt}
           width={width}
           height={height}
-          className={cn(
-            "transition-[filter] duration-300",
-            isBlurred && "blur-lg",
-          )}
+          className={cn("transition-[filter] duration-300", isBlurred && "blur-lg")}
           draggable={!isBlurred}
           {...rest}
         />
@@ -110,7 +102,7 @@ export default function BlurImage({
             "absolute inset-0 flex items-center justify-center",
             "bg-muted/60 backdrop-blur-md",
             "pointer-events-none select-none",
-            "transition-opacity duration-300",
+            "transition-opacity duration-300"
           )}
           aria-hidden="true"
         >

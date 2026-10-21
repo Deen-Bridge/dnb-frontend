@@ -105,8 +105,7 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ sameOrigin, url }) =>
-        sameOrigin && url.pathname.startsWith("/api/"),
+      matcher: ({ sameOrigin, url }) => sameOrigin && url.pathname.startsWith("/api/"),
       handler: new NetworkOnly(),
     },
     {
@@ -115,8 +114,7 @@ const serwist = new Serwist({
     },
     {
       matcher: ({ request, url, sameOrigin }) =>
-        request.headers.get("Content-Type")?.includes("text/html") &&
-        sameOrigin,
+        request.headers.get("Content-Type")?.includes("text/html") && sameOrigin,
       handler: new NetworkFirst({
         cacheName: "pages",
         plugins: [
@@ -186,19 +184,17 @@ self.addEventListener("notificationclick", (event) => {
   const targetUrl = event.notification.data?.url || "/dashboard";
 
   event.waitUntil(
-    self.clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        for (const client of clientList) {
-          const clientUrl = new URL(client.url);
-          if (clientUrl.pathname === targetUrl && "focus" in client) {
-            return client.focus();
-          }
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        const clientUrl = new URL(client.url);
+        if (clientUrl.pathname === targetUrl && "focus" in client) {
+          return client.focus();
         }
-        if (self.clients.openWindow) {
-          return self.clients.openWindow(targetUrl);
-        }
-        return undefined;
-      })
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+      return undefined;
+    })
   );
 });

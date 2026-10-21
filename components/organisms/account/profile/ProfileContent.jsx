@@ -38,9 +38,7 @@ export default ProfileContent;
 
 // Temporary placeholder components
 const Placeholder = ({ title }) => (
-  <div className="p-6 text-center text-ink-muted text-lg">
-    No {title} yet. Stay tuned!
-  </div>
+  <div className="p-6 text-center text-ink-muted text-lg">No {title} yet. Stay tuned!</div>
 );
 
 const CoursesTab = ({ profileId }) => {
@@ -83,11 +81,7 @@ const CoursesTab = ({ profileId }) => {
           if (profileId) {
             fetchUserCourses(profileId)
               .then((data) => setUserCourses(data))
-              .catch(() =>
-                setError(
-                  "Failed to fetch courses. Please check your connection."
-                )
-              )
+              .catch(() => setError("Failed to fetch courses. Please check your connection."))
               .finally(() => setIsLoading(false));
           }
         }}
@@ -145,9 +139,7 @@ const BooksTab = ({ profileId }) => {
           if (profileId) {
             fetchUserBooks(profileId)
               .then((data) => setUserBooks(data))
-              .catch(() =>
-                setError("Failed to fetch books. Please check your connection.")
-              )
+              .catch(() => setError("Failed to fetch books. Please check your connection."))
               .finally(() => setIsLoading(false));
           }
         }}
@@ -160,9 +152,7 @@ const BooksTab = ({ profileId }) => {
       {isLoading ? (
         [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
       ) : userBooks && userBooks.length > 0 ? (
-        userBooks.map((book) => (
-          <LibraryBookCard key={book.id || book._id} book={book} />
-        ))
+        userBooks.map((book) => <LibraryBookCard key={book.id || book._id} book={book} />)
       ) : (
         <Placeholder title="books" />
       )}
@@ -210,11 +200,7 @@ const SpaceTab = ({ profileId }) => {
           if (profileId) {
             fetchUserSpaces(profileId)
               .then((data) => setUserSpaces(data.spaces || []))
-              .catch(() =>
-                setError(
-                  "Failed to fetch spaces. Please check your connection."
-                )
-              )
+              .catch(() => setError("Failed to fetch spaces. Please check your connection."))
               .finally(() => setIsLoading(false));
           }
         }}
@@ -250,9 +236,7 @@ const FollowersTab = ({ profileId }) => {
     });
 
     if (authLoading || !profileId) {
-      console.log(
-        "FollowersTab: Skipping fetch due to authLoading or no profileId"
-      );
+      console.log("FollowersTab: Skipping fetch due to authLoading or no profileId");
       setIsLoading(false);
       return;
     }
@@ -309,16 +293,10 @@ const FollowersTab = ({ profileId }) => {
                   setFollowers(followersData.followers || []);
                 }
                 if (countData.success) {
-                  setFollowersCount(
-                    countData.followersCount || countData.count || 0
-                  );
+                  setFollowersCount(countData.followersCount || countData.count || 0);
                 }
               })
-              .catch(() =>
-                setError(
-                  "Failed to fetch followers. Please check your connection."
-                )
-              )
+              .catch(() => setError("Failed to fetch followers. Please check your connection."))
               .finally(() => setIsLoading(false));
           }
         }}
@@ -371,9 +349,7 @@ const FollowingTab = ({ profileId }) => {
     });
 
     if (authLoading || !profileId) {
-      console.log(
-        "FollowingTab: Skipping fetch due to authLoading or no profileId"
-      );
+      console.log("FollowingTab: Skipping fetch due to authLoading or no profileId");
       setIsLoading(false);
       return;
     }
@@ -430,16 +406,10 @@ const FollowingTab = ({ profileId }) => {
                   setFollowing(followingData.following || []);
                 }
                 if (countData.success) {
-                  setFollowingCount(
-                    countData.followingCount || countData.count || 0
-                  );
+                  setFollowingCount(countData.followingCount || countData.count || 0);
                 }
               })
-              .catch(() =>
-                setError(
-                  "Failed to fetch following. Please check your connection."
-                )
-              )
+              .catch(() => setError("Failed to fetch following. Please check your connection."))
               .finally(() => setIsLoading(false));
           }
         }}

@@ -108,9 +108,7 @@ export function FeatureTooltipProvider({ children, initialHighlights = null }) {
 
   // Update a highlight (for admin interface)
   const updateHighlight = useCallback((id, updates) => {
-    setHighlights((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, ...updates } : h))
-    );
+    setHighlights((prev) => prev.map((h) => (h.id === id ? { ...h, ...updates } : h)));
   }, []);
 
   const value = useMemo(
@@ -139,11 +137,7 @@ export function FeatureTooltipProvider({ children, initialHighlights = null }) {
     ]
   );
 
-  return (
-    <FeatureTooltipContext.Provider value={value}>
-      {children}
-    </FeatureTooltipContext.Provider>
-  );
+  return <FeatureTooltipContext.Provider value={value}>{children}</FeatureTooltipContext.Provider>;
 }
 
 /**
@@ -153,9 +147,7 @@ export function FeatureTooltipProvider({ children, initialHighlights = null }) {
 export function useFeatureTooltipContext() {
   const context = useContext(FeatureTooltipContext);
   if (!context) {
-    throw new Error(
-      "useFeatureTooltipContext must be used within a FeatureTooltipProvider"
-    );
+    throw new Error("useFeatureTooltipContext must be used within a FeatureTooltipProvider");
   }
   return context;
 }

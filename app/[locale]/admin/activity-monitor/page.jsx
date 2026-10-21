@@ -4,13 +4,7 @@ import { useState } from "react";
 import { Activity, Radio, ShieldAlert, Users } from "lucide-react";
 import EmergencyStopSpaceDialog from "@/components/admin/EmergencyStopSpaceDialog";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const INITIAL_SPACES = [
   {
@@ -52,9 +46,7 @@ export default function ActivityMonitorPage() {
     setLastOutcome({ spaceId, ...outcome });
     if (outcome.result?.status === "ended") {
       setSpaces((current) =>
-        current.map((space) =>
-          space.id === spaceId ? { ...space, status: "ended" } : space
-        )
+        current.map((space) => (space.id === spaceId ? { ...space, status: "ended" } : space))
       );
     }
   }
@@ -69,12 +61,14 @@ export default function ActivityMonitorPage() {
       <header className="space-y-2">
         <div className="flex items-center gap-2 text-destructive">
           <ShieldAlert className="h-5 w-5" aria-hidden="true" />
-          <span className="text-sm font-semibold uppercase tracking-wide">Admin safety controls</span>
+          <span className="text-sm font-semibold uppercase tracking-wide">
+            Admin safety controls
+          </span>
         </div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Live activity monitor</h1>
         <p className="max-w-3xl text-muted-foreground">
-          Monitor active spaces and use emergency stop only for immediate policy,
-          safety, or operational incidents.
+          Monitor active spaces and use emergency stop only for immediate policy, safety, or
+          operational incidents.
         </p>
       </header>
 

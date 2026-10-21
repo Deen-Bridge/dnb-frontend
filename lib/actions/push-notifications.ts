@@ -24,7 +24,7 @@ export const PERMISSION_STATE = Object.freeze({
   DEFAULT: "default",
 } as const);
 
-export type PermissionStateValue = typeof PERMISSION_STATE[keyof typeof PERMISSION_STATE];
+export type PermissionStateValue = (typeof PERMISSION_STATE)[keyof typeof PERMISSION_STATE];
 
 export async function requestNotificationPermission(): Promise<NotificationPermission | "default"> {
   if (typeof Notification === "undefined") return PERMISSION_STATE.DEFAULT;
@@ -41,7 +41,8 @@ export async function getFcmToken(): Promise<string | null> {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || undefined,
     });
     return token || null;
-  } catch (err: any) { // TODO(types): FCM error
+  } catch (err: any) {
+    // TODO(types): FCM error
     console.error("[push] Failed to retrieve FCM token:", err?.message || err);
     return null;
   }
@@ -53,7 +54,9 @@ export interface ForegroundMessagePayload {
   [key: string]: any; // TODO(types): FCM payload properties
 }
 
-export async function onForegroundMessage(cb: (payload: ForegroundMessagePayload) => void): Promise<() => void> {
+export async function onForegroundMessage(
+  cb: (payload: ForegroundMessagePayload) => void
+): Promise<() => void> {
   const messaging = await getMessagingInstance();
   if (!messaging) return () => {};
 

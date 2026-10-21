@@ -180,11 +180,7 @@ export function FeatureFlagProvider({ children }) {
     [flags, isReady, refresh]
   );
 
-  return (
-    <FeatureFlagContext.Provider value={value}>
-      {children}
-    </FeatureFlagContext.Provider>
-  );
+  return <FeatureFlagContext.Provider value={value}>{children}</FeatureFlagContext.Provider>;
 }
 
 /**

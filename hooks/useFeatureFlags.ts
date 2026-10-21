@@ -4,7 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
-import { listFlags, createFlag, updateFlag, FeatureFlag, CreateFlagPayload } from "@/lib/actions/admin-flags";
+import {
+  listFlags,
+  createFlag,
+  updateFlag,
+  FeatureFlag,
+  CreateFlagPayload,
+} from "@/lib/actions/admin-flags";
 import { adminToastSuccess, adminToastError } from "@/lib/utils/admin-toast";
 
 export interface UseAdminFeatureFlagsResult {
@@ -30,7 +36,8 @@ export default function useFeatureFlags(): UseAdminFeatureFlagsResult {
     try {
       const { flags: list } = await listFlags();
       setFlags(Array.isArray(list) ? list : []);
-    } catch (err: any) { // TODO(types): Error shape from listFlags
+    } catch (err: any) {
+      // TODO(types): Error shape from listFlags
       setError(err?.message || "Failed to load feature flags");
     } finally {
       setIsLoading(false);
@@ -50,7 +57,8 @@ export default function useFeatureFlags(): UseAdminFeatureFlagsResult {
       try {
         const { flags: list } = await listFlags();
         if (!cancelled) setFlags(Array.isArray(list) ? list : []);
-      } catch (err: any) { // TODO(types): Error shape from listFlags
+      } catch (err: any) {
+        // TODO(types): Error shape from listFlags
         if (!cancelled) setError(err?.message || "Failed to load feature flags");
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -81,11 +89,10 @@ export default function useFeatureFlags(): UseAdminFeatureFlagsResult {
         title: enabled ? "Flag enabled" : "Flag disabled",
         action: { label: "Undo", onClick: () => toggleFlag(key, !enabled) },
       });
-    } catch (err: any) { // TODO(types): Error from updateFlag
+    } catch (err: any) {
+      // TODO(types): Error from updateFlag
       setFlags((prev) =>
-        prev.map((flag) =>
-          flag.key === key ? { ...flag, enabled: previous ?? !enabled } : flag
-        )
+        prev.map((flag) => (flag.key === key ? { ...flag, enabled: previous ?? !enabled } : flag))
       );
       adminToastError({
         title: err?.message || "Couldn't update flag",
@@ -107,7 +114,8 @@ export default function useFeatureFlags(): UseAdminFeatureFlagsResult {
     try {
       await updateFlag(key, { rolloutPercentage: clamped });
       adminToastSuccess({ title: "Rollout updated" });
-    } catch (err: any) { // TODO(types): Error from updateFlag rollout
+    } catch (err: any) {
+      // TODO(types): Error from updateFlag rollout
       setFlags((prev) =>
         prev.map((flag) =>
           flag.key === key ? { ...flag, rolloutPercentage: previous ?? 0 } : flag

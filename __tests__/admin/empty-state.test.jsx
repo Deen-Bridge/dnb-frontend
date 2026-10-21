@@ -42,9 +42,7 @@ describe("EmptyState", () => {
   });
 
   it("renders an action element in the action slot", () => {
-    render(
-      <EmptyState title="Failed to load" action={<button type="button">Try again</button>} />
-    );
+    render(<EmptyState title="Failed to load" action={<button type="button">Try again</button>} />);
     expect(screen.getByRole("button", { name: /try again/i })).toBeInTheDocument();
   });
 

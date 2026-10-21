@@ -13,9 +13,7 @@ const API_TIMEOUT_MS = 5000;
 function withTimeout(promise, ms = API_TIMEOUT_MS) {
   return Promise.race([
     promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("API request timed out")), ms)
-    ),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("API request timed out")), ms)),
   ]);
 }
 

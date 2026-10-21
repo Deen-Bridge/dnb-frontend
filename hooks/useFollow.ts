@@ -15,7 +15,8 @@ export const followUser = async (userId?: string): Promise<FollowActionResult> =
     const res = await axiosInstance.post(`/api/users/follow/${userId}`, {});
     console.log("followUser response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from followUser
+  } catch (e: any) {
+    // TODO(types): Axios error from followUser
     console.log("Error following user:", e?.message);
     return {
       success: false,
@@ -33,7 +34,8 @@ export const unfollowUser = async (userId?: string): Promise<FollowActionResult>
     const res = await axiosInstance.delete(`/api/users/unfollow/${userId}`);
     console.log("unfollowUser response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from unfollowUser
+  } catch (e: any) {
+    // TODO(types): Axios error from unfollowUser
     console.log("Error unfollowing user:", e?.message);
     return {
       success: false,
@@ -51,7 +53,8 @@ export const getFollowers = async (userId?: string): Promise<FollowActionResult>
     const res = await axiosInstance.get(`/api/users/${userId}/followers`);
     console.log("getFollowers response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from getFollowers
+  } catch (e: any) {
+    // TODO(types): Axios error from getFollowers
     console.log("Error fetching followers:", e?.message);
     return {
       success: false,
@@ -69,7 +72,8 @@ export const getFollowersCount = async (userId?: string): Promise<FollowActionRe
     const res = await axiosInstance.get(`/api/users/${userId}/followers/count`);
     console.log("getFollowersCount response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from getFollowersCount
+  } catch (e: any) {
+    // TODO(types): Axios error from getFollowersCount
     console.log("Error fetching followers count:", e?.message);
     return {
       success: false,
@@ -87,7 +91,8 @@ export const getFollowing = async (userId?: string): Promise<FollowActionResult>
     const res = await axiosInstance.get(`/api/users/${userId}/following`);
     console.log("getFollowing response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from getFollowing
+  } catch (e: any) {
+    // TODO(types): Axios error from getFollowing
     console.log("Error fetching following:", e?.message);
     return {
       success: false,
@@ -105,7 +110,8 @@ export const getFollowingCount = async (userId?: string): Promise<FollowActionRe
     const res = await axiosInstance.get(`/api/users/${userId}/following/count`);
     console.log("getFollowingCount response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from getFollowingCount
+  } catch (e: any) {
+    // TODO(types): Axios error from getFollowingCount
     console.log("Error fetching following count:", e?.message);
     return {
       success: false,
@@ -123,7 +129,8 @@ export const checkIfFollowing = async (userId?: string): Promise<FollowActionRes
     const res = await axiosInstance.get(`/api/users/${userId}/check-following`);
     console.log("checkIfFollowing response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from checkIfFollowing
+  } catch (e: any) {
+    // TODO(types): Axios error from checkIfFollowing
     console.log("Error checking follow status:", e?.message);
     return {
       success: false,

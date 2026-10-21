@@ -19,7 +19,8 @@ export const getRecommendations = async (): Promise<GetRecommendationsResult> =>
     const res = await axiosInstance.get(`/api/users/recommendations`);
     console.log("getRecommendations response:", res.data);
     return res.data;
-  } catch (e: any) { // TODO(types): Axios error from getRecommendations
+  } catch (e: any) {
+    // TODO(types): Axios error from getRecommendations
     console.log("Error fetching recommendations:", e?.message);
     return {
       success: false,

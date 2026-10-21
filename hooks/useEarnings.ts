@@ -142,7 +142,8 @@ export default function useEarnings(): UseEarningsResult {
           setAllTransactions(transactions);
           setCreatorItems(items);
         }
-      } catch (err: any) { // TODO(types): Error shape from earnings load
+      } catch (err: any) {
+        // TODO(types): Error shape from earnings load
         if (!cancelled) setError(err?.message || "Failed to load earnings data");
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -179,9 +180,7 @@ export default function useEarnings(): UseEarningsResult {
 
   const { thisMonthRevenue, lastMonthRevenue, monthOverMonthChange } = useMemo(() => {
     const { startOfLastMonth, endOfLastMonth, startOfThisMonth } = getLastMonthRange();
-    const thisMonth = confirmed.filter((tx) =>
-      dayjs(tx.createdAt).isAfter(startOfThisMonth)
-    );
+    const thisMonth = confirmed.filter((tx) => dayjs(tx.createdAt).isAfter(startOfThisMonth));
     const lastMonth = confirmed.filter((tx) => {
       const d = dayjs(tx.createdAt);
       return d.isAfter(startOfLastMonth) && d.isBefore(endOfLastMonth);
@@ -201,13 +200,9 @@ export default function useEarnings(): UseEarningsResult {
       let filtered = confirmed;
       const now = dayjs();
       if (range === "7d") {
-        filtered = confirmed.filter((tx) =>
-          dayjs(tx.createdAt).isAfter(now.subtract(7, "day"))
-        );
+        filtered = confirmed.filter((tx) => dayjs(tx.createdAt).isAfter(now.subtract(7, "day")));
       } else if (range === "30d") {
-        filtered = confirmed.filter((tx) =>
-          dayjs(tx.createdAt).isAfter(now.subtract(30, "day"))
-        );
+        filtered = confirmed.filter((tx) => dayjs(tx.createdAt).isAfter(now.subtract(30, "day")));
       }
       if (range === "7d") return aggregateByDay(filtered);
       return aggregateByWeek(filtered);
@@ -253,7 +248,13 @@ export default function useEarnings(): UseEarningsResult {
   );
 
   const statusBreakdown = useMemo((): StatusBreakdown => {
-    const counts: StatusBreakdown = { confirmed: 0, pending: 0, submitted: 0, failed: 0, expired: 0 };
+    const counts: StatusBreakdown = {
+      confirmed: 0,
+      pending: 0,
+      submitted: 0,
+      failed: 0,
+      expired: 0,
+    };
     for (const tx of allTransactions) {
       const st = tx.status as keyof StatusBreakdown;
       if (counts[st] !== undefined) counts[st]++;
@@ -261,9 +262,7 @@ export default function useEarnings(): UseEarningsResult {
     return counts;
   }, [allTransactions]);
 
-  const withdrawableBalance = walletInfo?.usdcBalance
-    ? parseFloat(walletInfo.usdcBalance)
-    : 0;
+  const withdrawableBalance = walletInfo?.usdcBalance ? parseFloat(walletInfo.usdcBalance) : 0;
 
   return {
     isLoading,

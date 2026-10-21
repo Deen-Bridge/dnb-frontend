@@ -14,15 +14,7 @@
  * is high-severity — visually distinct from the amber maintenance surface.
  */
 import { useMemo, useState } from "react";
-import {
-  Siren,
-  AlertTriangle,
-  Clock,
-  Send,
-  ServerCrash,
-  ShieldAlert,
-  Check,
-} from "lucide-react";
+import { Siren, AlertTriangle, Clock, Send, ServerCrash, ShieldAlert, Check } from "lucide-react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -95,15 +87,12 @@ function EmergencyBroadcastContent() {
   };
 
   const toggleArea = (id) => {
-    setAreas((prev) =>
-      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
-    );
+    setAreas((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
   };
 
   const etaIso = localInputToIso(etaLocal);
   const trimmedTitle = title.trim();
-  const canPrepare =
-    Boolean(template) && Boolean(trimmedTitle) && areas.length > 0;
+  const canPrepare = Boolean(template) && Boolean(trimmedTitle) && areas.length > 0;
   const confirmMatches = confirmText.trim() === CONFIRM_PHRASE;
 
   const previewAreas = useMemo(() => labelForAreas(areas), [areas]);
@@ -145,10 +134,7 @@ function EmergencyBroadcastContent() {
       {broadcast ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-red-500/40 bg-red-500/10 p-4">
           <div className="flex items-start gap-2">
-            <AlertTriangle
-              className="mt-0.5 h-5 w-5 shrink-0 text-red-600"
-              aria-hidden="true"
-            />
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" aria-hidden="true" />
             <div>
               <p className={cn(poppins_600.className, "text-sm text-red-700")}>
                 Live emergency broadcast: {broadcast.title}
@@ -202,12 +188,7 @@ function EmergencyBroadcastContent() {
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <span className="min-w-0">
-                  <span
-                    className={cn(
-                      poppins_600.className,
-                      "block text-sm text-ink"
-                    )}
-                  >
+                  <span className={cn(poppins_600.className, "block text-sm text-ink")}>
                     {preset.label}
                   </span>
                   <span
@@ -228,15 +209,10 @@ function EmergencyBroadcastContent() {
       {/* Step 2 — edit + send */}
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-5 rounded-2xl border border-accent/10 bg-surface-raised p-5 shadow-sm">
-          <p className={cn(poppins_600.className, "text-sm text-ink")}>
-            2. Review and send
-          </p>
+          <p className={cn(poppins_600.className, "text-sm text-ink")}>2. Review and send</p>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="emergency-title"
-              className={cn(poppins_500.className, "text-ink")}
-            >
+            <Label htmlFor="emergency-title" className={cn(poppins_500.className, "text-ink")}>
               Title
             </Label>
             <Input
@@ -252,10 +228,7 @@ function EmergencyBroadcastContent() {
           <div className="space-y-1.5">
             <Label
               htmlFor="emergency-eta"
-              className={cn(
-                poppins_500.className,
-                "flex items-center gap-1.5 text-ink"
-              )}
+              className={cn(poppins_500.className, "flex items-center gap-1.5 text-ink")}
             >
               <Clock className="h-4 w-4 text-red-600" aria-hidden="true" />
               Estimated resolution ETA (optional)
@@ -284,9 +257,7 @@ function EmergencyBroadcastContent() {
           </div>
 
           <fieldset className="space-y-2" disabled={!template}>
-            <legend
-              className={cn(poppins_500.className, "mb-1 text-sm text-ink")}
-            >
+            <legend className={cn(poppins_500.className, "mb-1 text-sm text-ink")}>
               Affected areas
             </legend>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -335,12 +306,7 @@ function EmergencyBroadcastContent() {
 
         {/* Learner preview — mirrors the red banner */}
         <div className="space-y-2">
-          <p
-            className={cn(
-              poppins_600.className,
-              "flex items-center gap-2 text-sm text-ink"
-            )}
-          >
+          <p className={cn(poppins_600.className, "flex items-center gap-2 text-sm text-ink")}>
             Learner preview
             <Badge
               variant="outline"
@@ -351,18 +317,13 @@ function EmergencyBroadcastContent() {
           </p>
           <div className="overflow-hidden rounded-2xl border border-red-800/40 bg-red-600 text-red-50 shadow-md">
             <div className="flex items-start gap-3 px-4 py-3">
-              <AlertTriangle
-                className="mt-0.5 h-5 w-5 shrink-0 text-red-100"
-                aria-hidden="true"
-              />
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-100" aria-hidden="true" />
               <div className="min-w-0 flex-1 space-y-1">
                 <p className={cn(poppins_600.className, "text-sm leading-snug")}>
                   {trimmedTitle || "Your alert title"}
                 </p>
                 {body.trim() ? (
-                  <p className="text-xs leading-snug text-red-100/90">
-                    {body.trim()}
-                  </p>
+                  <p className="text-xs leading-snug text-red-100/90">{body.trim()}</p>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
                   {etaLocal ? (
@@ -412,18 +373,14 @@ function EmergencyBroadcastContent() {
               Send emergency broadcast now?
             </DialogTitle>
             <DialogDescription>
-              This sends <strong>immediately</strong> to every learner — there is
-              no scheduling and no draft. To confirm, type{" "}
-              <span className="font-semibold text-red-600">{CONFIRM_PHRASE}</span>{" "}
-              below.
+              This sends <strong>immediately</strong> to every learner — there is no scheduling and
+              no draft. To confirm, type{" "}
+              <span className="font-semibold text-red-600">{CONFIRM_PHRASE}</span> below.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="emergency-confirm"
-              className={cn(poppins_500.className, "text-ink")}
-            >
+            <Label htmlFor="emergency-confirm" className={cn(poppins_500.className, "text-ink")}>
               Confirmation phrase
             </Label>
             <Input

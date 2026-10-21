@@ -168,11 +168,7 @@ export function FeatureFlagProvider({ children }) {
     [flags, loading, lastFetch, refresh]
   );
 
-  return (
-    <FeatureFlagContext.Provider value={value}>
-      {children}
-    </FeatureFlagContext.Provider>
-  );
+  return <FeatureFlagContext.Provider value={value}>{children}</FeatureFlagContext.Provider>;
 }
 
 export default FeatureFlagContext;

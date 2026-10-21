@@ -25,7 +25,9 @@ export interface DonationStatsResult {
 }
 
 export interface UseStellarDonationResult {
-  initializeDonation: (params: InitializeDonationParams) => Promise<InitializeDonationResult | null>;
+  initializeDonation: (
+    params: InitializeDonationParams
+  ) => Promise<InitializeDonationResult | null>;
   executeDonation: (donationData: any) => Promise<any>; // TODO(types): Donation submission payload
   cancelDonation: () => void;
   getDonationStats: () => Promise<DonationStatsResult>;
@@ -34,8 +36,7 @@ export interface UseStellarDonationResult {
 }
 
 export const useStellarDonation = (): UseStellarDonationResult => {
-  const { connectedWallet, signTransaction, refreshBalance, network } =
-    useStellar();
+  const { connectedWallet, signTransaction, refreshBalance, network } = useStellar();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [currentDonation, setCurrentDonation] = useState<InitializeDonationResult | null>(null);
 
@@ -48,13 +49,10 @@ export const useStellarDonation = (): UseStellarDonationResult => {
 
       setIsProcessing(true);
       try {
-        const res = await axiosInstance.post(
-          "/api/stellar/donation/initialize",
-          {
-            amount,
-            publicKey: connectedWallet,
-          }
-        );
+        const res = await axiosInstance.post("/api/stellar/donation/initialize", {
+          amount,
+          publicKey: connectedWallet,
+        });
 
         if (res.data.success !== false) {
           const donation: InitializeDonationResult = { ...res.data, amount };
@@ -63,7 +61,8 @@ export const useStellarDonation = (): UseStellarDonationResult => {
         } else {
           throw new Error(res.data.message);
         }
-      } catch (error: any) { // TODO(types): Error from donation init
+      } catch (error: any) {
+        // TODO(types): Error from donation init
         const message = error.response?.data?.message || error.message;
         if (error.response?.status === 503) {
           toast.error("Donations are not available right now. Please try again later.");
@@ -79,7 +78,8 @@ export const useStellarDonation = (): UseStellarDonationResult => {
   );
 
   const executeDonation = useCallback(
-    async (donationData: any): Promise<any> => { // TODO(types): Donation data object
+    async (donationData: any): Promise<any> => {
+      // TODO(types): Donation data object
       if (!donationData) {
         toast.error("No donation data available");
         return false;
@@ -90,10 +90,7 @@ export const useStellarDonation = (): UseStellarDonationResult => {
         const networkPassphrase =
           donationData.networkPassphrase ||
           (network === "mainnet" ? Networks.PUBLIC : Networks.TESTNET);
-        const signedXdr = await signTransaction(
-          donationData.transactionXdr,
-          networkPassphrase
-        );
+        const signedXdr = await signTransaction(donationData.transactionXdr, networkPassphrase);
 
         const res = await axiosInstance.post("/api/stellar/donation/submit", {
           donationId: donationData.donationId,
@@ -110,12 +107,14 @@ export const useStellarDonation = (): UseStellarDonationResult => {
         } else {
           throw new Error(res.data.message);
         }
-      } catch (error: any) { // TODO(types): Donation execution error
+      } catch (error: any) {
+        // TODO(types): Donation execution error
         import("@sentry/nextjs")
           .then((mod) => {
             const Sentry = mod.default ?? mod;
             if (!Sentry || typeof Sentry.captureException !== "function") return;
-            Sentry.withScope((scope: any) => { // TODO(types): Sentry scope
+            Sentry.withScope((scope: any) => {
+              // TODO(types): Sentry scope
               scope.setTag("feature", "stellar-donation");
               Sentry.captureException(error);
             });
@@ -127,9 +126,7 @@ export const useStellarDonation = (): UseStellarDonationResult => {
         if (message.includes("insufficient") || message.includes("underfunded")) {
           toast.error("Insufficient USDC balance");
         } else if (message.includes("op_no_trust") || message.includes("trustline")) {
-          toast.error(
-            "You need to add USDC trustline to your wallet first"
-          );
+          toast.error("You need to add USDC trustline to your wallet first");
         } else if (message.includes("rejected") || message.includes("cancelled")) {
           toast.error("Transaction was cancelled");
         } else {
@@ -151,7 +148,8 @@ export const useStellarDonation = (): UseStellarDonationResult => {
     try {
       const res = await axiosInstance.get("/api/stellar/donation/stats");
       return res.data;
-    } catch (error: any) { // TODO(types): Error from donation stats
+    } catch (error: any) {
+      // TODO(types): Error from donation stats
       console.error("Failed to fetch donation stats:", error);
       return {
         success: false,

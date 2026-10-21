@@ -16,12 +16,7 @@
  *     keys; submit stays disabled until the input is valid.
  */
 import { useMemo, useState } from "react";
-import {
-  AlertTriangle,
-  Flag as FlagIcon,
-  Plus,
-  ShieldAlert,
-} from "lucide-react";
+import { AlertTriangle, Flag as FlagIcon, Plus, ShieldAlert } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -64,11 +59,7 @@ import ReauthPromptDialog from "@/components/auth/ReauthPromptDialog";
 import useFeatureFlags from "@/hooks/useFeatureFlags";
 import useReauth from "@/hooks/useReauth";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /** Kebab-case key contract shared with `lib/actions/admin-flags`. */
 const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -100,17 +91,12 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
 
   const rolloutNumber = Number(rollout);
   const rolloutError =
-    rollout !== "" &&
-    (!Number.isFinite(rolloutNumber) || rolloutNumber < 0 || rolloutNumber > 100)
+    rollout !== "" && (!Number.isFinite(rolloutNumber) || rolloutNumber < 0 || rolloutNumber > 100)
       ? "Rollout must be between 0 and 100"
       : null;
 
   const canSubmit =
-    Boolean(trimmedKey) &&
-    !keyError &&
-    !rolloutError &&
-    description.trim().length > 0 &&
-    !isSaving;
+    Boolean(trimmedKey) && !keyError && !rolloutError && description.trim().length > 0 && !isSaving;
 
   const reset = () => {
     setKey("");
@@ -148,15 +134,12 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="border border-accent/10 bg-surface-raised sm:max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <DialogTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <Plus className="h-5 w-5 text-secondary" />
             Create feature flag
           </DialogTitle>
           <DialogDescription className={cn(poppins_400.className, "text-ink-muted")}>
-            New flags start disabled. Turn them on and dial up the rollout once
-            they&apos;re ready.
+            New flags start disabled. Turn them on and dial up the rollout once they&apos;re ready.
           </DialogDescription>
         </DialogHeader>
 
@@ -187,10 +170,7 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
           </div>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="flag-description"
-              className={cn(poppins_500.className, "text-ink")}
-            >
+            <Label htmlFor="flag-description" className={cn(poppins_500.className, "text-ink")}>
               Description
             </Label>
             <Textarea
@@ -203,10 +183,7 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
           </div>
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="flag-rollout"
-              className={cn(poppins_500.className, "text-ink")}
-            >
+            <Label htmlFor="flag-rollout" className={cn(poppins_500.className, "text-ink")}>
               Rollout %
             </Label>
             <Input
@@ -235,10 +212,7 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
             <div className="flex items-center gap-2">
               <ShieldAlert className="h-4 w-4 text-destructive" />
               <div>
-                <Label
-                  htmlFor="flag-critical"
-                  className={cn(poppins_500.className, "text-ink")}
-                >
+                <Label htmlFor="flag-critical" className={cn(poppins_500.className, "text-ink")}>
                   Critical (kill-switch)
                 </Label>
                 <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
@@ -304,9 +278,7 @@ function FlagRow({ flag, onToggle, onRolloutCommit, ensureFreshSession }) {
   return (
     <>
       <TableRow
-        className={cn(
-          flag.critical && "border-l-2 border-l-destructive/60 bg-destructive/5"
-        )}
+        className={cn(flag.critical && "border-l-2 border-l-destructive/60 bg-destructive/5")}
       >
         <TableCell>
           <div className="flex items-center gap-2 py-1">
@@ -335,9 +307,7 @@ function FlagRow({ flag, onToggle, onRolloutCommit, ensureFreshSession }) {
           </div>
         </TableCell>
         <TableCell className="max-w-sm">
-          <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>
-            {flag.description}
-          </p>
+          <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>{flag.description}</p>
           <p className={cn(poppins_400.className, "mt-0.5 text-xs text-ink-muted/70")}>
             Updated {updatedLabel(flag.updatedAt)}
           </p>
@@ -383,11 +353,9 @@ function FlagRow({ flag, onToggle, onRolloutCommit, ensureFreshSession }) {
               <ShieldAlert className="h-5 w-5 text-destructive" />
               Turn off a critical flag?
             </AlertDialogTitle>
-            <AlertDialogDescription
-              className={cn(poppins_400.className, "text-ink-muted")}
-            >
-              <code className="text-ink">{flag.key}</code> is a kill-switch flag.
-              Disabling it can have broad impact across DeenBridge. Are you sure?
+            <AlertDialogDescription className={cn(poppins_400.className, "text-ink-muted")}>
+              <code className="text-ink">{flag.key}</code> is a kill-switch flag. Disabling it can
+              have broad impact across DeenBridge. Are you sure?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

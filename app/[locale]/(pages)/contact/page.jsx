@@ -3,11 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
 import Footer from "../(landingPage)/Footer";
 import Button from "@/components/atoms/form/Button";
@@ -116,8 +112,8 @@ export default function ContactPage() {
               "mx-auto max-w-2xl text-lg leading-relaxed text-ink-inverse-muted font-stretch-110%"
             )}
           >
-            Questions, feedback, or something you’d like to build with us —
-            we’d love to hear from you.
+            Questions, feedback, or something you’d like to build with us — we’d love to hear from
+            you.
           </p>
         </div>
       </section>
@@ -130,20 +126,13 @@ export default function ContactPage() {
               <Link
                 key={c.title}
                 href={c.action}
-                {...(c.external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
+                {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className="group rounded-2xl border border-accent/10 bg-surface-raised p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-xl"
               >
                 <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-secondary/10">
                   {c.icon}
                 </div>
-                <h3
-                  className={cn(
-                    poppins_600,
-                    "mb-2 text-base text-ink font-stretch-110%"
-                  )}
-                >
+                <h3 className={cn(poppins_600, "mb-2 text-base text-ink font-stretch-110%")}>
                   {c.title}
                 </h3>
                 <p
@@ -173,12 +162,7 @@ export default function ContactPage() {
             {/* Info */}
             <div className="space-y-6 lg:col-span-2">
               <div className="rounded-3xl border border-accent/10 bg-surface-raised p-8 shadow-sm">
-                <h3
-                  className={cn(
-                    poppins_600,
-                    "mb-6 text-xl text-ink font-stretch-110%"
-                  )}
-                >
+                <h3 className={cn(poppins_600, "mb-6 text-xl text-ink font-stretch-110%")}>
                   Reach us directly
                 </h3>
 
@@ -188,14 +172,7 @@ export default function ContactPage() {
                       <FaEnvelope className="size-4" />
                     </span>
                     <div>
-                      <p
-                        className={cn(
-                          poppins_500,
-                          "text-sm text-ink font-stretch-110%"
-                        )}
-                      >
-                        Email
-                      </p>
+                      <p className={cn(poppins_500, "text-sm text-ink font-stretch-110%")}>Email</p>
                       <a
                         href={`mailto:${SUPPORT_EMAIL}`}
                         className={cn(
@@ -213,12 +190,7 @@ export default function ContactPage() {
                       <FaGlobeAfrica className="size-4" />
                     </span>
                     <div>
-                      <p
-                        className={cn(
-                          poppins_500,
-                          "text-sm text-ink font-stretch-110%"
-                        )}
-                      >
+                      <p className={cn(poppins_500, "text-sm text-ink font-stretch-110%")}>
                         Where we are
                       </p>
                       <p className={cn(poppins_400, "text-sm text-ink-muted")}>
@@ -230,12 +202,7 @@ export default function ContactPage() {
 
                 <hr className="my-8 border-accent/10" />
 
-                <h4
-                  className={cn(
-                    poppins_500,
-                    "mb-4 text-sm text-ink font-stretch-110%"
-                  )}
-                >
+                <h4 className={cn(poppins_500, "mb-4 text-sm text-ink font-stretch-110%")}>
                   Follow along
                 </h4>
                 <div className="flex gap-3">
@@ -274,10 +241,7 @@ export default function ContactPage() {
               >
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label
-                      htmlFor="name"
-                      className={cn(poppins_500, "text-sm text-ink")}
-                    >
+                    <label htmlFor="name" className={cn(poppins_500, "text-sm text-ink")}>
                       Your name
                     </label>
                     <input
@@ -291,10 +255,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label
-                      htmlFor="email"
-                      className={cn(poppins_500, "text-sm text-ink")}
-                    >
+                    <label htmlFor="email" className={cn(poppins_500, "text-sm text-ink")}>
                       Email address
                     </label>
                     <input
@@ -310,10 +271,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="topic"
-                    className={cn(poppins_500, "text-sm text-ink")}
-                  >
+                  <label htmlFor="topic" className={cn(poppins_500, "text-sm text-ink")}>
                     What’s it about?
                   </label>
                   <select
@@ -331,10 +289,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="message"
-                    className={cn(poppins_500, "text-sm text-ink")}
-                  >
+                  <label htmlFor="message" className={cn(poppins_500, "text-sm text-ink")}>
                     Message
                   </label>
                   <textarea
@@ -357,12 +312,7 @@ export default function ContactPage() {
                   Send message
                 </Button>
 
-                <p
-                  className={cn(
-                    poppins_400,
-                    "text-center text-xs text-ink-muted/80"
-                  )}
-                >
+                <p className={cn(poppins_400, "text-center text-xs text-ink-muted/80")}>
                   This opens your email app with the message ready to send.
                 </p>
               </form>

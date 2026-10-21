@@ -1,21 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import useAuth from "@/hooks/useAuth";
-import {
-  commentOnReel,
-  deleteReelComment,
-  fetchReelComments,
-} from "@/lib/actions/reels-action";
+import { commentOnReel, deleteReelComment, fetchReelComments } from "@/lib/actions/reels-action";
 import { cn } from "@/lib/utils";
 import { Loader2, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,13 +28,7 @@ const mapComment = (comment) => ({
     : null,
 });
 
-const ReelCommentsSheet = ({
-  reel,
-  open,
-  onOpenChange,
-  onCommentAdded,
-  onCommentDeleted,
-}) => {
+const ReelCommentsSheet = ({ reel, open, onOpenChange, onCommentAdded, onCommentDeleted }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,12 +74,9 @@ const ReelCommentsSheet = ({
         return;
       }
 
-      const mapped =
-        response.comments?.map((comment) => mapComment(comment)) || [];
+      const mapped = response.comments?.map((comment) => mapComment(comment)) || [];
 
-      setComments((prev) =>
-        reset ? mapped : [...prev.filter(Boolean), ...mapped]
-      );
+      setComments((prev) => (reset ? mapped : [...prev.filter(Boolean), ...mapped]));
       setPage(response.page);
       setHasMore(response.hasMore);
     } catch (error) {
@@ -132,9 +113,7 @@ const ReelCommentsSheet = ({
     try {
       const response = await deleteReelComment(reel.id, commentId);
       if (response?.success) {
-        setComments((prev) =>
-          prev.filter((comment) => comment.id !== commentId)
-        );
+        setComments((prev) => prev.filter((comment) => comment.id !== commentId));
         onCommentDeleted?.(commentId, response?.stats);
       }
     } catch (error) {
@@ -171,9 +150,7 @@ const ReelCommentsSheet = ({
             {comments.length === 0 && !loading ? (
               <div className="flex h-52 flex-col items-center justify-center text-center text-muted-foreground">
                 <p className="text-sm">No comments yet.</p>
-                <p className="text-xs">
-                  Be the first to share your reflections on this reel.
-                </p>
+                <p className="text-xs">Be the first to share your reflections on this reel.</p>
               </div>
             ) : (
               <div className="space-y-4 py-4">
@@ -199,9 +176,7 @@ const ReelCommentsSheet = ({
                             {comment.user?.name || "Unknown User"}
                           </p>
                           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                            {comment.createdAt
-                              ? dayjs(comment.createdAt).fromNow()
-                              : "Just now"}
+                            {comment.createdAt ? dayjs(comment.createdAt).fromNow() : "Just now"}
                           </p>
                         </div>
                         {allowDelete(comment) && (
@@ -220,9 +195,7 @@ const ReelCommentsSheet = ({
                           </ShadButton>
                         )}
                       </div>
-                      <p className="text-sm text-foreground/90">
-                        {comment.text}
-                      </p>
+                      <p className="text-sm text-foreground/90">{comment.text}</p>
                     </div>
                   </div>
                 ))}
@@ -235,11 +208,7 @@ const ReelCommentsSheet = ({
                       onClick={() => loadComments(page + 1)}
                       disabled={loading}
                     >
-                      {loading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        "Load more"
-                      )}
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Load more"}
                     </ShadButton>
                   </div>
                 )}
@@ -275,11 +244,7 @@ const ReelCommentsSheet = ({
                   onClick={handlePost}
                   disabled={posting || !newComment.trim()}
                 >
-                  {posting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "Post Comment"
-                  )}
+                  {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Post Comment"}
                 </ShadButton>
               </div>
             </div>

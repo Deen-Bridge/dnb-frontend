@@ -5,23 +5,10 @@ import Image from "next/image";
 import { VideoIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const PublicSpaceCard = ({ space }) => {
-  const {
-    _id,
-    title,
-    description,
-    thumbnail,
-    category,
-    status,
-    eventDate,
-    duration,
-  } = space;
+  const { _id, title, description, thumbnail, category, status, eventDate, duration } = space;
 
   function formatDuration(minutes) {
     if (minutes < 60) return `${minutes} mins`;
@@ -70,9 +57,7 @@ const PublicSpaceCard = ({ space }) => {
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <h3 className={cn(poppins_600, "line-clamp-1 text-base text-ink")}>
-          {title}
-        </h3>
+        <h3 className={cn(poppins_600, "line-clamp-1 text-base text-ink")}>{title}</h3>
         <p
           className={cn(
             poppins_400,
@@ -83,12 +68,7 @@ const PublicSpaceCard = ({ space }) => {
         </p>
 
         <div className="mt-3 flex items-center justify-between gap-3">
-          <span
-            className={cn(
-              poppins_400,
-              "flex items-center gap-1.5 text-xs text-ink-muted"
-            )}
-          >
+          <span className={cn(poppins_400, "flex items-center gap-1.5 text-xs text-ink-muted")}>
             <Clock className="h-4 w-4 text-accent" />
             {formattedTime}
           </span>

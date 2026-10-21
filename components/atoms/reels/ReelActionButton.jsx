@@ -34,13 +34,10 @@ const ReelActionButton = ({
         <span aria-hidden="true">{icon}</span>
       </span>
       {label !== undefined && (
-        <span className="text-xs font-medium text-white drop-shadow">
-          {label}
-        </span>
+        <span className="text-xs font-medium text-white drop-shadow">{label}</span>
       )}
     </button>
   );
 };
 
 export default ReelActionButton;
-

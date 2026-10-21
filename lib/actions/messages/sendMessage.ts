@@ -1,11 +1,5 @@
 import { db } from "@/lib/config/firebase.config";
-import {
-  collection,
-  addDoc,
-  doc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 export async function sendMessage(convoId: string, senderId: string, text: string): Promise<void> {
   const msgRef = collection(db, `conversations/${convoId}/messages`);

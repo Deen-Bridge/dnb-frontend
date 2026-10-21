@@ -48,7 +48,9 @@ export function ReelVisibilityDialog({ open, onOpenChange, reel, onConfirm, load
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isHidden ? "Restore reel visibility" : "Hide reel from learners"}</DialogTitle>
+          <DialogTitle>
+            {isHidden ? "Restore reel visibility" : "Hide reel from learners"}
+          </DialogTitle>
           <DialogDescription>
             {isHidden
               ? `Restore “${reel.title}” to learner-facing feeds.`
@@ -61,10 +63,14 @@ export function ReelVisibilityDialog({ open, onOpenChange, reel, onConfirm, load
             <div className="space-y-2">
               <Label htmlFor="reel-hide-reason">Reason category</Label>
               <Select value={reasonCategory} onValueChange={setReasonCategory}>
-                <SelectTrigger id="reel-hide-reason"><SelectValue placeholder="Select a reason category" /></SelectTrigger>
+                <SelectTrigger id="reel-hide-reason">
+                  <SelectValue placeholder="Select a reason category" />
+                </SelectTrigger>
                 <SelectContent>
                   {REJECTION_REASON_CATEGORIES.map((reason) => (
-                    <SelectItem key={reason.id} value={reason.id}>{reason.label}</SelectItem>
+                    <SelectItem key={reason.id} value={reason.id}>
+                      {reason.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -83,8 +89,14 @@ export function ReelVisibilityDialog({ open, onOpenChange, reel, onConfirm, load
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>Cancel</Button>
-          <Button variant={isHidden ? "default" : "destructive"} onClick={submit} disabled={!canSubmit || loading}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            variant={isHidden ? "default" : "destructive"}
+            onClick={submit}
+            disabled={!canSubmit || loading}
+          >
             {isHidden ? "Unhide reel" : "Hide reel"}
           </Button>
         </DialogFooter>

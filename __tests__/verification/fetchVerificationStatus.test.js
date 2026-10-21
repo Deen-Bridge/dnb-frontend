@@ -39,7 +39,12 @@ const FULL_RESPONSE = {
     },
   ],
   timeline: [
-    { status: "identity", label: "Identity verification", ts: "2024-01-01T00:00:00.000Z", done: true },
+    {
+      status: "identity",
+      label: "Identity verification",
+      ts: "2024-01-01T00:00:00.000Z",
+      done: true,
+    },
     { status: "documents", label: "Document upload", ts: null, done: false },
     { status: "review", label: "Under review", ts: null, done: false },
   ],
@@ -53,9 +58,7 @@ describe("fetchVerificationStatus — success", () => {
 
   it("calls the correct endpoint", async () => {
     await fetchVerificationStatus();
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/educators/applications/status"
-    );
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/educators/applications/status");
   });
 
   it("returns normalised status", async () => {
@@ -74,7 +77,9 @@ describe("fetchVerificationStatus — success", () => {
   });
 
   it("normalises unknown status to not_started", async () => {
-    axiosInstance.get.mockResolvedValue({ data: { ...FULL_RESPONSE, status: "UNKNOWN_FUTURE_STATE" } });
+    axiosInstance.get.mockResolvedValue({
+      data: { ...FULL_RESPONSE, status: "UNKNOWN_FUTURE_STATE" },
+    });
     const result = await fetchVerificationStatus();
     expect(result.status).toBe(VERIFICATION_STATUS.NOT_STARTED);
   });
@@ -128,7 +133,10 @@ describe("fetchDocumentSignedUrl", () => {
 
   it("POSTs to the correct endpoint", async () => {
     axiosInstance.post.mockResolvedValue({
-      data: { signedUrl: "https://cdn.example.com/signed?token=abc", expiresAt: "2024-01-01T01:00:00Z" },
+      data: {
+        signedUrl: "https://cdn.example.com/signed?token=abc",
+        expiresAt: "2024-01-01T01:00:00Z",
+      },
     });
     const result = await fetchDocumentSignedUrl("doc_1");
     expect(axiosInstance.post).toHaveBeenCalledWith(

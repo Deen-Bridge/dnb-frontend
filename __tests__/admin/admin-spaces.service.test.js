@@ -2,10 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import axiosInstance from "@/lib/config/axios.config";
 import { logAdminAction } from "@/lib/actions/admin-audit";
 import { notifyHostOfEmergencyStop } from "@/lib/services/notifications";
-import {
-  EmergencyStopError,
-  emergencyStopLiveSpace,
-} from "@/lib/actions/admin-spaces";
+import { EmergencyStopError, emergencyStopLiveSpace } from "@/lib/actions/admin-spaces";
 
 vi.mock("@/lib/config/axios.config", () => ({
   default: {

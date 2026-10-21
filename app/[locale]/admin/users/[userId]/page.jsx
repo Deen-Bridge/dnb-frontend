@@ -4,13 +4,7 @@ import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -102,7 +96,12 @@ export default function AdminUserDetailPage({ params }) {
               reviewedBy: "Admin review team",
             },
             purchases: [
-              { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
+              {
+                id: "p1",
+                title: "Tafsir of Surah Al-Fatihah",
+                amount: "$24.50",
+                date: "2026-01-10",
+              },
               { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
             ],
           };
@@ -180,9 +179,7 @@ export default function AdminUserDetailPage({ params }) {
   };
 
   const network = config.stellarNetwork;
-  const explorerUrl = user?.walletAddress
-    ? getExplorerUrl(user.walletAddress, network)
-    : null;
+  const explorerUrl = user?.walletAddress ? getExplorerUrl(user.walletAddress, network) : null;
 
   return (
     <PageShell>
@@ -278,7 +275,10 @@ export default function AdminUserDetailPage({ params }) {
                     <span className="text-muted-foreground block font-medium mb-1">
                       Contact Email:
                     </span>
-                    <a href={`mailto:${user.email}`} className="text-primary hover:underline font-semibold print-url">
+                    <a
+                      href={`mailto:${user.email}`}
+                      className="text-primary hover:underline font-semibold print-url"
+                    >
                       {user.email}
                     </a>
                   </div>
@@ -313,7 +313,8 @@ export default function AdminUserDetailPage({ params }) {
                     <div className="space-y-3">
                       {verificationHistory.source === "composed" && (
                         <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                          Backend history endpoint is not available yet; this timeline is composed from verification record fields.
+                          Backend history endpoint is not available yet; this timeline is composed
+                          from verification record fields.
                         </p>
                       )}
                       <ol className="relative border-l pl-4">
@@ -333,7 +334,10 @@ export default function AdminUserDetailPage({ params }) {
                                     {event.label}
                                   </Badge>
                                   <span className="text-xs text-muted-foreground">
-                                    Actor: <span className="font-medium text-foreground">{event.actor}</span>
+                                    Actor:{" "}
+                                    <span className="font-medium text-foreground">
+                                      {event.actor}
+                                    </span>
                                   </span>
                                 </div>
                                 {event.note && (
@@ -350,7 +354,9 @@ export default function AdminUserDetailPage({ params }) {
                       </ol>
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">No verification events recorded yet.</p>
+                    <p className="text-xs text-muted-foreground">
+                      No verification events recorded yet.
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -414,7 +420,8 @@ export default function AdminUserDetailPage({ params }) {
                   </Badge>
                 </div>
                 <CardDescription className="text-xs">
-                  Bulk control over all reels published by this creator. Cross-linked with the moderation grid.
+                  Bulk control over all reels published by this creator. Cross-linked with the
+                  moderation grid.
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

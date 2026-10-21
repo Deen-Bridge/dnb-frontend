@@ -5,11 +5,7 @@ import { Star } from "lucide-react";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import { resolveCategorySlug } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const PublicCourseCard = ({ course }) => {
   const avgRating = getAverageRating(course?.reviews);
@@ -25,9 +21,7 @@ const PublicCourseCard = ({ course }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <Link
-          href={`/dashboard/courses/category/${resolveCategorySlug(
-            course?.category
-          )}`}
+          href={`/dashboard/courses/category/${resolveCategorySlug(course?.category)}`}
           className={cn(
             poppins_600,
             "absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[11px] uppercase tracking-wider text-accent shadow"
@@ -46,9 +40,7 @@ const PublicCourseCard = ({ course }) => {
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <h3 className={cn(poppins_600, "line-clamp-1 text-base text-ink")}>
-          {course.title}
-        </h3>
+        <h3 className={cn(poppins_600, "line-clamp-1 text-base text-ink")}>{course.title}</h3>
         <p
           className={cn(
             poppins_400,
@@ -62,24 +54,17 @@ const PublicCourseCard = ({ course }) => {
           {avgRating > 0 ? (
             <span className="flex items-center gap-1 text-sm">
               <Star size={14} className="fill-yellow-400 text-yellow-400" />
-              <span className={cn(poppins_500, "text-ink")}>
-                {avgRating.toFixed(1)}
-              </span>
+              <span className={cn(poppins_500, "text-ink")}>{avgRating.toFixed(1)}</span>
             </span>
           ) : (
-            <span className={cn(poppins_400, "text-xs text-ink-muted")}>
-              New course
-            </span>
+            <span className={cn(poppins_400, "text-xs text-ink-muted")}>New course</span>
           )}
         </div>
 
         <Button
           wide
           round
-          className={cn(
-            poppins_500,
-            "mt-4 w-full bg-accent text-sm text-white hover:bg-highlight"
-          )}
+          className={cn(poppins_500, "mt-4 w-full bg-accent text-sm text-white hover:bg-highlight")}
           to={`/dashboard/courses/${course._id}`}
         >
           View Course

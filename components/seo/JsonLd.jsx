@@ -18,12 +18,7 @@ export function JsonLd({ data }) {
 
   if (!html) return null;
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export default JsonLd;

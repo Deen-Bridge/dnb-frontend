@@ -64,16 +64,10 @@ function FilterControls({ filters, actors, onChange }) {
     <div className="grid grid-cols-1 gap-4 rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
       {/* Actor filter */}
       <div className="space-y-1.5">
-        <Label
-          htmlFor="audit-actor"
-          className={cn(poppins_500.className, "text-ink")}
-        >
+        <Label htmlFor="audit-actor" className={cn(poppins_500.className, "text-ink")}>
           Admin actor
         </Label>
-        <Select
-          value={filters.actor}
-          onValueChange={(value) => onChange({ actor: value })}
-        >
+        <Select value={filters.actor} onValueChange={(value) => onChange({ actor: value })}>
           <SelectTrigger id="audit-actor" className="w-full" aria-label="Filter by admin actor">
             <SelectValue placeholder="All actors" />
           </SelectTrigger>
@@ -90,17 +84,15 @@ function FilterControls({ filters, actors, onChange }) {
 
       {/* Category filter */}
       <div className="space-y-1.5">
-        <Label
-          htmlFor="audit-category"
-          className={cn(poppins_500.className, "text-ink")}
-        >
+        <Label htmlFor="audit-category" className={cn(poppins_500.className, "text-ink")}>
           Action category
         </Label>
-        <Select
-          value={filters.category}
-          onValueChange={(value) => onChange({ category: value })}
-        >
-          <SelectTrigger id="audit-category" className="w-full" aria-label="Filter by action category">
+        <Select value={filters.category} onValueChange={(value) => onChange({ category: value })}>
+          <SelectTrigger
+            id="audit-category"
+            className="w-full"
+            aria-label="Filter by action category"
+          >
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
@@ -160,9 +152,7 @@ function LoadingRows() {
 function LogRow({ log }) {
   return (
     <TableRow>
-      <TableCell
-        className={cn(poppins_400.className, "whitespace-nowrap text-sm text-ink-muted")}
-      >
+      <TableCell className={cn(poppins_400.className, "whitespace-nowrap text-sm text-ink-muted")}>
         {formatTimestamp(log.timestamp)}
       </TableCell>
       <TableCell className={cn(poppins_500.className, "text-sm text-ink")}>
@@ -199,14 +189,10 @@ function LogRow({ log }) {
           <span className="text-ink-muted">{log.target?.label || "—"}</span>
         )}
       </TableCell>
-      <TableCell
-        className={cn(poppins_400.className, "max-w-xs text-sm text-ink-muted")}
-      >
+      <TableCell className={cn(poppins_400.className, "max-w-xs text-sm text-ink-muted")}>
         {log.summary || "—"}
       </TableCell>
-      <TableCell
-        className={cn(poppins_400.className, "whitespace-nowrap text-sm text-ink-muted")}
-      >
+      <TableCell className={cn(poppins_400.className, "whitespace-nowrap text-sm text-ink-muted")}>
         {log.ip || "—"}
       </TableCell>
     </TableRow>
@@ -274,7 +260,12 @@ function AuditLogsContent() {
           title="Failed to load"
           description={error}
           action={
-            <Button type="button" variant="outline" className="rounded-full" onClick={() => refresh()}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              onClick={() => refresh()}
+            >
               Try again
             </Button>
           }

@@ -27,11 +27,7 @@ import {
 import usePurchases from "@/hooks/usePurchases";
 import dayjs from "dayjs";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const statusColors = {
   confirmed: "bg-secondary/10 text-secondary",
@@ -53,9 +49,7 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="border border-accent/10 bg-surface-raised sm:max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <DialogTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <Receipt className="h-5 w-5 text-accent" />
             Payment Receipt
           </DialogTitle>
@@ -97,9 +91,7 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-accent/10 p-3">
-                  <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-                    Status
-                  </p>
+                  <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>Status</p>
                   <span
                     className={cn(
                       poppins_500.className,
@@ -111,9 +103,7 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
                   </span>
                 </div>
                 <div className="rounded-xl border border-accent/10 p-3">
-                  <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-                    Date
-                  </p>
+                  <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>Date</p>
                   <p className={cn(poppins_500.className, "mt-1 text-sm text-ink")}>
                     {dayjs(receipt.createdAt).format("MMM D, YYYY")}
                   </p>
@@ -129,10 +119,7 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
                 </p>
                 {receipt.creatorWallet && (
                   <p
-                    className={cn(
-                      poppins_400.className,
-                      "mt-0.5 font-mono text-xs text-ink-muted"
-                    )}
+                    className={cn(poppins_400.className, "mt-0.5 font-mono text-xs text-ink-muted")}
                   >
                     {truncateAddress(receipt.creatorWallet)}
                   </p>
@@ -140,9 +127,7 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
               </div>
 
               <div className="rounded-xl border border-accent/10 p-3">
-                <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-                  Your Wallet
-                </p>
+                <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>Your Wallet</p>
                 {receipt.buyerWallet && (
                   <p className={cn(poppins_500.className, "mt-1 font-mono text-sm text-ink")}>
                     {truncateAddress(receipt.buyerWallet)}
@@ -167,12 +152,10 @@ function ReceiptModal({ open, onClose, item, receipt, itemType }) {
             </div>
           ) : (
             <div className="rounded-xl border border-accent/15 bg-secondary/5 p-4 text-center">
-              <p className={cn(poppins_500.className, "text-sm text-accent")}>
-                Free Enrollment
-              </p>
+              <p className={cn(poppins_500.className, "text-sm text-accent")}>Free Enrollment</p>
               <p className={cn(poppins_400.className, "mt-1 text-xs text-ink-muted")}>
-                This item was free or enrolled without a Stellar payment. No
-                on-chain transaction receipt is available.
+                This item was free or enrolled without a Stellar payment. No on-chain transaction
+                receipt is available.
               </p>
             </div>
           )}
@@ -248,9 +231,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
         </div>
 
         <div className="px-6 pb-2 pt-4">
-          <h3 className={cn(poppins_600.className, "line-clamp-1 text-base text-ink")}>
-            {title}
-          </h3>
+          <h3 className={cn(poppins_600.className, "line-clamp-1 text-base text-ink")}>{title}</h3>
           <p className={cn(poppins_400.className, "line-clamp-2 text-xs text-ink-muted")}>
             {item.description || item.author?.name || ""}
           </p>
@@ -259,12 +240,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
         <div className="space-y-3 px-6 pb-6 pt-0">
           <div className="flex items-center gap-2">
             <div className="relative h-8 w-8 overflow-hidden rounded-full bg-surface">
-              <Image
-                src={authorAvatar}
-                alt={authorName}
-                fill
-                className="object-cover"
-              />
+              <Image src={authorAvatar} alt={authorName} fill className="object-cover" />
             </div>
             <div className="text-xs">
               <p className={cn(poppins_500.className, "text-ink")}>{authorName}</p>
@@ -275,10 +251,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
           </div>
 
           <div className="flex gap-2">
-            <Button
-              className="flex-1 rounded-full bg-accent text-white hover:bg-accent/90"
-              asChild
-            >
+            <Button className="flex-1 rounded-full bg-accent text-white hover:bg-accent/90" asChild>
               <Link href={actionHref}>
                 {itemType === "course" ? (
                   <GraduationCap className="mr-1 h-4 w-4" />
@@ -318,7 +291,10 @@ function LoadingGrid() {
   return (
     <CardGrid>
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
+        <div
+          key={i}
+          className="overflow-hidden rounded-2xl border border-accent/10 bg-surface-raised shadow-sm"
+        >
           <Skeleton className="h-48 w-full rounded-none" />
           <div className="px-6 pb-2 pt-4">
             <Skeleton className="h-5 w-3/4" />
@@ -347,11 +323,7 @@ export default function PurchasesPage() {
   if (error) {
     return (
       <PageShell>
-        <PageHeader
-          icon={Library}
-          title="My Purchases"
-          subtitle="Your owned courses and books"
-        />
+        <PageHeader icon={Library} title="My Purchases" subtitle="Your owned courses and books" />
         <EmptyState
           icon={CircleAlert}
           iconContainerClassName="bg-red-50"
@@ -388,10 +360,7 @@ export default function PurchasesPage() {
           description="You haven't purchased any courses or books yet. Browse our library and enroll to get started."
           action={
             <>
-              <Button
-                className="rounded-full bg-accent text-white hover:bg-accent/90"
-                asChild
-              >
+              <Button className="rounded-full bg-accent text-white hover:bg-accent/90" asChild>
                 <Link href="/dashboard/courses">Browse Courses</Link>
               </Button>
               <Button variant="outline" className="rounded-full" asChild>
@@ -462,12 +431,7 @@ export default function PurchasesPage() {
           ) : (
             <CardGrid>
               {books.map((book) => (
-                <PurchaseCard
-                  key={book._id}
-                  item={book}
-                  itemType="book"
-                  getReceipt={getReceipt}
-                />
+                <PurchaseCard key={book._id} item={book} itemType="book" getReceipt={getReceipt} />
               ))}
             </CardGrid>
           )}

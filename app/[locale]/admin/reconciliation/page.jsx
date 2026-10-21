@@ -3,21 +3,11 @@
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -95,18 +85,20 @@ const generateMockData = (dateFrom, dateTo) => {
     } else {
       status = "amount-mismatch";
       platformAmount = Math.floor(Math.random() * 200 + 10);
-      onChainAmount = platformAmount + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5 + 1);
+      onChainAmount =
+        platformAmount + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5 + 1);
     }
 
-    const txHash = status !== "missing-on-chain"
-      ? `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`
-      : null;
+    const txHash =
+      status !== "missing-on-chain"
+        ? `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`
+        : null;
 
     transactions.push({
       id: `txn_${i}_${Date.now()}`,
       platformId: `PLT-${String(100000 + i).slice(1)}`,
       timestamp: date.toISOString(),
-      creatorEmail: `educator${i % 10 + 1}@example.com`,
+      creatorEmail: `educator${(i % 10) + 1}@example.com`,
       creatorId: `usr_${1000 + (i % 10)}`,
       itemType: Math.random() > 0.5 ? "course" : "book",
       itemTitle: Math.random() > 0.5 ? `Course ${i + 1}` : `Book ${i + 1}`,
@@ -194,9 +186,7 @@ export default function PayoutReconciliationPage() {
 
     const csvContent = [
       headers.join(","),
-      ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")
-      ),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -225,8 +215,8 @@ export default function PayoutReconciliationPage() {
               Read-Only Verification Tool
             </p>
             <p className={cn(poppins_400.className, "text-xs text-blue-700")}>
-              This tool compares platform purchase records with Stellar blockchain data.
-              No data modifications are made.
+              This tool compares platform purchase records with Stellar blockchain data. No data
+              modifications are made.
             </p>
           </div>
         </CardContent>
@@ -236,9 +226,7 @@ export default function PayoutReconciliationPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Select Date Range</CardTitle>
-          <CardDescription>
-            Choose the period to reconcile transactions
-          </CardDescription>
+          <CardDescription>Choose the period to reconcile transactions</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4 items-end">
@@ -246,7 +234,10 @@ export default function PayoutReconciliationPage() {
               <span className={cn(poppins_500.className, "text-sm block")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
+                  <Button
+                    variant="outline"
+                    className="w-[280px] justify-start text-left font-normal"
+                  >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {formatDateRange(dateRange)}
                   </Button>
@@ -263,10 +254,7 @@ export default function PayoutReconciliationPage() {
               </Popover>
             </div>
 
-            <Button
-              onClick={handleSearch}
-              disabled={!dateRange.from || !dateRange.to || loading}
-            >
+            <Button onClick={handleSearch} disabled={!dateRange.from || !dateRange.to || loading}>
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -300,9 +288,7 @@ export default function PayoutReconciliationPage() {
             </Card>
             <Card className="border-green-200">
               <CardContent className="p-4">
-                <p className={cn(poppins_400.className, "text-xs text-green-700")}>
-                  Matched
-                </p>
+                <p className={cn(poppins_400.className, "text-xs text-green-700")}>Matched</p>
                 <p className={cn(poppins_600.className, "text-2xl text-green-600")}>
                   {stats.matched}
                 </p>
@@ -393,9 +379,7 @@ export default function PayoutReconciliationPage() {
                               isDiscrepancy && "hover:opacity-90"
                             )}
                           >
-                            <TableCell className="font-mono text-sm">
-                              {tx.platformId}
-                            </TableCell>
+                            <TableCell className="font-mono text-sm">{tx.platformId}</TableCell>
                             <TableCell className="text-sm">
                               {format(new Date(tx.timestamp), "MMM d, HH:mm")}
                             </TableCell>
@@ -411,13 +395,13 @@ export default function PayoutReconciliationPage() {
                             <TableCell className="text-right font-mono">
                               ${tx.platformAmount.toFixed(2)}
                             </TableCell>
-                            <TableCell className={cn(
-                              "text-right font-mono",
-                              tx.status === "amount-mismatch" && "text-amber-700 font-bold"
-                            )}>
-                              {tx.onChainAmount !== null
-                                ? `$${tx.onChainAmount.toFixed(2)}`
-                                : "—"}
+                            <TableCell
+                              className={cn(
+                                "text-right font-mono",
+                                tx.status === "amount-mismatch" && "text-amber-700 font-bold"
+                              )}
+                            >
+                              {tx.onChainAmount !== null ? `$${tx.onChainAmount.toFixed(2)}` : "—"}
                             </TableCell>
                             <TableCell>
                               <Badge
@@ -434,24 +418,14 @@ export default function PayoutReconciliationPage() {
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 text-xs"
-                                  asChild
-                                >
+                                <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
                                   <a href={`/admin/transactions/${tx.id}`}>
                                     Platform
                                     <ArrowUpRight className="ml-1 h-3 w-3" />
                                   </a>
                                 </Button>
                                 {tx.txHash && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs"
-                                    asChild
-                                  >
+                                  <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
                                     <a
                                       href={getStellarExplorerUrl(tx.txHash)}
                                       target="_blank"

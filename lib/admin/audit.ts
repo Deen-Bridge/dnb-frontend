@@ -39,7 +39,7 @@ export const AUDIT_ACTIONS = Object.freeze({
   VERIFICATION_BULK_REJECT: "verification.bulk_reject",
 } as const);
 
-export type AuditAction = typeof AUDIT_ACTIONS[keyof typeof AUDIT_ACTIONS];
+export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
 
 export const AUDIT_CATEGORIES = Object.freeze([
   "user",
@@ -49,7 +49,7 @@ export const AUDIT_CATEGORIES = Object.freeze([
   "system",
 ] as const);
 
-export type AuditCategory = typeof AUDIT_CATEGORIES[number];
+export type AuditCategory = (typeof AUDIT_CATEGORIES)[number];
 
 const KNOWN_ACTIONS: ReadonlySet<string> = new Set(Object.values(AUDIT_ACTIONS));
 
@@ -126,7 +126,12 @@ function normalizeTarget(target?: AuditTarget): NormalizedAuditTarget {
   };
 }
 
-export function logAuditEvent({ action, target, metadata = {}, summary }: AuditEventParams = {}): void {
+export function logAuditEvent({
+  action,
+  target,
+  metadata = {},
+  summary,
+}: AuditEventParams = {}): void {
   const timestamp = new Date().toISOString();
   const actor = resolveActor();
   const normalizedTarget = normalizeTarget(target);
@@ -145,8 +150,7 @@ export function logAuditEvent({ action, target, metadata = {}, summary }: AuditE
     );
   }
 
-  const derivedSummary =
-    summary || `${action} on ${normalizedTarget.label}`.trim();
+  const derivedSummary = summary || `${action} on ${normalizedTarget.label}`.trim();
 
   const event = {
     action,
@@ -182,8 +186,7 @@ export async function withAudit<T>(
   metadata: Record<string, any> = {} // TODO(types): Mutation audit metadata context dictionary
 ): Promise<T> {
   const result = await mutationFn();
-  const resolvedTarget =
-    typeof target === "function" ? target(result) : target;
+  const resolvedTarget = typeof target === "function" ? target(result) : target;
   logAuditEvent({ action, target: resolvedTarget, metadata });
   return result;
 }

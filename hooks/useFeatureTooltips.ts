@@ -59,7 +59,9 @@ export interface UseFeatureTooltipsResult {
   getAnchorElement: (selector: string) => Element | null;
 }
 
-export default function useFeatureTooltips(highlights: FeatureHighlight[] = []): UseFeatureTooltipsResult {
+export default function useFeatureTooltips(
+  highlights: FeatureHighlight[] = []
+): UseFeatureTooltipsResult {
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => loadDismissedIds());
   const [activeTooltips, setActiveTooltips] = useState<FeatureHighlight[]>([]);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -123,10 +125,7 @@ export default function useFeatureTooltips(highlights: FeatureHighlight[] = []):
     setDismissedIds(new Set());
   }, []);
 
-  const isDismissed = useCallback(
-    (id: string) => dismissedIds.has(id),
-    [dismissedIds]
-  );
+  const isDismissed = useCallback((id: string) => dismissedIds.has(id), [dismissedIds]);
 
   const getAnchorElement = useCallback((selector: string): Element | null => {
     if (typeof document === "undefined") return null;

@@ -22,7 +22,9 @@ const ReelModerationButton = ({ reelId, hidden = false, className }) => {
 
   return (
     <ReelActionButton
-      icon={isHidden ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+      icon={
+        isHidden ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />
+      }
       label={isHidden ? "Hidden" : "Visible"}
       active={isHidden}
       pressed={isHidden}

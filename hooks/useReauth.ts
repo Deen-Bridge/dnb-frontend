@@ -22,9 +22,7 @@ export interface UseReauthResult {
 export default function useReauth(): UseReauthResult {
   const [open, setOpen] = useState<boolean>(false);
 
-  const reauthAfterRef = useRef<number>(
-    DEFAULT_SESSION_SECURITY_CONFIG.reauthAfterMinutes
-  );
+  const reauthAfterRef = useRef<number>(DEFAULT_SESSION_SECURITY_CONFIG.reauthAfterMinutes);
   const pendingRef = useRef<((result: boolean) => void) | null>(null);
 
   useEffect(() => {

@@ -19,7 +19,10 @@ export interface RefundPaymentResult {
   };
 }
 
-export async function refundPayment(orderId: string, context: RefundContext = {}): Promise<RefundPaymentResult> {
+export async function refundPayment(
+  orderId: string,
+  context: RefundContext = {}
+): Promise<RefundPaymentResult> {
   const { amount = null, reason = null } = context;
   return withAudit(
     AUDIT_ACTIONS.REFUND,

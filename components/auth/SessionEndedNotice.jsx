@@ -13,10 +13,7 @@
 import { useSearchParams } from "next/navigation";
 import { AlertTriangle, Clock, ShieldAlert } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  reasonMessage,
-  SESSION_END_REASONS,
-} from "@/lib/auth/session-status";
+import { reasonMessage, SESSION_END_REASONS } from "@/lib/auth/session-status";
 import { cn } from "@/lib/utils";
 
 const REASON_ICON = {

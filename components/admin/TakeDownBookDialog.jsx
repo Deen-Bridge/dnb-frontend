@@ -30,12 +30,7 @@ const TAKE_DOWN_REASONS = [
   { value: "other", label: "Other" },
 ];
 
-export default function TakeDownBookDialog({
-  open,
-  onOpenChange,
-  book,
-  onTakenDown,
-}) {
+export default function TakeDownBookDialog({ open, onOpenChange, book, onTakenDown }) {
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -70,45 +65,31 @@ export default function TakeDownBookDialog({
     onOpenChange(false);
   };
 
-  const reasonLabel =
-    TAKE_DOWN_REASONS.find((r) => r.value === reason)?.label ?? "";
+  const reasonLabel = TAKE_DOWN_REASONS.find((r) => r.value === reason)?.label ?? "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className={cn(
-              "flex items-center gap-2",
-              poppins_500.className
-            )}
-          >
-            <AlertTriangle
-              className="h-5 w-5 text-destructive"
-              aria-hidden="true"
-            />
+          <DialogTitle className={cn("flex items-center gap-2", poppins_500.className)}>
+            <AlertTriangle className="h-5 w-5 text-destructive" aria-hidden="true" />
             Take Down Book
           </DialogTitle>
           <DialogDescription className={poppins_400.className}>
-            This will hide <strong>{book?.title ?? "this book"}</strong> from
-            the catalog and reading views. Existing purchasers will retain
-            library access where licensing allows.
+            This will hide <strong>{book?.title ?? "this book"}</strong> from the catalog and
+            reading views. Existing purchasers will retain library access where licensing allows.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
           <div className="space-y-2">
-            <Label
-              htmlFor="takedown-reason"
-              className={poppins_500.className}
-            >
-              Reason <span aria-hidden="true" className="text-destructive">*</span>
+            <Label htmlFor="takedown-reason" className={poppins_500.className}>
+              Reason{" "}
+              <span aria-hidden="true" className="text-destructive">
+                *
+              </span>
             </Label>
-            <Select
-              value={reason}
-              onValueChange={setReason}
-              disabled={submitting}
-            >
+            <Select value={reason} onValueChange={setReason} disabled={submitting}>
               <SelectTrigger id="takedown-reason" className="w-full">
                 <SelectValue placeholder="Select a reason…" />
               </SelectTrigger>
@@ -123,10 +104,7 @@ export default function TakeDownBookDialog({
           </div>
 
           <div className="space-y-2">
-            <Label
-              htmlFor="takedown-note"
-              className={poppins_500.className}
-            >
+            <Label htmlFor="takedown-note" className={poppins_500.className}>
               Additional note (optional)
             </Label>
             <Textarea
@@ -140,24 +118,14 @@ export default function TakeDownBookDialog({
           </div>
 
           {error && (
-            <p
-              role="alert"
-              className={cn(
-                "text-sm text-destructive",
-                poppins_400.className
-              )}
-            >
+            <p role="alert" className={cn("text-sm text-destructive", poppins_400.className)}>
               {error}
             </p>
           )}
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={submitting}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={submitting}>
             Cancel
           </Button>
           <Button
@@ -172,10 +140,7 @@ export default function TakeDownBookDialog({
           >
             {submitting ? (
               <>
-                <Loader2
-                  className="h-4 w-4 mr-2 animate-spin"
-                  aria-hidden="true"
-                />
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                 Taking down…
               </>
             ) : (

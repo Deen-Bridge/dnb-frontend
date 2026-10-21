@@ -8,14 +8,17 @@ export interface GetSpaceMeetingTokenResult {
   [key: string]: any; // TODO(types): Token response payload
 }
 
-export const getSpaceMeetingToken = async (spaceId: string): Promise<GetSpaceMeetingTokenResult> => {
+export const getSpaceMeetingToken = async (
+  spaceId: string
+): Promise<GetSpaceMeetingTokenResult> => {
   try {
     const response = await axiosInstance.post("/api/calls/token", {
       spaceId,
     });
 
     return response.data;
-  } catch (error: any) { // TODO(types): Axios error on space token
+  } catch (error: any) {
+    // TODO(types): Axios error on space token
     const message =
       error?.response?.data?.message ||
       error?.message ||

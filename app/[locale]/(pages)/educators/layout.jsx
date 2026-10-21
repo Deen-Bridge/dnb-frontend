@@ -1,17 +1,17 @@
 import { siteName } from "@/lib/config/site.config";
 
-const title = 'Our Educators';
+const title = "Our Educators";
 const description =
-  'Meet the teachers, authors, and hosts who write the books, build the courses, and lead the live spaces on Deen Bridge.';
+  "Meet the teachers, authors, and hosts who write the books, build the courses, and lead the live spaces on Deen Bridge.";
 
 export const metadata = {
   title,
   description,
-  alternates: { canonical: '/educators' },
+  alternates: { canonical: "/educators" },
   openGraph: {
     title: `${title} | ${siteName}`,
     description,
-    url: '/educators',
+    url: "/educators",
     siteName,
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: title }],

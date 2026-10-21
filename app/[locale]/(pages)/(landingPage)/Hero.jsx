@@ -5,11 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
 
 /* Swap for any real photo in /public/images
@@ -109,10 +105,7 @@ const Hero = () => {
               className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-surface-raised px-4 py-2 shadow-lg transition-transform hover:scale-105"
             >
               <span
-                className={cn(
-                  poppins_500,
-                  "text-[11px] uppercase tracking-wider text-ink-muted"
-                )}
+                className={cn(poppins_500, "text-[11px] uppercase tracking-wider text-ink-muted")}
               >
                 {t("stellar.builtOn")}
               </span>
@@ -125,10 +118,7 @@ const Hero = () => {
               />
               <span className="text-ink-muted/40">·</span>
               <span
-                className={cn(
-                  poppins_600,
-                  "text-[11px] uppercase tracking-wider text-highlight"
-                )}
+                className={cn(poppins_600, "text-[11px] uppercase tracking-wider text-highlight")}
               >
                 USDC
               </span>
@@ -175,12 +165,7 @@ const Hero = () => {
                     >
                       {t(`previews.${p.id}.title`)}
                     </h3>
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "text-xs text-ink-inverse-muted"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "text-xs text-ink-inverse-muted")}>
                       {t(`previews.${p.id}.meta`)}
                     </p>
                   </div>

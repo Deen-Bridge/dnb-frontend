@@ -106,10 +106,7 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="w-full gap-0 overflow-y-auto p-0 sm:max-w-xl"
-      >
+      <SheetContent side="right" className="w-full gap-0 overflow-y-auto p-0 sm:max-w-xl">
         <SheetHeader className="space-y-1 border-b border-border p-4">
           <div className="flex items-center gap-2">
             <SheetTitle className={cn(poppins_600.className, "text-base text-ink")}>
@@ -117,11 +114,18 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
             </SheetTitle>
             <StatusBadge status={report.status} />
           </div>
-          <SheetDescription className={cn(poppins_400.className, "flex flex-wrap items-center gap-2 text-ink-muted")}>
+          <SheetDescription
+            className={cn(
+              poppins_400.className,
+              "flex flex-wrap items-center gap-2 text-ink-muted"
+            )}
+          >
             <Flag className="h-3.5 w-3.5" aria-hidden="true" />
             <span>{report.reason}</span>
             <span aria-hidden="true">·</span>
-            <span>filed {formatDistanceToNow(new Date(report.createdAt), { addSuffix: true })}</span>
+            <span>
+              filed {formatDistanceToNow(new Date(report.createdAt), { addSuffix: true })}
+            </span>
           </SheetDescription>
         </SheetHeader>
 
@@ -147,16 +151,30 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
               </Avatar>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={cn(poppins_500.className, "text-sm text-ink")}>{reporter?.name}</span>
-                  <span className={cn(poppins_400.className, "inline-flex items-center gap-1 text-xs text-ink-muted")}>
+                  <span className={cn(poppins_500.className, "text-sm text-ink")}>
+                    {reporter?.name}
+                  </span>
+                  <span
+                    className={cn(
+                      poppins_400.className,
+                      "inline-flex items-center gap-1 text-xs text-ink-muted"
+                    )}
+                  >
                     <Clock className="h-3 w-3" aria-hidden="true" /> account {accountAge} old
                   </span>
                   <Badge variant={isSerialReporter ? "destructive" : "secondary"} className="gap-1">
-                    {isSerialReporter ? <AlertTriangle className="h-3 w-3" aria-hidden="true" /> : null}
+                    {isSerialReporter ? (
+                      <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                    ) : null}
                     {reporter?.priorReportCount || 0} prior reports
                   </Badge>
                 </div>
-                <blockquote className={cn(poppins_400.className, "rounded-md border-l-2 border-border bg-muted/40 px-3 py-2 text-sm text-ink")}>
+                <blockquote
+                  className={cn(
+                    poppins_400.className,
+                    "rounded-md border-l-2 border-border bg-muted/40 px-3 py-2 text-sm text-ink"
+                  )}
+                >
                   {reporter?.statement}
                 </blockquote>
               </div>
@@ -170,7 +188,12 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
             <SectionTitle icon={History}>Target history</SectionTitle>
 
             <div className="space-y-1">
-              <p className={cn(poppins_500.className, "text-xs uppercase tracking-wide text-ink-muted")}>
+              <p
+                className={cn(
+                  poppins_500.className,
+                  "text-xs uppercase tracking-wide text-ink-muted"
+                )}
+              >
                 Prior reports ({target?.priorReports?.length || 0})
               </p>
               {target?.priorReports?.length ? (
@@ -178,7 +201,10 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
                   {target.priorReports.map((pr) => (
                     <li
                       key={pr.id}
-                      className={cn(poppins_400.className, "flex items-center justify-between gap-2 rounded-md border border-border px-2.5 py-1.5 text-xs")}
+                      className={cn(
+                        poppins_400.className,
+                        "flex items-center justify-between gap-2 rounded-md border border-border px-2.5 py-1.5 text-xs"
+                      )}
                     >
                       <span className="truncate text-ink">{pr.reason}</span>
                       <span className="flex shrink-0 items-center gap-2 text-ink-muted">
@@ -189,12 +215,19 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
                   ))}
                 </ul>
               ) : (
-                <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>No prior reports on this target.</p>
+                <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
+                  No prior reports on this target.
+                </p>
               )}
             </div>
 
             <div className="space-y-1 pt-1">
-              <p className={cn(poppins_500.className, "text-xs uppercase tracking-wide text-ink-muted")}>
+              <p
+                className={cn(
+                  poppins_500.className,
+                  "text-xs uppercase tracking-wide text-ink-muted"
+                )}
+              >
                 Prior admin actions ({target?.priorActions?.length || 0})
               </p>
               {target?.priorActions?.length ? (
@@ -202,7 +235,10 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
                   {target.priorActions.map((pa) => (
                     <li
                       key={pa.id}
-                      className={cn(poppins_400.className, "flex items-center justify-between gap-2 rounded-md border border-border px-2.5 py-1.5 text-xs")}
+                      className={cn(
+                        poppins_400.className,
+                        "flex items-center justify-between gap-2 rounded-md border border-border px-2.5 py-1.5 text-xs"
+                      )}
                     >
                       <span className="truncate text-ink">{humanizeAction(pa.action)}</span>
                       <span className="flex shrink-0 items-center gap-2 text-ink-muted">
@@ -213,7 +249,9 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
                   ))}
                 </ul>
               ) : (
-                <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>No prior admin actions on this target.</p>
+                <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
+                  No prior admin actions on this target.
+                </p>
               )}
             </div>
           </section>
@@ -258,15 +296,17 @@ export default function ReportDetailDrawer({ report, open, onOpenChange, reports
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                       This removes &ldquo;{target?.title}&rdquo; ({target?.type}) and marks the
-                      report as actioned. The action is recorded in the audit log. You can
-                      restore the content later from moderation.
+                      report as actioned. The action is recorded in the audit log. You can restore
+                      the content later from moderation.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       className="bg-destructive text-white hover:bg-destructive/90"
-                      onClick={() => runAndMaybeClose(() => reports.applyAction(report.id, "takedown"))}
+                      onClick={() =>
+                        runAndMaybeClose(() => reports.applyAction(report.id, "takedown"))
+                      }
                     >
                       Take down
                     </AlertDialogAction>

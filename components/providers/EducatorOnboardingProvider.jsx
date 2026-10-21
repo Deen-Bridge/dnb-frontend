@@ -22,12 +22,7 @@
  *   3. Both values live in React state only and are GC-d with the component.
  */
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useReducer,
-} from "react";
+import { createContext, useCallback, useContext, useReducer } from "react";
 
 // ---------------------------------------------------------------------------
 // State shape
@@ -156,9 +151,7 @@ const EducatorOnboardingContext = createContext(null);
 export function useEducatorOnboarding() {
   const ctx = useContext(EducatorOnboardingContext);
   if (!ctx) {
-    throw new Error(
-      "useEducatorOnboarding must be used inside <EducatorOnboardingProvider>"
-    );
+    throw new Error("useEducatorOnboarding must be used inside <EducatorOnboardingProvider>");
   }
   return ctx;
 }
@@ -173,16 +166,10 @@ export default function EducatorOnboardingProvider({ children }) {
   // ── Navigation ────────────────────────────────────────────────────────────
   const nextStep = useCallback(() => dispatch({ type: ACTION.NEXT_STEP }), []);
   const prevStep = useCallback(() => dispatch({ type: ACTION.PREV_STEP }), []);
-  const goToStep = useCallback(
-    (n) => dispatch({ type: ACTION.GO_TO_STEP, payload: n }),
-    []
-  );
+  const goToStep = useCallback((n) => dispatch({ type: ACTION.GO_TO_STEP, payload: n }), []);
 
   // ── Phase control ─────────────────────────────────────────────────────────
-  const setPhase = useCallback(
-    (phase) => dispatch({ type: ACTION.SET_PHASE, payload: phase }),
-    []
-  );
+  const setPhase = useCallback((phase) => dispatch({ type: ACTION.SET_PHASE, payload: phase }), []);
 
   // ── Consent ───────────────────────────────────────────────────────────────
   /**
@@ -194,10 +181,7 @@ export default function EducatorOnboardingProvider({ children }) {
     []
   );
 
-  const revokeConsent = useCallback(
-    () => dispatch({ type: ACTION.REVOKE_CONSENT }),
-    []
-  );
+  const revokeConsent = useCallback(() => dispatch({ type: ACTION.REVOKE_CONSENT }), []);
 
   // ── Verification token ────────────────────────────────────────────────────
   /**
@@ -206,8 +190,7 @@ export default function EducatorOnboardingProvider({ children }) {
    * @param {string} token
    */
   const setVerificationToken = useCallback(
-    (token) =>
-      dispatch({ type: ACTION.SET_VERIFICATION_TOKEN, payload: token }),
+    (token) => dispatch({ type: ACTION.SET_VERIFICATION_TOKEN, payload: token }),
     []
   );
 
@@ -220,10 +203,7 @@ export default function EducatorOnboardingProvider({ children }) {
   /**
    * @param {{ message?: string, phase?: "failure"|"timeout" }} opts
    */
-  const setError = useCallback(
-    (opts) => dispatch({ type: ACTION.SET_ERROR, payload: opts }),
-    []
-  );
+  const setError = useCallback((opts) => dispatch({ type: ACTION.SET_ERROR, payload: opts }), []);
 
   const retry = useCallback(() => dispatch({ type: ACTION.RETRY }), []);
 

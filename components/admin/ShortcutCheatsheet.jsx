@@ -98,20 +98,15 @@ export default function ShortcutCheatsheet({ open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg bg-surface-raised">
         <DialogHeader>
-          <DialogTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <DialogTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <Keyboard className="h-5 w-5 text-accent" aria-hidden="true" />
             Keyboard shortcuts
           </DialogTitle>
           <DialogDescription className={cn(poppins_400.className, "text-ink-muted")}>
             Chord shortcuts for admin surfaces. Press{" "}
-            <kbd className="rounded border border-border px-1 text-[0.7rem]">
-              {SEQUENCE_PREFIX}
-            </kbd>{" "}
-            then a key to jump to a page. These are plain-key chords (no{" "}
-            {isMac ? "⌘" : "Ctrl"}), so they never clash with browser or OS
-            shortcuts. The command palette also opens with{" "}
+            <kbd className="rounded border border-border px-1 text-[0.7rem]">{SEQUENCE_PREFIX}</kbd>{" "}
+            then a key to jump to a page. These are plain-key chords (no {isMac ? "⌘" : "Ctrl"}), so
+            they never clash with browser or OS shortcuts. The command palette also opens with{" "}
             <kbd className="rounded border border-border px-1 text-[0.7rem]">
               {isMac ? "⌘" : "Ctrl"}
             </kbd>
@@ -132,16 +127,11 @@ export default function ShortcutCheatsheet({ open, onOpenChange }) {
               </h3>
               <ul className="flex flex-col gap-1.5">
                 {group.items.map((shortcut) => (
-                  <li
-                    key={shortcut.label}
-                    className="flex items-center justify-between gap-4"
-                  >
+                  <li key={shortcut.label} className="flex items-center justify-between gap-4">
                     <span className={cn(poppins_400.className, "text-sm text-ink")}>
                       {shortcut.label}
                       {shortcut.description ? (
-                        <span className="ml-2 text-xs text-ink-muted">
-                          {shortcut.description}
-                        </span>
+                        <span className="ml-2 text-xs text-ink-muted">{shortcut.description}</span>
                       ) : null}
                     </span>
                     <span className="sr-only">{keysLabel(shortcut)}</span>

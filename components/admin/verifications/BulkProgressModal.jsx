@@ -160,15 +160,11 @@ export default function BulkProgressModal({
         }}
       >
         <DialogHeader className="gap-1.5">
-          <DialogTitle
-            className={cn(poppins_600, "text-lg text-ink flex items-center gap-2")}
-          >
+          <DialogTitle className={cn(poppins_600, "text-lg text-ink flex items-center gap-2")}>
             {isRunning ? (
               <>
                 <Loader2 className="size-5 animate-spin text-accent" />
-                <span>
-                  {isApprove ? "Approving Educators..." : "Rejecting Educators..."}
-                </span>
+                <span>{isApprove ? "Approving Educators..." : "Rejecting Educators..."}</span>
               </>
             ) : (
               <>
@@ -202,9 +198,7 @@ export default function BulkProgressModal({
                   ? `Processing ${Math.min(currentIndex + 1, total)} of ${total} (${progressPercent}%)`
                   : `Completed 100% (${successCount} succeeded${failCount > 0 ? `, ${failCount} failed` : ""})`}
               </span>
-              <span className="text-ink-muted text-[11px] font-mono">
-                {progressPercent}%
-              </span>
+              <span className="text-ink-muted text-[11px] font-mono">{progressPercent}%</span>
             </div>
 
             <Progress
@@ -243,9 +237,7 @@ export default function BulkProgressModal({
                       <p className="font-medium text-ink truncate">
                         {item.name || "Educator Applicant"}
                       </p>
-                      <p className="text-[11px] text-ink-muted truncate">
-                        {item.email}
-                      </p>
+                      <p className="text-[11px] text-ink-muted truncate">{item.email}</p>
                       {statusInfo.error && (
                         <p className="text-[11px] text-red-500 font-normal mt-0.5 truncate">
                           {statusInfo.error}

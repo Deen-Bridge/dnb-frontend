@@ -13,7 +13,7 @@ export const COURSE_STATUS = Object.freeze({
   TAKEN_DOWN: "taken_down",
 } as const);
 
-export type CourseStatus = typeof COURSE_STATUS[keyof typeof COURSE_STATUS];
+export type CourseStatus = (typeof COURSE_STATUS)[keyof typeof COURSE_STATUS];
 
 export const TAKEDOWN_REASONS = Object.freeze([
   { value: "copyright", label: "Copyright / DMCA" },
@@ -21,7 +21,7 @@ export const TAKEDOWN_REASONS = Object.freeze([
   { value: "quality", label: "Quality Issues" },
 ] as const);
 
-export type TakedownReasonValue = typeof TAKEDOWN_REASONS[number]["value"];
+export type TakedownReasonValue = (typeof TAKEDOWN_REASONS)[number]["value"];
 
 export const DISMISSAL_REASONS = Object.freeze([
   {
@@ -42,7 +42,7 @@ export const DISMISSAL_REASONS = Object.freeze([
   },
 ] as const);
 
-export type DismissalReasonValue = typeof DISMISSAL_REASONS[number]["value"];
+export type DismissalReasonValue = (typeof DISMISSAL_REASONS)[number]["value"];
 
 const VALID_DISMISSAL_REASONS = new Set<string>(DISMISSAL_REASONS.map((r) => r.value));
 
@@ -96,7 +96,10 @@ export async function updateCourseStatus(
   }
 
   logAuditEvent({
-    action: status === COURSE_STATUS.TAKEN_DOWN ? AUDIT_ACTIONS.COURSE_TAKEDOWN : AUDIT_ACTIONS.COURSE_UPDATED,
+    action:
+      status === COURSE_STATUS.TAKEN_DOWN
+        ? AUDIT_ACTIONS.COURSE_TAKEDOWN
+        : AUDIT_ACTIONS.COURSE_UPDATED,
     target: { label: `Course ${courseId}`, href: `/dashboard/admin/courses/${courseId}` },
     metadata: { status, reason, note },
   });
@@ -150,7 +153,9 @@ export async function dismissReport({
   if (!reportId) throw new Error("reportId is required.");
   if (!reporterId) throw new Error("reporterId is required.");
   if (!reason || !VALID_DISMISSAL_REASONS.has(reason)) {
-    throw new Error(`Invalid dismissal reason: "${reason}". Must be one of: ${[...VALID_DISMISSAL_REASONS].join(", ")}.`);
+    throw new Error(
+      `Invalid dismissal reason: "${reason}". Must be one of: ${[...VALID_DISMISSAL_REASONS].join(", ")}.`
+    );
   }
 
   const firstTime = await isFirstTimeReporter(reporterId);

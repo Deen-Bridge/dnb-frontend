@@ -30,10 +30,7 @@ export default function useFlaggedContent<T extends FlaggedItem = FlaggedItem>(
   );
 
   const filteredItems = useMemo(
-    () =>
-      showFlaggedOnly
-        ? items.filter((item) => (item.flagCount ?? 0) > 0)
-        : items,
+    () => (showFlaggedOnly ? items.filter((item) => (item.flagCount ?? 0) > 0) : items),
     [items, showFlaggedOnly]
   );
 

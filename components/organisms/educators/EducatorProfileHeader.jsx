@@ -4,31 +4,15 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
-import {
-  Share2,
-  Users,
-  BookOpen,
-  GraduationCap,
-  Star,
-  Calendar,
-  BadgeCheck,
-} from "lucide-react";
+import { Share2, Users, BookOpen, GraduationCap, Star, Calendar, BadgeCheck } from "lucide-react";
 import { format } from "date-fns";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const StatChip = ({ icon: Icon, value, label, gold }) => (
   <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 backdrop-blur">
-    <Icon
-      className={cn("h-4 w-4", gold ? "fill-yellow-400 text-yellow-400" : "text-secondary")}
-    />
+    <Icon className={cn("h-4 w-4", gold ? "fill-yellow-400 text-yellow-400" : "text-secondary")} />
     <span className={cn(poppins_600, "text-sm text-ink-inverse")}>{value}</span>
-    <span className={cn(poppins_400, "text-xs text-ink-inverse-muted")}>
-      {label}
-    </span>
+    <span className={cn(poppins_400, "text-xs text-ink-inverse-muted")}>{label}</span>
   </div>
 );
 
@@ -64,9 +48,7 @@ const EducatorProfileHeader = ({
         <div className="relative -mt-14 sm:-mt-16">
           <Avatar className="h-28 w-28 border-4 border-basic shadow-2xl sm:h-32 sm:w-32">
             <AvatarImage src={educator?.avatar} alt={educator?.name} />
-            <AvatarFallback
-              className={cn(poppins_600, "bg-accent text-3xl text-white")}
-            >
+            <AvatarFallback className={cn(poppins_600, "bg-accent text-3xl text-white")}>
               {educator?.name?.charAt(0) || "E"}
             </AvatarFallback>
           </Avatar>
@@ -76,12 +58,7 @@ const EducatorProfileHeader = ({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <h1
-                  className={cn(
-                    poppins_600,
-                    "text-2xl text-ink-inverse sm:text-3xl"
-                  )}
-                >
+                <h1 className={cn(poppins_600, "text-2xl text-ink-inverse sm:text-3xl")}>
                   {educator?.name}
                 </h1>
                 {educator?.isVerified && (
@@ -102,12 +79,7 @@ const EducatorProfileHeader = ({
                 </span>
               )}
               {educator?.bio && (
-                <p
-                  className={cn(
-                    poppins_400,
-                    "max-w-2xl leading-relaxed text-ink-inverse-muted"
-                  )}
-                >
+                <p className={cn(poppins_400, "max-w-2xl leading-relaxed text-ink-inverse-muted")}>
                   {educator.bio}
                 </p>
               )}
@@ -134,7 +106,11 @@ const EducatorProfileHeader = ({
                 Share
               </Button>
               {isOwnProfile ? (
-                <Button to="/profile-setup" round className="bg-white px-5 text-sm text-basic hover:bg-white/90">
+                <Button
+                  to="/profile-setup"
+                  round
+                  className="bg-white px-5 text-sm text-basic hover:bg-white/90"
+                >
                   Edit Profile
                 </Button>
               ) : (
@@ -161,12 +137,8 @@ const EducatorProfileHeader = ({
             {stats?.courses > 0 && (
               <StatChip icon={GraduationCap} value={stats.courses} label="Courses" />
             )}
-            {stats?.books > 0 && (
-              <StatChip icon={BookOpen} value={stats.books} label="Books" />
-            )}
-            {stats?.spaces > 0 && (
-              <StatChip icon={Users} value={stats.spaces} label="Spaces" />
-            )}
+            {stats?.books > 0 && <StatChip icon={BookOpen} value={stats.books} label="Books" />}
+            {stats?.spaces > 0 && <StatChip icon={Users} value={stats.spaces} label="Spaces" />}
             {avgRating > 0 && (
               <StatChip icon={Star} value={avgRating.toFixed(1)} label="Rating" gold />
             )}

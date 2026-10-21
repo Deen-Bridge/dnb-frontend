@@ -44,11 +44,7 @@ import AdminTierGuard from "@/components/auth/AdminTierGuard";
 import useReconciliation from "@/hooks/useReconciliation";
 import { explorerTxUrl } from "@/lib/actions/admin-reconciliation";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /** Visual + copy config per reconciliation status. */
 const STATUS_META = {
@@ -139,21 +135,12 @@ function ReconciliationRow({ row }) {
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
       </TableCell>
-      <TableCell className={cn(poppins_400.className, "text-sm text-ink")}>
-        {row.buyer}
-      </TableCell>
-      <TableCell className={cn(poppins_400.className, "text-sm text-ink")}>
-        {row.creator}
-      </TableCell>
+      <TableCell className={cn(poppins_400.className, "text-sm text-ink")}>{row.buyer}</TableCell>
+      <TableCell className={cn(poppins_400.className, "text-sm text-ink")}>{row.creator}</TableCell>
       <TableCell className={cn(poppins_500.className, "text-sm text-ink")}>
         <span className="tabular-nums">{amountLabel(row.amount, row.currency)}</span>
         {onChainAmount && (
-          <span
-            className={cn(
-              poppins_400.className,
-              "block text-xs text-amber-600 tabular-nums"
-            )}
-          >
+          <span className={cn(poppins_400.className, "block text-xs text-amber-600 tabular-nums")}>
             on-chain: {onChainAmount}
           </span>
         )}
@@ -163,10 +150,7 @@ function ReconciliationRow({ row }) {
       </TableCell>
       <TableCell>
         <div className="flex flex-col items-start gap-1.5">
-          <Badge
-            variant="outline"
-            className={cn("rounded-full", meta.badge)}
-          >
+          <Badge variant="outline" className={cn("rounded-full", meta.badge)}>
             <StatusIcon className="h-3 w-3" aria-hidden="true" />
             {meta.label}
           </Badge>
@@ -228,7 +212,10 @@ function ReconciliationTable({ rows, isLoading }) {
                   : null;
 
               return (
-                <div key={row.id} className={cn("p-3 space-y-2", meta.highlighted && "bg-muted/30")}>
+                <div
+                  key={row.id}
+                  className={cn("p-3 space-y-2", meta.highlighted && "bg-muted/30")}
+                >
                   <div className="flex items-start justify-between gap-2">
                     <Link
                       href={`/dashboard/purchases/${row.id}`}
@@ -240,7 +227,10 @@ function ReconciliationTable({ rows, isLoading }) {
                       {row.reference}
                       <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
                     </Link>
-                    <Badge variant="outline" className={cn("rounded-full text-[10px] shrink-0", meta.badge)}>
+                    <Badge
+                      variant="outline"
+                      className={cn("rounded-full text-[10px] shrink-0", meta.badge)}
+                    >
                       <StatusIcon className="h-2.5 w-2.5" aria-hidden="true" />
                       {meta.label}
                     </Badge>
@@ -253,7 +243,12 @@ function ReconciliationTable({ rows, isLoading }) {
                     <span className={cn(poppins_500.className, "text-sm text-ink")}>
                       <span className="tabular-nums">{amountLabel(row.amount, row.currency)}</span>
                       {onChainAmount && (
-                        <span className={cn(poppins_400.className, "block text-[10px] text-amber-600 tabular-nums")}>
+                        <span
+                          className={cn(
+                            poppins_400.className,
+                            "block text-[10px] text-amber-600 tabular-nums"
+                          )}
+                        >
                           on-chain: {onChainAmount}
                         </span>
                       )}
@@ -285,17 +280,7 @@ function ReconciliationTable({ rows, isLoading }) {
 }
 
 function ReconciliationContent() {
-  const {
-    rows,
-    summary,
-    isLoading,
-    error,
-    hasRun,
-    from,
-    to,
-    setRange,
-    run,
-  } = useReconciliation();
+  const { rows, summary, isLoading, error, hasRun, from, to, setRange, run } = useReconciliation();
 
   const handleSubmit = (event) => {
     event.preventDefault();

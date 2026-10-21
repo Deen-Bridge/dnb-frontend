@@ -1,17 +1,17 @@
 import { siteName } from "@/lib/config/site.config";
 
-const title = 'The AI Assistant';
+const title = "The AI Assistant";
 const description =
   "An Islamic-knowledge assistant that scores its own confidence, verifies every Qur'an and hadith citation, and routes doubtful rulings to a scholar instead of guessing.";
 
 export const metadata = {
   title,
   description,
-  alternates: { canonical: '/ai' },
+  alternates: { canonical: "/ai" },
   openGraph: {
     title: `${title} | ${siteName}`,
     description,
-    url: '/ai',
+    url: "/ai",
     siteName,
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: title }],

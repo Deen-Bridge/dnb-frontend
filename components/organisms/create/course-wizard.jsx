@@ -109,10 +109,7 @@ export default function CourseWizard({ courseId }) {
     formState: { errors },
   } = methods;
 
-  const { hasDraft, loadDraft, clearDraft } = useDraftAutosave(
-    watch,
-    courseId
-  );
+  const { hasDraft, loadDraft, clearDraft } = useDraftAutosave(watch, courseId);
 
   // Cloudinary upload hooks
   const thumbnailUpload = useCloudinaryUpload("dnb_courses_thumbnails", {
@@ -222,11 +219,7 @@ export default function CourseWizard({ courseId }) {
       for (let i = 0; i < (data.lessons || []).length; i++) {
         const lesson = { ...data.lessons[i] };
         if (lesson.videoFile instanceof File) {
-          toast.info(
-            `Uploading video for Lesson ${i + 1} (${i + 1}/${
-              data.lessons.length
-            })...`
-          );
+          toast.info(`Uploading video for Lesson ${i + 1} (${i + 1}/${data.lessons.length})...`);
           const uploadedUrl = await videoUpload.uploadFile(lesson.videoFile);
           lesson.videoUrl = uploadedUrl;
           if (i === 0) {
@@ -263,9 +256,7 @@ export default function CourseWizard({ courseId }) {
       if (res && (res.success || res._id || res.course)) {
         clearDraft();
         toast.success(
-          isEditMode
-            ? "Course updated successfully!"
-            : "Course published successfully!"
+          isEditMode ? "Course updated successfully!" : "Course published successfully!"
         );
         const newId = res.course?._id || res._id || courseId;
         router.push(`/dashboard/courses/${newId}`);
@@ -273,9 +264,7 @@ export default function CourseWizard({ courseId }) {
         toast.error(res?.message || "Failed to save course.");
       }
     } catch (err) {
-      toast.error(
-        err?.message || "An error occurred while saving the course."
-      );
+      toast.error(err?.message || "An error occurred while saving the course.");
     } finally {
       setSubmitting(false);
       thumbnailUpload.reset();
@@ -372,11 +361,7 @@ export default function CourseWizard({ courseId }) {
               </span>
             </div>
             <Progress
-              value={
-                thumbnailUpload.uploading
-                  ? thumbnailUpload.progress
-                  : videoUpload.progress
-              }
+              value={thumbnailUpload.uploading ? thumbnailUpload.progress : videoUpload.progress}
               className="h-2"
             />
           </div>
@@ -385,28 +370,14 @@ export default function CourseWizard({ courseId }) {
         {/* Active Step Content */}
         <div className="min-h-[350px] py-2">
           {currentStep === 0 && (
-            <WizardStepBasics
-              control={control}
-              errors={errors}
-              register={register}
-            />
+            <WizardStepBasics control={control} errors={errors} register={register} />
           )}
 
           {currentStep === 1 && (
-            <WizardStepCurriculum
-              control={control}
-              errors={errors}
-              register={register}
-            />
+            <WizardStepCurriculum control={control} errors={errors} register={register} />
           )}
 
-          {currentStep === 2 && (
-            <WizardStepMedia
-              control={control}
-              errors={errors}
-              watch={watch}
-            />
-          )}
+          {currentStep === 2 && <WizardStepMedia control={control} errors={errors} watch={watch} />}
 
           {currentStep === 3 && (
             <WizardStepPricing
@@ -445,12 +416,8 @@ export default function CourseWizard({ courseId }) {
             <Button
               type="button"
               round
-              loading={
-                submitting || thumbnailUpload.uploading || videoUpload.uploading
-              }
-              disabled={
-                submitting || thumbnailUpload.uploading || videoUpload.uploading
-              }
+              loading={submitting || thumbnailUpload.uploading || videoUpload.uploading}
+              disabled={submitting || thumbnailUpload.uploading || videoUpload.uploading}
               onClick={handleSubmit(handlePublish)}
               className="bg-accent hover:bg-accent/90 text-white font-bold flex items-center gap-1"
             >

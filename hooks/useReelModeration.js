@@ -30,7 +30,12 @@ import useOptimisticMutation from "@/hooks/useOptimisticMutation";
 import { setReelVisibility } from "@/lib/actions/reels-action";
 
 export default function useReelModeration(reelId, initialHidden = false) {
-  const { value: hidden, mutate, isPending, error } = useOptimisticMutation({
+  const {
+    value: hidden,
+    mutate,
+    isPending,
+    error,
+  } = useOptimisticMutation({
     initialValue: Boolean(initialHidden),
     key: reelId,
     errorMessage: "Couldn't update this reel's visibility",
@@ -42,8 +47,7 @@ export default function useReelModeration(reelId, initialHidden = false) {
       mutate({
         applyOptimistic: () => Boolean(next),
         run: (value) => setReelVisibility(reelId, { hidden: value }),
-        commit: (result, optimistic) =>
-          result?.reel ? Boolean(result.reel.hidden) : optimistic,
+        commit: (result, optimistic) => (result?.reel ? Boolean(result.reel.hidden) : optimistic),
       }),
     [mutate, reelId]
   );
@@ -54,8 +58,7 @@ export default function useReelModeration(reelId, initialHidden = false) {
       mutate({
         applyOptimistic: (current) => !current,
         run: (value) => setReelVisibility(reelId, { hidden: value }),
-        commit: (result, optimistic) =>
-          result?.reel ? Boolean(result.reel.hidden) : optimistic,
+        commit: (result, optimistic) => (result?.reel ? Boolean(result.reel.hidden) : optimistic),
       }),
     [mutate, reelId]
   );

@@ -41,11 +41,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/atoms/form/Button";
 import {
@@ -57,12 +53,7 @@ import { useVerificationStatus } from "@/hooks/useVerificationStatus";
 // ── Design-system building blocks (matching security / notifications pages) ─
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -74,9 +65,7 @@ const CardHead = ({ icon: Icon, title, desc }) => (
     </div>
     <div>
       <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
-      {desc && (
-        <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>{desc}</p>
-      )}
+      {desc && <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>{desc}</p>}
     </div>
   </div>
 );
@@ -90,23 +79,28 @@ const STATUS_BADGE = {
   },
   [VERIFICATION_STATUS.INCOMPLETE]: {
     label: "Incomplete",
-    className: "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300",
+    className:
+      "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300",
   },
   [VERIFICATION_STATUS.PENDING]: {
     label: "Pending review",
-    className: "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700/50 dark:bg-blue-950/40 dark:text-blue-300",
+    className:
+      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700/50 dark:bg-blue-950/40 dark:text-blue-300",
   },
   [VERIFICATION_STATUS.UNDER_REVIEW]: {
     label: "Under review",
-    className: "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700/50 dark:bg-blue-950/40 dark:text-blue-300",
+    className:
+      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700/50 dark:bg-blue-950/40 dark:text-blue-300",
   },
   [VERIFICATION_STATUS.REJECTED]: {
     label: "Rejected",
-    className: "border-red-300 bg-red-50 text-red-700 dark:border-red-700/50 dark:bg-red-950/40 dark:text-red-300",
+    className:
+      "border-red-300 bg-red-50 text-red-700 dark:border-red-700/50 dark:bg-red-950/40 dark:text-red-300",
   },
   [VERIFICATION_STATUS.VERIFIED]: {
     label: "Verified",
-    className: "border-green-300 bg-green-50 text-green-700 dark:border-green-700/50 dark:bg-green-950/40 dark:text-green-300",
+    className:
+      "border-green-300 bg-green-50 text-green-700 dark:border-green-700/50 dark:bg-green-950/40 dark:text-green-300",
   },
 };
 
@@ -176,19 +170,14 @@ function TimelineStep({ step, isLast }) {
     <li className="relative flex gap-4">
       {/* Connector line */}
       {!isLast && (
-        <span
-          aria-hidden="true"
-          className="absolute left-[17px] top-8 h-full w-px bg-accent/15"
-        />
+        <span aria-hidden="true" className="absolute left-[17px] top-8 h-full w-px bg-accent/15" />
       )}
 
       {/* Dot */}
       <div
         className={cn(
           "relative z-10 mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border-2",
-          step.done
-            ? "border-secondary bg-secondary/10"
-            : "border-accent/20 bg-surface"
+          step.done ? "border-secondary bg-secondary/10" : "border-accent/20 bg-surface"
         )}
         aria-hidden="true"
       >
@@ -201,18 +190,14 @@ function TimelineStep({ step, isLast }) {
 
       {/* Content */}
       <div className="pb-6">
-        <p className={cn(poppins_500, "text-sm text-ink leading-snug")}>
-          {step.label}
-        </p>
+        <p className={cn(poppins_500, "text-sm text-ink leading-snug")}>{step.label}</p>
         {step.ts ? (
           <p className={cn(poppins_400, "mt-0.5 text-xs text-ink-muted")}>
             {format(new Date(step.ts), "dd MMM yyyy, HH:mm")} (
             {formatDistanceToNow(new Date(step.ts), { addSuffix: true })})
           </p>
         ) : (
-          <p className={cn(poppins_400, "mt-0.5 text-xs text-ink-muted/60")}>
-            Not yet reached
-          </p>
+          <p className={cn(poppins_400, "mt-0.5 text-xs text-ink-muted/60")}>Not yet reached</p>
         )}
       </div>
     </li>
@@ -248,17 +233,12 @@ function DocumentRow({ doc }) {
         </div>
         <div className="min-w-0">
           {/* Masked filename — only name+extension, no path */}
-          <p
-            className={cn(poppins_500, "truncate text-sm text-ink")}
-            title={doc.filename}
-          >
+          <p className={cn(poppins_500, "truncate text-sm text-ink")} title={doc.filename}>
             {doc.filename}
           </p>
           <p className={cn(poppins_400, "text-xs text-ink-muted capitalize")}>
             {doc.type?.replace(/_/g, " ")}
-            {doc.uploadedAt && (
-              <> · {format(new Date(doc.uploadedAt), "dd MMM yyyy")}</>
-            )}
+            {doc.uploadedAt && <> · {format(new Date(doc.uploadedAt), "dd MMM yyyy")}</>}
           </p>
         </div>
       </div>
@@ -288,24 +268,13 @@ function DocumentRow({ doc }) {
 
 export default function VerificationPage() {
   const router = useRouter();
-  const {
-    status,
-    data,
-    loading,
-    error,
-    resumeStep,
-    refresh,
-    isVerified,
-  } = useVerificationStatus();
+  const { status, data, loading, error, resumeStep, refresh, isVerified } = useVerificationStatus();
 
   const cfg = STATUS_COPY[status] ?? STATUS_COPY[VERIFICATION_STATUS.NOT_STARTED];
   const badgeCfg = STATUS_BADGE[status] ?? STATUS_BADGE[VERIFICATION_STATUS.NOT_STARTED];
 
   const handleCta = useCallback(() => {
-    if (
-      status === VERIFICATION_STATUS.NOT_STARTED ||
-      status === VERIFICATION_STATUS.INCOMPLETE
-    ) {
+    if (status === VERIFICATION_STATUS.NOT_STARTED || status === VERIFICATION_STATUS.INCOMPLETE) {
       router.push(`/educator-onboarding?step=${resumeStep}`);
     } else if (status === VERIFICATION_STATUS.REJECTED) {
       // Resubmit: clear the wizard state and restart from step 1
@@ -321,7 +290,6 @@ export default function VerificationPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl space-y-6">
-
         {/* ── Header ──────────────────────────────────────────────────── */}
         <PageHeader
           icon={ShieldCheck}
@@ -387,11 +355,7 @@ export default function VerificationPage() {
           <>
             {/* ── Current status panel ────────────────────────────────── */}
             <Panel data-testid="status-panel">
-              <CardHead
-                icon={cfg.icon}
-                title={cfg.heading}
-                desc={cfg.detail}
-              />
+              <CardHead icon={cfg.icon} title={cfg.heading} desc={cfg.detail} />
 
               {/* Verified checkmark */}
               {isVerified && (
@@ -420,9 +384,7 @@ export default function VerificationPage() {
                         : "bg-accent hover:bg-highlight"
                     )}
                   >
-                    {cfg.ctaIcon && (
-                      <cfg.ctaIcon className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                    )}
+                    {cfg.ctaIcon && <cfg.ctaIcon className="mr-1.5 h-4 w-4" aria-hidden="true" />}
                     {cfg.ctaLabel}
                   </Button>
                 </div>
@@ -494,56 +456,39 @@ export default function VerificationPage() {
                   ))}
 
                   {/* Compliance notice */}
-                  <p
-                    className={cn(
-                      poppins_400,
-                      "mt-2 text-xs text-ink-muted/70"
-                    )}
-                  >
-                    <ExternalLink
-                      className="mr-1 inline h-3 w-3"
-                      aria-hidden="true"
-                    />
-                    Document links expire after a short period. Each click
-                    generates a fresh secure URL — your files are never exposed
-                    on a public link.
+                  <p className={cn(poppins_400, "mt-2 text-xs text-ink-muted/70")}>
+                    <ExternalLink className="mr-1 inline h-3 w-3" aria-hidden="true" />
+                    Document links expire after a short period. Each click generates a fresh secure
+                    URL — your files are never exposed on a public link.
                   </p>
                 </div>
               </Panel>
             )}
 
             {/* ── Empty state for non-educators or not_started ─────────── */}
-            {status === VERIFICATION_STATUS.NOT_STARTED &&
-              !data?.documents?.length && (
-                <Panel data-testid="empty-panel">
-                  <div className="flex flex-col items-center gap-3 p-10 text-center">
-                    <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
-                      <ShieldCheck className="h-7 w-7 text-accent" />
-                    </div>
-                    <p className={cn(poppins_600, "text-ink")}>
-                      No application yet
-                    </p>
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "max-w-sm text-sm text-ink-muted"
-                      )}
-                    >
-                      Once you start the verification process, your application
-                      details will appear here.
-                    </p>
-                    <Button
-                      round
-                      onClick={handleCta}
-                      data-testid="empty-panel-cta-btn"
-                      className="mt-2 bg-accent px-6 text-sm text-white hover:bg-highlight"
-                    >
-                      <BadgeCheck className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                      Start verification
-                    </Button>
+            {status === VERIFICATION_STATUS.NOT_STARTED && !data?.documents?.length && (
+              <Panel data-testid="empty-panel">
+                <div className="flex flex-col items-center gap-3 p-10 text-center">
+                  <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
+                    <ShieldCheck className="h-7 w-7 text-accent" />
                   </div>
-                </Panel>
-              )}
+                  <p className={cn(poppins_600, "text-ink")}>No application yet</p>
+                  <p className={cn(poppins_400, "max-w-sm text-sm text-ink-muted")}>
+                    Once you start the verification process, your application details will appear
+                    here.
+                  </p>
+                  <Button
+                    round
+                    onClick={handleCta}
+                    data-testid="empty-panel-cta-btn"
+                    className="mt-2 bg-accent px-6 text-sm text-white hover:bg-highlight"
+                  >
+                    <BadgeCheck className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                    Start verification
+                  </Button>
+                </div>
+              </Panel>
+            )}
           </>
         )}
       </div>

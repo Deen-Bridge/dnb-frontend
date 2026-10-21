@@ -109,19 +109,30 @@ function ReportsContent() {
                     }}
                   >
                     <TableCell>
-                      <span className={cn(poppins_500.className, "flex items-center gap-2 text-ink")}>
+                      <span
+                        className={cn(poppins_500.className, "flex items-center gap-2 text-ink")}
+                      >
                         <Flag className="h-3.5 w-3.5 text-ink-muted" aria-hidden="true" />
                         {r.reason}
                       </span>
                     </TableCell>
                     <TableCell>
                       <span className={cn(poppins_400.className, "flex items-center gap-2")}>
-                        <Badge variant="secondary">{TARGET_TYPE_LABEL[r.target?.type] || "Content"}</Badge>
-                        <span className="max-w-[16rem] truncate text-ink-muted">{r.target?.title}</span>
+                        <Badge variant="secondary">
+                          {TARGET_TYPE_LABEL[r.target?.type] || "Content"}
+                        </Badge>
+                        <span className="max-w-[16rem] truncate text-ink-muted">
+                          {r.target?.title}
+                        </span>
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={cn(poppins_400.className, "flex items-center gap-2 text-ink-muted")}>
+                      <span
+                        className={cn(
+                          poppins_400.className,
+                          "flex items-center gap-2 text-ink-muted"
+                        )}
+                      >
                         {r.reporter?.name}
                         {serial ? (
                           <Badge variant="destructive" className="gap-1">

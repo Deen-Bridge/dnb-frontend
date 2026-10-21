@@ -94,9 +94,7 @@ export default function useDigestConfig() {
    * @param {Partial<{dayOfWeek: number, hour: number, minute: number, timezone: string}>} patch
    */
   const setSchedule = useCallback((patch) => {
-    setConfig((prev) =>
-      prev ? { ...prev, schedule: { ...prev.schedule, ...patch } } : prev
-    );
+    setConfig((prev) => (prev ? { ...prev, schedule: { ...prev.schedule, ...patch } } : prev));
   }, []);
 
   /**
@@ -110,9 +108,7 @@ export default function useDigestConfig() {
     let added = false;
     setConfig((prev) => {
       if (!prev) return prev;
-      const exists = prev.recipients.some(
-        (r) => r.toLowerCase() === next.toLowerCase()
-      );
+      const exists = prev.recipients.some((r) => r.toLowerCase() === next.toLowerCase());
       if (exists) return prev;
       added = true;
       return { ...prev, recipients: [...prev.recipients, next] };
@@ -155,9 +151,7 @@ export default function useDigestConfig() {
     if (!config) return false;
     const { valid, errors: validationErrors } = validateDigestConfig(config);
     if (!valid) {
-      toast.error(
-        Object.values(validationErrors)[0] || "Fix the highlighted fields first"
-      );
+      toast.error(Object.values(validationErrors)[0] || "Fix the highlighted fields first");
       return false;
     }
     setIsSaving(true);

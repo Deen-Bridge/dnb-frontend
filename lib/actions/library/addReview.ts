@@ -6,14 +6,17 @@ export interface AddBookReviewParams {
   comment: string;
 }
 
-export async function addBookReview({ bookId, rating, comment }: AddBookReviewParams): Promise<any> { // TODO(types): Book review response payload
+export async function addBookReview({
+  bookId,
+  rating,
+  comment,
+}: AddBookReviewParams): Promise<any> {
+  // TODO(types): Book review response payload
   try {
-    const res = await axiosInstance.post(
-      `/api/books/${bookId}/reviews`,
-      { rating, comment }
-    );
+    const res = await axiosInstance.post(`/api/books/${bookId}/reviews`, { rating, comment });
     return res.data;
-  } catch (error: any) { // TODO(types): Axios error on book review
+  } catch (error: any) {
+    // TODO(types): Axios error on book review
     if (error.response && error.response.data) {
       return error.response.data;
     }

@@ -49,8 +49,22 @@ vi.mock("@/lib/actions/admin-reports", async () => {
 });
 
 const USER_ROWS = [
-  { id: "u1", name: "Amina Yusuf", email: "amina@deenbridge.org", role: "student", status: "active", joinedAt: "2025-01-12" },
-  { id: "u2", name: "Bilal Karim", email: "bilal@deenbridge.org", role: "educator", status: "active", joinedAt: "2025-02-03" },
+  {
+    id: "u1",
+    name: "Amina Yusuf",
+    email: "amina@deenbridge.org",
+    role: "student",
+    status: "active",
+    joinedAt: "2025-01-12",
+  },
+  {
+    id: "u2",
+    name: "Bilal Karim",
+    email: "bilal@deenbridge.org",
+    role: "educator",
+    status: "active",
+    joinedAt: "2025-02-03",
+  },
 ];
 
 const SAVED_QUERIES = [

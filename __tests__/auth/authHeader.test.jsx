@@ -149,9 +149,7 @@ describe("issue #74 — the stale-token regression", () => {
     await usePurchaseBook("book_456");
 
     expect(authHeaderOf(1)).toBeUndefined();
-    expect(JSON.stringify(sentRequests[1].headers)).not.toContain(
-      "token-before-logout"
-    );
+    expect(JSON.stringify(sentRequests[1].headers)).not.toContain("token-before-logout");
   });
 });
 
@@ -187,9 +185,8 @@ describe("issue #74 — authenticated consumers still work", () => {
     // Rendered through the real provider so refreshUser runs its real path.
     const { render, screen, act } = await import("@testing-library/react");
     const React = await import("react");
-    const { default: AuthProvider, useAuthContext } = await import(
-      "@/components/providers/AuthProvider"
-    );
+    const { default: AuthProvider, useAuthContext } =
+      await import("@/components/providers/AuthProvider");
 
     let ctx;
     function Probe() {
@@ -197,9 +194,7 @@ describe("issue #74 — authenticated consumers still work", () => {
       return React.createElement("span", null, "ready");
     }
 
-    render(
-      React.createElement(AuthProvider, null, React.createElement(Probe))
-    );
+    render(React.createElement(AuthProvider, null, React.createElement(Probe)));
     await screen.findByText("ready");
 
     await act(async () => {
@@ -208,16 +203,13 @@ describe("issue #74 — authenticated consumers still work", () => {
 
     const call = sentRequests.find((r) => r.url === "/api/users/u1");
     expect(call).toBeDefined();
-    expect(
-      call.headers?.Authorization ?? call.headers?.authorization
-    ).toBe("Bearer refresh-token");
+    expect(call.headers?.Authorization ?? call.headers?.authorization).toBe("Bearer refresh-token");
   });
 });
 
 describe("issue #74 — no credential leaks to the console", () => {
   it("writes no raw JWT to any console channel during an authenticated request", async () => {
-    const JWT =
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1MSJ9.s3cr3t-signature-value";
+    const JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1MSJ9.s3cr3t-signature-value";
 
     const spies = ["log", "info", "warn", "error", "debug"].map((level) =>
       vi.spyOn(console, level).mockImplementation(() => {})
@@ -229,7 +221,7 @@ describe("issue #74 — no credential leaks to the console", () => {
     const everythingLogged = spies
       .flatMap((spy) => spy.mock.calls)
       .flat()
-      .map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg) ?? ""))
+      .map((arg) => (typeof arg === "string" ? arg : (JSON.stringify(arg) ?? "")))
       .join(" ");
 
     expect(everythingLogged).not.toContain(JWT);
@@ -243,14 +235,7 @@ describe("issue #74 — no credential leaks to the console", () => {
 
 /** Recursively collect .js/.jsx source files, skipping build + vendor dirs. */
 function collectSourceFiles(dir, acc = []) {
-  const SKIP = new Set([
-    "node_modules",
-    ".next",
-    ".git",
-    "coverage",
-    "public",
-    "mobile",
-  ]);
+  const SKIP = new Set(["node_modules", ".next", ".git", "coverage", "public", "mobile"]);
   for (const entry of readdirSync(dir)) {
     if (SKIP.has(entry)) continue;
     const full = join(dir, entry);
@@ -268,9 +253,7 @@ function collectSourceFiles(dir, acc = []) {
 
 describe("issue #74 — req.header.config is deleted", () => {
   it("the module file no longer exists", () => {
-    expect(existsSync(join(REPO_ROOT, "lib/config/req.header.config.js"))).toBe(
-      false
-    );
+    expect(existsSync(join(REPO_ROOT, "lib/config/req.header.config.js"))).toBe(false);
   });
 
   it("no source file imports req.header.config", () => {

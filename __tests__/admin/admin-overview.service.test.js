@@ -14,26 +14,15 @@ describe("fetchAdminOverview", () => {
 
     expect(snapshot.empty).toBe(true);
     expect(snapshot.generatedAt).toEqual(expect.any(String));
-    expect(
-      Object.values(snapshot.counts).every((count) => count.value === 0)
-    ).toBe(true);
-    expect(
-      Object.values(snapshot.settings).every(
-        (setting) => setting.configured === false
-      )
-    ).toBe(true);
+    expect(Object.values(snapshot.counts).every((count) => count.value === 0)).toBe(true);
+    expect(Object.values(snapshot.settings).every((setting) => setting.configured === false)).toBe(
+      true
+    );
   });
 
   it("exposes every count the overview widgets depend on", async () => {
     const snapshot = await fetchAdminOverview();
-    const keys = [
-      "mentors",
-      "categories",
-      "courses",
-      "books",
-      "students",
-      "transactions",
-    ];
+    const keys = ["mentors", "categories", "courses", "books", "students", "transactions"];
 
     for (const key of keys) {
       expect(snapshot.counts[key]).toMatchObject({

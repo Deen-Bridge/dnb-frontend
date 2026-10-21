@@ -2,12 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  can as canFn,
-  isVerified as isVerifiedFn,
-  normalizeRole,
-  Role,
-} from "@/lib/auth/roles";
+import { can as canFn, isVerified as isVerifiedFn, normalizeRole, Role } from "@/lib/auth/roles";
 
 export interface UseCanResult {
   can: (action: string) => boolean;

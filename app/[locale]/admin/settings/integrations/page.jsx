@@ -3,13 +3,7 @@
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,12 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Key,
   Webhook,
@@ -167,9 +156,11 @@ export default function IntegrationsPage() {
   // Reveal key (one-time only)
   const handleRevealKey = useCallback((keyId) => {
     // Security warning
-    if (!window.confirm(
-      "WARNING: This key will only be shown once. Make sure to copy it now. Are you sure you want to reveal it?"
-    )) {
+    if (
+      !window.confirm(
+        "WARNING: This key will only be shown once. Make sure to copy it now. Are you sure you want to reveal it?"
+      )
+    ) {
       return;
     }
 
@@ -310,12 +301,10 @@ export default function IntegrationsPage() {
         <CardContent className="flex items-center gap-3 py-4">
           <Shield className="h-5 w-5 text-amber-600" />
           <div>
-            <p className={cn(poppins_500.className, "text-sm text-amber-800")}>
-              Security Notice
-            </p>
+            <p className={cn(poppins_500.className, "text-sm text-amber-800")}>Security Notice</p>
             <p className={cn(poppins_400.className, "text-xs text-amber-700")}>
-              API keys are shown only once when created. Store them securely.
-              Rotate keys immediately if you suspect they've been compromised.
+              API keys are shown only once when created. Store them securely. Rotate keys
+              immediately if you suspect they've been compromised.
             </p>
           </div>
         </CardContent>
@@ -339,9 +328,7 @@ export default function IntegrationsPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-lg">API Keys</CardTitle>
-                <CardDescription>
-                  Server-generated keys for API authentication
-                </CardDescription>
+                <CardDescription>Server-generated keys for API authentication</CardDescription>
               </div>
               <Button onClick={() => setShowCreateKey(true)}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -370,9 +357,7 @@ export default function IntegrationsPage() {
                     <TableBody>
                       {apiKeys.map((key) => (
                         <TableRow key={key.id}>
-                          <TableCell className={cn(poppins_500.className)}>
-                            {key.name}
-                          </TableCell>
+                          <TableCell className={cn(poppins_500.className)}>{key.name}</TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <code className="rounded bg-muted px-2 py-1 text-sm">
@@ -462,10 +447,7 @@ export default function IntegrationsPage() {
               ) : (
                 <div className="space-y-4">
                   {webhooks.map((webhook) => (
-                    <div
-                      key={webhook.id}
-                      className="rounded-lg border p-4 space-y-3"
-                    >
+                    <div key={webhook.id} className="rounded-lg border p-4 space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
                           <code className="text-sm font-medium">{webhook.url}</code>
@@ -483,9 +465,7 @@ export default function IntegrationsPage() {
                             onCheckedChange={(checked) =>
                               setWebhooks((prev) =>
                                 prev.map((wh) =>
-                                  wh.id === webhook.id
-                                    ? { ...wh, isActive: checked }
-                                    : wh
+                                  wh.id === webhook.id ? { ...wh, isActive: checked } : wh
                                 )
                               )
                             }
@@ -550,9 +530,7 @@ export default function IntegrationsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create API Key</DialogTitle>
-            <DialogDescription>
-              Generate a new API key for authentication
-            </DialogDescription>
+            <DialogDescription>Generate a new API key for authentication</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -567,8 +545,8 @@ export default function IntegrationsPage() {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
                 <p className="text-xs text-amber-700">
-                  The API key will only be shown once after creation. Make sure to
-                  copy and store it securely.
+                  The API key will only be shown once after creation. Make sure to copy and store it
+                  securely.
                 </p>
               </div>
             </div>
@@ -577,10 +555,7 @@ export default function IntegrationsPage() {
             <Button variant="outline" onClick={() => setShowCreateKey(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={handleCreateKey}
-              disabled={!newKeyName || loading.createKey}
-            >
+            <Button onClick={handleCreateKey} disabled={!newKeyName || loading.createKey}>
               {loading.createKey ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (
@@ -597,9 +572,7 @@ export default function IntegrationsPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Add Webhook Endpoint</DialogTitle>
-            <DialogDescription>
-              Configure a URL to receive event notifications
-            </DialogDescription>
+            <DialogDescription>Configure a URL to receive event notifications</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -607,9 +580,7 @@ export default function IntegrationsPage() {
               <Input
                 placeholder="https://example.com/webhooks"
                 value={newWebhook.url}
-                onChange={(e) =>
-                  setNewWebhook((prev) => ({ ...prev, url: e.target.value }))
-                }
+                onChange={(e) => setNewWebhook((prev) => ({ ...prev, url: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -658,8 +629,8 @@ export default function IntegrationsPage() {
               Rotate API Key
             </DialogTitle>
             <DialogDescription>
-              This will invalidate the current key and generate a new one.
-              All applications using this key will need to be updated.
+              This will invalidate the current key and generate a new one. All applications using
+              this key will need to be updated.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -683,18 +654,15 @@ export default function IntegrationsPage() {
               Delete API Key
             </DialogTitle>
             <DialogDescription>
-              This action cannot be undone. All applications using this key will
-              lose access immediately.
+              This action cannot be undone. All applications using this key will lose access
+              immediately.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteConfirm(null)}>
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() => handleDeleteKey(showDeleteConfirm)}
-            >
+            <Button variant="destructive" onClick={() => handleDeleteKey(showDeleteConfirm)}>
               <Trash2 className="h-4 w-4 mr-2" />
               Delete Key
             </Button>

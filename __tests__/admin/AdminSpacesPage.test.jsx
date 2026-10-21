@@ -37,9 +37,7 @@ describe("AdminSpacesPage — states", () => {
   it("renders skeleton placeholders while loading", () => {
     const { container } = render(<AdminSpacesPage />);
     expect(screen.getByText("Spaces Oversight")).toBeInTheDocument();
-    expect(
-      container.querySelector('[data-slot="skeleton"]')
-    ).not.toBeNull();
+    expect(container.querySelector('[data-slot="skeleton"]')).not.toBeNull();
   });
 
   it("renders summary stat cards after data loads", async () => {

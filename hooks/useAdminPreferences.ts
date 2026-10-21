@@ -78,16 +78,22 @@ export default function useAdminPreferences(): UseAdminPreferencesResult {
     setLoaded(true);
   }, []);
 
-  const updatePref = useCallback(<K extends keyof AdminPreferences>(key: K, value: AdminPreferences[K]) => {
-    setPrefs((prev) => {
-      const next = { ...prev, [key]: value };
-      saveToStorage(next);
-      return next;
-    });
-  }, []);
+  const updatePref = useCallback(
+    <K extends keyof AdminPreferences>(key: K, value: AdminPreferences[K]) => {
+      setPrefs((prev) => {
+        const next = { ...prev, [key]: value };
+        saveToStorage(next);
+        return next;
+      });
+    },
+    []
+  );
 
   const updateEmailNotification = useCallback(
-    <K extends keyof EmailNotificationsPreferences>(key: K, value: EmailNotificationsPreferences[K]) => {
+    <K extends keyof EmailNotificationsPreferences>(
+      key: K,
+      value: EmailNotificationsPreferences[K]
+    ) => {
       setPrefs((prev) => {
         const next = {
           ...prev,

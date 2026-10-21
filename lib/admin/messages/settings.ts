@@ -23,10 +23,12 @@ export const SESSION_IDLE_TIMEOUT_DESC = "Log out admin users after this period 
 export const SESSION_IDLE_MINUTES = "{minutes} minutes";
 
 export const SESSION_REAUTH_TIMEOUT = "Re-authentication timeout";
-export const SESSION_REAUTH_TIMEOUT_DESC = "Require password confirmation for sensitive actions after this period";
+export const SESSION_REAUTH_TIMEOUT_DESC =
+  "Require password confirmation for sensitive actions after this period";
 
 export const SESSION_WARNING_BEFORE = "Warning before logout";
-export const SESSION_WARNING_BEFORE_DESC = "Show idle warning this many seconds before automatic logout";
+export const SESSION_WARNING_BEFORE_DESC =
+  "Show idle warning this many seconds before automatic logout";
 export const SESSION_WARNING_SECONDS = "{seconds} seconds";
 
 export const SESSION_SAVE_BUTTON = "Save settings";

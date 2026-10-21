@@ -32,7 +32,10 @@ export const useStellarScholarship = () => {
   }, []);
 
   const apply = useCallback(async (application: Record<string, unknown>) => {
-    const response = await axiosInstance.post("/api/stellar/scholarships/applications", application);
+    const response = await axiosInstance.post(
+      "/api/stellar/scholarships/applications",
+      application
+    );
     return response.data.application;
   }, []);
 
@@ -42,12 +45,18 @@ export const useStellarScholarship = () => {
   }, []);
 
   const submitReview = useCallback(async (id: string, review: Record<string, unknown>) => {
-    const response = await axiosInstance.post(`/api/stellar/scholarships/applications/${id}/reviews`, review);
+    const response = await axiosInstance.post(
+      `/api/stellar/scholarships/applications/${id}/reviews`,
+      review
+    );
     return response.data.application;
   }, []);
 
   const decideApplication = useCallback(async (id: string, decision: Record<string, unknown>) => {
-    const response = await axiosInstance.post(`/api/stellar/scholarships/applications/${id}/decision`, decision);
+    const response = await axiosInstance.post(
+      `/api/stellar/scholarships/applications/${id}/decision`,
+      decision
+    );
     return response.data.application;
   }, []);
 
@@ -96,8 +105,7 @@ export const useStellarScholarship = () => {
   );
 
   const contribute = useCallback(
-    (amount: string) =>
-      runAction("/api/stellar/scholarships/contributions/initialize", { amount }),
+    (amount: string) => runAction("/api/stellar/scholarships/contributions/initialize", { amount }),
     [runAction]
   );
 
@@ -117,18 +125,27 @@ export const useStellarScholarship = () => {
     return response.data.reports;
   }, []);
 
-  const submitMilestoneReport = useCallback(async (index: number, report: Record<string, unknown>) => {
-    const response = await axiosInstance.post(`/api/stellar/scholarships/milestones/${index}/reports`, report);
-    return response.data.report;
-  }, []);
+  const submitMilestoneReport = useCallback(
+    async (index: number, report: Record<string, unknown>) => {
+      const response = await axiosInstance.post(
+        `/api/stellar/scholarships/milestones/${index}/reports`,
+        report
+      );
+      return response.data.report;
+    },
+    []
+  );
 
-  const reviewMilestoneReport = useCallback(async (index: number, reportId: string, review: Record<string, unknown>) => {
-    const response = await axiosInstance.post(
-      `/api/stellar/scholarships/milestones/${index}/reports/${reportId}/review`,
-      review
-    );
-    return response.data.report;
-  }, []);
+  const reviewMilestoneReport = useCallback(
+    async (index: number, reportId: string, review: Record<string, unknown>) => {
+      const response = await axiosInstance.post(
+        `/api/stellar/scholarships/milestones/${index}/reports/${reportId}/review`,
+        review
+      );
+      return response.data.report;
+    },
+    []
+  );
 
   return {
     getState,
