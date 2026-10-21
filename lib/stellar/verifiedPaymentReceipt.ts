@@ -1,119 +1,181 @@
+export type StellarPublicNetwork = "testnet" | "mainnet";
+
+export type PaymentReceiptState =
+  | "verified_on_chain"
+  | "pending_verification"
+  | "failed_verification"
+  | "unknown_verification"
+  | "unverified_attempt";
+
 export type BackendVerificationStatus =
-  | "confirmed"
+  | "verified"
   | "pending"
   | "failed"
   | "unknown";
 
-export interface VerifiedPaymentEvidence {
-  intentId: string;
-  amount: string;
-  assetCode: string;
-  assetIssuer: string;
-  network: "testnet" | "mainnet";
-  txHash: string | null;
-  ledgerSequence: number | null;
+export interface PaymentVerificationEvidence {
+  txHash?: string | null;
+  network?: StellarPublicNetwork | null;
+  expectedNetwork?: StellarPublicNetwork | null;
+  ledgerSequence?: number | null;
+  ledgerTime?: string | null;
+  verifiedAt?: string | null;
   backendVerified: boolean;
-  backendStatus?: BackendVerificationStatus;
-  verifiedAt: string | null;
+  verificationStatus?: BackendVerificationStatus;
+  amount?: string | null;
+  assetCode?: string | null;
+  assetIssuer?: string | null;
+  isLoading?: boolean;
+  errorMessage?: string | null;
 }
 
-export type ReceiptDisplayState =
-  | "verified_on_chain"
-  | "pending_verification"
-  | "failed_verification"
-  | "unknown_verification";
-
-export interface PaymentReceiptModel {
-  intentId: string;
-  displayState: ReceiptDisplayState;
-  badgeLabel: string;
-  amountLabel: string;
-  assetCode: string;
-  assetIssuerShort: string;
-  networkLabel: string;
+export interface VerifiedPaymentReceipt {
+  state: PaymentReceiptState;
+  statusLabel: string;
+  network: StellarPublicNetwork | null;
+  networkBadge: string;
   txHash: string | null;
   ledgerSequence: number | null;
+  ledgerTime: string | null;
   verifiedAt: string | null;
   explorerUrl: string | null;
+  amount: string | null;
+  assetCode: string | null;
+  assetIssuer: string | null;
+  isFinalConfirmation: boolean;
+  isLoading: boolean;
+  errorMessage: string | null;
+  ariaRole: "status" | "alert";
+  ariaLive: "polite" | "assertive";
 }
 
-const HEX_TX_HASH_RE = /^[0-9a-f]{64}$/i;
-const STELLAR_ISSUER_RE = /^G[A-Z2-7]{55}$/;
+const EXPLORER_BASE: Record<StellarPublicNetwork, string> = {
+  testnet: "https://stellar.expert/explorer/testnet/tx/",
+  mainnet: "https://stellar.expert/explorer/public/tx/",
+};
 
+const VALID_STELLAR_TX_HASH = /^[0-9a-fA-F]{64}$/;
+
+/**
+ * Validates whether a transaction hash is a canonical 64-character hexadecimal Stellar hash.
+ *
+ * @param hash - Candidate transaction hash from backend or callback evidence.
+ * @returns True when the trimmed hash matches a 64-character hex digest.
+ */
+export function isValidStellarTxHash(hash: string | null | undefined): boolean {
+  return typeof hash === "string" && VALID_STELLAR_TX_HASH.test(hash.trim());
+}
+
+/**
+ * Validates whether a ledger sequence number is a positive safe integer.
+ *
+ * @param seq - Candidate ledger sequence number from backend verification.
+ * @returns True when the sequence is a positive safe integer.
+ */
+export function isValidLedgerSequence(seq: number | null | undefined): seq is number {
+  return typeof seq === "number" && Number.isSafeInteger(seq) && seq > 0;
+}
+
+/**
+ * Builds a public Stellar payment receipt from backend verification evidence,
+ * enforcing network consistency, ledger/hash validity, and accessible UI state semantics.
+ *
+ * @param evidence - Backend verification evidence and optional UI loading/error state.
+ * @returns Normalized VerifiedPaymentReceipt for confirmed, pending, failed, or unknown states.
+ */
 export function buildVerifiedPaymentReceipt(
-  evidence: VerifiedPaymentEvidence
-): PaymentReceiptModel {
-  const issuer = evidence.assetIssuer.trim().toUpperCase();
-  const validIssuer = STELLAR_ISSUER_RE.test(issuer);
-  const issuerShort = validIssuer
-    ? `${issuer.slice(0, 6)}...${issuer.slice(-4)}`
-    : "UNVERIFIED_ISSUER";
-
-  const rawHash = evidence.txHash ? evidence.txHash.trim() : "";
-  const normalizedTxHash = HEX_TX_HASH_RE.test(rawHash)
-    ? rawHash.toLowerCase()
+  evidence: PaymentVerificationEvidence,
+): VerifiedPaymentReceipt {
+  const rawHash = evidence.txHash?.trim() || null;
+  const validHash = isValidStellarTxHash(rawHash) ? rawHash : null;
+  const validLedger = isValidLedgerSequence(evidence.ledgerSequence)
+    ? evidence.ledgerSequence
     : null;
+  const network =
+    evidence.network === "testnet" || evidence.network === "mainnet"
+      ? evidence.network
+      : null;
+  const networkMismatch =
+    Boolean(evidence.expectedNetwork) &&
+    Boolean(network) &&
+    evidence.expectedNetwork !== network;
 
-  const numericAmount = Number(evidence.amount);
-  const validAmount = Number.isFinite(numericAmount) && numericAmount > 0;
-  const validAssetCode = evidence.assetCode.trim().toUpperCase() === "USDC";
+  const isLoading = Boolean(evidence.isLoading);
+  const errorMessage = evidence.errorMessage?.trim() || null;
 
-  const effectiveStatus: BackendVerificationStatus =
-    evidence.backendStatus ??
+  const status: BackendVerificationStatus =
+    evidence.verificationStatus ??
     (evidence.backendVerified
-      ? "confirmed"
-      : normalizedTxHash
+      ? "verified"
+      : rawHash
         ? "pending"
         : "unknown");
 
   const isConfirmed =
-    effectiveStatus === "confirmed" &&
+    !isLoading &&
+    !errorMessage &&
+    !networkMismatch &&
     evidence.backendVerified &&
-    validAmount &&
-    validAssetCode &&
-    validIssuer &&
-    Boolean(normalizedTxHash) &&
-    typeof evidence.ledgerSequence === "number" &&
-    Number.isInteger(evidence.ledgerSequence) &&
-    evidence.ledgerSequence > 0;
+    status === "verified" &&
+    Boolean(validHash) &&
+    validLedger !== null &&
+    network !== null;
 
-  let displayState: ReceiptDisplayState;
-  let badgeLabel: string;
-
-  if (effectiveStatus === "failed") {
-    displayState = "failed_verification";
-    badgeLabel = "Payment Failed — Ledger Verification Rejected";
+  let state: PaymentReceiptState;
+  let statusLabel: string;
+  if (isLoading) {
+    state = "pending_verification";
+    statusLabel = "Loading Verification Status";
+  } else if (networkMismatch || status === "failed" || errorMessage) {
+    state = "failed_verification";
+    statusLabel = networkMismatch
+      ? "Network Mismatch — Verification Failed"
+      : "Payment Verification Failed";
   } else if (isConfirmed) {
-    displayState = "verified_on_chain";
-    badgeLabel = "Confirmed on Stellar Ledger";
-  } else if (effectiveStatus === "pending" && normalizedTxHash) {
-    displayState = "pending_verification";
-    badgeLabel = "Submitted — Awaiting Ledger Confirmation";
+    state = "verified_on_chain";
+    statusLabel = "Confirmed on Stellar Ledger";
+  } else if (
+    status === "pending" ||
+    (status === "verified" && (Boolean(rawHash) || validLedger !== null))
+  ) {
+    state = "pending_verification";
+    statusLabel = "Pending Backend Ledger Verification";
+  } else if (status === "unknown") {
+    state = "unknown_verification";
+    statusLabel = "Verification Status Unknown";
   } else {
-    displayState = "unknown_verification";
-    badgeLabel = "Unverified — No Confirmed Settlement Record";
+    state = "unverified_attempt";
+    statusLabel = "Unverified Payment Attempt";
   }
 
-  const explorerBase =
-    evidence.network === "mainnet"
-      ? "https://stellar.expert/explorer/public/tx"
-      : "https://stellar.expert/explorer/testnet/tx";
+  const networkBadge =
+    network === "mainnet"
+      ? "Stellar Mainnet"
+      : network === "testnet"
+        ? "Stellar Testnet"
+        : "Unknown Network";
+
+  const isFailureState = state === "failed_verification";
 
   return {
-    intentId: evidence.intentId,
-    displayState,
-    badgeLabel,
-    amountLabel: `${evidence.amount} ${evidence.assetCode}`,
-    assetCode: evidence.assetCode,
-    assetIssuerShort: issuerShort,
-    networkLabel:
-      evidence.network === "mainnet" ? "Stellar Mainnet" : "Stellar Testnet",
-    txHash: normalizedTxHash,
-    ledgerSequence: isConfirmed ? evidence.ledgerSequence : null,
-    verifiedAt: isConfirmed ? evidence.verifiedAt : null,
-    explorerUrl:
-      isConfirmed && normalizedTxHash
-        ? `${explorerBase}/${normalizedTxHash}`
-        : null,
+    state,
+    statusLabel,
+    network: networkMismatch ? null : network,
+    networkBadge: networkMismatch ? "Network Mismatch" : networkBadge,
+    txHash: isConfirmed ? validHash : state === "pending_verification" ? rawHash : null,
+    ledgerSequence: isConfirmed ? validLedger : null,
+    ledgerTime: isConfirmed ? evidence.ledgerTime?.trim() || null : null,
+    verifiedAt: isConfirmed ? evidence.verifiedAt?.trim() || null : null,
+    explorerUrl: isConfirmed && validHash && network ? `${EXPLORER_BASE[network]}${validHash}` : null,
+    amount: isConfirmed ? evidence.amount?.trim() || null : null,
+    assetCode: isConfirmed ? evidence.assetCode?.trim() || null : null,
+    assetIssuer: isConfirmed ? evidence.assetIssuer?.trim() || null : null,
+    isFinalConfirmation: isConfirmed,
+    isLoading,
+    errorMessage: networkMismatch
+      ? errorMessage ?? "Backend receipt network does not match active Stellar network"
+      : errorMessage,
+    ariaRole: isFailureState ? "alert" : "status",
+    ariaLive: isFailureState ? "assertive" : "polite",
   };
 }

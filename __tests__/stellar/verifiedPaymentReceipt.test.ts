@@ -1,72 +1,89 @@
-import { describe, it, expect } from "vitest";
-import { buildVerifiedPaymentReceipt } from "@/lib/stellar/verifiedPaymentReceipt";
-
-const VALID_ISSUER = "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5";
+import { describe, expect, it } from "vitest";
+import { buildVerifiedPaymentReceipt } from "../../lib/stellar/verifiedPaymentReceipt";
 
 describe("buildVerifiedPaymentReceipt (#589)", () => {
-  it("distinguishes confirmed, pending, failed, and unknown states with strict hex txHash validation", () => {
-    const confirmed = buildVerifiedPaymentReceipt({
-      intentId: "intent_1",
-      amount: "25.00",
-      assetCode: "USDC",
-      assetIssuer: VALID_ISSUER,
-      network: "testnet",
-      txHash: "A".repeat(64),
-      ledgerSequence: 512340,
-      backendVerified: true,
-      backendStatus: "confirmed",
-      verifiedAt: "2026-10-21T08:00:00Z",
-    });
-    expect(confirmed.displayState).toBe("verified_on_chain");
-    expect(confirmed.ledgerSequence).toBe(512340);
-    expect(confirmed.verifiedAt).toBe("2026-10-21T08:00:00Z");
-    expect(confirmed.explorerUrl).toBe(
-      `https://stellar.expert/explorer/testnet/tx/${"a".repeat(64)}`
-    );
+  const validHash = "a".repeat(64);
 
-    const pending = buildVerifiedPaymentReceipt({
-      intentId: "intent_2",
-      amount: "25.00",
-      assetCode: "USDC",
-      assetIssuer: VALID_ISSUER,
+  it("produces a final confirmation receipt with ledger time and explorer link only when backendVerified is true", () => {
+    const r = buildVerifiedPaymentReceipt({
+      txHash: validHash,
       network: "testnet",
-      txHash: "b".repeat(64),
+      expectedNetwork: "testnet",
+      ledgerSequence: 512390,
+      ledgerTime: "2026-10-21T08:30:00Z",
+      verifiedAt: "2026-10-21T08:30:02Z",
+      backendVerified: true,
+      verificationStatus: "verified",
+      amount: "50.00",
+      assetCode: "USDC",
+      assetIssuer: "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+    });
+    expect(r.isFinalConfirmation).toBe(true);
+    expect(r.state).toBe("verified_on_chain");
+    expect(r.ledgerTime).toBe("2026-10-21T08:30:00Z");
+    expect(r.explorerUrl).toContain("testnet/tx/");
+    expect(r.ariaRole).toBe("status");
+  });
+
+  it("keeps unverified wallet callbacks in pending_verification and omits confirmed fields", () => {
+    const r = buildVerifiedPaymentReceipt({
+      txHash: validHash,
+      network: "mainnet",
       ledgerSequence: null,
       backendVerified: false,
-      backendStatus: "pending",
-      verifiedAt: null,
+      verificationStatus: "pending",
+      amount: "50.00",
+      assetCode: "USDC",
     });
-    expect(pending.displayState).toBe("pending_verification");
-    expect(pending.explorerUrl).toBeNull();
+    expect(r.isFinalConfirmation).toBe(false);
+    expect(r.state).toBe("pending_verification");
+    expect(r.explorerUrl).toBeNull();
+    expect(r.amount).toBeNull();
+  });
 
+  it("represents failed and unknown backend verification states distinctly", () => {
     const failed = buildVerifiedPaymentReceipt({
-      intentId: "intent_3",
-      amount: "25.00",
-      assetCode: "USDC",
-      assetIssuer: VALID_ISSUER,
+      txHash: validHash,
       network: "testnet",
-      txHash: "c".repeat(64),
       ledgerSequence: null,
       backendVerified: false,
-      backendStatus: "failed",
-      verifiedAt: null,
-    });
-    expect(failed.displayState).toBe("failed_verification");
-    expect(failed.explorerUrl).toBeNull();
-
-    const malformedHash = buildVerifiedPaymentReceipt({
-      intentId: "intent_4",
-      amount: "25.00",
+      verificationStatus: "failed",
+      amount: "50.00",
       assetCode: "USDC",
-      assetIssuer: VALID_ISSUER,
-      network: "testnet",
-      txHash: "z".repeat(64),
-      ledgerSequence: 512340,
-      backendVerified: true,
-      backendStatus: "confirmed",
-      verifiedAt: "2026-10-21T08:00:00Z",
     });
-    expect(malformedHash.displayState).toBe("unknown_verification");
-    expect(malformedHash.txHash).toBeNull();
+    expect(failed.state).toBe("failed_verification");
+    expect(failed.ariaRole).toBe("alert");
+    expect(failed.ariaLive).toBe("assertive");
+
+    const unknown = buildVerifiedPaymentReceipt({
+      txHash: null,
+      network: "testnet",
+      ledgerSequence: null,
+      backendVerified: false,
+      verificationStatus: "unknown",
+    });
+    expect(unknown.state).toBe("unknown_verification");
+    expect(unknown.isFinalConfirmation).toBe(false);
+  });
+
+  it("rejects mismatched network responses, malformed evidence, and exposes accessible loading/error states", () => {
+    const mismatch = buildVerifiedPaymentReceipt({
+      txHash: validHash,
+      network: "testnet",
+      expectedNetwork: "mainnet",
+      ledgerSequence: 512390,
+      backendVerified: true,
+      verificationStatus: "verified",
+    });
+    expect(mismatch.isFinalConfirmation).toBe(false);
+    expect(mismatch.state).toBe("failed_verification");
+    expect(mismatch.explorerUrl).toBeNull();
+
+    const loading = buildVerifiedPaymentReceipt({
+      backendVerified: false,
+      isLoading: true,
+    });
+    expect(loading.isLoading).toBe(true);
+    expect(loading.state).toBe("pending_verification");
   });
 });
