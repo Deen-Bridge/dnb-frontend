@@ -66,76 +66,11 @@ import RestoreBookDialog from "@/components/admin/RestoreBookDialog";
 import BlurImage from "@/components/ui/blur-image";
 import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 import BookPayoutPanel from "@/components/admin/BookPayoutPanel";
-
-// Mock books data — replace with real API call
-const generateMockBooks = () => [
-  {
-    _id: "bk_001",
-    title: "Introduction to Fiqh",
-    author: { _id: "a1", name: "Sheikh Ahmad", avatar: null, role: "Educator" },
-    category: "Fiqh",
-    price: 0,
-    image: "/images/placeholder.jpg",
-    readCount: 342,
-    status: "active",
-    takenDownReason: null,
-  },
-  {
-    _id: "bk_002",
-    title: "Understanding Hadith Sciences",
-    author: { _id: "a2", name: "Dr. Fatima", avatar: null, role: "Scholar" },
-    category: "Hadith",
-    price: 12.99,
-    image: "/images/placeholder.jpg",
-    readCount: 518,
-    status: "active",
-    takenDownReason: null,
-  },
-  {
-    _id: "bk_003",
-    title: "Seerah of the Prophet ﷺ",
-    author: { _id: "a3", name: "Sheikh Omar", avatar: null, role: "Educator" },
-    category: "Seerah",
-    price: 0,
-    image: "/images/placeholder.jpg",
-    readCount: 891,
-    status: "taken-down",
-    takenDownReason: "content-violation",
-  },
-  {
-    _id: "bk_004",
-    title: "Tajweed Made Simple",
-    author: { _id: "a4", name: "Ustadh Ibrahim", avatar: null, role: "Teacher" },
-    category: "Quran",
-    price: 5.0,
-    image: "/images/placeholder.jpg",
-    readCount: 127,
-    status: "active",
-    takenDownReason: null,
-  },
-  {
-    _id: "bk_005",
-    title: "Aqeedah Fundamentals",
-    author: { _id: "a5", name: "Dr. Yusuf", avatar: null, role: "Scholar" },
-    category: "Aqeedah",
-    price: 0,
-    image: "/images/placeholder.jpg",
-    readCount: 204,
-    status: "taken-down",
-    takenDownReason: "dmca",
-  },
-  {
-    _id: "bk_006",
-    title: "Islamic Ethics & Character",
-    author: { _id: "a6", name: "Sister Maryam", avatar: null, role: "Educator" },
-    category: "Ethics",
-    price: 7.5,
-    image: "/images/placeholder.jpg",
-    readCount: 67,
-    status: "active",
-    takenDownReason: null,
-  },
-];
+import {
+  fetchAdminBooks,
+  restoreBook,
+  takeDownBook,
+} from "@/lib/actions/admin-books";
 
 const STATUS_TABS = [
   { value: "all", label: "All Books", icon: BookOpen },
@@ -153,6 +88,7 @@ const REASON_LABELS = {
 export default function AdminBooksPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [takedownDialogOpen, setTakedownDialogOpen] = useState(false);
@@ -164,9 +100,15 @@ export default function AdminBooksPage() {
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 300));
-    setBooks(generateMockBooks());
-    setLoading(false);
+    setError(null);
+    try {
+      const data = await fetchAdminBooks();
+      setBooks(data);
+    } catch (err) {
+      setError(err?.message || "Failed to load books. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -200,23 +142,17 @@ export default function AdminBooksPage() {
     return counts;
   }, [books]);
 
-  const handleTakenDown = (bookId, { reason }) => {
+  const handleTakenDown = async (bookId, { reason, note }) => {
+    const updated = await takeDownBook(bookId, { reason, note });
     setBooks((prev) =>
-      prev.map((b) =>
-        b._id === bookId
-          ? { ...b, status: "taken-down", takenDownReason: reason }
-          : b
-      )
+      prev.map((b) => (b._id === bookId ? { ...b, ...updated } : b))
     );
   };
 
-  const handleRestored = (bookId) => {
+  const handleRestored = async (bookId) => {
+    const updated = await restoreBook(bookId);
     setBooks((prev) =>
-      prev.map((b) =>
-        b._id === bookId
-          ? { ...b, status: "active", takenDownReason: null }
-          : b
-      )
+      prev.map((b) => (b._id === bookId ? { ...b, ...updated } : b))
     );
   };
 
@@ -243,6 +179,14 @@ export default function AdminBooksPage() {
           </div>
         }
       />
+
+      {error && (
+        <Card>
+          <CardContent className="pt-6 text-sm text-destructive" role="alert">
+            {error}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Status Tabs */}
       <Card>

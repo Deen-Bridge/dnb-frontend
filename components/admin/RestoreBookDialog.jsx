@@ -28,9 +28,7 @@ export default function RestoreBookDialog({
     setError(null);
 
     try {
-      // Mock handler — replace with real action when API is ready
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      onRestored?.(book._id);
+      await onRestored?.(book._id);
       onOpenChange(false);
     } catch (err) {
       setError(err?.message || "Failed to restore book. Please try again.");

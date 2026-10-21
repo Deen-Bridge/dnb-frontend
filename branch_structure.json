@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "fix/issue-314-book-takedown-restore",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "fix/issue-314-book-takedown-restore": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "fix/issue-314-book-takedown-restore",
+    "origin"
+  ]
+}

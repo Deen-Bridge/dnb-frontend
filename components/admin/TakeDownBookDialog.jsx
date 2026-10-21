@@ -49,9 +49,7 @@ export default function TakeDownBookDialog({
     setError(null);
 
     try {
-      // Mock handler — replace with real action when API is ready
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      onTakenDown?.(book._id, { reason, note });
+      await onTakenDown?.(book._id, { reason, note });
       onOpenChange(false);
       setReason("");
       setNote("");
