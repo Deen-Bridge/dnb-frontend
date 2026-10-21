@@ -47,6 +47,7 @@ import {
 } from "@/lib/admin/verification-sla";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
+import { AdminEmptyState } from "@/components/molecules/admin/empty-state";
 
 const SLA_ICONS = {
   healthy: CheckCircle2,
@@ -270,18 +271,12 @@ export default function AdminVerificationQueuePage() {
               </TableHeader>
               <TableBody>
                 {filteredQueue.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="py-10 text-center text-muted-foreground"
-                    >
-                      <UserCheck
-                        className="mx-auto mb-2 h-8 w-8 opacity-50"
-                        aria-hidden="true"
-                      />
-                      <p>No verification applications match this view.</p>
-                    </TableCell>
-                  </TableRow>
+                  <AdminEmptyState
+                    colSpan={6}
+                    icon={UserCheck}
+                    title="No verification applications"
+                    description="There are no applications that match the selected view."
+                  />
                 ) : (
                   filteredQueue.map((item) => {
                     const bucket = getVerificationSlaBucket(item.submittedAt, now);
