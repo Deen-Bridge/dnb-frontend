@@ -63,6 +63,7 @@ export function LoginForm({ className, ...props }) {
       const user = await login(data.email, data.password);
 
       setTimeout(() => {
+        // The hard reload intentionally refreshes the auth cookie/session after login.
         window.location.href =
           normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
       }, 500);
@@ -76,6 +77,7 @@ export function LoginForm({ className, ...props }) {
       const result = await loginWithStellar();
       if (result && !result.unregistered) {
         setTimeout(() => {
+          // The hard reload intentionally refreshes the auth cookie/session after login.
           window.location.href =
             normalizeRole(result?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
         }, 500);
