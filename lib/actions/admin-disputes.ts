@@ -1,6 +1,29 @@
 import axiosInstance from "@/lib/config/axios.config";
 import { validateDocumentFile } from "@/lib/verification/documents/policy";
 
+/**
+ * Return the number of open disputes when the moderation endpoint is available.
+ * `null` means the queue has no count endpoint yet, so callers can show an
+ * unavailable placeholder without presenting a misleading zero.
+ */
+export async function fetchOpenDisputeCount(): Promise<number | null> {
+  try {
+    const res = await axiosInstance.get("/api/admin/payments/disputes", {
+      params: { state: "open", limit: 1 },
+      timeout: 5000,
+      retryOnServerError: false,
+    });
+    const data = res.data?.data ?? res.data;
+    const count = data?.total ?? data?.count ?? data?.pagination?.total;
+    if (Number.isFinite(Number(count))) return Number(count);
+    if (Array.isArray(data?.disputes)) return data.disputes.length;
+    if (Array.isArray(data?.items)) return data.items.length;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export interface DisputeEvidenceSignedUrlResult {
   success: boolean;
   signedUrl: string;

@@ -19,6 +19,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { fetchAdminOverview } from "@/lib/actions/admin-overview";
+import PendingModerationSummary from "@/components/admin/PendingModerationSummary";
 import SystemHealthWidget from "@/components/admin/SystemHealthWidget";
 import RecentActivityFeed from "@/components/admin/RecentActivityFeed";
 import {
@@ -405,6 +406,7 @@ export default function AdminOverviewPage() {
 
       {isEmpty && guided && <WelcomeBanner />}
 
+      <PendingModerationSummary />
       <SystemHealthWidget />
 
       <RecentActivityFeed />
