@@ -27,9 +27,7 @@ export default function GlobalNotFound() {
         }}
       >
         <h1 style={{ fontSize: "2.25rem", margin: 0 }}>404</h1>
-        <p style={{ margin: 0, opacity: 0.85 }}>
-          This page could not be found.
-        </p>
+        <p style={{ margin: 0, opacity: 0.85 }}>This page could not be found.</p>
         <Link
           href="/"
           style={{

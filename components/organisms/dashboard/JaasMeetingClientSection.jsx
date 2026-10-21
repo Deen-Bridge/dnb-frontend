@@ -14,18 +14,15 @@ import { config } from "@/lib/config/env";
 // The Jitsi meeting client (and the external_api.js script it injects) is
 // only needed once a live session is actually joined — the mount below is
 // gated on meetingActive — so keep it out of the space-page bundle.
-const JaasMeetingComponent = dynamic(
-  () => import("@/components/organisms/jitsi/JitsiMeeting"),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="w-full animate-pulse rounded-xl bg-black/80"
-        style={{ height: "75vh", marginTop: "1rem" }}
-      />
-    ),
-  }
-);
+const JaasMeetingComponent = dynamic(() => import("@/components/organisms/jitsi/JitsiMeeting"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="w-full animate-pulse rounded-xl bg-black/80"
+      style={{ height: "75vh", marginTop: "1rem" }}
+    />
+  ),
+});
 
 const normalizeDomain = (domain = "meet.jit.si") =>
   domain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "");
@@ -37,7 +34,7 @@ const ensureHttpsUrl = (url) => {
 };
 
 export default function JaasMeetingClientButtons({ space }) {
-    const { user } = useAuth();
+  const { user } = useAuth();
   const isHost = space?.host?._id === user?._id;
 
   const waitListIds = useMemo(
@@ -49,9 +46,7 @@ export default function JaasMeetingClientButtons({ space }) {
     waitListIds.some((id) => id?.toString() === user?._id)
   );
   const [spaceStatus, setSpaceStatus] = useState(space?.status ?? "upcoming");
-  const [meetingActive, setMeetingActive] = useState(
-    isHost && space?.status === "live"
-  );
+  const [meetingActive, setMeetingActive] = useState(isHost && space?.status === "live");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
@@ -59,9 +54,7 @@ export default function JaasMeetingClientButtons({ space }) {
   const envRequiresJwt = config.jitsiRequireJwt;
 
   const [meetingToken, setMeetingToken] = useState(null);
-  const [requiresJwt, setRequiresJwt] = useState(
-    envRequiresJwt ? true : null
-  );
+  const [requiresJwt, setRequiresJwt] = useState(envRequiresJwt ? true : null);
   const effectiveRequiresJwt = useMemo(
     () => (requiresJwt === null ? envRequiresJwt : requiresJwt),
     [requiresJwt, envRequiresJwt]
@@ -69,8 +62,7 @@ export default function JaasMeetingClientButtons({ space }) {
   const [meetingMeta, setMeetingMeta] = useState(() => {
     const domain = config.jitsiDomain;
     const normalizedDomain = normalizeDomain(domain);
-    const fallbackRoom =
-      space?.meetingRoom || (space?._id ? `deenbridge-space-${space._id}` : "");
+    const fallbackRoom = space?.meetingRoom || (space?._id ? `deenbridge-space-${space._id}` : "");
     const fallbackUrl = ensureHttpsUrl(
       space?.meetingUrl || `https://${normalizedDomain}/${fallbackRoom}`
     );
@@ -95,10 +87,7 @@ export default function JaasMeetingClientButtons({ space }) {
     setJoinedWaitlist(waitListIds.some((id) => id?.toString() === user?._id));
   }, [waitListIds, user?._id]);
 
-  const baseDomain = useMemo(
-    () => normalizeDomain(config.jitsiDomain),
-    []
-  );
+  const baseDomain = useMemo(() => normalizeDomain(config.jitsiDomain), []);
 
   const baseMeetingRoom = useMemo(() => {
     if (space?.meetingRoom) return space.meetingRoom;
@@ -127,14 +116,12 @@ export default function JaasMeetingClientButtons({ space }) {
     }
 
     try {
-        await joinSpaceWaitlist(space._id);
-        setJoinedWaitlist(true);
+      await joinSpaceWaitlist(space._id);
+      setJoinedWaitlist(true);
       toast.success("You have been added to the waitlist.");
     } catch (error) {
       const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Unable to join waitlist.";
+        error?.response?.data?.message || error?.message || "Unable to join waitlist.";
       toast.error(message);
     }
   }, [space._id, user?._id]);
@@ -171,26 +158,19 @@ export default function JaasMeetingClientButtons({ space }) {
 
         if (!response?.success) {
           if (!silent) {
-            toast.error(
-              response?.message || "Unable to prepare the meeting session."
-            );
+            toast.error(response?.message || "Unable to prepare the meeting session.");
           }
           return null;
         }
 
         const requiresJwtResponse =
-          typeof response.requiresJwt === "boolean"
-            ? response.requiresJwt
-            : envRequiresJwt;
+          typeof response.requiresJwt === "boolean" ? response.requiresJwt : envRequiresJwt;
 
         setRequiresJwt(requiresJwtResponse);
 
         if (requiresJwtResponse && !response.token) {
           if (!silent) {
-            toast.error(
-              response?.message ||
-                "Secure meeting token missing. Please try again."
-            );
+            toast.error(response?.message || "Secure meeting token missing. Please try again.");
           }
           return null;
         }
@@ -200,8 +180,7 @@ export default function JaasMeetingClientButtons({ space }) {
         );
         const resolvedRoom = response.meetingRoom || meetingMeta.roomName;
         const resolvedUrl = ensureHttpsUrl(
-          response.meetingUrl ||
-            `https://${normalizedDomain}/${resolvedRoom || ""}`
+          response.meetingUrl || `https://${normalizedDomain}/${resolvedRoom || ""}`
         );
 
         setMeetingToken(requiresJwtResponse ? response.token : null);
@@ -227,14 +206,7 @@ export default function JaasMeetingClientButtons({ space }) {
         setTokenLoading(false);
       }
     },
-    [
-      space._id,
-      tokenLoading,
-      meetingMeta.domain,
-      meetingMeta.roomName,
-      baseDomain,
-      envRequiresJwt,
-    ]
+    [space._id, tokenLoading, meetingMeta.domain, meetingMeta.roomName, baseDomain, envRequiresJwt]
   );
 
   const openMeetingWindow = useCallback(async () => {
@@ -281,9 +253,7 @@ export default function JaasMeetingClientButtons({ space }) {
       const tokenResponse = await requestMeetingToken({ silent: true });
       if (!tokenResponse) {
         setMeetingActive(false);
-        toast.error(
-          "Unable to start the live session. Please check the call configuration."
-        );
+        toast.error("Unable to start the live session. Please check the call configuration.");
         return;
       }
 
@@ -291,9 +261,7 @@ export default function JaasMeetingClientButtons({ space }) {
       toast.success("Space is now live.");
     } catch (error) {
       const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to start the live session.";
+        error?.response?.data?.message || error?.message || "Failed to start the live session.";
       toast.error(message);
     } finally {
       setIsUpdatingStatus(false);
@@ -311,9 +279,7 @@ export default function JaasMeetingClientButtons({ space }) {
       toast.success("Live session has ended.");
     } catch (error) {
       const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to update space status.";
+        error?.response?.data?.message || error?.message || "Failed to update space status.";
       toast.error(message);
     } finally {
       isEndingRef.current = false;
@@ -340,10 +306,10 @@ export default function JaasMeetingClientButtons({ space }) {
 
   const participantCtas = (
     <>
-                <Button
-                    wide
-                    className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
-                    round
+      <Button
+        wide
+        className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
+        round
         disabled={spaceStatus !== "live" || joinLoading}
         loading={joinLoading}
         onClick={async () => {
@@ -357,14 +323,14 @@ export default function JaasMeetingClientButtons({ space }) {
       >
         <VideoIcon className="w-5 h-5 mr-2" />
         {spaceStatus === "live" ? "Join Live Session" : "Session Not Live Yet"}
-                </Button>
+      </Button>
 
-            {!joinedWaitlist ? (
+      {!joinedWaitlist ? (
         <Button outlined round onClick={handleJoinWaitlist}>
-                    <Clock className="w-5 h-5 mr-2" /> Join Waitlist
-                </Button>
-            ) : (
-                <Button outlined round disabled>
+          <Clock className="w-5 h-5 mr-2" /> Join Waitlist
+        </Button>
+      ) : (
+        <Button outlined round disabled>
           <CheckCircle className="w-5 h-5 mr-2 text-brand-text" /> Waitlist Joined
         </Button>
       )}
@@ -373,8 +339,8 @@ export default function JaasMeetingClientButtons({ space }) {
         <Button outlined round onClick={handleCopyLink} disabled={isCopying}>
           <Copy className="w-5 h-5 mr-2" />
           {isCopying ? "Copying..." : "Copy Meeting Link"}
-                </Button>
-            )}
+        </Button>
+      )}
     </>
   );
 
@@ -423,36 +389,32 @@ export default function JaasMeetingClientButtons({ space }) {
             spaceStatus === "live"
               ? "bg-green-100 text-green-700"
               : spaceStatus === "ended"
-              ? "bg-gray-200 text-gray-600"
-              : "bg-yellow-100 text-yellow-700"
+                ? "bg-gray-200 text-gray-600"
+                : "bg-yellow-100 text-yellow-700"
           }`}
         >
           {spaceStatus?.toUpperCase()}
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-4">
-        {isHost ? hostControls : participantCtas}
-      </div>
+      <div className="flex flex-wrap gap-4">{isHost ? hostControls : participantCtas}</div>
 
-      {isHost &&
-        meetingActive &&
-        (effectiveRequiresJwt ? Boolean(meetingToken) : true) && (
+      {isHost && meetingActive && (effectiveRequiresJwt ? Boolean(meetingToken) : true) && (
         <JaasMeetingComponent
           roomName={meetingMeta.roomName}
           displayName={user?.name || "Host"}
           domain={meetingMeta.domain}
-            jwt={effectiveRequiresJwt ? meetingToken : undefined}
-            requiresJwt={effectiveRequiresJwt}
+          jwt={effectiveRequiresJwt ? meetingToken : undefined}
+          requiresJwt={effectiveRequiresJwt}
           height="75vh"
           onReadyToClose={handleMeetingClosed}
         />
-        )}
+      )}
       {isHost && meetingActive && effectiveRequiresJwt && !meetingToken && (
         <div className="rounded-xl border border-dashed border-accent/40 bg-muted/60 p-6 text-sm text-muted-foreground">
           Preparing secure meeting session...
         </div>
-            )}
-        </div>
-    );
+      )}
+    </div>
+  );
 }

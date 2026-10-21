@@ -29,7 +29,5 @@ export default defineConfig({
       NEXT_PUBLIC_STELLAR_NETWORK: "testnet",
     },
   },
-  projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-  ],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

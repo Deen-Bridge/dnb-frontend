@@ -3,13 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -146,17 +140,14 @@ export default function FeatureFlagsPage() {
     const query = searchQuery.toLowerCase();
     return flags.filter(
       (flag) =>
-        flag.key.toLowerCase().includes(query) ||
-        flag.description.toLowerCase().includes(query)
+        flag.key.toLowerCase().includes(query) || flag.description.toLowerCase().includes(query)
     );
   }, [flags, searchQuery]);
 
   // Toggle flag with optimistic update
   const handleToggle = useCallback(async (flagId, currentState) => {
     // Optimistic update
-    setFlags((prev) =>
-      prev.map((f) => (f.id === flagId ? { ...f, enabled: !currentState } : f))
-    );
+    setFlags((prev) => prev.map((f) => (f.id === flagId ? { ...f, enabled: !currentState } : f)));
     setLoadingFlags((prev) => ({ ...prev, [flagId]: true }));
 
     try {
@@ -175,16 +166,12 @@ export default function FeatureFlagsPage() {
       // Update timestamp on success
       setFlags((prev) =>
         prev.map((f) =>
-          f.id === flagId
-            ? { ...f, updatedAt: new Date().toISOString().split("T")[0] }
-            : f
+          f.id === flagId ? { ...f, updatedAt: new Date().toISOString().split("T")[0] } : f
         )
       );
     } catch (error) {
       // Rollback on failure
-      setFlags((prev) =>
-        prev.map((f) => (f.id === flagId ? { ...f, enabled: currentState } : f))
-      );
+      setFlags((prev) => prev.map((f) => (f.id === flagId ? { ...f, enabled: currentState } : f)));
       console.error("Failed to toggle flag:", error);
     } finally {
       setLoadingFlags((prev) => ({ ...prev, [flagId]: false }));
@@ -249,9 +236,7 @@ export default function FeatureFlagsPage() {
   // Stats
   const enabledCount = flags.filter((f) => f.enabled).length;
   const criticalCount = flags.filter((f) => f.isCritical).length;
-  const gradualRolloutCount = flags.filter(
-    (f) => f.enabled && f.rolloutPercentage < 100
-  ).length;
+  const gradualRolloutCount = flags.filter((f) => f.enabled && f.rolloutPercentage < 100).length;
 
   return (
     <PageShell>
@@ -261,15 +246,8 @@ export default function FeatureFlagsPage() {
         subtitle="Manage feature toggles and gradual rollouts"
         actions={
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw
-                className={cn("h-4 w-4 mr-2", isRefreshing && "animate-spin")}
-              />
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
+              <RefreshCw className={cn("h-4 w-4 mr-2", isRefreshing && "animate-spin")} />
               Refresh
             </Button>
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -299,9 +277,7 @@ export default function FeatureFlagsPage() {
                       }}
                       className={keyError ? "border-red-500" : ""}
                     />
-                    {keyError && (
-                      <p className="text-xs text-red-500">{keyError}</p>
-                    )}
+                    {keyError && <p className="text-xs text-red-500">{keyError}</p>}
                     <p className="text-xs text-muted-foreground">
                       Must be lowercase kebab-case (e.g., my-feature)
                     </p>
@@ -369,9 +345,7 @@ export default function FeatureFlagsPage() {
               <Users className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className={cn(poppins_600.className, "text-2xl")}>
-                {gradualRolloutCount}
-              </p>
+              <p className={cn(poppins_600.className, "text-2xl")}>{gradualRolloutCount}</p>
               <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                 Gradual Rollouts
               </p>
@@ -395,7 +369,10 @@ export default function FeatureFlagsPage() {
 
       {/* Search */}
       <div className="relative max-w-md" role="search" aria-label="Search feature flags">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+        <Search
+          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+          aria-hidden="true"
+        />
         <Input
           placeholder="Search flags..."
           aria-label="Search feature flags"
@@ -409,9 +386,7 @@ export default function FeatureFlagsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Feature Flags ({filteredFlags.length})</CardTitle>
-          <CardDescription>
-            Toggle features and control rollout percentages
-          </CardDescription>
+          <CardDescription>Toggle features and control rollout percentages</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border">
@@ -428,10 +403,7 @@ export default function FeatureFlagsPage() {
               <TableBody>
                 {filteredFlags.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                       No feature flags found
                     </TableCell>
                   </TableRow>
@@ -439,9 +411,7 @@ export default function FeatureFlagsPage() {
                   filteredFlags.map((flag) => (
                     <TableRow
                       key={flag.id}
-                      className={cn(
-                        flag.isCritical && "bg-red-50/50 hover:bg-red-50"
-                      )}
+                      className={cn(flag.isCritical && "bg-red-50/50 hover:bg-red-50")}
                     >
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -472,9 +442,7 @@ export default function FeatureFlagsPage() {
                             <Switch
                               checked={flag.enabled}
                               aria-label={`Toggle feature flag ${flag.key}`}
-                              onCheckedChange={() =>
-                                handleToggle(flag.id, flag.enabled)
-                              }
+                              onCheckedChange={() => handleToggle(flag.id, flag.enabled)}
                             />
                           )}
                           <Badge
@@ -504,9 +472,7 @@ export default function FeatureFlagsPage() {
                           </div>
                           <Slider
                             value={[flag.rolloutPercentage]}
-                            onValueChange={(val) =>
-                              handleRolloutChange(flag.id, val)
-                            }
+                            onValueChange={(val) => handleRolloutChange(flag.id, val)}
                             max={100}
                             step={5}
                             disabled={!flag.enabled}
@@ -531,9 +497,7 @@ export default function FeatureFlagsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Developer Usage</CardTitle>
-          <CardDescription>
-            How to consume feature flags in your components
-          </CardDescription>
+          <CardDescription>How to consume feature flags in your components</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg bg-muted p-4">

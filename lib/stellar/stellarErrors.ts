@@ -110,7 +110,8 @@ export const WALLET_INSTALL_LINKS: Record<string, WalletInstallLink> = {
   },
 };
 
-export function mapStellarError(rawError: any): StellarErrorDescriptor | null { // TODO(types): Raw error object/string from Stellar SDK/Horizon
+export function mapStellarError(rawError: any): StellarErrorDescriptor | null {
+  // TODO(types): Raw error object/string from Stellar SDK/Horizon
   if (!rawError) return null;
 
   const errorStr = typeof rawError === "string" ? rawError : rawError.message || "";
@@ -147,7 +148,8 @@ export function mapStellarError(rawError: any): StellarErrorDescriptor | null { 
   return null;
 }
 
-export function isNoWalletError(error: any): boolean { // TODO(types): Error from StellarWalletsKit authModal
+export function isNoWalletError(error: any): boolean {
+  // TODO(types): Error from StellarWalletsKit authModal
   if (!error) return false;
   const msg = typeof error === "string" ? error : error.message || "";
   return (
@@ -160,7 +162,8 @@ export function isNoWalletError(error: any): boolean { // TODO(types): Error fro
   );
 }
 
-export function isUserRejection(error: any): boolean { // TODO(types): Error from signing request
+export function isUserRejection(error: any): boolean {
+  // TODO(types): Error from signing request
   if (!error) return false;
   const msg = typeof error === "string" ? error : error.message || "";
   return (

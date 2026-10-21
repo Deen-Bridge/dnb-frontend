@@ -39,7 +39,9 @@ vi.mock("@/lib/actions/educators/submitLiveness", () => ({
 
 vi.mock("react-ripples", () => ({
   default: ({ children, onClick, className }) => (
-    <span className={className} onClick={onClick}>{children}</span>
+    <span className={className} onClick={onClick}>
+      {children}
+    </span>
   ),
 }));
 
@@ -53,8 +55,7 @@ vi.mock("@/lib/verification/liveness", async (importOriginal) => {
   // Import the real mock-adapter using its resolved path so Vitest can find it
   const { MockLivenessAdapter } = await importOriginal();
   return {
-    getLivenessAdapter: () =>
-      new MockLivenessAdapter({ outcome: _mockOutcome, delayMs: 0 }),
+    getLivenessAdapter: () => new MockLivenessAdapter({ outcome: _mockOutcome, delayMs: 0 }),
   };
 });
 
@@ -82,8 +83,12 @@ function clickBtn(testId) {
 // Tests
 // ---------------------------------------------------------------------------
 describe("LivenessCapture — success path", () => {
-  beforeEach(() => { _mockOutcome = "success"; });
-  afterEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    _mockOutcome = "success";
+  });
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("calls submitLiveness with userId and verificationToken", async () => {
     renderCapture();
@@ -119,30 +124,28 @@ describe("LivenessCapture — success path", () => {
 });
 
 describe("LivenessCapture — failure path", () => {
-  beforeEach(() => { _mockOutcome = "failure"; });
-  afterEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    _mockOutcome = "failure";
+  });
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("renders distinct failure heading", async () => {
     renderCapture();
     await waitFor(() =>
-      expect(
-        screen.getByRole("heading", { name: /verification failed/i })
-      ).toBeInTheDocument()
+      expect(screen.getByRole("heading", { name: /verification failed/i })).toBeInTheDocument()
     );
   });
 
   it("shows a 'Try again' retry button on failure", async () => {
     renderCapture();
-    await waitFor(() =>
-      expect(screen.getByTestId("capture-retry-btn")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByTestId("capture-retry-btn")).toBeInTheDocument());
   });
 
   it("shows a Cancel button on failure", async () => {
     renderCapture();
-    await waitFor(() =>
-      expect(screen.getByTestId("capture-cancel-btn")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByTestId("capture-cancel-btn")).toBeInTheDocument());
   });
 
   it("does NOT call onSuccess on failure", async () => {
@@ -185,21 +188,21 @@ describe("LivenessCapture — timeout path", () => {
       await vi.advanceTimersByTimeAsync(6000);
     });
 
-    expect(
-      screen.getByRole("heading", { name: /verification timed out/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /verification timed out/i })).toBeInTheDocument();
     expect(screen.getByTestId("capture-retry-btn")).toBeInTheDocument();
     expect(screen.getByTestId("capture-cancel-btn")).toBeInTheDocument();
     // Distinct from failure
-    expect(
-      screen.queryByRole("heading", { name: /verification failed/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /verification failed/i })).not.toBeInTheDocument();
   }, 15000);
 });
 
 describe("LivenessCapture — cancel", () => {
-  beforeEach(() => { _mockOutcome = "failure"; });
-  afterEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    _mockOutcome = "failure";
+  });
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("cancel on failure calls onCancel and not onSuccess", async () => {
     const onSuccess = vi.fn();

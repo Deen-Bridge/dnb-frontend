@@ -60,7 +60,10 @@ function StepUpConfirmDialog({
   const isConfirmed =
     typeof confirmation === "string" &&
     confirmation.trim().length > 0 &&
-    confirmation.trim().toLowerCase() === String(confirmPhrase || "").trim().toLowerCase();
+    confirmation.trim().toLowerCase() ===
+      String(confirmPhrase || "")
+        .trim()
+        .toLowerCase();
 
   const handleConfirm = async () => {
     if (!isConfirmed || isSubmitting) return;
@@ -98,7 +101,9 @@ function StepUpConfirmDialog({
         <div className="space-y-2">
           <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>
             This action is sensitive and cannot be undone. Type{" "}
-            <span className={cn(poppins_500.className, "font-mono text-ink")}>"{confirmPhrase}"</span>{" "}
+            <span className={cn(poppins_500.className, "font-mono text-ink")}>
+              "{confirmPhrase}"
+            </span>{" "}
             to confirm.
           </p>
           <Input

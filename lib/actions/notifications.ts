@@ -37,7 +37,8 @@ export const fetchNotifications = async (
       totalPages: data.totalPages ?? 1,
       unread: data.unread ?? 0,
     };
-  } catch (error: any) { // TODO(types): Axios error from notification fetch
+  } catch (error: any) {
+    // TODO(types): Axios error from notification fetch
     console.error("Error fetching notifications:", error?.message);
     return {
       success: false,
@@ -57,13 +58,14 @@ export interface MarkNotificationAsReadResult {
   error?: string;
 }
 
-export const markNotificationAsRead = async (notificationId: string): Promise<MarkNotificationAsReadResult> => {
+export const markNotificationAsRead = async (
+  notificationId: string
+): Promise<MarkNotificationAsReadResult> => {
   try {
-    const res = await axiosInstance.put(
-      `/api/notifications/${notificationId}/read`
-    );
+    const res = await axiosInstance.put(`/api/notifications/${notificationId}/read`);
     return { success: true, notification: res.data?.notification };
-  } catch (error: any) { // TODO(types): Axios error from mark notification as read
+  } catch (error: any) {
+    // TODO(types): Axios error from mark notification as read
     console.error("Error marking notification as read:", error?.message);
     return { success: false, error: error?.message };
   }
@@ -79,7 +81,8 @@ export const markAllNotificationsAsRead = async (): Promise<MarkAllNotifications
   try {
     const res = await axiosInstance.put("/api/notifications/mark-all-read");
     return { success: true, count: res.data?.count ?? 0 };
-  } catch (error: any) { // TODO(types): Axios error from mark all read
+  } catch (error: any) {
+    // TODO(types): Axios error from mark all read
     console.error("Error marking all notifications as read:", error?.message);
     return { success: false, error: error?.message };
   }
@@ -91,16 +94,17 @@ export interface DeleteNotificationResult {
   error?: string;
 }
 
-export const deleteNotification = async (notificationId: string): Promise<DeleteNotificationResult> => {
+export const deleteNotification = async (
+  notificationId: string
+): Promise<DeleteNotificationResult> => {
   try {
-    const res = await axiosInstance.delete(
-      `/api/notifications/${notificationId}`
-    );
+    const res = await axiosInstance.delete(`/api/notifications/${notificationId}`);
     return {
       success: true,
       message: res.data?.message || "Notification deleted",
     };
-  } catch (error: any) { // TODO(types): Axios error from delete notification
+  } catch (error: any) {
+    // TODO(types): Axios error from delete notification
     console.error("Error deleting notification:", error?.message);
     return { success: false, error: error?.message };
   }
@@ -116,7 +120,8 @@ export const getNotificationSettings = async (): Promise<NotificationSettingsRes
   try {
     const res = await axiosInstance.get("/api/notifications/settings");
     return { success: true, settings: res.data?.settings || res.data || {} };
-  } catch (error: any) { // TODO(types): Axios error from get settings
+  } catch (error: any) {
+    // TODO(types): Axios error from get settings
     console.error("Error fetching notification settings:", error?.message);
     return { success: false, error: error?.message, settings: {} };
   }

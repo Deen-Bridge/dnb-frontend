@@ -15,7 +15,8 @@ export const ANNOUNCEMENT_EVENT_NAMES = Object.freeze({
   linkClick: "announcement.link_click",
 } as const);
 
-export type AnnouncementEventName = typeof ANNOUNCEMENT_EVENT_NAMES[keyof typeof ANNOUNCEMENT_EVENT_NAMES];
+export type AnnouncementEventName =
+  (typeof ANNOUNCEMENT_EVENT_NAMES)[keyof typeof ANNOUNCEMENT_EVENT_NAMES];
 
 function percent(numerator: number, denominator: number): number {
   if (!denominator) return 0;
@@ -107,13 +108,16 @@ export async function fetchAnnouncementAnalytics({
       unit: "percent",
     },
     ctr: {
-      value: (ann.linkClicks.tracked && ann.linkClicks.value !== null) ? percent(ann.linkClicks.value, ann.impressions.value) : 0,
+      value:
+        ann.linkClicks.tracked && ann.linkClicks.value !== null
+          ? percent(ann.linkClicks.value, ann.impressions.value)
+          : 0,
       tracked: ann.linkClicks.tracked && ann.impressions.tracked,
       unit: "percent",
     },
   }));
 
-  const sum = (pick: (a: typeof announcements[number]) => number | null | undefined) =>
+  const sum = (pick: (a: (typeof announcements)[number]) => number | null | undefined) =>
     announcements.reduce((total, ann) => total + (pick(ann) || 0), 0);
 
   const totalImpressions = sum((a) => a.impressions.value);

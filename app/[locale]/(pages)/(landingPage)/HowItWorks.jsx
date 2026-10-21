@@ -27,17 +27,8 @@ const StepCard = ({ step, title, desc }) => (
         {step.id}
       </span>
     </div>
-    <h4
-      className={cn(
-        poppins_600,
-        "mb-1.5 text-base text-accent font-stretch-110%"
-      )}
-    >
-      {title}
-    </h4>
-    <p className={cn(poppins_400, "text-sm text-ink-muted font-stretch-110%")}>
-      {desc}
-    </p>
+    <h4 className={cn(poppins_600, "mb-1.5 text-base text-accent font-stretch-110%")}>{title}</h4>
+    <p className={cn(poppins_400, "text-sm text-ink-muted font-stretch-110%")}>{desc}</p>
   </div>
 );
 
@@ -59,12 +50,7 @@ const TrackCopy = ({ eyebrow, title, body, cta, href }) => (
     >
       {title}
     </h3>
-    <p
-      className={cn(
-        poppins_400,
-        "mb-8 text-lg leading-relaxed text-ink-muted font-stretch-110%"
-      )}
-    >
+    <p className={cn(poppins_400, "mb-8 text-lg leading-relaxed text-ink-muted font-stretch-110%")}>
       {body}
     </p>
     <Button
@@ -159,12 +145,8 @@ export default function HowItWorks() {
               <FaStar className="text-highlight w-8 h-8 animate-pulse" />
               <FaHeart className="text-accent w-8 h-8 animate-pulse" />
             </div>
-            <h3 className="text-2xl font-bold text-ink mb-4 font-stretch-125%">
-              {t("cta.title")}
-            </h3>
-            <p className="text-ink-muted mb-8 font-stretch-110%">
-              {t("cta.subtitle")}
-            </p>
+            <h3 className="text-2xl font-bold text-ink mb-4 font-stretch-125%">{t("cta.title")}</h3>
+            <p className="text-ink-muted mb-8 font-stretch-110%">{t("cta.subtitle")}</p>
             <Button
               wide
               round

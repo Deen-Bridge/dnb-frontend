@@ -81,7 +81,9 @@ describe("ErrorBoundaryUI", () => {
   });
 
   it("renders a Go home link to the configured destination", () => {
-    render(<ErrorBoundaryUI error={new Error("boom")} reset={() => {}} homeHref="/dashboard/courses" />);
+    render(
+      <ErrorBoundaryUI error={new Error("boom")} reset={() => {}} homeHref="/dashboard/courses" />
+    );
     expect(screen.getByRole("link", { name: /go home/i })).toHaveAttribute(
       "href",
       "/dashboard/courses"

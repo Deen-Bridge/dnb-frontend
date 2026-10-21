@@ -38,9 +38,7 @@ export default function WizardStepMedia({ control, errors, watch }) {
           )}
         />
         {errors.thumbnailFile && (
-          <p className="text-xs text-red-500 font-medium">
-            {errors.thumbnailFile.message}
-          </p>
+          <p className="text-xs text-red-500 font-medium">{errors.thumbnailFile.message}</p>
         )}
       </div>
 
@@ -56,10 +54,7 @@ export default function WizardStepMedia({ control, errors, watch }) {
         </div>
 
         {lessons.map((lesson, idx) => (
-          <div
-            key={lesson.id || idx}
-            className="p-4 border rounded-xl bg-card space-y-2"
-          >
+          <div key={lesson.id || idx} className="p-4 border rounded-xl bg-card space-y-2">
             <div className="flex justify-between items-center text-sm font-semibold">
               <span>
                 Lesson {idx + 1}: {lesson.title || "Untitled Lesson"}
@@ -95,7 +90,8 @@ export default function WizardStepMedia({ control, errors, watch }) {
       <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2 text-xs text-amber-800">
         <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
         <span>
-          Files are staged in your browser and will be uploaded securely when you click <strong>Publish</strong> in the review step.
+          Files are staged in your browser and will be uploaded securely when you click{" "}
+          <strong>Publish</strong> in the review step.
         </span>
       </div>
     </div>

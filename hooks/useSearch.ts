@@ -1,7 +1,8 @@
 import axiosInstance from "@/lib/config/axios.config";
 import { getLocalSearchResults } from "@/lib/search-fallback";
 
-export async function searchQuery(query?: string): Promise<any[]> { // TODO(types): Search query result items
+export async function searchQuery(query?: string): Promise<any[]> {
+  // TODO(types): Search query result items
   const cleanQuery = query ? query.trim() : "";
   if (!cleanQuery) return [];
 

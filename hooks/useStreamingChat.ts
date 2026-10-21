@@ -37,7 +37,8 @@ export function useStreamingChat(
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const sendMessage = useCallback(
-    async (message: string, context: any = null): Promise<SendMessageResult | undefined> => { // TODO(types): Context parameter
+    async (message: string, context: any = null): Promise<SendMessageResult | undefined> => {
+      // TODO(types): Context parameter
       if (!message?.trim()) {
         toast.error("Please enter a message");
         return;
@@ -85,10 +86,7 @@ export function useStreamingChat(
         let currentChatId = chatId;
         let history: any[] = []; // TODO(types): History array
 
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "", isStreaming: true },
-        ]);
+        setMessages((prev) => [...prev, { role: "assistant", content: "", isStreaming: true }]);
 
         while (true) {
           const { done, value } = await reader.read();
@@ -167,7 +165,8 @@ export function useStreamingChat(
           history: history,
           response: aiMessageContent,
         };
-      } catch (err: any) { // TODO(types): Error from streaming chat
+      } catch (err: any) {
+        // TODO(types): Error from streaming chat
         if (err?.name === "AbortError") {
           console.log("Stream aborted");
           return;

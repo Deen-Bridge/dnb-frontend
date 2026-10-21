@@ -26,7 +26,11 @@ function buildOptions({
   action?: AdminToastAction;
   duration: number;
 }) {
-  const options: { duration: number; description?: string; action?: { label: string; onClick: () => void } } = { duration };
+  const options: {
+    duration: number;
+    description?: string;
+    action?: { label: string; onClick: () => void };
+  } = { duration };
   if (description) options.description = description;
   if (action) {
     options.action = { label: action.label, onClick: action.onClick };
@@ -34,14 +38,23 @@ function buildOptions({
   return options;
 }
 
-export function adminToastSuccess({ title, description, action }: AdminToastOptions = { title: "" }): void {
-  toast.success(title, buildOptions({ description, action, duration: ADMIN_TOAST_DURATIONS.success }));
+export function adminToastSuccess(
+  { title, description, action }: AdminToastOptions = { title: "" }
+): void {
+  toast.success(
+    title,
+    buildOptions({ description, action, duration: ADMIN_TOAST_DURATIONS.success })
+  );
 }
 
-export function adminToastError({ title, description, action }: AdminToastOptions = { title: "" }): void {
+export function adminToastError(
+  { title, description, action }: AdminToastOptions = { title: "" }
+): void {
   toast.error(title, buildOptions({ description, action, duration: ADMIN_TOAST_DURATIONS.error }));
 }
 
-export function adminToastInfo({ title, description }: { title: string; description?: string } = { title: "" }): void {
+export function adminToastInfo(
+  { title, description }: { title: string; description?: string } = { title: "" }
+): void {
   toast.info(title, buildOptions({ description, duration: ADMIN_TOAST_DURATIONS.info }));
 }

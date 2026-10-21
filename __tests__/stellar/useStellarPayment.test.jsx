@@ -52,7 +52,10 @@ const MOCK_PAYMENT_INIT_DATA = {
   success: true,
   transactionId: "tx_mock_123",
   item: { _id: "course_456", title: "Islamic Finance 101", price: 29.99 },
-  creator: { name: "Shaykh Ahmad", wallet: "GB7BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q9R0" },
+  creator: {
+    name: "Shaykh Ahmad",
+    wallet: "GB7BDSVU7WAKCCGLTDTBQLP3Y4S7G45P6W6Y5Z2XJ3K4L5M6N7P8Q9R0",
+  },
   payment: {
     xdr: "AAAA_UNSIGNED_XDR",
     networkPassphrase: "Test SDF Network ; September 2015",

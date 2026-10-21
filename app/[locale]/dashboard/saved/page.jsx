@@ -191,9 +191,7 @@ export default function SavedPage() {
               key={book._id}
               book={book}
               initialIsBookmarked={true}
-              onBookmarkChange={(isBookmarked) =>
-                handleBookBookmarkChange(isBookmarked, book._id)
-              }
+              onBookmarkChange={(isBookmarked) => handleBookBookmarkChange(isBookmarked, book._id)}
             />
           ))}
         </CardGrid>

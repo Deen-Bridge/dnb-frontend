@@ -19,13 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ExternalLink,
@@ -45,10 +39,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchGlobalTransactions } from "@/lib/actions/admin-transactions";
-import {
-  getExplorerTransactionUrl,
-  isValidStellarAddress,
-} from "@/lib/utils/stellarExplorer";
+import { getExplorerTransactionUrl, isValidStellarAddress } from "@/lib/utils/stellarExplorer";
 import { downloadCsv } from "@/lib/utils/csv";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
@@ -95,7 +86,9 @@ export default function GlobalTransactionExplorer() {
     let valid = true;
     if (buyerWallet && buyerWallet.trim() !== "") {
       if (!isValidStellarAddress(buyerWallet.trim())) {
-        setBuyerWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setBuyerWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
         valid = false;
       } else {
         setBuyerWalletError("");
@@ -106,7 +99,9 @@ export default function GlobalTransactionExplorer() {
 
     if (creatorWallet && creatorWallet.trim() !== "") {
       if (!isValidStellarAddress(creatorWallet.trim())) {
-        setCreatorWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setCreatorWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
         valid = false;
       } else {
         setCreatorWalletError("");
@@ -165,7 +160,9 @@ export default function GlobalTransactionExplorer() {
 
     if (key === "buyerWallet") {
       if (value && !isValidStellarAddress(value.trim())) {
-        setBuyerWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setBuyerWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
       } else {
         setBuyerWalletError("");
       }
@@ -173,7 +170,9 @@ export default function GlobalTransactionExplorer() {
 
     if (key === "creatorWallet") {
       if (value && !isValidStellarAddress(value.trim())) {
-        setCreatorWalletError("Invalid Stellar address format (must start with G and be 56 characters)");
+        setCreatorWalletError(
+          "Invalid Stellar address format (must start with G and be 56 characters)"
+        );
       } else {
         setCreatorWalletError("");
       }
@@ -308,7 +307,8 @@ export default function GlobalTransactionExplorer() {
             Global Transaction Explorer
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Platform-wide transaction history with real-time filters and network-aware chain verification ({network}).
+            Platform-wide transaction history with real-time filters and network-aware chain
+            verification ({network}).
           </p>
         </div>
 
@@ -377,7 +377,11 @@ export default function GlobalTransactionExplorer() {
                   value={filters.status}
                   onValueChange={(val) => handleFilterChange("status", val)}
                 >
-                  <SelectTrigger id="statusFilter" className="h-9 text-sm" aria-label="Filter by status">
+                  <SelectTrigger
+                    id="statusFilter"
+                    className="h-9 text-sm"
+                    aria-label="Filter by status"
+                  >
                     <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,14 +397,21 @@ export default function GlobalTransactionExplorer() {
 
               {/* Item Type Filter */}
               <div className="space-y-1.5">
-                <label htmlFor="itemTypeFilter" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="itemTypeFilter"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Item Type
                 </label>
                 <Select
                   value={filters.itemType}
                   onValueChange={(val) => handleFilterChange("itemType", val)}
                 >
-                  <SelectTrigger id="itemTypeFilter" className="h-9 text-sm" aria-label="Filter by item type">
+                  <SelectTrigger
+                    id="itemTypeFilter"
+                    className="h-9 text-sm"
+                    aria-label="Filter by item type"
+                  >
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
@@ -471,7 +482,10 @@ export default function GlobalTransactionExplorer() {
 
               {/* Creator Wallet */}
               <div className="space-y-1.5 md:col-span-2">
-                <label htmlFor="creatorWallet" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="creatorWallet"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Creator Wallet Search
                 </label>
                 <Input
@@ -555,14 +569,10 @@ export default function GlobalTransactionExplorer() {
           <CreditCard className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-50" />
           <p className="font-semibold text-foreground text-base">No transactions found</p>
           <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
-            No transactions match the selected filter criteria. Try adjusting your date range, amount, or wallet address filters.
+            No transactions match the selected filter criteria. Try adjusting your date range,
+            amount, or wallet address filters.
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4 text-xs"
-            onClick={handleResetFilters}
-          >
+          <Button variant="outline" size="sm" className="mt-4 text-xs" onClick={handleResetFilters}>
             Clear Filters
           </Button>
         </div>

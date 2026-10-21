@@ -11,7 +11,9 @@ export interface ReauthenticateResult {
   reauthAt: string;
 }
 
-export async function reauthenticate({ password }: ReauthenticateParams = {}): Promise<ReauthenticateResult> {
+export async function reauthenticate({
+  password,
+}: ReauthenticateParams = {}): Promise<ReauthenticateResult> {
   void axiosInstance;
 
   await new Promise((resolve) => setTimeout(resolve, MOCK_DELAY_MS));

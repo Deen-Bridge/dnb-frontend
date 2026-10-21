@@ -21,19 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Users,
-  Info,
-} from "lucide-react";
+import { CheckCircle, XCircle, AlertTriangle, Users, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_500, poppins_600 } from "@/lib/config/font.config";
-import {
-  REJECTION_REASON_CATEGORIES,
-  MAX_BATCH_SIZE,
-} from "@/lib/actions/admin-verifications";
+import { REJECTION_REASON_CATEGORIES, MAX_BATCH_SIZE } from "@/lib/actions/admin-verifications";
 
 /**
  * BulkDecisionDialog
@@ -104,11 +95,7 @@ export default function BulkDecisionDialog({
                   : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
               )}
             >
-              {isApprove ? (
-                <CheckCircle className="size-6" />
-              ) : (
-                <XCircle className="size-6" />
-              )}
+              {isApprove ? <CheckCircle className="size-6" /> : <XCircle className="size-6" />}
             </div>
 
             <div>
@@ -142,9 +129,7 @@ export default function BulkDecisionDialog({
             <Info className="size-4 shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold">
-                {isApprove
-                  ? "Sequential Approval Fan-Out"
-                  : "Sequential Rejection Fan-Out"}
+                {isApprove ? "Sequential Approval Fan-Out" : "Sequential Rejection Fan-Out"}
               </p>
               <p className="mt-0.5 opacity-90">
                 {isApprove
@@ -168,10 +153,7 @@ export default function BulkDecisionDialog({
                   <span>Shared Reason Category</span>
                   <span className="text-red-500">*</span>
                 </Label>
-                <Select
-                  value={reasonCategory}
-                  onValueChange={setReasonCategory}
-                >
+                <Select value={reasonCategory} onValueChange={setReasonCategory}>
                   <SelectTrigger
                     id="bulk-rejection-reason"
                     data-testid="rejection-category-select"
@@ -233,25 +215,18 @@ export default function BulkDecisionDialog({
 
             <div className="max-h-48 overflow-y-auto divide-y divide-accent/10 rounded-xl border border-accent/10 bg-surface">
               {itemsToProcess.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between p-2.5 px-3 text-xs"
-                >
+                <div key={item.id} className="flex items-center justify-between p-2.5 px-3 text-xs">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Avatar className="size-7 rounded-lg border border-accent/10">
                       <AvatarFallback className="text-[10px] bg-secondary/15 text-accent font-semibold">
-                        {(item.name || item.email || "E")
-                          .slice(0, 2)
-                          .toUpperCase()}
+                        {(item.name || item.email || "E").slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
                       <p className="font-medium text-ink truncate">
                         {item.name || "Educator Applicant"}
                       </p>
-                      <p className="text-[11px] text-ink-muted truncate">
-                        {item.email}
-                      </p>
+                      <p className="text-[11px] text-ink-muted truncate">{item.email}</p>
                     </div>
                   </div>
 
@@ -286,9 +261,7 @@ export default function BulkDecisionDialog({
             onClick={handleConfirm}
             className={cn(
               "text-xs font-semibold h-9 px-4 text-white",
-              isApprove
-                ? "bg-emerald-600 hover:bg-emerald-700"
-                : "bg-red-600 hover:bg-red-700"
+              isApprove ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
             )}
           >
             {isApprove ? (

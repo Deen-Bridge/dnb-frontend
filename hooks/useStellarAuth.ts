@@ -9,32 +9,32 @@ import { persistSession } from "@/hooks/useAuth";
 const CHALLENGE_PATH = "/api/auth/stellar/challenge";
 const VERIFY_PATH = "/api/auth/stellar/verify";
 
-const isModalClosedError = (error: any): boolean => // TODO(types): Error shape from wallet selection
+const isModalClosedError = (error: any): boolean =>
+  // TODO(types): Error shape from wallet selection
   error?.code === -1 ||
-  (typeof error?.message === "string" &&
-    /closed|cancel(l)?ed|reject(ed)?/i.test(error.message));
+  (typeof error?.message === "string" && /closed|cancel(l)?ed|reject(ed)?/i.test(error.message));
 
-const isExpiredChallengeError = (error: any): boolean => { // TODO(types): Axios error from challenge
+const isExpiredChallengeError = (error: any): boolean => {
+  // TODO(types): Axios error from challenge
   const message =
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    "";
-  return /expir|time.?bound|challenge.*(invalid|expired)/i.test(
-    String(message)
-  );
+    error?.response?.data?.message || error?.response?.data?.error || error?.message || "";
+  return /expir|time.?bound|challenge.*(invalid|expired)/i.test(String(message));
 };
 
-const isUnregisteredWallet = (error: any, data?: any): boolean => { // TODO(types): Response data/error shape
+const isUnregisteredWallet = (error: any, data?: any): boolean => {
+  // TODO(types): Response data/error shape
   if (data && data.registered === false) return true;
   const status = error?.response?.status;
   return status === 404 || status === 409;
 };
 
-const getNetworkPassphrase = (payload: any = {}): string => // TODO(types): Challenge payload
+const getNetworkPassphrase = (payload: any = {}): string =>
+  // TODO(types): Challenge payload
   payload.networkPassphrase || payload.network_passphrase;
 
-const fetchChallenge = async (account: string): Promise<{ transaction: string; networkPassphrase: string }> => {
+const fetchChallenge = async (
+  account: string
+): Promise<{ transaction: string; networkPassphrase: string }> => {
   const res = await axiosInstance.get(CHALLENGE_PATH, {
     params: { account },
   });
@@ -48,7 +48,8 @@ const fetchChallenge = async (account: string): Promise<{ transaction: string; n
   return { transaction, networkPassphrase };
 };
 
-const verifyChallenge = async (signedXdr: string): Promise<any> => { // TODO(types): SEP-10 verify response
+const verifyChallenge = async (signedXdr: string): Promise<any> => {
+  // TODO(types): SEP-10 verify response
   const res = await axiosInstance.post(VERIFY_PATH, {
     transaction: signedXdr,
   });
@@ -85,7 +86,8 @@ export function useStellarAuth(): UseStellarAuthResult {
         } else {
           setStellarAuthAvailable(true);
         }
-      } catch (error: any) { // TODO(types): Network error from probe
+      } catch (error: any) {
+        // TODO(types): Network error from probe
         if (cancelled) return;
         const status = error?.response?.status;
         if (status === 404 || status === 503) {
@@ -113,9 +115,7 @@ export function useStellarAuth(): UseStellarAuthResult {
     }
 
     if (stellarAuthAvailable === false) {
-      toast.error(
-        "Sign in with Stellar is not available yet. Please use email login."
-      );
+      toast.error("Sign in with Stellar is not available yet. Please use email login.");
       return null;
     }
 
@@ -124,7 +124,8 @@ export function useStellarAuth(): UseStellarAuthResult {
     try {
       const address = await selectWallet();
 
-      const attemptVerify = async (allowRetry: boolean): Promise<any> => { // TODO(types): Verify challenge response payload
+      const attemptVerify = async (allowRetry: boolean): Promise<any> => {
+        // TODO(types): Verify challenge response payload
         const { transaction, networkPassphrase } = await fetchChallenge(address);
         const signedXdr = await signTransaction(transaction, networkPassphrase);
 
@@ -155,7 +156,8 @@ export function useStellarAuth(): UseStellarAuthResult {
       persistSession(token, user);
       toast.success("Signed in with Stellar");
       return user;
-    } catch (error: any) { // TODO(types): Error from SEP-10 login
+    } catch (error: any) {
+      // TODO(types): Error from SEP-10 login
       if (isModalClosedError(error)) {
         toast.message("Wallet connection cancelled");
         return null;

@@ -15,12 +15,7 @@ const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
   }, [onRetry, reset]);
 
   return (
-    <div
-      className={cn(
-        "h-[85dvh] flex flex-col items-center justify-center",
-        className
-      )}
-    >
+    <div className={cn("h-[85dvh] flex flex-col items-center justify-center", className)}>
       <Image
         height="222"
         width="443"

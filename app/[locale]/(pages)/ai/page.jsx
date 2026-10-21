@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
 import Footer from "../(landingPage)/Footer";
 import Button from "@/components/atoms/form/Button";
@@ -218,12 +214,7 @@ const ChatDemo = () => {
                 </span>
               ))}
             </div>
-            <p
-              className={cn(
-                poppins_400,
-                "text-[11px] leading-relaxed text-ink-inverse-muted"
-              )}
-            >
+            <p className={cn(poppins_400, "text-[11px] leading-relaxed text-ink-inverse-muted")}>
               {answer.meta.madhhab}
             </p>
           </div>
@@ -280,9 +271,9 @@ export default function AiPage() {
                 "mb-8 max-w-xl text-lg leading-relaxed text-ink-inverse-muted font-stretch-110%"
               )}
             >
-              Ask about Qur’an, hadith, fiqh, or your own zakat. Every answer is
-              scored, every citation is checked, and anything doubtful goes to a
-              scholar before it reaches you — not after.
+              Ask about Qur’an, hadith, fiqh, or your own zakat. Every answer is scored, every
+              citation is checked, and anything doubtful goes to a scholar before it reaches you —
+              not after.
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
@@ -314,12 +305,7 @@ export default function AiPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <ChatDemo />
-            <p
-              className={cn(
-                poppins_400,
-                "mt-3 text-center text-xs text-ink-inverse-muted/70"
-              )}
-            >
+            <p className={cn(poppins_400, "mt-3 text-center text-xs text-ink-inverse-muted/70")}>
               Illustrative exchange — showing the shape of a real response.
             </p>
           </motion.div>
@@ -350,8 +336,8 @@ export default function AiPage() {
                   "mx-auto max-w-2xl text-lg text-ink-muted font-stretch-110%"
                 )}
               >
-                Most assistants optimise for always having an answer. This one
-                optimises for never giving you a wrong one.
+                Most assistants optimise for always having an answer. This one optimises for never
+                giving you a wrong one.
               </p>
             </div>
 
@@ -370,12 +356,7 @@ export default function AiPage() {
                     <div className="mb-6 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary to-accent shadow-md transition-transform group-hover:scale-110">
                       <Icon className="size-6 text-ink-inverse" />
                     </div>
-                    <h3
-                      className={cn(
-                        poppins_600,
-                        "mb-3 text-xl text-accent font-stretch-110%"
-                      )}
-                    >
+                    <h3 className={cn(poppins_600, "mb-3 text-xl text-accent font-stretch-110%")}>
                       {p.title}
                     </h3>
                     <p
@@ -439,19 +420,11 @@ export default function AiPage() {
                     {s.id}
                   </span>
                   <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-2 text-base text-ink-inverse font-stretch-110%"
-                    )}
+                    className={cn(poppins_600, "mb-2 text-base text-ink-inverse font-stretch-110%")}
                   >
                     {s.title}
                   </h3>
-                  <p
-                    className={cn(
-                      poppins_400,
-                      "text-sm leading-relaxed text-ink-inverse-muted"
-                    )}
-                  >
+                  <p className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}>
                     {s.desc}
                   </p>
                 </motion.div>
@@ -478,8 +451,8 @@ export default function AiPage() {
                   "mx-auto max-w-2xl text-lg text-ink-muted font-stretch-110%"
                 )}
               >
-                Not a general chatbot with a prompt taped on — purpose-built
-                pieces, each solving a way an Islamic assistant can fail
+                Not a general chatbot with a prompt taped on — purpose-built pieces, each solving a
+                way an Islamic assistant can fail
               </p>
             </div>
 
@@ -498,12 +471,7 @@ export default function AiPage() {
                     <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-secondary/10">
                       <Icon className="size-5 text-accent" />
                     </div>
-                    <h3
-                      className={cn(
-                        poppins_600,
-                        "mb-2 text-base text-ink font-stretch-110%"
-                      )}
-                    >
+                    <h3 className={cn(poppins_600, "mb-2 text-base text-ink font-stretch-110%")}>
                       {c.title}
                     </h3>
                     <p
@@ -528,12 +496,7 @@ export default function AiPage() {
               <div className="mb-5 flex size-12 items-center justify-center rounded-2xl bg-secondary/10">
                 <ShieldCheck className="size-6 text-accent" />
               </div>
-              <h3
-                className={cn(
-                  poppins_600,
-                  "mb-3 text-2xl text-ink font-stretch-110%"
-                )}
-              >
+              <h3 className={cn(poppins_600, "mb-3 text-2xl text-ink font-stretch-110%")}>
                 Your memory, your call
               </h3>
               <p
@@ -542,10 +505,9 @@ export default function AiPage() {
                   "text-sm leading-relaxed text-ink-muted font-stretch-110%"
                 )}
               >
-                What the assistant remembers about you is readable on request
-                and erasable in full. You can also switch remembering off for
-                any single message. Stored profiles expire on their own — they
-                are not kept indefinitely.
+                What the assistant remembers about you is readable on request and erasable in full.
+                You can also switch remembering off for any single message. Stored profiles expire
+                on their own — they are not kept indefinitely.
               </p>
             </div>
 
@@ -553,12 +515,7 @@ export default function AiPage() {
               <div className="mb-5 flex size-12 items-center justify-center rounded-2xl bg-secondary/10">
                 <FileSearch className="size-6 text-accent" />
               </div>
-              <h3
-                className={cn(
-                  poppins_600,
-                  "mb-3 text-2xl text-ink font-stretch-110%"
-                )}
-              >
+              <h3 className={cn(poppins_600, "mb-3 text-2xl text-ink font-stretch-110%")}>
                 Open source, end to end
               </h3>
               <p
@@ -567,10 +524,9 @@ export default function AiPage() {
                   "mb-5 text-sm leading-relaxed text-ink-muted font-stretch-110%"
                 )}
               >
-                The assistant is a FastAPI service under an MIT licence, built
-                in public alongside the web app and the API. If you want to know
-                exactly how a ruling is scored or a citation is checked, you can
-                go and read it.
+                The assistant is a FastAPI service under an MIT licence, built in public alongside
+                the web app and the API. If you want to know exactly how a ruling is scored or a
+                citation is checked, you can go and read it.
               </p>
               <Link
                 href="https://github.com/Deen-Bridge/dnb-ai"
@@ -615,8 +571,8 @@ export default function AiPage() {
                   "mx-auto mb-10 max-w-2xl text-base leading-relaxed text-ink-inverse-muted sm:text-lg font-stretch-110%"
                 )}
               >
-                The kind of question you would normally take to a teacher. See
-                what it says — and see what it refuses to say.
+                The kind of question you would normally take to a teacher. See what it says — and
+                see what it refuses to say.
               </p>
               <Button
                 wide

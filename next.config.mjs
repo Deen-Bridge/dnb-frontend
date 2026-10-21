@@ -44,13 +44,10 @@ const nextConfig = {
 // Chain all config wrappers: analyzer -> serwist -> intl -> sentry
 // Sentry source-map upload auto-skips when SENTRY_AUTH_TOKEN is absent,
 // so local builds are unaffected.
-export default withSentryConfig(
-  withSerwist(withNextIntl(withAnalyzer(nextConfig))),
-  {
-    silent: true,
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    sourcemaps: { hideSourcemaps: true },
-    disableLogger: true,
-  }
-);
+export default withSentryConfig(withSerwist(withNextIntl(withAnalyzer(nextConfig))), {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  sourcemaps: { hideSourcemaps: true },
+  disableLogger: true,
+});

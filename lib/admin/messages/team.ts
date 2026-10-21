@@ -40,7 +40,8 @@ export const REVOKE_CONFIRMATION = "{name}'s admin access will be removed entire
 export const REVOKE_BUTTON = "Revoke";
 
 export const EMPTY_STATE_TITLE = "No admins yet";
-export const EMPTY_STATE_DESCRIPTION = "Invite your first teammate to start building the admin team.";
+export const EMPTY_STATE_DESCRIPTION =
+  "Invite your first teammate to start building the admin team.";
 
 export const ERROR_LOAD_TITLE = "Failed to load";
 export const ERROR_RETRY_BUTTON = "Try again";

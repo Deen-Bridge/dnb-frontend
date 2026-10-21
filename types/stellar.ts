@@ -1,6 +1,16 @@
-import { StellarWalletInfo, StellarTransaction, StellarPaymentInitResponse, StellarPaymentSubmitResponse } from "./api";
+import {
+  StellarWalletInfo,
+  StellarTransaction,
+  StellarPaymentInitResponse,
+  StellarPaymentSubmitResponse,
+} from "./api";
 
-export type { StellarWalletInfo, StellarTransaction, StellarPaymentInitResponse, StellarPaymentSubmitResponse };
+export type {
+  StellarWalletInfo,
+  StellarTransaction,
+  StellarPaymentInitResponse,
+  StellarPaymentSubmitResponse,
+};
 
 export interface StellarPreCheckIssue {
   title: string;

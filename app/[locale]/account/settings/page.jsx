@@ -37,20 +37,13 @@ import {
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /* ── design-system building blocks ── */
 
 const Panel = ({ className, children }) => (
   <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised p-6 shadow-sm",
-      className
-    )}
+    className={cn("rounded-2xl border border-accent/10 bg-surface-raised p-6 shadow-sm", className)}
   >
     {children}
   </div>
@@ -71,9 +64,7 @@ const CardHead = ({ icon: Icon, title, description, danger }) => (
     <div>
       <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
       {description && (
-        <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>
-          {description}
-        </p>
+        <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>{description}</p>
       )}
     </div>
   </div>
@@ -90,11 +81,7 @@ const ToggleRow = ({ icon: Icon, title, description, checked, onCheckedChange })
         <p className={cn(poppins_400, "text-sm text-ink-muted")}>{description}</p>
       </div>
     </div>
-    <Switch
-      checked={checked}
-      onCheckedChange={onCheckedChange}
-      aria-label={title}
-    />
+    <Switch checked={checked} onCheckedChange={onCheckedChange} aria-label={title} />
   </div>
 );
 
@@ -235,10 +222,7 @@ const SettingsPage = () => {
     if (res?.success) {
       showMessage("success", "Profile updated successfully!");
     } else {
-      showMessage(
-        "error",
-        res?.message || "Failed to update profile. Please try again."
-      );
+      showMessage("error", res?.message || "Failed to update profile. Please try again.");
     }
     setIsLoading(false);
   };
@@ -274,15 +258,8 @@ const SettingsPage = () => {
   };
 
   const handleDeleteAccount = () => {
-    if (
-      confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      showMessage(
-        "error",
-        "Account deletion initiated. Please check your email for confirmation."
-      );
+    if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      showMessage("error", "Account deletion initiated. Please check your email for confirmation.");
     }
   };
 
@@ -312,61 +289,53 @@ const SettingsPage = () => {
         />
 
         {message.text && (
-            <div
+          <div
+            className={cn(
+              "mt-6 flex items-center gap-2 rounded-xl border p-4",
+              message.type === "success"
+                ? "border-secondary/20 bg-secondary/5"
+                : "border-red-200 bg-red-50"
+            )}
+          >
+            {message.type === "success" ? (
+              <CheckCircle className="h-4 w-4 shrink-0 text-secondary" />
+            ) : (
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+            )}
+            <span
               className={cn(
-                "mt-6 flex items-center gap-2 rounded-xl border p-4",
-                message.type === "success"
-                  ? "border-secondary/20 bg-secondary/5"
-                  : "border-red-200 bg-red-50"
+                poppins_500,
+                "text-sm",
+                message.type === "success" ? "text-secondary" : "text-red-600"
               )}
             >
-              {message.type === "success" ? (
-                <CheckCircle className="h-4 w-4 shrink-0 text-secondary" />
-              ) : (
-                <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
-              )}
-              <span
-                className={cn(
-                  poppins_500,
-                  "text-sm",
-                  message.type === "success" ? "text-secondary" : "text-red-600"
-                )}
-              >
-                {message.text}
-              </span>
-            </div>
-          )}
+              {message.text}
+            </span>
+          </div>
+        )}
 
-          {installable && (
-            <div className="mt-4 flex flex-col gap-3 rounded-xl border border-secondary/20 bg-secondary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-secondary/15 to-highlight/10">
-                  <Smartphone className="h-4 w-4 text-accent" />
-                </div>
-                <p className={cn(poppins_500, "text-sm text-ink")}>
-                  Install DeenBridge for quick access
-                </p>
+        {installable && (
+          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-secondary/20 bg-secondary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-secondary/15 to-highlight/10">
+                <Smartphone className="h-4 w-4 text-accent" />
               </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setInstallable(false)}
-                >
-                  Dismiss
-                </Button>
-                <Button size="sm" onClick={handleInstall}>
-                  Install
-                </Button>
-              </div>
+              <p className={cn(poppins_500, "text-sm text-ink")}>
+                Install DeenBridge for quick access
+              </p>
             </div>
-          )}
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => setInstallable(false)}>
+                Dismiss
+              </Button>
+              <Button size="sm" onClick={handleInstall}>
+                Install
+              </Button>
+            </div>
+          </div>
+        )}
 
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-6"
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-2xl border border-accent/10 bg-surface-raised p-1.5 shadow-sm">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" /> Profile
@@ -374,10 +343,7 @@ const SettingsPage = () => {
             <TabsTrigger value="account" className="flex items-center gap-2">
               <Lock className="h-4 w-4" /> Account
             </TabsTrigger>
-            <TabsTrigger
-              value="notifications"
-              className="flex items-center gap-2"
-            >
+            <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="h-4 w-4" /> Notifications
             </TabsTrigger>
           </TabsList>
@@ -395,14 +361,9 @@ const SettingsPage = () => {
                 <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
                   <div className="relative">
                     <Avatar className="h-24 w-24 border-4 border-surface-raised shadow-md">
-                      <AvatarImage
-                        src={profile.avatar || user?.avatar}
-                        alt=""
-                      />
+                      <AvatarImage src={profile.avatar || user?.avatar} alt="" />
                       <AvatarFallback className="bg-accent text-2xl text-white">
-                        {profile.name?.charAt(0) ||
-                          user?.name?.charAt(0) ||
-                          "U"}
+                        {profile.name?.charAt(0) || user?.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <Button
@@ -422,9 +383,7 @@ const SettingsPage = () => {
                       @{profile.username || user?.username}
                     </p>
                     <div className="mt-2 flex items-center justify-center gap-2 sm:justify-start">
-                      <Badge className="bg-accent text-white">
-                        {user?.role || "Member"}
-                      </Badge>
+                      <Badge className="bg-accent text-white">{user?.role || "Member"}</Badge>
                       <VerifiedBadge user={user} />
                     </div>
                   </div>
@@ -536,13 +495,9 @@ const SettingsPage = () => {
                 </div>
                 <Separator className="bg-accent/10" />
                 <div className="space-y-4">
-                  <h4 className={cn(poppins_600, "text-base text-ink")}>
-                    Change Password
-                  </h4>
+                  <h4 className={cn(poppins_600, "text-base text-ink")}>Change Password</h4>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="currentPassword">
-                      Current Password
-                    </FieldLabel>
+                    <FieldLabel htmlFor="currentPassword">Current Password</FieldLabel>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-ink-muted" />
                       <Input
@@ -560,9 +515,7 @@ const SettingsPage = () => {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
-                        aria-label={
-                          showPassword ? "Hide password" : "Show password"
-                        }
+                        aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -591,9 +544,7 @@ const SettingsPage = () => {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        aria-label={
-                          showNewPassword ? "Hide password" : "Show password"
-                        }
+                        aria-label={showNewPassword ? "Hide password" : "Show password"}
                       >
                         {showNewPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -604,9 +555,7 @@ const SettingsPage = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel htmlFor="confirmPassword">
-                      Confirm New Password
-                    </FieldLabel>
+                    <FieldLabel htmlFor="confirmPassword">Confirm New Password</FieldLabel>
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
@@ -617,10 +566,7 @@ const SettingsPage = () => {
                     />
                   </div>
                 </div>
-                <SubmitButton
-                  savingLabel="Updating..."
-                  label="Update Account"
-                />
+                <SubmitButton savingLabel="Updating..." label="Update Account" />
               </form>
             </Panel>
 
@@ -634,12 +580,9 @@ const SettingsPage = () => {
               />
               <div className="p-5 sm:p-6">
                 <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                  <h4 className={cn(poppins_600, "mb-2 text-red-700")}>
-                    Delete Account
-                  </h4>
+                  <h4 className={cn(poppins_600, "mb-2 text-red-700")}>Delete Account</h4>
                   <p className={cn(poppins_400, "mb-4 text-sm text-red-600")}>
-                    Once you delete your account, there is no going back. Please
-                    be certain.
+                    Once you delete your account, there is no going back. Please be certain.
                   </p>
                   <Button
                     variant="destructive"
@@ -683,42 +626,31 @@ const SettingsPage = () => {
                     title="Course Updates"
                     description="New courses and updates"
                     checked={notifications.courseUpdates}
-                    onCheckedChange={() =>
-                      handleNotificationChange("courseUpdates")
-                    }
+                    onCheckedChange={() => handleNotificationChange("courseUpdates")}
                   />
                   <ToggleRow
                     icon={Mail}
                     title="Message Notifications"
                     description="New messages and replies"
                     checked={notifications.messageNotifications}
-                    onCheckedChange={() =>
-                      handleNotificationChange("messageNotifications")
-                    }
+                    onCheckedChange={() => handleNotificationChange("messageNotifications")}
                   />
                   <ToggleRow
                     icon={Globe}
                     title="Space Reminders"
                     description="Upcoming space sessions"
                     checked={notifications.spaceReminders}
-                    onCheckedChange={() =>
-                      handleNotificationChange("spaceReminders")
-                    }
+                    onCheckedChange={() => handleNotificationChange("spaceReminders")}
                   />
                   <ToggleRow
                     icon={Mail}
                     title="Newsletter"
                     description="Weekly updates and insights"
                     checked={notifications.newsletter}
-                    onCheckedChange={() =>
-                      handleNotificationChange("newsletter")
-                    }
+                    onCheckedChange={() => handleNotificationChange("newsletter")}
                   />
                 </div>
-                <SubmitButton
-                  savingLabel="Saving..."
-                  label="Save Preferences"
-                />
+                <SubmitButton savingLabel="Saving..." label="Save Preferences" />
               </form>
             </Panel>
           </TabsContent>
@@ -738,9 +670,7 @@ const SettingsPage = () => {
                     title="Profile Visibility"
                     description="Allow others to view your profile"
                     checked={privacy.profileVisible}
-                    onCheckedChange={() =>
-                      handlePrivacyChange("profileVisible")
-                    }
+                    onCheckedChange={() => handlePrivacyChange("profileVisible")}
                   />
                   <ToggleRow
                     icon={Globe}
@@ -778,10 +708,7 @@ const SettingsPage = () => {
                     onCheckedChange={() => handlePrivacyChange("showInterests")}
                   />
                 </div>
-                <SubmitButton
-                  savingLabel="Saving..."
-                  label="Save Privacy Settings"
-                />
+                <SubmitButton savingLabel="Saving..." label="Save Privacy Settings" />
               </form>
             </Panel>
           </TabsContent>
@@ -803,11 +730,7 @@ const SettingsPage = () => {
                         <Button
                           key={mode}
                           type="button"
-                          variant={
-                            mounted && selectedMode === mode
-                              ? "default"
-                              : "outline"
-                          }
+                          variant={mounted && selectedMode === mode ? "default" : "outline"}
                           className="capitalize"
                           aria-pressed={mounted && selectedMode === mode}
                           onClick={() => handleModeChange(mode)}
@@ -820,29 +743,25 @@ const SettingsPage = () => {
                   <div className="space-y-3">
                     <FieldLabel>Accent Color</FieldLabel>
                     <div className="grid grid-cols-5 gap-3">
-                      {Object.entries(ACCENT_PALETTES).map(
-                        ([color, palette]) => (
-                          <Button
-                            key={color}
-                            type="button"
-                            variant="outline"
-                            className={cn(
-                              "h-12 w-12 rounded-full p-0",
-                              mounted &&
-                                accent === color &&
-                                "ring-2 ring-accent ring-offset-2"
-                            )}
-                            style={{ backgroundColor: palette.surface }}
-                            aria-label={`Accent color ${color}`}
-                            aria-pressed={mounted && accent === color}
-                            onClick={() => setAccent(color)}
-                          >
-                            {mounted && accent === color && (
-                              <CheckCircle className="mx-auto h-5 w-5 text-white" />
-                            )}
-                          </Button>
-                        )
-                      )}
+                      {Object.entries(ACCENT_PALETTES).map(([color, palette]) => (
+                        <Button
+                          key={color}
+                          type="button"
+                          variant="outline"
+                          className={cn(
+                            "h-12 w-12 rounded-full p-0",
+                            mounted && accent === color && "ring-2 ring-accent ring-offset-2"
+                          )}
+                          style={{ backgroundColor: palette.surface }}
+                          aria-label={`Accent color ${color}`}
+                          aria-pressed={mounted && accent === color}
+                          onClick={() => setAccent(color)}
+                        >
+                          {mounted && accent === color && (
+                            <CheckCircle className="mx-auto h-5 w-5 text-white" />
+                          )}
+                        </Button>
+                      ))}
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -852,11 +771,7 @@ const SettingsPage = () => {
                         <Button
                           key={size}
                           type="button"
-                          variant={
-                            mounted && fontSize === size
-                              ? "default"
-                              : "outline"
-                          }
+                          variant={mounted && fontSize === size ? "default" : "outline"}
                           className="capitalize"
                           aria-pressed={mounted && fontSize === size}
                           onClick={() => setFontSize(size)}
@@ -866,8 +781,8 @@ const SettingsPage = () => {
                       ))}
                     </div>
                     <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                      Scales most of the interface. Some elements keep a fixed
-                      size and won't change.
+                      Scales most of the interface. Some elements keep a fixed size and won't
+                      change.
                     </p>
                   </div>
                 </div>
@@ -886,12 +801,9 @@ const SettingsPage = () => {
                 danger
               />
               <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                <h4 className={cn(poppins_600, "mb-2 text-red-700")}>
-                  Delete Account
-                </h4>
+                <h4 className={cn(poppins_600, "mb-2 text-red-700")}>Delete Account</h4>
                 <p className={cn(poppins_400, "mb-4 text-sm text-red-600")}>
-                  Once you delete your account, there is no going back. Please
-                  be certain.
+                  Once you delete your account, there is no going back. Please be certain.
                 </p>
                 <Button
                   variant="destructive"

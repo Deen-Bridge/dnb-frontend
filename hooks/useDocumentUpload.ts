@@ -25,7 +25,7 @@ export const SLOT_STATE = {
   ERROR: "error",
 } as const;
 
-export type SlotStateValue = typeof SLOT_STATE[keyof typeof SLOT_STATE];
+export type SlotStateValue = (typeof SLOT_STATE)[keyof typeof SLOT_STATE];
 
 export interface SlotInfo {
   state: SlotStateValue;
@@ -155,8 +155,7 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
             scanMessage: result.scanMessage,
             error:
               result.status === DOCUMENT_STATUS.REJECTED
-                ? result.scanMessage ??
-                  "This document was rejected by the security scan."
+                ? (result.scanMessage ?? "This document was rejected by the security scan.")
                 : null,
             reference: {
               documentId,
@@ -205,8 +204,7 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
       const previewUrl = makePreviewUrl(file);
       setPreviewUrl(documentType, previewUrl);
 
-      const controller =
-        typeof AbortController === "function" ? new AbortController() : null;
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
       abortControllersRef.current[documentType] = controller;
 
       try {
@@ -257,7 +255,8 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
         }
 
         return { ok: true, reference };
-      } catch (err: any) { // TODO(types): Upload pipeline error
+      } catch (err: any) {
+        // TODO(types): Upload pipeline error
         if (err?.code === "ERR_CANCELED") {
           return { ok: false, reason: "cancelled" };
         }
@@ -284,7 +283,8 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
       if (existingId) {
         try {
           await removeDocumentRequest(existingId);
-        } catch (err: any) { // TODO(types): Error from remove document
+        } catch (err: any) {
+          // TODO(types): Error from remove document
           patchSlot(documentType, {
             error: err?.message ?? "Could not remove the document",
             errorReason: "remove_failed",

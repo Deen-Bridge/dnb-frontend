@@ -20,11 +20,7 @@ export const useCache = <T = any>( // TODO(types): Cached item generic payload
   fetchFn: () => Promise<T>,
   options: UseCacheOptions = {}
 ): UseCacheResult<T> => {
-  const {
-    ttl = CACHE_CONFIG.DEFAULT_TTL,
-    storage = "auto",
-    enabled = true,
-  } = options;
+  const { ttl = CACHE_CONFIG.DEFAULT_TTL, storage = "auto", enabled = true } = options;
 
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,7 +52,8 @@ export const useCache = <T = any>( // TODO(types): Cached item generic payload
         setData(freshData);
         setLoading(false);
         return freshData;
-      } catch (err: any) { // TODO(types): Cache fetch error
+      } catch (err: any) {
+        // TODO(types): Cache fetch error
         setError(err);
         setLoading(false);
         throw err;
@@ -140,7 +137,8 @@ export const useCachedFetch = <T = any>( // TODO(types): Cached fetch generic re
         setData(result);
         setLoading(false);
         return result;
-      } catch (err: any) { // TODO(types): Error from cached fetch
+      } catch (err: any) {
+        // TODO(types): Error from cached fetch
         setError(err);
         setLoading(false);
         throw err;

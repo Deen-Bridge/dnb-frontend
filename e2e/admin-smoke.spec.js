@@ -66,10 +66,7 @@ async function stubBackend(page) {
   );
 }
 
-test("admin smoke: login → team → revoke (ban) → audit trail", async ({
-  page,
-  context,
-}) => {
+test("admin smoke: login → team → revoke (ban) → audit trail", async ({ page, context }) => {
   await stubBackend(page);
 
   await test.step("login through the real form persists a super-admin session", async () => {
@@ -86,10 +83,13 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
     // The real `login()` → `persistSession()` flow writes the session cookies
     // that `AuthProvider` reads on every protected route.
     await expect
-      .poll(async () => {
-        const cookies = await context.cookies();
-        return cookies.some((c) => c.name === "authToken");
-      }, { timeout: 15_000 })
+      .poll(
+        async () => {
+          const cookies = await context.cookies();
+          return cookies.some((c) => c.name === "authToken");
+        },
+        { timeout: 15_000 }
+      )
       .toBe(true);
 
     const cookies = await context.cookies();
@@ -114,26 +114,20 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
     await page.goto(ADMIN_TEAM_URL);
     surface = page.locator("main").first();
 
-    await expect(
-      surface.getByRole("heading", { name: "Admin team" })
-    ).toBeVisible();
+    await expect(surface.getByRole("heading", { name: "Admin team" })).toBeVisible();
 
     // Real roster rendered — not an "insufficient permissions" fallback.
     // Assert on emails: names repeat in the "Added by" column, emails are
     // unique per row.
     for (const member of SEED_ADMIN_ROSTER) {
-      await expect(
-        surface.getByText(member.email, { exact: true })
-      ).toBeVisible();
+      await expect(surface.getByText(member.email, { exact: true })).toBeVisible();
     }
     await expect(surface.getByText(/only super admins/i)).toHaveCount(0);
   });
 
   await test.step("perform the moderation action: revoke a member's admin access", async () => {
     // Open the row actions for the target member (real Radix dropdown).
-    await surface
-      .getByRole("button", { name: `Actions for ${SEED_REVOKE_TARGET.name}` })
-      .click();
+    await surface.getByRole("button", { name: `Actions for ${SEED_REVOKE_TARGET.name}` }).click();
     await page.getByRole("menuitem", { name: /revoke access/i }).click();
 
     // Real step-up confirmation: type the member's email to unlock, confirm.
@@ -146,28 +140,20 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
 
     // Member removed from the list — the ban-equivalent mutation succeeded
     // (this is the flow that fires the fire-and-forget audit event).
-    await expect(
-      surface.getByText(SEED_REVOKE_TARGET.email, { exact: true })
-    ).toHaveCount(0);
+    await expect(surface.getByText(SEED_REVOKE_TARGET.email, { exact: true })).toHaveCount(0);
     // Other members remain.
-    await expect(
-      surface.getByText(SEED_ADMIN_ROSTER[0].email, { exact: true })
-    ).toBeVisible();
+    await expect(surface.getByText(SEED_ADMIN_ROSTER[0].email, { exact: true })).toBeVisible();
   });
 
   await test.step("audit trail surfaces the ban + resolve-report moderation entries", async () => {
     await page.goto(AUDIT_LOGS_URL);
     const auditSurface = page.locator("main").first();
 
-    await expect(
-      auditSurface.getByRole("heading", { name: "Audit logs" })
-    ).toBeVisible();
+    await expect(auditSurface.getByRole("heading", { name: "Audit logs" })).toBeVisible();
 
     // Narrow to moderation actions via the real category filter so both the
     // ban and the report-resolution entries land on the first page.
-    await auditSurface
-      .getByRole("combobox", { name: "Filter by action category" })
-      .click();
+    await auditSurface.getByRole("combobox", { name: "Filter by action category" }).click();
     await page.getByRole("option", { name: EXPECTED_AUDIT.category }).click();
 
     // The moderation spine: a ban entry and a report-resolution entry.
@@ -175,9 +161,7 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
       auditSurface.getByText(EXPECTED_AUDIT.banAction, { exact: true }).first()
     ).toBeVisible();
     await expect(
-      auditSurface
-        .getByText(EXPECTED_AUDIT.resolveReportAction, { exact: true })
-        .first()
+      auditSurface.getByText(EXPECTED_AUDIT.resolveReportAction, { exact: true }).first()
     ).toBeVisible();
   });
 });

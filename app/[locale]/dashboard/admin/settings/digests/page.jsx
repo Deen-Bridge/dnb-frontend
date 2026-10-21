@@ -37,13 +37,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -68,8 +62,7 @@ const DIGEST_META = [
   {
     type: "moderation",
     label: "Moderation summary",
-    description:
-      "Pending reports, flagged content, and recent moderation actions.",
+    description: "Pending reports, flagged content, and recent moderation actions.",
   },
   {
     type: "revenue",
@@ -107,9 +100,7 @@ function DigestToggleRow({ meta, enabled, onToggle }) {
         <Label htmlFor={switchId} className={cn(poppins_500.className, "text-ink")}>
           {meta.label}
         </Label>
-        <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-          {meta.description}
-        </p>
+        <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>{meta.description}</p>
       </div>
       <Switch
         id={switchId}
@@ -153,11 +144,7 @@ function DigestsContent() {
   const draftEmailError = useMemo(() => {
     if (!draftEmail) return null;
     if (!isValidEmail(draftEmail)) return "Enter a valid email address.";
-    if (
-      config?.recipients?.some(
-        (r) => r.toLowerCase() === draftEmail.toLowerCase()
-      )
-    ) {
+    if (config?.recipients?.some((r) => r.toLowerCase() === draftEmail.toLowerCase())) {
       return "That recipient is already on the list.";
     }
     return null;
@@ -236,18 +223,14 @@ function DigestsContent() {
       {warning && (
         <div className="flex items-center gap-2 rounded-xl border border-highlight/30 bg-highlight/10 px-4 py-2.5">
           <TriangleAlert className="h-4 w-4 shrink-0 text-highlight" aria-hidden="true" />
-          <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>
-            {warning}
-          </p>
+          <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>{warning}</p>
         </div>
       )}
 
       {/* (a) Digest-type toggles */}
       <Card className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
         <CardHeader>
-          <CardTitle className={cn(poppins_600.className, "text-ink")}>
-            Report types
-          </CardTitle>
+          <CardTitle className={cn(poppins_600.className, "text-ink")}>Report types</CardTitle>
           <CardDescription className={cn(poppins_400.className, "text-ink-muted")}>
             Choose which summaries the scheduled digest includes.
           </CardDescription>
@@ -267,9 +250,7 @@ function DigestsContent() {
       {/* (b) Delivery schedule */}
       <Card className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
         <CardHeader>
-          <CardTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <CardTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <Clock className="h-5 w-5 text-secondary" />
             Delivery schedule
           </CardTitle>
@@ -413,9 +394,7 @@ function DigestsContent() {
       {/* (c) Recipients */}
       <Card className="rounded-2xl border border-accent/10 bg-surface-raised shadow-sm">
         <CardHeader>
-          <CardTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <CardTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <Mail className="h-5 w-5 text-secondary" />
             Recipients
           </CardTitle>

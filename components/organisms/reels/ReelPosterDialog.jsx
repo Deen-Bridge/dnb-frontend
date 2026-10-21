@@ -77,10 +77,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
   const [scrubTime, setScrubTime] = useState(0);
   const [capturing, setCapturing] = useState(false);
 
-  const { setPoster, isPending: persisting } = useReelPoster(
-    reel?.id,
-    reel?.poster
-  );
+  const { setPoster, isPending: persisting } = useReelPoster(reel?.id, reel?.poster);
   const frameUpload = useCloudinaryUpload(POSTER_UPLOAD_PRESET, POSTER_VALIDATION);
   const fileUpload = useCloudinaryUpload(POSTER_UPLOAD_PRESET, POSTER_VALIDATION);
 
@@ -175,9 +172,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            Manage poster
-          </DialogTitle>
+          <DialogTitle className="text-lg font-semibold">Manage poster</DialogTitle>
           <DialogDescription>
             Pick a frame from this reel or upload a custom cover image.
           </DialogDescription>
@@ -248,9 +243,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
                 disabled={busy}
                 onChange={handleFileChange}
               />
-              <p className="text-xs text-muted-foreground">
-                JPG or PNG, up to 5MB.
-              </p>
+              <p className="text-xs text-muted-foreground">JPG or PNG, up to 5MB.</p>
             </div>
             {(fileUpload.uploading || persisting) && (
               <p className="flex items-center gap-2 text-sm text-muted-foreground">

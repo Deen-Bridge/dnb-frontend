@@ -6,9 +6,18 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Play, BookOpen, FileText, Settings, ShieldAlert, Calendar, BarChart3, Tag } from "lucide-react";
+import {
+  Play,
+  BookOpen,
+  FileText,
+  Settings,
+  ShieldAlert,
+  Calendar,
+  BarChart3,
+  Tag,
+} from "lucide-react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,7 +26,9 @@ import ReactMarkdown from "react-markdown";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 
-const VidPlayerBox = dynamic(() => import("@/components/atoms/dashboard/vid-player-box"), { ssr: false });
+const VidPlayerBox = dynamic(() => import("@/components/atoms/dashboard/vid-player-box"), {
+  ssr: false,
+});
 
 export default function AdminCourseReviewPage() {
   const { courseId } = useParams();
@@ -25,10 +36,17 @@ export default function AdminCourseReviewPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getCourseById(courseId).then(setCourse).finally(() => setLoading(false));
+    getCourseById(courseId)
+      .then(setCourse)
+      .finally(() => setLoading(false));
   }, [courseId]);
 
-  if (loading) return <PageShell><Skeleton className="h-96" /></PageShell>;
+  if (loading)
+    return (
+      <PageShell>
+        <Skeleton className="h-96" />
+      </PageShell>
+    );
   if (!course) return <PageShell>Course not found.</PageShell>;
 
   return (
@@ -46,10 +64,14 @@ export default function AdminCourseReviewPage() {
                     {section.lessons?.map((lesson, lIdx) => (
                       <div key={lIdx} className="p-3 rounded-lg bg-surface border border-accent/5">
                         <div className="flex items-center gap-2 mb-2">
-                          {lesson.type === 'video' ? <Play className="w-4 h-4 text-secondary" /> : <FileText className="w-4 h-4 text-accent" />}
+                          {lesson.type === "video" ? (
+                            <Play className="w-4 h-4 text-secondary" />
+                          ) : (
+                            <FileText className="w-4 h-4 text-accent" />
+                          )}
                           <span className="font-medium">{lesson.title}</span>
                         </div>
-                        {lesson.type === 'video' && (
+                        {lesson.type === "video" && (
                           <div className="aspect-video w-full overflow-hidden rounded-lg">
                             <VidPlayerBox src={lesson.videoUrl} />
                           </div>
@@ -72,16 +94,31 @@ export default function AdminCourseReviewPage() {
           <div className="p-6 rounded-2xl border border-accent/10 bg-surface-raised">
             <h3 className="text-lg font-semibold mb-4">Metadata</h3>
             <dl className="space-y-3 text-sm">
-              <div className="flex justify-between"><span>Price:</span><span className="font-medium">{course.price === 0 ? 'Free' : `$${course.price}`}</span></div>
-              <div className="flex justify-between"><span>Published:</span><span className="font-medium">{new Date(course.createdAt).toLocaleDateString()}</span></div>
-              <div className="flex justify-between"><span>Rating:</span><span className="font-medium">{course.reviews?.length || 0} reviews</span></div>
+              <div className="flex justify-between">
+                <span>Price:</span>
+                <span className="font-medium">
+                  {course.price === 0 ? "Free" : `$${course.price}`}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Published:</span>
+                <span className="font-medium">
+                  {new Date(course.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Rating:</span>
+                <span className="font-medium">{course.reviews?.length || 0} reviews</span>
+              </div>
             </dl>
           </div>
           <div className="p-6 rounded-2xl border border-destructive/20 bg-destructive/5">
             <div className="flex items-center gap-2 text-destructive font-semibold mb-2">
               <ShieldAlert className="w-5 h-5" /> Flag History
             </div>
-            <p className="text-sm opacity-80">{course.flags?.length || 0} flags reported for this content.</p>
+            <p className="text-sm opacity-80">
+              {course.flags?.length || 0} flags reported for this content.
+            </p>
           </div>
         </div>
       </div>

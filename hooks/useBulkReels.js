@@ -70,12 +70,7 @@ async function sequentialFanOut(items, handler, onProgress) {
  *   confirmed: boolean,
  * }}
  */
-export default function useBulkReels({
-  reels,
-  setReels,
-  mutateReel,
-  apiAction,
-}) {
+export default function useBulkReels({ reels, setReels, mutateReel, apiAction }) {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [processing, setProcessing] = useState(false);
@@ -123,7 +118,7 @@ export default function useBulkReels({
         return Math.max(0, Math.min(next, reels.length - 1));
       });
     },
-    [reels.length],
+    [reels.length]
   );
 
   /**
@@ -152,9 +147,7 @@ export default function useBulkReels({
           if (result?.ok) {
             // Mutate local state on success
             setReels((prev) =>
-              prev.map((r) =>
-                r.id === id ? mutateReel(r, { hidden: action === "hide" }) : r,
-              ),
+              prev.map((r) => (r.id === id ? mutateReel(r, { hidden: action === "hide" }) : r))
             );
           }
           return result;
@@ -165,23 +158,20 @@ export default function useBulkReels({
             id: toastId,
             description: `${completed} of ${total} processed`,
           });
-        },
+        }
       );
 
       // Final summary toast
       if (failed === 0) {
         toast.success(
           `${action === "hide" ? "Hidden" : "Unhidden"} ${succeeded} reel${succeeded !== 1 ? "s" : ""}`,
-          { id: toastId },
+          { id: toastId }
         );
       } else {
-        toast.error(
-          `${failed} of ${ids.length} failed`,
-          {
-            id: toastId,
-            description: errors.length > 0 ? errors[0] : "Unknown error",
-          },
-        );
+        toast.error(`${failed} of ${ids.length} failed`, {
+          id: toastId,
+          description: errors.length > 0 ? errors[0] : "Unknown error",
+        });
       }
 
       clearSelection();
@@ -189,18 +179,12 @@ export default function useBulkReels({
       setProgress(null);
       setConfirmed(false);
     },
-    [selectedIds, apiAction, setReels, mutateReel, clearSelection],
+    [selectedIds, apiAction, setReels, mutateReel, clearSelection]
   );
 
-  const bulkHide = useCallback(
-    (reason) => executeBulk("hide", reason),
-    [executeBulk],
-  );
+  const bulkHide = useCallback((reason) => executeBulk("hide", reason), [executeBulk]);
 
-  const bulkUnhide = useCallback(
-    (reason) => executeBulk("unhide", reason),
-    [executeBulk],
-  );
+  const bulkUnhide = useCallback((reason) => executeBulk("unhide", reason), [executeBulk]);
 
   return useMemo(
     () => ({
@@ -236,6 +220,6 @@ export default function useBulkReels({
       progress,
       needsConfirmation,
       confirmed,
-    ],
+    ]
   );
 }

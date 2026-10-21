@@ -18,13 +18,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -100,7 +94,13 @@ import VerificationDetailDrawer from "@/components/admin/verifications/Verificat
 
 export default function AdminEducatorsVerificationPage() {
   const [applications, setApplications] = useState([]);
-  const [counts, setCounts] = useState({ all: 0, pending: 0, under_review: 0, approved: 0, rejected: 0 });
+  const [counts, setCounts] = useState({
+    all: 0,
+    pending: 0,
+    under_review: 0,
+    approved: 0,
+    rejected: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [isRefetching, setIsRefetching] = useState(false);
   const [statusFilter, setStatusFilter] = useState("pending");
@@ -124,25 +124,28 @@ export default function AdminEducatorsVerificationPage() {
   const [detailOpen, setDetailOpen] = useState(false);
 
   // Load verification queue data
-  const loadQueue = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setIsRefetching(true);
-    else setLoading(true);
+  const loadQueue = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) setIsRefetching(true);
+      else setLoading(true);
 
-    try {
-      const data = await fetchVerificationQueue({
-        status: statusFilter,
-        search: searchQuery,
-      });
+      try {
+        const data = await fetchVerificationQueue({
+          status: statusFilter,
+          search: searchQuery,
+        });
 
-      setApplications(data.applications || []);
-      setCounts(data.counts || { all: 0, pending: 0, under_review: 0, approved: 0, rejected: 0 });
-    } catch {
-      toast.error("Failed to load verification queue.");
-    } finally {
-      setLoading(false);
-      setIsRefetching(false);
-    }
-  }, [statusFilter, searchQuery]);
+        setApplications(data.applications || []);
+        setCounts(data.counts || { all: 0, pending: 0, under_review: 0, approved: 0, rejected: 0 });
+      } catch {
+        toast.error("Failed to load verification queue.");
+      } finally {
+        setLoading(false);
+        setIsRefetching(false);
+      }
+    },
+    [statusFilter, searchQuery]
+  );
 
   useEffect(() => {
     loadQueue();
@@ -229,9 +232,7 @@ export default function AdminEducatorsVerificationPage() {
         `Successfully ${bulkAction === "approve" ? "approved" : "rejected"} ${succeeded.length} educators.`
       );
     } else {
-      toast.error(
-        `Batch finished: ${succeeded.length} succeeded, ${failed.length} failed.`
-      );
+      toast.error(`Batch finished: ${succeeded.length} succeeded, ${failed.length} failed.`);
     }
   };
 
@@ -249,7 +250,11 @@ export default function AdminEducatorsVerificationPage() {
   // Single Reject
   const handleSingleReject = async (app, { reasonCategory, notes }) => {
     try {
-      await rejectVerification(app.id, { reasonCategory, notes }, { name: app.name, email: app.email });
+      await rejectVerification(
+        app.id,
+        { reasonCategory, notes },
+        { name: app.name, email: app.email }
+      );
       toast.success(`Rejected ${app.name || "educator"}`);
       loadQueue(true);
     } catch {
@@ -273,9 +278,7 @@ export default function AdminEducatorsVerificationPage() {
               onClick={() => loadQueue(true)}
               className="text-xs border-accent/20 h-9"
             >
-              <RefreshCw
-                className={cn("size-3.5 mr-1.5", isRefetching && "animate-spin")}
-              />
+              <RefreshCw className={cn("size-3.5 mr-1.5", isRefetching && "animate-spin")} />
               Refresh Queue
             </Button>
           }
@@ -315,7 +318,12 @@ export default function AdminEducatorsVerificationPage() {
             <CardContent className="p-4 flex items-center justify-between">
               <div>
                 <p className="text-xs text-ink-muted font-medium">Approved Total</p>
-                <p className={cn(poppins_600, "text-2xl text-emerald-600 dark:text-emerald-400 mt-1")}>
+                <p
+                  className={cn(
+                    poppins_600,
+                    "text-2xl text-emerald-600 dark:text-emerald-400 mt-1"
+                  )}
+                >
                   {counts.approved}
                 </p>
               </div>
@@ -397,7 +405,9 @@ export default function AdminEducatorsVerificationPage() {
               <div className="py-16 text-center text-ink-muted text-xs flex flex-col items-center justify-center gap-2">
                 <Users className="size-8 text-ink-muted/50" />
                 <p className="font-medium text-ink">No verification applications found</p>
-                <p className="text-[11px]">There are no educators matching the selected status or query.</p>
+                <p className="text-[11px]">
+                  There are no educators matching the selected status or query.
+                </p>
               </div>
             ) : (
               <Table>
@@ -416,7 +426,9 @@ export default function AdminEducatorsVerificationPage() {
                     <TableHead className="font-semibold text-ink">Liveness Signal</TableHead>
                     <TableHead className="font-semibold text-ink">Documents</TableHead>
                     <TableHead className="font-semibold text-ink">Status</TableHead>
-                    <TableHead className="text-right px-4 font-semibold text-ink">Actions</TableHead>
+                    <TableHead className="text-right px-4 font-semibold text-ink">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="divide-y divide-accent/10">
@@ -445,9 +457,7 @@ export default function AdminEducatorsVerificationPage() {
                           <div className="flex items-center gap-2.5">
                             <Avatar className="size-8 rounded-lg border border-accent/10">
                               <AvatarFallback className="text-xs bg-secondary/15 text-accent font-semibold">
-                                {(app.name || app.email || "E")
-                                  .slice(0, 2)
-                                  .toUpperCase()}
+                                {(app.name || app.email || "E").slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div>

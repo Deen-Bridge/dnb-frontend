@@ -19,26 +19,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
 import { changePassword } from "@/lib/actions/auth/changePassword";
-import {
-  getSessions,
-  revokeSession,
-  revokeOtherSessions,
-} from "@/lib/actions/auth/sessions";
+import { getSessions, revokeSession, revokeOtherSessions } from "@/lib/actions/auth/sessions";
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -87,8 +74,7 @@ const PasswordField = ({ id, label, value, onChange, placeholder }) => {
   );
 };
 
-const deviceIcon = (ua = "") =>
-  /mobile|android|iphone|ipad/i.test(ua) ? Smartphone : Monitor;
+const deviceIcon = (ua = "") => (/mobile|android|iphone|ipad/i.test(ua) ? Smartphone : Monitor);
 
 export default function SecurityPage() {
   // ── password ──
@@ -201,9 +187,7 @@ export default function SecurityPage() {
                 id="confirm"
                 label="Confirm new password"
                 value={pw.confirm}
-                onChange={(e) =>
-                  setPw((p) => ({ ...p, confirm: e.target.value }))
-                }
+                onChange={(e) => setPw((p) => ({ ...p, confirm: e.target.value }))}
                 placeholder="Re-enter new password"
               />
             </div>

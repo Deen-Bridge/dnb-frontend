@@ -85,11 +85,7 @@ const Page = () => {
         subtitle="Join live sessions, discussions, and community events"
         actions={
           canCreateSpace && (
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => setmodalOpen(true)}
-            >
+            <Button variant="outline" className="rounded-full" onClick={() => setmodalOpen(true)}>
               <Plus className="mr-1 h-4 w-4" />
               Create
             </Button>
@@ -129,9 +125,7 @@ const Page = () => {
               variant="secondary"
               className={cn(
                 "ml-1 text-xs px-1.5 py-0",
-                showFlaggedOnly
-                  ? "bg-white/20 text-white"
-                  : "bg-red-100 text-red-600"
+                showFlaggedOnly ? "bg-white/20 text-white" : "bg-red-100 text-red-600"
               )}
             >
               {flaggedCount}
@@ -157,11 +151,7 @@ const Page = () => {
           }
           action={
             canCreateSpace && (
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={() => setmodalOpen(true)}
-              >
+              <Button variant="outline" className="rounded-full" onClick={() => setmodalOpen(true)}>
                 Create Space
               </Button>
             )
@@ -175,11 +165,7 @@ const Page = () => {
         </CardGrid>
       )}
 
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setmodalOpen(false)}
-        title="Create Space"
-      >
+      <Modal isOpen={modalOpen} onClose={() => setmodalOpen(false)} title="Create Space">
         <SpaceCreateForm onSpaceCreated={handleSpaceCreated} />
       </Modal>
     </PageShell>

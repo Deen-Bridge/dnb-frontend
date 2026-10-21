@@ -1,7 +1,7 @@
 // app/api/report-reasons/route.js
-import { NextResponse } from 'next/server';
-import { REPORT_REASON_GROUPS } from '@/lib/reportReasons';
-import { getReasons, createReason } from '@/lib/report-reasons-store';
+import { NextResponse } from "next/server";
+import { REPORT_REASON_GROUPS } from "@/lib/reportReasons";
+import { getReasons, createReason } from "@/lib/report-reasons-store";
 
 export async function GET() {
   const groups = Object.values(REPORT_REASON_GROUPS).map(({ id, label, description }) => ({
@@ -18,7 +18,7 @@ export async function POST(request) {
   const { group, label, description } = body || {};
 
   if (!group || !label) {
-    return NextResponse.json({ error: 'Group and label are required.' }, { status: 400 });
+    return NextResponse.json({ error: "Group and label are required." }, { status: 400 });
   }
 
   const groupExists = Object.values(REPORT_REASON_GROUPS).some((g) => g.id === group);

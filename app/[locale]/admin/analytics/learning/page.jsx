@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -28,11 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import {
   GraduationCap,
@@ -85,9 +75,7 @@ function StatCard({ icon: Icon, label, metric }) {
                 {metric.value.toLocaleString()}
               </p>
             ) : (
-              <p className={cn(poppins_600.className, "text-3xl text-muted-foreground/40")}>
-                —
-              </p>
+              <p className={cn(poppins_600.className, "text-3xl text-muted-foreground/40")}>—</p>
             )}
             {!metric.tracked && (
               <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
@@ -112,14 +100,17 @@ function NotTrackedPlaceholder({ icon: Icon, title, description }) {
       </div>
       <div>
         <div className="flex items-center justify-center gap-2">
-          <h3 className={cn(poppins_600.className, "text-base text-foreground")}>
-            {title}
-          </h3>
+          <h3 className={cn(poppins_600.className, "text-base text-foreground")}>{title}</h3>
           <Badge variant="outline" className="text-xs text-muted-foreground">
             Not tracked yet
           </Badge>
         </div>
-        <p className={cn(poppins_400.className, "mx-auto mt-1 max-w-md text-sm text-muted-foreground")}>
+        <p
+          className={cn(
+            poppins_400.className,
+            "mx-auto mt-1 max-w-md text-sm text-muted-foreground"
+          )}
+        >
           {description}
         </p>
       </div>
@@ -128,10 +119,7 @@ function NotTrackedPlaceholder({ icon: Icon, title, description }) {
 }
 
 function CourseCompletionFunnel({ funnel }) {
-  const maxValue = Math.max(
-    ...funnel.map((stage) => (stage.tracked ? stage.value : 0)),
-    1
-  );
+  const maxValue = Math.max(...funnel.map((stage) => (stage.tracked ? stage.value : 0)), 1);
 
   return (
     <Card>
@@ -146,9 +134,7 @@ function CourseCompletionFunnel({ funnel }) {
       </CardHeader>
       <CardContent className="space-y-5">
         {funnel.map((stage) => {
-          const width = stage.tracked
-            ? Math.max(8, (stage.value / maxValue) * 100)
-            : 100;
+          const width = stage.tracked ? Math.max(8, (stage.value / maxValue) * 100) : 100;
           return (
             <div key={stage.stage} className="flex items-center gap-4">
               <span className={cn(poppins_500.className, "w-28 shrink-0 text-sm")}>
@@ -257,9 +243,7 @@ function GeographicDistribution({ geographic }) {
             <Globe className="h-5 w-5" />
             Geographic Distribution
           </CardTitle>
-          <CardDescription>
-            Where learners are located around the world
-          </CardDescription>
+          <CardDescription>Where learners are located around the world</CardDescription>
         </CardHeader>
         <CardContent>
           <NotTrackedPlaceholder
@@ -290,9 +274,7 @@ function GeographicDistribution({ geographic }) {
         <div className="flex items-center justify-between rounded-lg border border-accent/10 bg-muted/30 px-4 py-3">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-accent" />
-            <span className={cn(poppins_500.className, "text-sm")}>
-              {coverage.label}
-            </span>
+            <span className={cn(poppins_500.className, "text-sm")}>{coverage.label}</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="h-2 w-32 overflow-hidden rounded-full bg-muted">
@@ -301,10 +283,7 @@ function GeographicDistribution({ geographic }) {
                 style={{ width: `${coverage.value}%` }}
               />
             </div>
-            <Badge
-              variant={coverage.value >= 70 ? "secondary" : "outline"}
-              className="text-xs"
-            >
+            <Badge variant={coverage.value >= 70 ? "secondary" : "outline"} className="text-xs">
               {coverage.value}%
             </Badge>
           </div>
@@ -312,9 +291,8 @@ function GeographicDistribution({ geographic }) {
 
         {coverage.value < 100 && (
           <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
-            Country data is available for {coverage.value}% of learners. The
-            remaining learners have no country on file and are excluded from the
-            distribution below.
+            Country data is available for {coverage.value}% of learners. The remaining learners have
+            no country on file and are excluded from the distribution below.
           </p>
         )}
 
@@ -376,20 +354,15 @@ function TopCountriesTable({ countries }) {
             </TableHeader>
             <TableBody>
               {countries.map((country, index) => {
-                const share = totalLearners > 0
-                  ? Math.round((country.learners / totalLearners) * 100)
-                  : 0;
+                const share =
+                  totalLearners > 0 ? Math.round((country.learners / totalLearners) * 100) : 0;
                 return (
                   <TableRow key={country.code}>
                     <TableCell className="text-muted-foreground">{index + 1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <span className={cn(poppins_500.className, "text-sm")}>
-                          {country.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {country.code}
-                        </span>
+                        <span className={cn(poppins_500.className, "text-sm")}>{country.name}</span>
+                        <span className="text-xs text-muted-foreground">{country.code}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -455,9 +428,10 @@ export default function LearningAnalyticsPage() {
     let active = true;
     setLoading(true);
     const to = new Date().toISOString();
-    const from = dateRange > 0
-      ? new Date(Date.now() - dateRange * 24 * 60 * 60 * 1000).toISOString()
-      : undefined;
+    const from =
+      dateRange > 0
+        ? new Date(Date.now() - dateRange * 24 * 60 * 60 * 1000).toISOString()
+        : undefined;
     fetchEngagementAnalytics({ from, to })
       .then((engagement) => {
         if (active) {
@@ -506,11 +480,7 @@ export default function LearningAnalyticsPage() {
           title="Learning Analytics"
           subtitle="How learners engage with courses and content"
         />
-        <EmptyState
-          icon={AlertTriangle}
-          title="Failed to load analytics"
-          description={error}
-        />
+        <EmptyState icon={AlertTriangle} title="Failed to load analytics" description={error} />
       </PageShell>
     );
   }
@@ -577,9 +547,7 @@ export default function LearningAnalyticsPage() {
               <Clock className="h-5 w-5" />
               Average Session Length
             </CardTitle>
-            <CardDescription>
-              How long learners stay in a single session
-            </CardDescription>
+            <CardDescription>How long learners stay in a single session</CardDescription>
           </CardHeader>
           <CardContent>
             <NotTrackedPlaceholder

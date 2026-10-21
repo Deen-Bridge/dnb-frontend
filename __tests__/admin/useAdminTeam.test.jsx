@@ -51,7 +51,9 @@ beforeEach(() => {
   mocks.listAdmins.mockResolvedValue({ admins: [{ ...SUPER }, { ...STAFF }] });
   mocks.demoteAdmin.mockResolvedValue({ admin: { id: "a1", tier: "staff" } });
   mocks.revokeAdmin.mockResolvedValue({ revoked: true, adminId: "a2" });
-  mocks.createInvite.mockResolvedValue({ invite: { token: "inv_mock_x", url: "u", expiresAt: "e" } });
+  mocks.createInvite.mockResolvedValue({
+    invite: { token: "inv_mock_x", url: "u", expiresAt: "e" },
+  });
 });
 
 async function mountLoaded() {
@@ -130,7 +132,9 @@ describe("useAdminTeam — revoke", () => {
 
 describe("useAdminTeam — invite", () => {
   it("returns the minted invite from the service", async () => {
-    mocks.createInvite.mockResolvedValueOnce({ invite: { token: "inv_mock_x", url: "u", expiresAt: "e" } });
+    mocks.createInvite.mockResolvedValueOnce({
+      invite: { token: "inv_mock_x", url: "u", expiresAt: "e" },
+    });
     const { result } = await mountLoaded();
 
     let invite;

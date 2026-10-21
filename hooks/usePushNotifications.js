@@ -62,10 +62,7 @@ function readStoredPreferences() {
 function persistPreferences(preferences) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(
-      PREFERENCES_STORAGE_KEY,
-      JSON.stringify(preferences)
-    );
+    window.localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));
   } catch {
     /* localStorage may be unavailable (private mode) — ignore */
   }

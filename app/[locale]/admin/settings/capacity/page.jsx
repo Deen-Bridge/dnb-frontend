@@ -3,13 +3,7 @@
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,8 +99,8 @@ export default function CapacitySettingsPage() {
               Platform-Wide Guardrails
             </p>
             <p className={cn(poppins_400.className, "text-xs text-blue-700")}>
-              These settings enforce limits across all spaces. Individual
-              educators can set lower values, but never exceed these ceilings.
+              These settings enforce limits across all spaces. Individual educators can set lower
+              values, but never exceed these ceilings.
             </p>
           </div>
         </CardContent>
@@ -142,7 +136,8 @@ export default function CapacitySettingsPage() {
                 <p className="text-xs text-red-500">{errors.maxConcurrentSpaces}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Allowed range: {PLATFORM_LIMITS.maxConcurrentSpaces.min} – {PLATFORM_LIMITS.maxConcurrentSpaces.max}
+                Allowed range: {PLATFORM_LIMITS.maxConcurrentSpaces.min} –{" "}
+                {PLATFORM_LIMITS.maxConcurrentSpaces.max}
               </p>
             </div>
           </CardContent>
@@ -177,7 +172,8 @@ export default function CapacitySettingsPage() {
                 <p className="text-xs text-red-500">{errors.defaultMaxParticipants}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Allowed range: {PLATFORM_LIMITS.defaultMaxParticipants.min} – {PLATFORM_LIMITS.defaultMaxParticipants.max}
+                Allowed range: {PLATFORM_LIMITS.defaultMaxParticipants.min} –{" "}
+                {PLATFORM_LIMITS.defaultMaxParticipants.max}
               </p>
             </div>
           </CardContent>
@@ -214,7 +210,8 @@ export default function CapacitySettingsPage() {
                 <p className="text-xs text-red-500">{errors.minLeadTimeMinutes}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Allowed range: {PLATFORM_LIMITS.minLeadTimeMinutes.min} – {PLATFORM_LIMITS.minLeadTimeMinutes.max} minutes
+                Allowed range: {PLATFORM_LIMITS.minLeadTimeMinutes.min} –{" "}
+                {PLATFORM_LIMITS.minLeadTimeMinutes.max} minutes
               </p>
             </div>
             <div className="flex items-center justify-center rounded-lg border bg-muted/50 p-6">
@@ -240,12 +237,10 @@ export default function CapacitySettingsPage() {
         <CardContent>
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
-              <p className={cn(poppins_500.className, "text-sm")}>
-                Enforce limits strictly
-              </p>
+              <p className={cn(poppins_500.className, "text-sm")}>Enforce limits strictly</p>
               <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
-                When enabled, requests that exceed these limits will be rejected.
-                When disabled, limits are shown as warnings only.
+                When enabled, requests that exceed these limits will be rejected. When disabled,
+                limits are shown as warnings only.
               </p>
             </div>
             <Switch

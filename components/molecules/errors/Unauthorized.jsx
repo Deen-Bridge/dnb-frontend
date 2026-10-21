@@ -38,19 +38,11 @@ const Unauthorized = ({ className, message }) => {
         <ShieldAlert className="h-12 w-12 text-destructive" aria-hidden="true" />
       </div>
       <h1
-        className={cn(
-          "text-3xl lg:text-4xl text-foreground font-bold mb-4",
-          Inter_800.className
-        )}
+        className={cn("text-3xl lg:text-4xl text-foreground font-bold mb-4", Inter_800.className)}
       >
         Access restricted
       </h1>
-      <p
-        className={cn(
-          "text-lg lg:text-xl text-muted-foreground mb-8",
-          Inter_400.className
-        )}
-      >
+      <p className={cn("text-lg lg:text-xl text-muted-foreground mb-8", Inter_400.className)}>
         {message ||
           "You don't have permission to view this page. If you think this is a mistake, contact a maintainer."}
       </p>

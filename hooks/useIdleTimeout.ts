@@ -37,9 +37,7 @@ export default function useIdleTimeout({
   throttleMs = 750,
 }: UseIdleTimeoutOptions): UseIdleTimeoutResult {
   const [isIdleWarning, setIsIdleWarning] = useState<boolean>(false);
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(
-    Math.ceil((warnMs || 0) / 1000)
-  );
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(Math.ceil((warnMs || 0) / 1000));
 
   const onWarnRef = useRef<(() => void) | undefined>(onWarn);
   const onTimeoutRef = useRef<(() => void) | undefined>(onTimeout);
@@ -131,9 +129,7 @@ export default function useIdleTimeout({
 
     return () => {
       mountedRef.current = false;
-      ACTIVITY_EVENTS.forEach((evt) =>
-        window.removeEventListener(evt, handleActivity)
-      );
+      ACTIVITY_EVENTS.forEach((evt) => window.removeEventListener(evt, handleActivity));
       document.removeEventListener("visibilitychange", handleVisibility);
       clearTimers();
     };

@@ -8,9 +8,13 @@ export interface UserPresence {
   lastSeen: any; // TODO(types): Firestore timestamp or ISO string
 }
 
-export function listenToPresence(userId: string, callback: (presence: UserPresence) => void): Unsubscribe {
+export function listenToPresence(
+  userId: string,
+  callback: (presence: UserPresence) => void
+): Unsubscribe {
   const userRef = doc(db, "users", userId);
-  return onSnapshot(userRef, (snapshot: any) => { // TODO(types): Firestore document snapshot
+  return onSnapshot(userRef, (snapshot: any) => {
+    // TODO(types): Firestore document snapshot
     if (snapshot.exists()) {
       const data = snapshot.data();
       callback({

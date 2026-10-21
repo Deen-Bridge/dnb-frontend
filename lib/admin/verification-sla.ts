@@ -44,7 +44,10 @@ export const VERIFICATION_SLA_BUCKET_ORDER = ["healthy", "watch", "overdue"] as 
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
-export function getVerificationAgeDays(submittedAt: string | Date | number, now: Date = new Date()): number {
+export function getVerificationAgeDays(
+  submittedAt: string | Date | number,
+  now: Date = new Date()
+): number {
   const submittedDate = new Date(submittedAt);
   if (Number.isNaN(submittedDate.getTime())) return 0;
 
@@ -52,7 +55,10 @@ export function getVerificationAgeDays(submittedAt: string | Date | number, now:
   return Math.max(0, Math.floor(elapsed / DAY_IN_MS));
 }
 
-export function getVerificationSlaBucket(submittedAt: string | Date | number, now: Date = new Date()): SlaBucket {
+export function getVerificationSlaBucket(
+  submittedAt: string | Date | number,
+  now: Date = new Date()
+): SlaBucket {
   const ageDays = getVerificationAgeDays(submittedAt, now);
 
   if (ageDays <= (VERIFICATION_SLA_BUCKETS.healthy.maxAgeDays ?? 2)) {

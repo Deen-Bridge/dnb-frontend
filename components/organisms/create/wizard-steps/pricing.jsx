@@ -63,9 +63,7 @@ export default function WizardStepPricing({ errors, register, setValue, watch })
             Course Price (USD / XLM equivalent) <span className="text-red-500">*</span>
           </Label>
           <div className="relative">
-            <span className="absolute left-3 top-2.5 text-muted-foreground font-bold">
-              $
-            </span>
+            <span className="absolute left-3 top-2.5 text-muted-foreground font-bold">$</span>
             <Input
               id="price"
               type="number"

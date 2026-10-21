@@ -18,21 +18,12 @@ import {
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /* ── building blocks (design-system consistent) ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -47,9 +38,7 @@ const CardHeader = ({ icon: Icon, title, description }) => (
     <div>
       <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
       {description && (
-        <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-          {description}
-        </p>
+        <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>{description}</p>
       )}
     </div>
   </div>
@@ -57,17 +46,10 @@ const CardHeader = ({ icon: Icon, title, description }) => (
 
 const FieldLabel = ({ htmlFor, children, hint }) => (
   <span className="mb-1.5 block">
-    <label
-      htmlFor={htmlFor}
-      className={cn(poppins_500, "text-sm text-ink")}
-    >
+    <label htmlFor={htmlFor} className={cn(poppins_500, "text-sm text-ink")}>
       {children}
     </label>
-    {hint && (
-      <span className={cn(poppins_400, "ml-1 text-xs text-ink-muted")}>
-        {hint}
-      </span>
-    )}
+    {hint && <span className={cn(poppins_400, "ml-1 text-xs text-ink-muted")}>{hint}</span>}
   </span>
 );
 
@@ -103,7 +85,6 @@ const ReportIssue = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
   };
   return (
     <PageShell>
@@ -125,10 +106,7 @@ const ReportIssue = () => {
               title="Report an issue"
               description="Describe your problem in detail so we can resolve it quickly."
             />
-            <form
-              onSubmit={handleSubmit}
-              className="mt-6 space-y-5"
-            >
+            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               <div>
                 <FieldLabel htmlFor="report-subject">Subject</FieldLabel>
                 <Input
@@ -146,9 +124,7 @@ const ReportIssue = () => {
               </div>
 
               <div>
-                <FieldLabel htmlFor="report-description">
-                  Description
-                </FieldLabel>
+                <FieldLabel htmlFor="report-description">Description</FieldLabel>
                 <Textarea
                   name="report-description"
                   id="report-description"
@@ -169,21 +145,11 @@ const ReportIssue = () => {
                 >
                   Upload file
                 </FieldLabel>
-                <FileInput
-                  id="report-file"
-                  file={image}
-                  onChange={handleImageChange}
-                />
+                <FileInput id="report-file" file={image} onChange={handleImageChange} />
               </div>
 
               <div className="border-t border-accent/10 pt-5">
-                <Button
-                  round
-                  wide
-                  loading={loading}
-                  type="submit"
-                  className="py-3"
-                >
+                <Button round wide loading={loading} type="submit" className="py-3">
                   Create a ticket
                 </Button>
               </div>
@@ -193,10 +159,7 @@ const ReportIssue = () => {
           {/* Sidebar: how to reach us */}
           <div className="space-y-6">
             <Panel className="p-6">
-              <CardHeader
-                icon={MessageSquareText}
-                title="Other ways to reach us"
-              />
+              <CardHeader icon={MessageSquareText} title="Other ways to reach us" />
               <ul className="mt-5 space-y-4">
                 {SUPPORT_CHANNELS.map((channel) => (
                   <li key={channel.title} className="flex items-start gap-3">
@@ -204,14 +167,9 @@ const ReportIssue = () => {
                       <channel.icon className="h-4 w-4 text-accent" />
                     </div>
                     <div>
-                      <p className={cn(poppins_500, "text-sm text-ink")}>
-                        {channel.title}
-                      </p>
+                      <p className={cn(poppins_500, "text-sm text-ink")}>{channel.title}</p>
                       <p
-                        className={cn(
-                          poppins_400,
-                          "mt-0.5 text-xs leading-relaxed text-ink-muted"
-                        )}
+                        className={cn(poppins_400, "mt-0.5 text-xs leading-relaxed text-ink-muted")}
                       >
                         {channel.text}
                       </p>
@@ -223,12 +181,7 @@ const ReportIssue = () => {
 
             <Panel className="p-6">
               <CardHeader icon={Paperclip} title="Tips for a faster fix" />
-              <ul
-                className={cn(
-                  poppins_400,
-                  "mt-4 space-y-3 text-sm text-ink-muted"
-                )}
-              >
+              <ul className={cn(poppins_400, "mt-4 space-y-3 text-sm text-ink-muted")}>
                 <li className="flex items-start gap-2">
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
                   Include a clear subject that summarizes the problem.

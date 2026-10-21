@@ -3,13 +3,7 @@
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -181,8 +175,8 @@ export default function BrandingSettingsPage() {
               Admin-Controlled Surfaces Only
             </p>
             <p className={cn(poppins_400.className, "text-xs text-blue-700")}>
-              These settings only affect banners, toasts, and announcement emails.
-              The global app theme is managed separately.
+              These settings only affect banners, toasts, and announcement emails. The global app
+              theme is managed separately.
             </p>
           </div>
         </CardContent>
@@ -206,9 +200,7 @@ export default function BrandingSettingsPage() {
               <Label>Banner Style</Label>
               <Select
                 value={settings.bannerTheme}
-                onValueChange={(value) =>
-                  setSettings((prev) => ({ ...prev, bannerTheme: value }))
-                }
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, bannerTheme: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -225,9 +217,7 @@ export default function BrandingSettingsPage() {
               <Label>Toast Style</Label>
               <Select
                 value={settings.toastTheme}
-                onValueChange={(value) =>
-                  setSettings((prev) => ({ ...prev, toastTheme: value }))
-                }
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, toastTheme: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -247,9 +237,7 @@ export default function BrandingSettingsPage() {
                   {ACCENT_COLORS.map((color) => (
                     <button
                       key={color.value}
-                      onClick={() =>
-                        setSettings((prev) => ({ ...prev, accentColor: color.value }))
-                      }
+                      onClick={() => setSettings((prev) => ({ ...prev, accentColor: color.value }))}
                       className={cn(
                         "h-10 w-10 rounded-full border-2 transition-all",
                         color.preview,
@@ -341,9 +329,7 @@ export default function BrandingSettingsPage() {
             <Eye className="h-5 w-5" />
             Live Preview
           </CardTitle>
-          <CardDescription>
-            See how your branding will appear in communications
-          </CardDescription>
+          <CardDescription>See how your branding will appear in communications</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Banner Preview */}
@@ -352,7 +338,9 @@ export default function BrandingSettingsPage() {
             <div
               className={cn(
                 "rounded-lg p-4 text-white",
-                settings.bannerTheme === "accent" ? "" : "bg-gradient-to-r from-secondary to-highlight"
+                settings.bannerTheme === "accent"
+                  ? ""
+                  : "bg-gradient-to-r from-secondary to-highlight"
               )}
               style={
                 settings.bannerTheme === "accent"
@@ -376,7 +364,9 @@ export default function BrandingSettingsPage() {
               <div
                 className={cn(
                   "rounded-lg px-4 py-3 text-white shadow-lg max-w-sm",
-                  settings.toastTheme === "accent" ? "" : "bg-gradient-to-r from-secondary to-highlight"
+                  settings.toastTheme === "accent"
+                    ? ""
+                    : "bg-gradient-to-r from-secondary to-highlight"
                 )}
                 style={
                   settings.toastTheme === "accent"
@@ -404,18 +394,14 @@ export default function BrandingSettingsPage() {
                     className="h-10 w-auto"
                   />
                 ) : (
-                  <div className="text-2xl font-bold text-gray-800">
-                    Deen Bridge
-                  </div>
+                  <div className="text-2xl font-bold text-gray-800">Deen Bridge</div>
                 )}
               </div>
               <div className="space-y-2 text-center">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Important Announcement
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-800">Important Announcement</h3>
                 <p className="text-sm text-gray-600">
-                  This is a preview of how your announcement emails will appear
-                  to recipients with your custom branding.
+                  This is a preview of how your announcement emails will appear to recipients with
+                  your custom branding.
                 </p>
               </div>
             </div>

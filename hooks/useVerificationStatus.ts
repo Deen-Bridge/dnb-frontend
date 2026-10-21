@@ -94,7 +94,8 @@ export function useVerificationStatus(): UseVerificationStatusResult {
         writeBannerPrefs({});
         setBannerPrefsVersion((v) => v + 1);
       }
-    } catch (err: any) { // TODO(types): Error from fetchVerificationStatus
+    } catch (err: any) {
+      // TODO(types): Error from fetchVerificationStatus
       if (!mountedRef.current) return;
       setError(err?.message ?? "Unknown error");
     } finally {
@@ -169,11 +170,9 @@ export function useVerificationStatus(): UseVerificationStatusResult {
     isVerified: status === VERIFICATION_STATUS.VERIFIED,
     isRejected: status === VERIFICATION_STATUS.REJECTED,
     isPending:
-      status === VERIFICATION_STATUS.PENDING ||
-      status === VERIFICATION_STATUS.UNDER_REVIEW,
+      status === VERIFICATION_STATUS.PENDING || status === VERIFICATION_STATUS.UNDER_REVIEW,
     isIncomplete:
-      status === VERIFICATION_STATUS.INCOMPLETE ||
-      status === VERIFICATION_STATUS.NOT_STARTED,
+      status === VERIFICATION_STATUS.INCOMPLETE || status === VERIFICATION_STATUS.NOT_STARTED,
     snooze,
     dismiss,
     refresh,

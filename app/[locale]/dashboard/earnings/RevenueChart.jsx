@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 const chartConfig = {
@@ -42,17 +38,9 @@ export default function RevenueChart({ data }) {
         />
         <ChartTooltip
           cursor={{ fill: "rgba(0,153,0,0.06)" }}
-          content={
-            <ChartTooltipContent
-              formatter={(value) => `$${value.toFixed(2)}`}
-            />
-          }
+          content={<ChartTooltipContent formatter={(value) => `$${value.toFixed(2)}`} />}
         />
-        <Bar
-          dataKey="revenue"
-          fill="var(--color-revenue)"
-          radius={[6, 6, 0, 0]}
-        />
+        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );

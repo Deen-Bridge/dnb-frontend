@@ -17,11 +17,7 @@ import { CAPABILITIES } from "@/lib/auth/roles";
 import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
-import {
-  ISLAMIC_CATEGORIES,
-  resolveCategorySlug,
-  sortCourses,
-} from "@/lib/categories";
+import { ISLAMIC_CATEGORIES, resolveCategorySlug, sortCourses } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 const CourseGridSkeleton = () => (
@@ -43,13 +39,9 @@ const CoursesPageContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
-  const [category, setCategory] = useState(
-    () => searchParams.get("category") || ""
-  );
+  const [category, setCategory] = useState(() => searchParams.get("category") || "");
   const [sort, setSort] = useState(() => searchParams.get("sort") || "newest");
-  const [searchInput, setSearchInput] = useState(
-    () => searchParams.get("search") || ""
-  );
+  const [searchInput, setSearchInput] = useState(() => searchParams.get("search") || "");
 
   const search = useDebouncedValue(searchInput, 300);
 
@@ -102,11 +94,7 @@ const CoursesPageContent = () => {
         const title = String(course?.title || "").toLowerCase();
         const description = String(course?.description || "").toLowerCase();
         const instructor = String(course?.createdBy?.name || "").toLowerCase();
-        if (
-          !title.includes(term) &&
-          !description.includes(term) &&
-          !instructor.includes(term)
-        ) {
+        if (!title.includes(term) && !description.includes(term) && !instructor.includes(term)) {
           return false;
         }
       }
@@ -137,11 +125,7 @@ const CoursesPageContent = () => {
       <PageHeader
         icon={GraduationCap}
         title={showBookmarks ? "My Bookmarked Courses" : "All Courses"}
-        subtitle={
-          showBookmarks
-            ? "Courses you've saved for later"
-            : "Browse and enroll in courses"
-        }
+        subtitle={showBookmarks ? "Courses you've saved for later" : "Browse and enroll in courses"}
         actions={
           <>
             {canCreateCourse && (
@@ -156,7 +140,10 @@ const CoursesPageContent = () => {
             )}
             <Button
               variant={showBookmarks ? "default" : "outline"}
-              className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
+              className={cn(
+                "rounded-full",
+                showBookmarks && "bg-accent text-white hover:bg-accent/90"
+              )}
               onClick={() => setShowBookmarks(!showBookmarks)}
             >
               <Bookmark className="h-4 w-4 mr-1" />
@@ -230,13 +217,12 @@ const CoursesPageContent = () => {
               : "No courses available at the moment."
           }
           action={
-            !showBookmarks && canCreateCourse && (
+            !showBookmarks &&
+            canCreateCourse && (
               <Button
                 variant="outline"
                 className="rounded-full"
-                onClick={() =>
-                  (window.location.href = "/dashboard/courses/create")
-                }
+                onClick={() => (window.location.href = "/dashboard/courses/create")}
               >
                 Create Course
               </Button>

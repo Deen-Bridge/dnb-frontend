@@ -175,9 +175,7 @@ describe("rejection before any network call", () => {
       dataTransfer: { files: [huge] },
     });
 
-    expect(await screen.findByTestId(`error-${ID}`)).toHaveTextContent(
-      /limit is 10 MB/i
-    );
+    expect(await screen.findByTestId(`error-${ID}`)).toHaveTextContent(/limit is 10 MB/i);
     expect(axiosInstance.post).not.toHaveBeenCalled();
     expect(axios.request).not.toHaveBeenCalled();
   });
@@ -206,9 +204,7 @@ describe("drag/drop upload", () => {
 
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" })],
       },
     });
 
@@ -253,9 +249,7 @@ describe("drag/drop upload", () => {
 
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" })],
       },
     });
 
@@ -285,10 +279,7 @@ describe("camera capture", () => {
     fireEvent.change(cameraInput, { target: { files: [photo] } });
 
     await waitFor(() =>
-      expect(screen.getByTestId("slot-status")).toHaveAttribute(
-        "data-state",
-        "accepted"
-      )
+      expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted")
     );
 
     expect(axiosInstance.post).toHaveBeenCalledWith(
@@ -308,20 +299,14 @@ describe("scan pending resolves", () => {
 
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" })],
       },
     });
 
     await screen.findByTestId(`scan-pending-${ID}`);
 
     await waitFor(
-      () =>
-        expect(screen.getByTestId("slot-status")).toHaveAttribute(
-          "data-state",
-          "accepted"
-        ),
+      () => expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted"),
       { timeout: 3000 }
     );
 
@@ -344,18 +329,12 @@ describe("scan pending resolves", () => {
 
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" })],
       },
     });
 
     await waitFor(
-      () =>
-        expect(screen.getByTestId("slot-status")).toHaveAttribute(
-          "data-state",
-          "rejected"
-        ),
+      () => expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "rejected"),
       { timeout: 3000 }
     );
 
@@ -376,16 +355,11 @@ describe("replace and remove", () => {
     // First upload
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "first.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "first.pdf", type: "application/pdf" })],
       },
     });
     await waitFor(() =>
-      expect(screen.getByTestId("slot-status")).toHaveAttribute(
-        "data-state",
-        "accepted"
-      )
+      expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted")
     );
 
     // Replace with a second file, via the slot's file input
@@ -410,9 +384,7 @@ describe("replace and remove", () => {
 
     fireEvent.change(screen.getByTestId(`input-${ID}`), {
       target: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "second.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "second.pdf", type: "application/pdf" })],
       },
     });
 
@@ -426,9 +398,7 @@ describe("replace and remove", () => {
     // The referenced object now points at the new document. Waited for rather
     // than read once: the filename renders as soon as validation starts, which
     // is before the replacement upload has finalised.
-    await waitFor(() =>
-      expect(onChange.mock.calls.at(-1)[0][ID].documentId).toBe("doc_second")
-    );
+    await waitFor(() => expect(onChange.mock.calls.at(-1)[0][ID].documentId).toBe("doc_second"));
   });
 
   it("remove deletes the document and clears the slot", async () => {
@@ -438,23 +408,16 @@ describe("replace and remove", () => {
 
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" })],
       },
     });
     await waitFor(() =>
-      expect(screen.getByTestId("slot-status")).toHaveAttribute(
-        "data-state",
-        "accepted"
-      )
+      expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted")
     );
 
     fireEvent.click(screen.getByTestId(`remove-${ID}`));
 
-    await waitFor(() =>
-      expect(screen.getByTestId(`dropzone-${ID}`)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByTestId(`dropzone-${ID}`)).toBeInTheDocument());
 
     expect(axiosInstance.delete).toHaveBeenCalledWith(
       `/api/educators/applications/documents/${SIGNED_TARGET.documentId}`
@@ -524,18 +487,12 @@ describe("onChange reports the full reference map", () => {
 
     dropInto(ID, "passport.pdf");
     await waitFor(() =>
-      expect(screen.getByTestId(`document-slot-${ID}`)).toHaveAttribute(
-        "data-state",
-        "accepted"
-      )
+      expect(screen.getByTestId(`document-slot-${ID}`)).toHaveAttribute("data-state", "accepted")
     );
 
     dropInto(CERT, "ijazah.pdf");
     await waitFor(() =>
-      expect(screen.getByTestId(`document-slot-${CERT}`)).toHaveAttribute(
-        "data-state",
-        "accepted"
-      )
+      expect(screen.getByTestId(`document-slot-${CERT}`)).toHaveAttribute("data-state", "accepted")
     );
 
     // The second slot completing must not drop the first slot's reference.
@@ -553,11 +510,7 @@ describe("onChange reports the full reference map", () => {
     dropInto(ID, "passport.pdf");
 
     await waitFor(
-      () =>
-        expect(screen.getByTestId("slot-status")).toHaveAttribute(
-          "data-state",
-          "accepted"
-        ),
+      () => expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted"),
       { timeout: 3000 }
     );
 
@@ -578,16 +531,11 @@ describe("no public asset URL is ever produced or stored", () => {
 
     fireEvent.drop(screen.getByTestId(`dropzone-${ID}`), {
       dataTransfer: {
-        files: [
-          makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" }),
-        ],
+        files: [makeFile(PDF_MAGIC, { name: "passport.pdf", type: "application/pdf" })],
       },
     });
     await waitFor(() =>
-      expect(screen.getByTestId("slot-status")).toHaveAttribute(
-        "data-state",
-        "accepted"
-      )
+      expect(screen.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted")
     );
 
     // The stored reference carries an opaque id and a status — no URL field.

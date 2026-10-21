@@ -37,23 +37,47 @@ vi.mock("@/hooks/useVerificationStatus", () => ({
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
 const TIMELINE = [
-  { status: "identity", label: "Identity verification", ts: "2024-01-01T00:00:00.000Z", done: true },
+  {
+    status: "identity",
+    label: "Identity verification",
+    ts: "2024-01-01T00:00:00.000Z",
+    done: true,
+  },
   { status: "documents", label: "Document upload", ts: null, done: false },
   { status: "review", label: "Under review", ts: null, done: false },
 ];
 
 const DOCS = [
-  { id: "doc_1", type: "national_id", filename: "passport.jpg", uploadedAt: "2024-01-01T00:00:00.000Z", signedUrlEndpoint: "/signed-url" },
+  {
+    id: "doc_1",
+    type: "national_id",
+    filename: "passport.jpg",
+    uploadedAt: "2024-01-01T00:00:00.000Z",
+    signedUrlEndpoint: "/signed-url",
+  },
 ];
 
 function makeHook(overrides = {}) {
   return {
     status: VERIFICATION_STATUS.INCOMPLETE,
-    data: { timeline: TIMELINE, documents: [], rejectionReason: null, submittedAt: null, reviewedAt: null },
-    loading: false, error: null, resumeStep: 2,
+    data: {
+      timeline: TIMELINE,
+      documents: [],
+      rejectionReason: null,
+      submittedAt: null,
+      reviewedAt: null,
+    },
+    loading: false,
+    error: null,
+    resumeStep: 2,
     refresh: vi.fn().mockResolvedValue(undefined),
-    isVerified: false, isRejected: false, isPending: false, isIncomplete: true,
-    isBannerVisible: false, snooze: vi.fn(), dismiss: vi.fn(),
+    isVerified: false,
+    isRejected: false,
+    isPending: false,
+    isIncomplete: true,
+    isBannerVisible: false,
+    snooze: vi.fn(),
+    dismiss: vi.fn(),
     ...overrides,
   };
 }
@@ -63,7 +87,7 @@ import VerificationPage from "@/app/[locale]/account/verification/page";
 // Click a Button component (onClick lives on the inner Ripples span)
 function clickBtn(testId) {
   const btn = document.querySelector('[data-testid="' + testId + '"]');
-  const inner = btn && (btn.querySelector('span') || btn);
+  const inner = btn && (btn.querySelector("span") || btn);
   if (inner) fireEvent.click(inner);
 }
 
@@ -111,7 +135,9 @@ describe("VerificationPage - status panels", () => {
 
   it("pending: no CTA, shows submitted copy", () => {
     _hookState.current = makeHook({
-      status: VERIFICATION_STATUS.PENDING, isPending: true, isIncomplete: false,
+      status: VERIFICATION_STATUS.PENDING,
+      isPending: true,
+      isIncomplete: false,
       data: { timeline: TIMELINE, documents: [], rejectionReason: null },
     });
     render(<VerificationPage />);
@@ -121,7 +147,9 @@ describe("VerificationPage - status panels", () => {
 
   it("under_review: no CTA, shows review heading", () => {
     _hookState.current = makeHook({
-      status: VERIFICATION_STATUS.UNDER_REVIEW, isPending: true, isIncomplete: false,
+      status: VERIFICATION_STATUS.UNDER_REVIEW,
+      isPending: true,
+      isIncomplete: false,
       data: { timeline: TIMELINE, documents: [], rejectionReason: null },
     });
     render(<VerificationPage />);
@@ -131,7 +159,9 @@ describe("VerificationPage - status panels", () => {
 
   it("verified: checkmark text, no CTA", () => {
     _hookState.current = makeHook({
-      status: VERIFICATION_STATUS.VERIFIED, isVerified: true, isIncomplete: false,
+      status: VERIFICATION_STATUS.VERIFIED,
+      isVerified: true,
+      isIncomplete: false,
       data: { timeline: TIMELINE, documents: [], rejectionReason: null },
     });
     render(<VerificationPage />);
@@ -143,8 +173,15 @@ describe("VerificationPage - status panels", () => {
 describe("VerificationPage - rejected state", () => {
   beforeEach(() => {
     _hookState.current = makeHook({
-      status: VERIFICATION_STATUS.REJECTED, isRejected: true, isIncomplete: false,
-      data: { timeline: TIMELINE, documents: [], rejectionReason: "Photo was not legible.", reviewedAt: "2024-01-02T10:00:00.000Z" },
+      status: VERIFICATION_STATUS.REJECTED,
+      isRejected: true,
+      isIncomplete: false,
+      data: {
+        timeline: TIMELINE,
+        documents: [],
+        rejectionReason: "Photo was not legible.",
+        reviewedAt: "2024-01-02T10:00:00.000Z",
+      },
     });
   });
 
@@ -176,7 +213,9 @@ describe("VerificationPage - timeline", () => {
 
 describe("VerificationPage - documents (masked)", () => {
   beforeEach(() => {
-    _hookState.current = makeHook({ data: { timeline: TIMELINE, documents: DOCS, rejectionReason: null } });
+    _hookState.current = makeHook({
+      data: { timeline: TIMELINE, documents: DOCS, rejectionReason: null },
+    });
   });
 
   it("renders masked filename - no raw URL", () => {
@@ -187,12 +226,21 @@ describe("VerificationPage - documents (masked)", () => {
   });
 
   it("View button fetches signed URL and opens new tab with noopener", async () => {
-    mockFetchSignedUrl.mockResolvedValue({ signedUrl: "https://cdn.example.com/signed?token=xyz", expiresAt: "2024-01-01T01:00:00Z" });
+    mockFetchSignedUrl.mockResolvedValue({
+      signedUrl: "https://cdn.example.com/signed?token=xyz",
+      expiresAt: "2024-01-01T01:00:00Z",
+    });
     const spy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<VerificationPage />);
     clickBtn("doc-view-btn");
     await waitFor(() => expect(mockFetchSignedUrl).toHaveBeenCalledWith("doc_1"));
-    await waitFor(() => expect(spy).toHaveBeenCalledWith(expect.stringContaining("signed?token="), "_blank", "noopener,noreferrer"));
+    await waitFor(() =>
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining("signed?token="),
+        "_blank",
+        "noopener,noreferrer"
+      )
+    );
     spy.mockRestore();
   });
 });

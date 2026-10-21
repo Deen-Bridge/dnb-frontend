@@ -60,13 +60,7 @@ function EmptyState({
         {(displayTitle || description) && (
           <div>
             {displayTitle && (
-              <h3
-                className={cn(
-                  poppins_600.className,
-                  "text-lg text-ink",
-                  titleClassName
-                )}
-              >
+              <h3 className={cn(poppins_600.className, "text-lg text-ink", titleClassName)}>
                 {displayTitle}
               </h3>
             )}
@@ -84,9 +78,7 @@ function EmptyState({
           </div>
         )}
         {actionContent && (
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {actionContent}
-          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3">{actionContent}</div>
         )}
       </CardContent>
     </Card>

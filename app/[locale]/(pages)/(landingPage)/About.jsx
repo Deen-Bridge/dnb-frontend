@@ -4,17 +4,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
-import {
-  FaChalkboardTeacher,
-  FaBookOpen,
-  FaUsers,
-  FaRobot,
-} from "react-icons/fa";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { FaChalkboardTeacher, FaBookOpen, FaUsers, FaRobot } from "react-icons/fa";
 
 const pillars = [
   {
@@ -89,20 +80,10 @@ const About = () => {
                   <div className="mb-3 flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/15 to-highlight/10 border border-accent/5 transition-transform group-hover:scale-110">
                     {p.icon}
                   </div>
-                  <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-1.5 text-base text-ink font-stretch-110%"
-                    )}
-                  >
+                  <h3 className={cn(poppins_600, "mb-1.5 text-base text-ink font-stretch-110%")}>
                     {t(`pillars.${p.id}.title`)}
                   </h3>
-                  <p
-                    className={cn(
-                      poppins_400,
-                      "text-sm leading-relaxed text-ink-muted"
-                    )}
-                  >
+                  <p className={cn(poppins_400, "text-sm leading-relaxed text-ink-muted")}>
                     {t(`pillars.${p.id}.desc`)}
                   </p>
                 </li>

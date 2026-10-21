@@ -49,20 +49,17 @@ export const uploadToCloudinary = async (
       },
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         if (onProgress && progressEvent.total) {
-          const percentComplete = Math.round(
-            (progressEvent.loaded / progressEvent.total) * 100
-          );
+          const percentComplete = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           onProgress(percentComplete);
         }
       },
     });
 
     return response.data;
-  } catch (error: any) { // TODO(types): Cloudinary upload error
+  } catch (error: any) {
+    // TODO(types): Cloudinary upload error
     console.error("Cloudinary upload error:", error);
-    throw new Error(
-      error.response?.data?.error?.message || error.message || "Upload failed"
-    );
+    throw new Error(error.response?.data?.error?.message || error.message || "Upload failed");
   }
 };
 
@@ -93,9 +90,7 @@ export const uploadWithProgress = async (
       },
       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
         if (progressEvent.total) {
-          const percentComplete = Math.round(
-            (progressEvent.loaded / progressEvent.total) * 100
-          );
+          const percentComplete = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           if (onProgress) {
             onProgress(percentComplete);
           }
@@ -104,7 +99,8 @@ export const uploadWithProgress = async (
     });
 
     return response.data;
-  } catch (error: any) { // TODO(types): Cloudinary upload error
+  } catch (error: any) {
+    // TODO(types): Cloudinary upload error
     const errorMessage =
       error.response?.data?.error?.message ||
       error.response?.data?.message ||
@@ -131,11 +127,11 @@ export const uploadMultipleFiles = async (
   return Promise.all(uploadPromises);
 };
 
-export const validateFile = (file: File, options: FileValidationOptions = {}): FileValidationResult => {
-  const {
-    maxSize = 100 * 1024 * 1024,
-    allowedTypes = ["image/*", "video/*"],
-  } = options;
+export const validateFile = (
+  file: File,
+  options: FileValidationOptions = {}
+): FileValidationResult => {
+  const { maxSize = 100 * 1024 * 1024, allowedTypes = ["image/*", "video/*"] } = options;
 
   if (file.size > maxSize) {
     return {

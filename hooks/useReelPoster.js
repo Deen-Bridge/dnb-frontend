@@ -24,7 +24,12 @@ import useOptimisticMutation from "@/hooks/useOptimisticMutation";
 import { updateReelPoster } from "@/lib/actions/reels-action";
 
 export default function useReelPoster(reelId, initialPoster = null) {
-  const { value: poster, mutate, isPending, error } = useOptimisticMutation({
+  const {
+    value: poster,
+    mutate,
+    isPending,
+    error,
+  } = useOptimisticMutation({
     initialValue: initialPoster ?? null,
     key: reelId,
     errorMessage: "Couldn't update this reel's poster",
@@ -36,8 +41,7 @@ export default function useReelPoster(reelId, initialPoster = null) {
       mutate({
         applyOptimistic: () => posterUrl,
         run: (value) => updateReelPoster(reelId, { posterUrl: value }),
-        commit: (result, optimistic) =>
-          result?.reel ? result.reel.poster : optimistic,
+        commit: (result, optimistic) => (result?.reel ? result.reel.poster : optimistic),
       }),
     [mutate, reelId]
   );

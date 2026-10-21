@@ -36,13 +36,7 @@ export default function Sep7QrCode({ uri, size = 168, caption }: Sep7QrCodeProps
       <p className="text-xs text-muted-foreground text-center">
         {caption || "Scan with a Stellar mobile wallet"}
       </p>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleCopy}
-        className="gap-1"
-      >
+      <Button type="button" variant="outline" size="sm" onClick={handleCopy} className="gap-1">
         {copied ? (
           <>
             <Check className="h-3 w-3" />

@@ -4,61 +4,33 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  loadChatHistory,
-  loadChatMessages,
-} from "@/lib/actions/ai/load-chat-history";
+import { loadChatHistory, loadChatMessages } from "@/lib/actions/ai/load-chat-history";
 import { streamChat } from "@/lib/actions/ai/streaming-chat-action";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { useAiLayout } from "./context";
 
 const markdownComponents = {
   p: ({ children }) => (
-    <p className={cn(poppins_400, "mb-2 text-sm leading-relaxed text-ink")}>
-      {children}
-    </p>
+    <p className={cn(poppins_400, "mb-2 text-sm leading-relaxed text-ink")}>{children}</p>
   ),
-  h1: ({ children }) => (
-    <h1 className={cn(poppins_600, "mb-2 text-xl text-ink")}>{children}</h1>
-  ),
-  h2: ({ children }) => (
-    <h2 className={cn(poppins_600, "mb-2 text-lg text-ink")}>{children}</h2>
-  ),
-  h3: ({ children }) => (
-    <h3 className={cn(poppins_600, "mb-2 text-base text-ink")}>{children}</h3>
-  ),
+  h1: ({ children }) => <h1 className={cn(poppins_600, "mb-2 text-xl text-ink")}>{children}</h1>,
+  h2: ({ children }) => <h2 className={cn(poppins_600, "mb-2 text-lg text-ink")}>{children}</h2>,
+  h3: ({ children }) => <h3 className={cn(poppins_600, "mb-2 text-base text-ink")}>{children}</h3>,
   ul: ({ children }) => (
-    <ul className={cn(poppins_400, "mb-2 list-disc pl-4 text-ink")}>
-      {children}
-    </ul>
+    <ul className={cn(poppins_400, "mb-2 list-disc pl-4 text-ink")}>{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className={cn(poppins_400, "mb-2 list-decimal pl-4 text-ink")}>
-      {children}
-    </ol>
+    <ol className={cn(poppins_400, "mb-2 list-decimal pl-4 text-ink")}>{children}</ol>
   ),
   li: ({ children }) => <li className="mb-1">{children}</li>,
   code: ({ children }) => (
-    <code
-      className={cn(
-        poppins_400,
-        "rounded bg-accent/10 px-1 py-0.5 text-xs text-ink"
-      )}
-    >
+    <code className={cn(poppins_400, "rounded bg-accent/10 px-1 py-0.5 text-xs text-ink")}>
       {children}
     </code>
   ),
@@ -159,10 +131,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
           setStreamingContent((prev) => prev + text);
         },
         onComplete: ({ chatId: newChatId, history, response }) => {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: response },
-          ]);
+          setMessages((prev) => [...prev, { role: "assistant", content: response }]);
           setStreamingContent("");
 
           if (newChatId && newChatId !== chatId) {
@@ -178,9 +147,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
       });
     } catch (error) {
       console.error("Error getting AI response:", error);
-      toast.error(
-        error.message || "Failed to get AI response. Please try again."
-      );
+      toast.error(error.message || "Failed to get AI response. Please try again.");
       setMessages((prev) => [
         ...prev,
         {
@@ -254,17 +221,11 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
             >
               Assalamu Alaikum!
             </h1>
-            <p
-              className={cn(
-                poppins_400,
-                "mt-3 max-w-md leading-relaxed text-ink-muted"
-              )}
-            >
+            <p className={cn(poppins_400, "mt-3 max-w-md leading-relaxed text-ink-muted")}>
               I&apos;m your Islamic AI assistant, grounded in the{" "}
-              <span className={cn(poppins_600, "text-secondary")}>Qur&apos;an</span>{" "}
-              and{" "}
-              <span className={cn(poppins_600, "text-highlight")}>Hadith</span>.
-              How can I help you today?
+              <span className={cn(poppins_600, "text-secondary")}>Qur&apos;an</span> and{" "}
+              <span className={cn(poppins_600, "text-highlight")}>Hadith</span>. How can I help you
+              today?
             </p>
 
             <div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-3 sm:grid-cols-2">
@@ -277,9 +238,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
                   <span className="text-2xl transition-transform group-hover:scale-110">
                     {item.emoji}
                   </span>
-                  <span className={cn(poppins_500, "text-sm text-ink")}>
-                    {item.question}
-                  </span>
+                  <span className={cn(poppins_500, "text-sm text-ink")}>{item.question}</span>
                 </button>
               ))}
             </div>
@@ -299,9 +258,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
                   </div>
                   <Avatar className="mt-0.5 h-8 w-8 shrink-0 rounded-full">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
-                    <AvatarFallback
-                      className={cn(poppins_500, "bg-accent text-xs text-white")}
-                    >
+                    <AvatarFallback className={cn(poppins_500, "bg-accent text-xs text-white")}>
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -310,9 +267,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
                 <div key={index} className="flex gap-3">
                   <AiAvatar size={32} />
                   <div className="min-w-0 flex-1 pt-0.5">
-                    <ReactMarkdown components={markdownComponents}>
-                      {message.content}
-                    </ReactMarkdown>
+                    <ReactMarkdown components={markdownComponents}>{message.content}</ReactMarkdown>
                   </div>
                 </div>
               )
@@ -337,9 +292,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
               <div className="flex gap-3">
                 <AiAvatar size={32} />
                 <div className="min-w-0 flex-1 pt-0.5">
-                  <ReactMarkdown components={markdownComponents}>
-                    {streamingContent}
-                  </ReactMarkdown>
+                  <ReactMarkdown components={markdownComponents}>{streamingContent}</ReactMarkdown>
                   <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-accent align-middle" />
                 </div>
               </div>
@@ -410,8 +363,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
             "mx-auto mt-2 max-w-3xl text-center text-[11px] text-ink-muted"
           )}
         >
-          DeenBridge AI can make mistakes — verify important rulings with a
-          qualified scholar.
+          DeenBridge AI can make mistakes — verify important rulings with a qualified scholar.
         </p>
       </div>
     </div>
@@ -422,10 +374,6 @@ export default function DashboardPage() {
   const { chatData, onChatUpdate, onOpenSidebar } = useAiLayout();
 
   return (
-    <Dashboard
-      chatData={chatData}
-      onChatUpdate={onChatUpdate}
-      onOpenSidebar={onOpenSidebar}
-    />
+    <Dashboard chatData={chatData} onChatUpdate={onChatUpdate} onOpenSidebar={onOpenSidebar} />
   );
 }

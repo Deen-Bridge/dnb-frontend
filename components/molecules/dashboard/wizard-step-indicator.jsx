@@ -2,12 +2,7 @@
 import React from "react";
 import { Check } from "lucide-react";
 
-export default function WizardStepIndicator({
-  steps,
-  currentStep,
-  completedSteps,
-  onStepClick,
-}) {
+export default function WizardStepIndicator({ steps, currentStep, completedSteps, onStepClick }) {
   return (
     <nav aria-label="Course creation wizard steps" className="w-full py-4">
       <ol className="flex items-center justify-between w-full max-w-3xl mx-auto px-4">
@@ -35,8 +30,8 @@ export default function WizardStepIndicator({
                     isCompleted
                       ? "bg-accent text-white"
                       : isActive
-                      ? "bg-accent/20 border-2 border-accent text-brand-text font-bold"
-                      : "bg-muted border border-gray-300 text-muted-foreground"
+                        ? "bg-accent/20 border-2 border-accent text-brand-text font-bold"
+                        : "bg-muted border border-gray-300 text-muted-foreground"
                   }`}
                 >
                   {isCompleted ? <Check className="w-5 h-5 stroke-[2.5]" /> : idx + 1}
@@ -46,8 +41,8 @@ export default function WizardStepIndicator({
                     isActive
                       ? "text-foreground font-semibold"
                       : isCompleted
-                      ? "text-brand-text"
-                      : "text-muted-foreground"
+                        ? "text-brand-text"
+                        : "text-muted-foreground"
                   }`}
                 >
                   {step.label}

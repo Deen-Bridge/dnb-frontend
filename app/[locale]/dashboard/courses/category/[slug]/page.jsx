@@ -13,11 +13,7 @@ import { fetchCoursesByCategory } from "@/lib/actions/courses/fetch-course-categ
 import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import { getCategoryBySlug, FALLBACK_SLUG } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const SkeletonGrid = () => (
   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -70,12 +66,9 @@ const CategoryPageContent = () => {
   }, [slug, sort]);
 
   useEffect(() => {
-    router.replace(
-      sort !== "newest"
-        ? `?sort=${sort}`
-        : "/dashboard/courses/category/" + slug,
-      { scroll: false }
-    );
+    router.replace(sort !== "newest" ? `?sort=${sort}` : "/dashboard/courses/category/" + slug, {
+      scroll: false,
+    });
   }, [sort, slug, router]);
 
   if (!category) {
@@ -89,14 +82,7 @@ const CategoryPageContent = () => {
             <FolderX className="h-7 w-7 text-accent" />
           </div>
           <div>
-            <h1
-              className={cn(
-                poppins_600,
-                "text-lg text-ink"
-              )}
-            >
-              Category not found
-            </h1>
+            <h1 className={cn(poppins_600, "text-lg text-ink")}>Category not found</h1>
             <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
               This category doesn&apos;t exist or may have been renamed.
             </p>
@@ -118,9 +104,7 @@ const CategoryPageContent = () => {
   const Icon = category.icon;
   const title = category.shortLabel || category.label;
   const isFallback = slug === FALLBACK_SLUG;
-  const emptyHeading = isFallback
-    ? "No uncategorized courses yet."
-    : `No courses yet in ${title}`;
+  const emptyHeading = isFallback ? "No uncategorized courses yet." : `No courses yet in ${title}`;
 
   return (
     <div className="space-y-6 bg-surface p-4 sm:p-6">
@@ -141,9 +125,7 @@ const CategoryPageContent = () => {
             >
               {title}
             </h1>
-            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-              {category.description}
-            </p>
+            <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>{category.description}</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -194,15 +176,8 @@ const CategoryPageContent = () => {
               <Icon className="h-7 w-7 text-accent" />
             </div>
             <div>
-              <h3 className={cn(poppins_600, "text-lg text-ink")}>
-                {emptyHeading}
-              </h3>
-              <p
-                className={cn(
-                  poppins_400,
-                  "mt-1 max-w-md text-sm text-ink-muted"
-                )}
-              >
+              <h3 className={cn(poppins_600, "text-lg text-ink")}>{emptyHeading}</h3>
+              <p className={cn(poppins_400, "mt-1 max-w-md text-sm text-ink-muted")}>
                 Be the first to teach in this category and share your knowledge.
               </p>
             </div>
@@ -221,11 +196,7 @@ const CategoryPageContent = () => {
       ) : (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
-            <CourseCard
-              key={course._id}
-              course={course}
-              progress={progressMap[course._id]}
-            />
+            <CourseCard key={course._id} course={course} progress={progressMap[course._id]} />
           ))}
         </div>
       )}

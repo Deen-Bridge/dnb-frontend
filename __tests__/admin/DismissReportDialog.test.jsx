@@ -128,15 +128,15 @@ describe("sendDismissalNotification", () => {
 // ============================================================================
 describe("dismissReport", () => {
   it("rejects when reportId is missing", async () => {
-    await expect(
-      dismissReport({ reporterId: "rp_1", reason: "no_violation" })
-    ).rejects.toThrow(/reportId is required/i);
+    await expect(dismissReport({ reporterId: "rp_1", reason: "no_violation" })).rejects.toThrow(
+      /reportId is required/i
+    );
   });
 
   it("rejects when reporterId is missing", async () => {
-    await expect(
-      dismissReport({ reportId: "rpt_0001", reason: "no_violation" })
-    ).rejects.toThrow(/reporterId is required/i);
+    await expect(dismissReport({ reportId: "rpt_0001", reason: "no_violation" })).rejects.toThrow(
+      /reporterId is required/i
+    );
   });
 
   it("rejects an unknown reason", async () => {
@@ -255,9 +255,7 @@ describe("DismissReportDialog", () => {
 
   it("Dismiss Report button is disabled until a reason is selected", async () => {
     renderDialog();
-    await waitFor(() =>
-      expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument());
     const submitBtn = screen.getByRole("button", { name: /confirm dismissal/i });
     expect(submitBtn).toBeDisabled();
   });
@@ -299,15 +297,11 @@ describe("DismissReportDialog", () => {
 
   it("enables the submit button once a reason is selected", async () => {
     renderDialog();
-    await waitFor(() =>
-      expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument());
 
     // Open select and pick a reason
     fireEvent.click(screen.getByRole("combobox"));
-    await waitFor(() =>
-      screen.getByText("Doesn't violate policy")
-    );
+    await waitFor(() => screen.getByText("Doesn't violate policy"));
     fireEvent.click(screen.getByText("Doesn't violate policy"));
 
     await waitFor(() =>
@@ -317,9 +311,7 @@ describe("DismissReportDialog", () => {
 
   it("calls onDismissed and closes dialog after successful submission", async () => {
     const { onDismissed, onOpenChange } = renderDialog();
-    await waitFor(() =>
-      expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument());
 
     fireEvent.click(screen.getByRole("combobox"));
     await waitFor(() => screen.getByText("Already handled"));
@@ -344,8 +336,6 @@ describe("DismissReportDialog", () => {
       expect(checkbox).not.toBeChecked();
     });
     fireEvent.click(screen.getByRole("checkbox"));
-    await waitFor(() =>
-      expect(screen.getByRole("checkbox")).toBeChecked()
-    );
+    await waitFor(() => expect(screen.getByRole("checkbox")).toBeChecked());
   });
 });

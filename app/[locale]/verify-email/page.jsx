@@ -68,16 +68,27 @@ export default function VerifyEmailPage() {
         {status === "success" && (
           <div className="space-y-4">
             <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-              <svg aria-hidden="true" className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                aria-hidden="true"
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-green-700">Email Verified!</h1>
             <p className="text-muted-foreground">{message}</p>
             {normalizeRole(verifiedUser?.role) === ROLES.EDUCATOR && (
               <p className="text-sm text-muted-foreground rounded-lg border border-border bg-muted/40 px-4 py-3 text-left">
-                Next step: complete a quick identity verification so your
-                educator application can be reviewed.
+                Next step: complete a quick identity verification so your educator application can
+                be reviewed.
               </p>
             )}
             <button
@@ -94,8 +105,19 @@ export default function VerifyEmailPage() {
         {status === "error" && (
           <div className="space-y-4">
             <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
-              <svg aria-hidden="true" className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                aria-hidden="true"
+                className="w-8 h-8 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-red-700">Verification Failed</h1>

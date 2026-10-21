@@ -50,18 +50,17 @@ function validateRequest(space?: SpaceDescriptor, reason?: string): void {
   }
 
   if (!reason?.trim()) {
-    throw new EmergencyStopError(
-      "Enter a reason for ending this live space.",
-      "REASON_REQUIRED"
-    );
+    throw new EmergencyStopError("Enter a reason for ending this live space.", "REASON_REQUIRED");
   }
 }
 
-function isUnsupported(error: any): boolean { // TODO(types): Error response object
+function isUnsupported(error: any): boolean {
+  // TODO(types): Error response object
   return [404, 405, 501].includes(error?.response?.status);
 }
 
-function isTimeout(error: any, controller: AbortController): boolean { // TODO(types): Timeout error object
+function isTimeout(error: any, controller: AbortController): boolean {
+  // TODO(types): Timeout error object
   return (
     controller.signal.aborted ||
     error?.code === "ECONNABORTED" ||
@@ -71,7 +70,8 @@ function isTimeout(error: any, controller: AbortController): boolean { // TODO(t
   );
 }
 
-function rejectionMessage(error: any): string { // TODO(types): Backend rejection error object
+function rejectionMessage(error: any): string {
+  // TODO(types): Backend rejection error object
   return (
     error?.response?.data?.message ||
     error?.response?.data?.error ||
@@ -87,7 +87,13 @@ interface WriteAuditEntryParams {
   detail?: string;
 }
 
-async function writeAuditEntry({ space, reason, actor, outcome, detail }: WriteAuditEntryParams): Promise<boolean> {
+async function writeAuditEntry({
+  space,
+  reason,
+  actor,
+  outcome,
+  detail,
+}: WriteAuditEntryParams): Promise<boolean> {
   try {
     await logAdminAction({
       actor: actor as any, // TODO(types): Actor credential for admin audit
@@ -151,7 +157,8 @@ export async function emergencyStopLiveSpace(
     } else {
       backendOutcome = "ended";
     }
-  } catch (error: any) { // TODO(types): Error from emergency stop request
+  } catch (error: any) {
+    // TODO(types): Error from emergency stop request
     if (error instanceof EmergencyStopError) {
       const auditLogged = await writeAuditEntry({
         space,

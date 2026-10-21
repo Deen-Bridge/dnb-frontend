@@ -1,8 +1,5 @@
 import { getCourseById } from "@/lib/actions/courses/get-course";
-import {
-  renderOgCard,
-  OG_IMAGE_SIZE,
-} from "@/components/seo/renderOgCard";
+import { renderOgCard, OG_IMAGE_SIZE } from "@/components/seo/renderOgCard";
 
 export const runtime = "nodejs";
 export const alt = "Deen Bridge course";
@@ -23,11 +20,7 @@ export default async function Image({ params }) {
   const subtitle = course?.createdBy?.name
     ? `Taught by ${course.createdBy.name}`
     : "Courses on Qur'an, Arabic, fiqh and more — on Deen Bridge.";
-  const badge = course
-    ? course.price === 0
-      ? "Free"
-      : `$${course.price} USDC`
-    : "Deen Bridge";
+  const badge = course ? (course.price === 0 ? "Free" : `$${course.price} USDC`) : "Deen Bridge";
 
   return renderOgCard({ title, subtitle, badge });
 }

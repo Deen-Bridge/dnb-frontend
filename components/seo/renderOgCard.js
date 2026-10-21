@@ -9,12 +9,7 @@ export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
  */
 export function renderOgCard({ title, subtitle, badge, typeLabel }) {
   return new ImageResponse(
-    <OgBrandCard
-      title={title}
-      subtitle={subtitle}
-      badge={badge}
-      typeLabel={typeLabel}
-    />,
+    <OgBrandCard title={title} subtitle={subtitle} badge={badge} typeLabel={typeLabel} />,
     OG_IMAGE_SIZE
   );
 }

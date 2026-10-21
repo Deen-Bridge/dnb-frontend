@@ -9,7 +9,8 @@ export const VERIFICATION_STATUS = {
   VERIFIED: "verified",
 } as const;
 
-export type VerificationStatusValue = typeof VERIFICATION_STATUS[keyof typeof VERIFICATION_STATUS];
+export type VerificationStatusValue =
+  (typeof VERIFICATION_STATUS)[keyof typeof VERIFICATION_STATUS];
 
 export interface ApplicationDocument {
   id: string;
@@ -53,57 +54,52 @@ const NOT_STARTED_FALLBACK: VerificationStatusResult = {
   ],
 };
 
-function normalise(raw: any): VerificationStatusResult { // TODO(types): Raw verification status response payload
+function normalise(raw: any): VerificationStatusResult {
+  // TODO(types): Raw verification status response payload
   const knownStatuses = Object.values(VERIFICATION_STATUS) as string[];
   return {
     status: (knownStatuses.includes(raw.status)
       ? raw.status
       : VERIFICATION_STATUS.NOT_STARTED) as VerificationStatusValue,
-    lastCompletedStep: typeof raw.lastCompletedStep === "number"
-      ? raw.lastCompletedStep
-      : 0,
+    lastCompletedStep: typeof raw.lastCompletedStep === "number" ? raw.lastCompletedStep : 0,
     totalSteps: typeof raw.totalSteps === "number" ? raw.totalSteps : 3,
     rejectionReason: raw.rejectionReason ?? null,
     submittedAt: raw.submittedAt ?? null,
     reviewedAt: raw.reviewedAt ?? null,
     documents: Array.isArray(raw.documents) ? raw.documents : [],
-    timeline: Array.isArray(raw.timeline)
-      ? raw.timeline
-      : NOT_STARTED_FALLBACK.timeline,
+    timeline: Array.isArray(raw.timeline) ? raw.timeline : NOT_STARTED_FALLBACK.timeline,
   };
 }
 
 export async function fetchVerificationStatus(): Promise<VerificationStatusResult> {
   try {
-    const res = await axiosInstance.get(
-      "/api/educators/applications/status"
-    );
+    const res = await axiosInstance.get("/api/educators/applications/status");
     return normalise(res.data);
-  } catch (err: any) { // TODO(types): Axios error on verification status
+  } catch (err: any) {
+    // TODO(types): Axios error on verification status
     const status = err?.response?.status;
     if (status === 404 || status === 403) {
       return NOT_STARTED_FALLBACK;
     }
     throw new Error(
-      err?.response?.data?.message ??
-        err?.message ??
-        "Failed to fetch verification status"
+      err?.response?.data?.message ?? err?.message ?? "Failed to fetch verification status"
     );
   }
 }
 
-export async function fetchDocumentSignedUrl(documentId: string): Promise<{ signedUrl: string; expiresAt: string }> {
+export async function fetchDocumentSignedUrl(
+  documentId: string
+): Promise<{ signedUrl: string; expiresAt: string }> {
   if (!documentId) throw new Error("documentId is required");
   try {
     const res = await axiosInstance.post(
       `/api/educators/applications/documents/${documentId}/signed-url`
     );
     return res.data;
-  } catch (err: any) { // TODO(types): Axios error on signed url
+  } catch (err: any) {
+    // TODO(types): Axios error on signed url
     throw new Error(
-      err?.response?.data?.message ??
-        err?.message ??
-        "Failed to obtain document URL"
+      err?.response?.data?.message ?? err?.message ?? "Failed to obtain document URL"
     );
   }
 }

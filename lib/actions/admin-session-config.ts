@@ -37,7 +37,9 @@ export interface SessionConfigValidationResult {
   };
 }
 
-export function validateSessionSecurityConfig(cfg?: Partial<SessionSecurityConfig>): SessionConfigValidationResult {
+export function validateSessionSecurityConfig(
+  cfg?: Partial<SessionSecurityConfig>
+): SessionConfigValidationResult {
   const errors: SessionConfigValidationResult["errors"] = {};
   const c = cfg || {};
 
@@ -62,8 +64,7 @@ export function validateSessionSecurityConfig(cfg?: Partial<SessionSecurityConfi
     c.idleTimeoutMinutes !== undefined &&
     c.idleWarningSeconds >= c.idleTimeoutMinutes * 60
   ) {
-    errors.idleWarningSeconds =
-      "The warning lead time must be shorter than the idle timeout.";
+    errors.idleWarningSeconds = "The warning lead time must be shorter than the idle timeout.";
   }
 
   return { valid: Object.keys(errors).length === 0, errors };
@@ -73,10 +74,14 @@ export async function getSessionSecurityConfig(): Promise<SessionSecurityConfig>
   return withMockDelay({ ...mockConfig });
 }
 
-export async function updateSessionSecurityConfig(cfg: SessionSecurityConfig): Promise<SessionSecurityConfig> {
+export async function updateSessionSecurityConfig(
+  cfg: SessionSecurityConfig
+): Promise<SessionSecurityConfig> {
   const { valid, errors } = validateSessionSecurityConfig(cfg);
   if (!valid) {
-    const err = new Error("Invalid session-security configuration.") as Error & { fieldErrors?: any }; // TODO(types): Field validation errors map
+    const err = new Error("Invalid session-security configuration.") as Error & {
+      fieldErrors?: any;
+    }; // TODO(types): Field validation errors map
     err.fieldErrors = errors;
     throw err;
   }

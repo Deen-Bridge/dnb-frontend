@@ -5,18 +5,9 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Button from "@/components/atoms/form/Button";
-import {
-  FaWallet,
-  FaBolt,
-  FaShieldAlt,
-  FaHandHoldingHeart,
-} from "react-icons/fa";
+import { FaWallet, FaBolt, FaShieldAlt, FaHandHoldingHeart } from "react-icons/fa";
 
 const highlights = [
   {
@@ -78,12 +69,7 @@ const StellarSection = () => {
               aria-label={t("badge.ariaLabel")}
               className="group mb-6 inline-flex items-center gap-3 rounded-2xl bg-surface-raised px-5 py-3 shadow-lg transition-transform hover:scale-105"
             >
-              <span
-                className={cn(
-                  poppins_500,
-                  "text-xs uppercase tracking-wider text-ink-muted"
-                )}
-              >
+              <span className={cn(poppins_500, "text-xs uppercase tracking-wider text-ink-muted")}>
                 {t("badge.builtOn")}
               </span>
               {/* Palette PNG with an opaque white background — multiply drops the
@@ -167,19 +153,11 @@ const StellarSection = () => {
                   {h.icon}
                 </div>
                 <h3
-                  className={cn(
-                    poppins_600,
-                    "mb-2 text-base text-ink-inverse font-stretch-110%"
-                  )}
+                  className={cn(poppins_600, "mb-2 text-base text-ink-inverse font-stretch-110%")}
                 >
                   {t(`highlights.${h.id}.title`)}
                 </h3>
-                <p
-                  className={cn(
-                    poppins_400,
-                    "text-sm leading-relaxed text-ink-inverse-muted"
-                  )}
-                >
+                <p className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}>
                   {t(`highlights.${h.id}.desc`)}
                 </p>
               </div>
@@ -205,12 +183,7 @@ const StellarSection = () => {
               >
                 <span dir="ltr">{f.k}</span>
               </div>
-              <div
-                className={cn(
-                  poppins_400,
-                  "text-xs sm:text-sm text-ink-inverse-muted"
-                )}
-              >
+              <div className={cn(poppins_400, "text-xs sm:text-sm text-ink-inverse-muted")}>
                 {t(`figures.${f.id}.label`)}
               </div>
             </div>

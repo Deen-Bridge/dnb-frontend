@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BookOpen, Bookmark, Plus } from "lucide-react";
 import LibraryBookCard from "@/components/molecules/dashboard/cards/libraryCard";
@@ -76,17 +70,11 @@ const LibraryPageContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const [searchInput, setSearchInput] = useState(
-    () => searchParams.get("search") || ""
-  );
-  const [category, setCategory] = useState(
-    () => searchParams.get("category") || ALL
-  );
+  const [searchInput, setSearchInput] = useState(() => searchParams.get("search") || "");
+  const [category, setCategory] = useState(() => searchParams.get("category") || ALL);
   const [price, setPrice] = useState(() => searchParams.get("price") || ALL);
   const [sort, setSort] = useState(() => searchParams.get("sort") || "newest");
-  const [page, setPage] = useState(
-    () => Math.max(1, Number(searchParams.get("page")) || 1)
-  );
+  const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get("page")) || 1));
 
   const search = useDebouncedValue(searchInput, 300);
 
@@ -164,7 +152,9 @@ const LibraryPageContent = () => {
       }
 
       if (category !== ALL) {
-        const actual = String(book?.category || "").trim().toLowerCase();
+        const actual = String(book?.category || "")
+          .trim()
+          .toLowerCase();
         if (actual !== wanted) return false;
       }
 
@@ -181,9 +171,7 @@ const LibraryPageContent = () => {
       sorted.sort((a, b) => priceOf(b) - priceOf(a));
     } else if (sort === "rating") {
       sorted.sort(
-        (a, b) =>
-          (getAverageRating(b?.reviews) || 0) -
-          (getAverageRating(a?.reviews) || 0)
+        (a, b) => (getAverageRating(b?.reviews) || 0) - (getAverageRating(a?.reviews) || 0)
       );
     } else {
       sorted.sort((a, b) => createdAtOf(b) - createdAtOf(a));
@@ -193,10 +181,7 @@ const LibraryPageContent = () => {
 
   const totalPages = Math.max(1, Math.ceil(filteredBooks.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
-  const pagedBooks = filteredBooks.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
+  const pagedBooks = filteredBooks.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const pageNumbers = useMemo(() => {
     const end = Math.min(totalPages, Math.max(1, currentPage - 2) + 4);
@@ -206,8 +191,7 @@ const LibraryPageContent = () => {
     return pages;
   }, [currentPage, totalPages]);
 
-  const isFiltered =
-    search.trim() !== "" || category !== ALL || price !== ALL || sort !== "newest";
+  const isFiltered = search.trim() !== "" || category !== ALL || price !== ALL || sort !== "newest";
 
   const handleClearFilters = () => {
     setSearchInput("");
@@ -239,10 +223,7 @@ const LibraryPageContent = () => {
 
   if (error) {
     return (
-      <NetworkErrorComp
-        errMsg="Error getting Books, Please try again"
-        reset={() => fetchData()}
-      />
+      <NetworkErrorComp errMsg="Error getting Books, Please try again" reset={() => fetchData()} />
     );
   }
 
@@ -251,26 +232,21 @@ const LibraryPageContent = () => {
       <PageHeader
         icon={BookOpen}
         title={showBookmarks ? "My Bookmarked Books" : "All Books"}
-        subtitle={
-          showBookmarks
-            ? "Books you've saved for later"
-            : "Browse and read Islamic books"
-        }
+        subtitle={showBookmarks ? "Books you've saved for later" : "Browse and read Islamic books"}
         actions={
           <>
             {canCreateBook && (
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={() => setModalOpen(true)}
-              >
+              <Button variant="outline" className="rounded-full" onClick={() => setModalOpen(true)}>
                 <Plus className="h-4 w-4 mr-1" />
                 Create
               </Button>
             )}
             <Button
               variant={showBookmarks ? "default" : "outline"}
-              className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
+              className={cn(
+                "rounded-full",
+                showBookmarks && "bg-accent text-white hover:bg-accent/90"
+              )}
               onClick={() => setShowBookmarks((prev) => !prev)}
             >
               <Bookmark className="h-4 w-4 mr-1" />
@@ -306,27 +282,24 @@ const LibraryPageContent = () => {
             isFiltered
               ? "No Matching Books"
               : showBookmarks
-              ? "No Bookmarked Books"
-              : "No Books Yet"
+                ? "No Bookmarked Books"
+                : "No Books Yet"
           }
           description={
             isFiltered
               ? "No books match the current filters. Try widening your search."
               : showBookmarks
-              ? "Save titles you want to revisit!"
-              : "No books available at the moment."
+                ? "Save titles you want to revisit!"
+                : "No books available at the moment."
           }
           action={
             isFiltered ? (
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={handleClearFilters}
-              >
+              <Button variant="outline" className="rounded-full" onClick={handleClearFilters}>
                 Clear filters
               </Button>
             ) : (
-              !showBookmarks && canCreateBook && (
+              !showBookmarks &&
+              canCreateBook && (
                 <Button
                   variant="outline"
                   className="rounded-full"
@@ -359,9 +332,7 @@ const LibraryPageContent = () => {
                   <PaginationPrevious
                     href="#"
                     aria-disabled={currentPage === 1}
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                    }
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     onClick={(event) => goToPage(event, currentPage - 1)}
                   />
                 </PaginationItem>
@@ -380,11 +351,7 @@ const LibraryPageContent = () => {
                   <PaginationNext
                     href="#"
                     aria-disabled={currentPage === totalPages}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     onClick={(event) => goToPage(event, currentPage + 1)}
                   />
                 </PaginationItem>

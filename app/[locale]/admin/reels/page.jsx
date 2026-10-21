@@ -14,13 +14,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -165,18 +159,14 @@ export default function AdminReelsManagementPage() {
     // Update creator pause status
     setCreators((prev) =>
       prev.map((c) =>
-        c.id === creatorId || c._id === creatorId
-          ? { ...c, isPaused: isPausing }
-          : c
+        c.id === creatorId || c._id === creatorId ? { ...c, isPaused: isPausing } : c
       )
     );
 
     // Update all reels belonging to creator
     setReels((prev) =>
       prev.map((r) =>
-        r.creatorId === creatorId
-          ? { ...r, status: isPausing ? "paused" : "active" }
-          : r
+        r.creatorId === creatorId ? { ...r, status: isPausing ? "paused" : "active" } : r
       )
     );
 
@@ -205,7 +195,7 @@ export default function AdminReelsManagementPage() {
     };
 
     setVisibilitySaving(true);
-    setReels((previous) => previous.map((item) => item.id === reel.id ? optimisticReel : item));
+    setReels((previous) => previous.map((item) => (item.id === reel.id ? optimisticReel : item)));
     setVisibilityDialogReel(optimisticReel);
 
     try {
@@ -214,16 +204,19 @@ export default function AdminReelsManagementPage() {
         reasonCategory,
         reasonNote,
       });
-      if (response?.success === false) throw new Error(response.message || "Unable to update reel visibility.");
+      if (response?.success === false)
+        throw new Error(response.message || "Unable to update reel visibility.");
 
       setNotification({
         type: "success",
-        message: hidden ? "Reel hidden from learner-facing feeds." : "Reel restored to learner-facing feeds.",
+        message: hidden
+          ? "Reel hidden from learner-facing feeds."
+          : "Reel restored to learner-facing feeds.",
       });
       setVisibilityDialogReel(null);
       setTimeout(() => setNotification(null), 5000);
     } catch (error) {
-      setReels((previous) => previous.map((item) => item.id === reel.id ? previousReel : item));
+      setReels((previous) => previous.map((item) => (item.id === reel.id ? previousReel : item)));
       setVisibilityDialogReel(previousReel);
       setNotification({
         type: "error",
@@ -260,8 +253,19 @@ export default function AdminReelsManagementPage() {
       />
 
       {notification && (
-        <div className={cn("mb-4 flex items-center gap-2 rounded-lg border p-4 text-sm font-medium", notification.type === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400")}>
-          {notification.type === "error" ? <AlertTriangle className="h-4 w-4 shrink-0" /> : <CheckCircle2 className="h-4 w-4 shrink-0" />}
+        <div
+          className={cn(
+            "mb-4 flex items-center gap-2 rounded-lg border p-4 text-sm font-medium",
+            notification.type === "error"
+              ? "border-destructive/30 bg-destructive/10 text-destructive"
+              : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          )}
+        >
+          {notification.type === "error" ? (
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+          )}
           <span>{notification.message}</span>
         </div>
       )}
@@ -276,9 +280,7 @@ export default function AdminReelsManagementPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-foreground text-base">
-                    {activeCreator.name}
-                  </h3>
+                  <h3 className="font-semibold text-foreground text-base">{activeCreator.name}</h3>
                   <Badge
                     variant="outline"
                     className={
@@ -367,7 +369,8 @@ export default function AdminReelsManagementPage() {
             Published Reels ({filteredReels.length})
           </CardTitle>
           <CardDescription>
-            Live video catalog. Pausing a creator sets all their reels to paused and prevents new uploads.
+            Live video catalog. Pausing a creator sets all their reels to paused and prevents new
+            uploads.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -391,7 +394,10 @@ export default function AdminReelsManagementPage() {
                 </TableRow>
               ) : (
                 filteredReels.map((reel) => (
-                  <TableRow key={reel.id} className={reel.isHidden ? "bg-muted/50 opacity-75" : undefined}>
+                  <TableRow
+                    key={reel.id}
+                    className={reel.isHidden ? "bg-muted/50 opacity-75" : undefined}
+                  >
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-medium text-foreground">{reel.title}</span>
@@ -417,7 +423,10 @@ export default function AdminReelsManagementPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       {reel.flagsCount > 0 ? (
-                        <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive gap-1">
+                        <Badge
+                          variant="outline"
+                          className="border-destructive/30 bg-destructive/10 text-destructive gap-1"
+                        >
                           <AlertTriangle className="h-3 w-3" />
                           {reel.flagsCount}
                         </Badge>
@@ -428,19 +437,31 @@ export default function AdminReelsManagementPage() {
                     <TableCell>
                       {reel.isHidden ? (
                         <div className="space-y-1">
-                          <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive gap-1">
+                          <Badge
+                            variant="outline"
+                            className="border-destructive/30 bg-destructive/10 text-destructive gap-1"
+                          >
                             <EyeOff className="h-3 w-3" /> Hidden by moderation
                           </Badge>
-                          <p className="max-w-44 truncate text-xs text-muted-foreground" title={reel.hiddenReasonNote}>
+                          <p
+                            className="max-w-44 truncate text-xs text-muted-foreground"
+                            title={reel.hiddenReasonNote}
+                          >
                             {reel.hiddenReasonNote}
                           </p>
                         </div>
                       ) : reel.status === "active" ? (
-                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        <Badge
+                          variant="outline"
+                          className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        >
                           Active
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        <Badge
+                          variant="outline"
+                          className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                        >
                           Paused / Hidden
                         </Badge>
                       )}

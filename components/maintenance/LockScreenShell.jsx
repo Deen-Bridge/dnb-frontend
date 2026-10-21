@@ -22,14 +22,7 @@ import { cn } from "@/lib/utils";
  * @param {React.ReactNode} [props.footer]  Optional muted footer line.
  * @param {string} [props.className]         Extra classes for the outer gradient container.
  */
-export default function LockScreenShell({
-  icon,
-  title,
-  description,
-  children,
-  footer,
-  className,
-}) {
+export default function LockScreenShell({ icon, title, description, children, footer, className }) {
   return (
     <div
       className={cn(
@@ -45,15 +38,11 @@ export default function LockScreenShell({
         </div>
 
         <h1 className="mb-3 text-3xl font-bold text-foreground">{title}</h1>
-        {description ? (
-          <p className="mb-8 text-muted-foreground">{description}</p>
-        ) : null}
+        {description ? <p className="mb-8 text-muted-foreground">{description}</p> : null}
 
         {children}
 
-        {footer ? (
-          <p className="mt-8 text-xs text-muted-foreground">{footer}</p>
-        ) : null}
+        {footer ? <p className="mt-8 text-xs text-muted-foreground">{footer}</p> : null}
       </div>
     </div>
   );

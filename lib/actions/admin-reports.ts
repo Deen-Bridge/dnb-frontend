@@ -142,25 +142,135 @@ export const REPORT_DATASETS = Object.freeze([
 /** Fixed sample rows per dataset so previews are deterministic and filterable. */
 const SAMPLE_ROWS = Object.freeze({
   users: [
-    { name: "Amina Yusuf", email: "amina@deenbridge.org", role: "student", status: "active", joinedAt: "2025-01-12" },
-    { name: "Bilal Karim", email: "bilal@deenbridge.org", role: "educator", status: "active", joinedAt: "2025-02-03" },
-    { name: "Zaynab Idris", email: "zaynab@deenbridge.org", role: "student", status: "banned", joinedAt: "2025-03-17" },
-    { name: "Umar Farouk", email: "umar@deenbridge.org", role: "student", status: "active", joinedAt: "2025-04-21" },
-    { name: "Khadija Bello", email: "khadija@deenbridge.org", role: "educator", status: "active", joinedAt: "2025-05-09" },
+    {
+      name: "Amina Yusuf",
+      email: "amina@deenbridge.org",
+      role: "student",
+      status: "active",
+      joinedAt: "2025-01-12",
+    },
+    {
+      name: "Bilal Karim",
+      email: "bilal@deenbridge.org",
+      role: "educator",
+      status: "active",
+      joinedAt: "2025-02-03",
+    },
+    {
+      name: "Zaynab Idris",
+      email: "zaynab@deenbridge.org",
+      role: "student",
+      status: "banned",
+      joinedAt: "2025-03-17",
+    },
+    {
+      name: "Umar Farouk",
+      email: "umar@deenbridge.org",
+      role: "student",
+      status: "active",
+      joinedAt: "2025-04-21",
+    },
+    {
+      name: "Khadija Bello",
+      email: "khadija@deenbridge.org",
+      role: "educator",
+      status: "active",
+      joinedAt: "2025-05-09",
+    },
   ],
   transactions: [
-    { id: "TX-1001", createdAt: "2025-06-01", itemType: "course", itemTitle: "Tafsir of Surah Al-Fatihah", amount: 24.5, status: "confirmed", buyer: "amina@deenbridge.org" },
-    { id: "TX-1002", createdAt: "2025-06-05", itemType: "book", itemTitle: "The Sealed Nectar", amount: 9.99, status: "pending", buyer: "umar@deenbridge.org" },
-    { id: "TX-1003", createdAt: "2025-06-08", itemType: "course", itemTitle: "Arabic Grammar Essentials", amount: 35.0, status: "confirmed", buyer: "zaynab@deenbridge.org" },
-    { id: "TX-1004", createdAt: "2025-06-12", itemType: "book", itemTitle: "Stories of the Prophets", amount: 7.5, status: "failed", buyer: "khadija@deenbridge.org" },
-    { id: "TX-1005", createdAt: "2025-06-15", itemType: "course", itemTitle: "Fiqh of Worship", amount: 42.0, status: "confirmed", buyer: "bilal@deenbridge.org" },
+    {
+      id: "TX-1001",
+      createdAt: "2025-06-01",
+      itemType: "course",
+      itemTitle: "Tafsir of Surah Al-Fatihah",
+      amount: 24.5,
+      status: "confirmed",
+      buyer: "amina@deenbridge.org",
+    },
+    {
+      id: "TX-1002",
+      createdAt: "2025-06-05",
+      itemType: "book",
+      itemTitle: "The Sealed Nectar",
+      amount: 9.99,
+      status: "pending",
+      buyer: "umar@deenbridge.org",
+    },
+    {
+      id: "TX-1003",
+      createdAt: "2025-06-08",
+      itemType: "course",
+      itemTitle: "Arabic Grammar Essentials",
+      amount: 35.0,
+      status: "confirmed",
+      buyer: "zaynab@deenbridge.org",
+    },
+    {
+      id: "TX-1004",
+      createdAt: "2025-06-12",
+      itemType: "book",
+      itemTitle: "Stories of the Prophets",
+      amount: 7.5,
+      status: "failed",
+      buyer: "khadija@deenbridge.org",
+    },
+    {
+      id: "TX-1005",
+      createdAt: "2025-06-15",
+      itemType: "course",
+      itemTitle: "Fiqh of Worship",
+      amount: 42.0,
+      status: "confirmed",
+      buyer: "bilal@deenbridge.org",
+    },
   ],
   reports: [
-    { id: "REP-201", createdAt: "2025-06-02", contentType: "course", itemTitle: "Tafsir of Surah Al-Fatihah", reason: "copyright", status: "open", reportedBy: "umar@deenbridge.org" },
-    { id: "REP-202", createdAt: "2025-06-06", contentType: "book", itemTitle: "The Sealed Nectar", reason: "spam", status: "investigating", reportedBy: "amina@deenbridge.org" },
-    { id: "REP-203", createdAt: "2025-06-09", contentType: "space", itemTitle: "Evening Dhikr Circle", reason: "inappropriate", status: "resolved", reportedBy: "zaynab@deenbridge.org" },
-    { id: "REP-204", createdAt: "2025-06-13", contentType: "book", itemTitle: "Stories of the Prophets", reason: "duplicate", status: "dismissed", reportedBy: "bilal@deenbridge.org" },
-    { id: "REP-205", createdAt: "2025-06-16", contentType: "course", itemTitle: "Fiqh of Worship", reason: "other", status: "open", reportedBy: "khadija@deenbridge.org" },
+    {
+      id: "REP-201",
+      createdAt: "2025-06-02",
+      contentType: "course",
+      itemTitle: "Tafsir of Surah Al-Fatihah",
+      reason: "copyright",
+      status: "open",
+      reportedBy: "umar@deenbridge.org",
+    },
+    {
+      id: "REP-202",
+      createdAt: "2025-06-06",
+      contentType: "book",
+      itemTitle: "The Sealed Nectar",
+      reason: "spam",
+      status: "investigating",
+      reportedBy: "amina@deenbridge.org",
+    },
+    {
+      id: "REP-203",
+      createdAt: "2025-06-09",
+      contentType: "space",
+      itemTitle: "Evening Dhikr Circle",
+      reason: "inappropriate",
+      status: "resolved",
+      reportedBy: "zaynab@deenbridge.org",
+    },
+    {
+      id: "REP-204",
+      createdAt: "2025-06-13",
+      contentType: "book",
+      itemTitle: "Stories of the Prophets",
+      reason: "duplicate",
+      status: "dismissed",
+      reportedBy: "bilal@deenbridge.org",
+    },
+    {
+      id: "REP-205",
+      createdAt: "2025-06-16",
+      contentType: "course",
+      itemTitle: "Fiqh of Worship",
+      reason: "other",
+      status: "open",
+      reportedBy: "khadija@deenbridge.org",
+    },
   ],
 });
 
@@ -245,10 +355,7 @@ function readSavedQueries(userId) {
 function writeSavedQueries(userId, queries) {
   if (typeof window === "undefined" || !userId) return;
   try {
-    window.localStorage.setItem(
-      `${SAVED_QUERIES_PREFIX}${userId}`,
-      JSON.stringify(queries)
-    );
+    window.localStorage.setItem(`${SAVED_QUERIES_PREFIX}${userId}`, JSON.stringify(queries));
   } catch {
     // Storage unavailable (private mode / quota) — saving silently no-ops.
   }
@@ -426,7 +533,12 @@ function seedReports() {
         ownerId: "usr_7001",
         ownerName: "Yusuf Adeyemi",
         priorReports: [
-          { id: "rep_0900", reason: "Copyright (audio)", createdAt: "2026-07-30T14:00:00.000Z", status: "dismissed" },
+          {
+            id: "rep_0900",
+            reason: "Copyright (audio)",
+            createdAt: "2026-07-30T14:00:00.000Z",
+            status: "dismissed",
+          },
         ],
         priorActions: [],
       },
@@ -456,12 +568,32 @@ function seedReports() {
         ownerId: "usr_7002",
         ownerName: "Al-Furqan Publishers",
         priorReports: [
-          { id: "rep_0811", reason: "Copyright violation", createdAt: "2026-06-11T10:00:00.000Z", status: "actioned" },
-          { id: "rep_0655", reason: "Low-quality scan", createdAt: "2026-05-02T08:30:00.000Z", status: "dismissed" },
+          {
+            id: "rep_0811",
+            reason: "Copyright violation",
+            createdAt: "2026-06-11T10:00:00.000Z",
+            status: "actioned",
+          },
+          {
+            id: "rep_0655",
+            reason: "Low-quality scan",
+            createdAt: "2026-05-02T08:30:00.000Z",
+            status: "dismissed",
+          },
         ],
         priorActions: [
-          { id: "act_311", action: "content.takedown", at: "2026-06-12T09:00:00.000Z", by: "Admin (Khadija)" },
-          { id: "act_312", action: "content.restore", at: "2026-06-20T09:00:00.000Z", by: "Admin (Khadija)" },
+          {
+            id: "act_311",
+            action: "content.takedown",
+            at: "2026-06-12T09:00:00.000Z",
+            by: "Admin (Khadija)",
+          },
+          {
+            id: "act_312",
+            action: "content.restore",
+            at: "2026-06-20T09:00:00.000Z",
+            by: "Admin (Khadija)",
+          },
         ],
       },
     },

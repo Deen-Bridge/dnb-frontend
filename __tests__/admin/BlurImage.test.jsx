@@ -64,9 +64,7 @@ describe("BlurImage", () => {
 
   it("reveals on mouseEnter and re-hides on mouseLeave", () => {
     blurState = { blurEnabled: true, reducedMotion: false };
-    const { container } = render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} />,
-    );
+    const { container } = render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} />);
 
     const wrapper = container.querySelector(".group\\/media-blur");
 
@@ -86,9 +84,7 @@ describe("BlurImage", () => {
 
   it("forceBlur always applies blur regardless of global state", () => {
     blurState = { blurEnabled: false, reducedMotion: false };
-    render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} forceBlur />,
-    );
+    render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} forceBlur />);
 
     const img = screen.getByRole("img", { name: "Test" });
     expect(img.className).toContain("blur-lg");
@@ -96,9 +92,7 @@ describe("BlurImage", () => {
 
   it("does not apply blur when reducedMotion is true", () => {
     blurState = { blurEnabled: true, reducedMotion: true };
-    render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} forceBlur />,
-    );
+    render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} forceBlur />);
 
     const img = screen.getByRole("img", { name: "Test" });
     expect(img.className).not.toContain("blur");
@@ -106,9 +100,7 @@ describe("BlurImage", () => {
 
   it("supports keyboard reveal with Enter", () => {
     blurState = { blurEnabled: true, reducedMotion: false };
-    const { container } = render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} />,
-    );
+    const { container } = render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} />);
 
     const wrapper = container.querySelector(".group\\/media-blur");
     expect(wrapper).toHaveAttribute("tabIndex", "0");
@@ -124,9 +116,7 @@ describe("BlurImage", () => {
 
   it("supports keyboard reveal with Space", () => {
     blurState = { blurEnabled: true, reducedMotion: false };
-    const { container } = render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} />,
-    );
+    const { container } = render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} />);
 
     const wrapper = container.querySelector(".group\\/media-blur");
 
@@ -139,7 +129,7 @@ describe("BlurImage", () => {
     render(
       <BlurImage>
         <div data-testid="custom-child">Custom content</div>
-      </BlurImage>,
+      </BlurImage>
     );
 
     expect(screen.getByTestId("custom-child")).toBeInTheDocument();
@@ -148,9 +138,7 @@ describe("BlurImage", () => {
 
   it("sets aria-label when blurred", () => {
     blurState = { blurEnabled: true, reducedMotion: false };
-    const { container } = render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} />,
-    );
+    const { container } = render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} />);
 
     const wrapper = container.querySelector(".group\\/media-blur");
     expect(wrapper).toHaveAttribute("aria-label", "Click or hover to reveal media");
@@ -158,9 +146,7 @@ describe("BlurImage", () => {
 
   it("removes aria-label when revealed", () => {
     blurState = { blurEnabled: true, reducedMotion: false };
-    const { container } = render(
-      <BlurImage src="/test.jpg" alt="Test" width={100} height={100} />,
-    );
+    const { container } = render(<BlurImage src="/test.jpg" alt="Test" width={100} height={100} />);
 
     const wrapper = container.querySelector(".group\\/media-blur");
     fireEvent.mouseEnter(wrapper);

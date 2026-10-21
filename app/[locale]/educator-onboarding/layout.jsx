@@ -4,8 +4,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Educator Verification — Deen Bridge",
-  description:
-    "Complete identity verification to submit your educator application.",
+  description: "Complete identity verification to submit your educator application.",
 };
 
 /**

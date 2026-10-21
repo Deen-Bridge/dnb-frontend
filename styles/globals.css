@@ -325,8 +325,7 @@
    Latin-serif substitute even if the class is ever dropped. */
 .font-arabic,
 html[dir="rtl"] body {
-  font-family: var(--font-arabic), var(--font-geist-sans), ui-sans-serif,
-    system-ui, sans-serif;
+  font-family: var(--font-arabic), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ─── Media Blur Gate (#268) ─────────────────────────────────────────── */
@@ -477,4 +476,3 @@ html[dir="rtl"] body {
     background: #f3f4f6 !important;
   }
 }
-

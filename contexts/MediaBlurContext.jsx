@@ -16,11 +16,7 @@ const MediaBlurContext = createContext(null);
 export function MediaBlurProvider({ children, overrideDefault = false }) {
   const value = useMediaBlur({ overrideDefault });
 
-  return (
-    <MediaBlurContext.Provider value={value}>
-      {children}
-    </MediaBlurContext.Provider>
-  );
+  return <MediaBlurContext.Provider value={value}>{children}</MediaBlurContext.Provider>;
 }
 
 /**
@@ -38,9 +34,7 @@ export function MediaBlurProvider({ children, overrideDefault = false }) {
 export function useMediaBlurContext() {
   const ctx = useContext(MediaBlurContext);
   if (ctx === null) {
-    throw new Error(
-      "useMediaBlurContext must be used within a <MediaBlurProvider>",
-    );
+    throw new Error("useMediaBlurContext must be used within a <MediaBlurProvider>");
   }
   return ctx;
 }

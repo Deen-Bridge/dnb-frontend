@@ -27,7 +27,9 @@ export interface UsePushNotificationsResult {
   PERMISSION_STATE: typeof PERMISSION_STATE;
 }
 
-export function usePushNotifications({ enabled = true }: UsePushNotificationsOptions = {}): UsePushNotificationsResult {
+export function usePushNotifications({
+  enabled = true,
+}: UsePushNotificationsOptions = {}): UsePushNotificationsResult {
   const [permission, setPermission] = useState<NotificationPermission | "default">(
     typeof Notification !== "undefined" ? Notification.permission : "default"
   );
@@ -51,7 +53,8 @@ export function usePushNotifications({ enabled = true }: UsePushNotificationsOpt
       } else if (typeof Notification !== "undefined") {
         setPermission(Notification.permission);
       }
-    } catch (err: any) { // TODO(types): FCM initialization error
+    } catch (err: any) {
+      // TODO(types): FCM initialization error
       console.error("[push] Failed to initialise FCM:", err?.message || err);
     } finally {
       setIsLoaded(true);

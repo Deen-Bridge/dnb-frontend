@@ -41,7 +41,7 @@ function generateMockTransactions(): AdminTransactionRecord[] {
       txHash: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
       itemType: "book",
       itemTitle: "The Sealed Nectar (Ar-Raheeq Al-Makhtum)",
-      amount: 14.50,
+      amount: 14.5,
       currency: "USDC",
       status: "pending",
       buyer: { name: "Umar Farouk", email: "umar@deenbridge.org" },
@@ -55,7 +55,7 @@ function generateMockTransactions(): AdminTransactionRecord[] {
       txHash: "0x9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d",
       itemType: "course",
       itemTitle: "Arabic Grammar Essentials",
-      amount: 35.00,
+      amount: 35.0,
       currency: "USDC",
       status: "failed",
       buyer: { name: "Zaynab Idris", email: "zaynab@deenbridge.org" },
@@ -83,7 +83,7 @@ function generateMockTransactions(): AdminTransactionRecord[] {
       txHash: "0x7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
       itemType: "course",
       itemTitle: "Fiqh of Worship",
-      amount: 59.00,
+      amount: 59.0,
       currency: "USDC",
       status: "submitted",
       buyer: { name: "Tariq Mansoor", email: "tariq@deenbridge.org" },
@@ -136,7 +136,10 @@ export interface FetchTransactionsResult {
   error?: string;
 }
 
-function filterMockTransactions(allTxs: AdminTransactionRecord[], params: FetchTransactionsParams): FetchTransactionsResult {
+function filterMockTransactions(
+  allTxs: AdminTransactionRecord[],
+  params: FetchTransactionsParams
+): FetchTransactionsResult {
   let filtered = [...allTxs];
 
   if (params.dateFrom) {
@@ -164,16 +167,22 @@ function filterMockTransactions(allTxs: AdminTransactionRecord[], params: FetchT
   }
 
   if (params.itemType && params.itemType !== "all") {
-    filtered = filtered.filter(
-      (t) => t.itemType.toLowerCase() === params.itemType!.toLowerCase()
-    );
+    filtered = filtered.filter((t) => t.itemType.toLowerCase() === params.itemType!.toLowerCase());
   }
 
-  if (params.minAmount !== undefined && params.minAmount !== "" && !isNaN(Number(params.minAmount))) {
+  if (
+    params.minAmount !== undefined &&
+    params.minAmount !== "" &&
+    !isNaN(Number(params.minAmount))
+  ) {
     filtered = filtered.filter((t) => Number(t.amount) >= Number(params.minAmount));
   }
 
-  if (params.maxAmount !== undefined && params.maxAmount !== "" && !isNaN(Number(params.maxAmount))) {
+  if (
+    params.maxAmount !== undefined &&
+    params.maxAmount !== "" &&
+    !isNaN(Number(params.maxAmount))
+  ) {
     filtered = filtered.filter((t) => Number(t.amount) <= Number(params.maxAmount));
   }
 
@@ -206,7 +215,9 @@ function filterMockTransactions(allTxs: AdminTransactionRecord[], params: FetchT
   };
 }
 
-export async function fetchGlobalTransactions(params: FetchTransactionsParams = {}): Promise<FetchTransactionsResult> {
+export async function fetchGlobalTransactions(
+  params: FetchTransactionsParams = {}
+): Promise<FetchTransactionsResult> {
   const queryParams: FetchTransactionsParams = {
     page: params.page || 1,
     limit: params.limit || 10,
@@ -214,8 +225,10 @@ export async function fetchGlobalTransactions(params: FetchTransactionsParams = 
     ...(params.dateTo && { dateTo: params.dateTo }),
     ...(params.status && params.status !== "all" && { status: params.status }),
     ...(params.itemType && params.itemType !== "all" && { itemType: params.itemType }),
-    ...(params.minAmount !== undefined && params.minAmount !== "" && { minAmount: params.minAmount }),
-    ...(params.maxAmount !== undefined && params.maxAmount !== "" && { maxAmount: params.maxAmount }),
+    ...(params.minAmount !== undefined &&
+      params.minAmount !== "" && { minAmount: params.minAmount }),
+    ...(params.maxAmount !== undefined &&
+      params.maxAmount !== "" && { maxAmount: params.maxAmount }),
     ...(params.buyerWallet && { buyerWallet: params.buyerWallet.trim() }),
     ...(params.creatorWallet && { creatorWallet: params.creatorWallet.trim() }),
   };
@@ -228,7 +241,8 @@ export async function fetchGlobalTransactions(params: FetchTransactionsParams = 
       return res.data;
     }
     return filterMockTransactions(generateMockTransactions(), queryParams);
-  } catch (error: any) { // TODO(types): Axios error on admin transactions
+  } catch (error: any) {
+    // TODO(types): Axios error on admin transactions
     if (error.response?.status === 404 || error.code === "ERR_NETWORK" || !error.response) {
       return filterMockTransactions(generateMockTransactions(), queryParams);
     }

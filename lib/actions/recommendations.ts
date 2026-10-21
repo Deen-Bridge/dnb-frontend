@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/config/axios.config";
 
-export const fetchRecommendedCourses = async (interests: string[] = []): Promise<any> => { // TODO(types): Recommended courses response
+export const fetchRecommendedCourses = async (interests: string[] = []): Promise<any> => {
+  // TODO(types): Recommended courses response
   try {
     const response = await axiosInstance.post("/api/courses/recommended", {
       interests,
@@ -12,7 +13,8 @@ export const fetchRecommendedCourses = async (interests: string[] = []): Promise
   }
 };
 
-export const fetchAllCourses = async (): Promise<any> => { // TODO(types): Courses response
+export const fetchAllCourses = async (): Promise<any> => {
+  // TODO(types): Courses response
   try {
     const response = await axiosInstance.get("/api/courses");
     return response.data;
@@ -22,7 +24,8 @@ export const fetchAllCourses = async (): Promise<any> => { // TODO(types): Cours
   }
 };
 
-export const fetchRecommendedBooks = async (interests: string[] = []): Promise<any> => { // TODO(types): Recommended books response
+export const fetchRecommendedBooks = async (interests: string[] = []): Promise<any> => {
+  // TODO(types): Recommended books response
   try {
     const response = await axiosInstance.post("/api/books/recommended", {
       interests,
@@ -34,7 +37,8 @@ export const fetchRecommendedBooks = async (interests: string[] = []): Promise<a
   }
 };
 
-export const fetchAllBooks = async (): Promise<any> => { // TODO(types): Books response
+export const fetchAllBooks = async (): Promise<any> => {
+  // TODO(types): Books response
   try {
     const response = await axiosInstance.get("/api/books");
     return response.data;

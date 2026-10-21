@@ -60,31 +60,28 @@ export default function useReports() {
    * Run a mutation, drop the resolved report out of the queue optimistically,
    * and toast the outcome. `run` returns `{ report }`.
    */
-  const mutate = useCallback(
-    async (id, run, { pending, success, failure }) => {
-      setPendingId(id);
-      const toastId = toast.loading(pending);
-      try {
-        const { report } = await run();
-        if (!report) throw new Error("Report not found");
-        // The queue holds only open/escalated reports: update the status in place,
-        // then drop anything now resolved (dismissed / actioned) out of the list.
-        setReports((prev) =>
-          prev
-            .map((r) => (r.id === id ? { ...r, status: report.status } : r))
-            .filter((r) => r.status === "open" || r.status === "escalated")
-        );
-        toast.success(success, { id: toastId });
-        return report;
-      } catch (err) {
-        toast.error(err?.message || failure, { id: toastId });
-        throw err;
-      } finally {
-        setPendingId(null);
-      }
-    },
-    []
-  );
+  const mutate = useCallback(async (id, run, { pending, success, failure }) => {
+    setPendingId(id);
+    const toastId = toast.loading(pending);
+    try {
+      const { report } = await run();
+      if (!report) throw new Error("Report not found");
+      // The queue holds only open/escalated reports: update the status in place,
+      // then drop anything now resolved (dismissed / actioned) out of the list.
+      setReports((prev) =>
+        prev
+          .map((r) => (r.id === id ? { ...r, status: report.status } : r))
+          .filter((r) => r.status === "open" || r.status === "escalated")
+      );
+      toast.success(success, { id: toastId });
+      return report;
+    } catch (err) {
+      toast.error(err?.message || failure, { id: toastId });
+      throw err;
+    } finally {
+      setPendingId(null);
+    }
+  }, []);
 
   const escalate = useCallback(
     (id) =>

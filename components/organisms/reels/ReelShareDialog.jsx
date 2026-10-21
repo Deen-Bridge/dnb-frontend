@@ -61,8 +61,7 @@ const platformConfig = [
     description: "Reach your community on Facebook",
     icon: <Facebook className="h-5 w-5" />,
     gradient: "linear-gradient(135deg, #1d4ed8, #2563eb)",
-    buildUrl: (url) =>
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    buildUrl: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
   },
 ];
 
@@ -74,8 +73,7 @@ const ReelShareDialog = ({ reel, open, onOpenChange, onShared }) => {
     return url.toString();
   }, [reel]);
 
-  const description =
-    reel?.description || "Check out this impactful reel on DeenBridge";
+  const description = reel?.description || "Check out this impactful reel on DeenBridge";
 
   const handleCopy = async () => {
     try {
@@ -180,7 +178,11 @@ const ReelShareDialog = ({ reel, open, onOpenChange, onShared }) => {
 
         <DialogFooter className="flex flex-col items-start gap-3 border-t border-border/60 bg-muted/50 px-6 py-4 text-[11px] text-muted-foreground">
           <p>
-            Tip: You can also highlight an excerpt and press <span className="rounded bg-background/70 px-1 py-0.5 font-medium text-foreground">Alt + S</span> to share instantly.
+            Tip: You can also highlight an excerpt and press{" "}
+            <span className="rounded bg-background/70 px-1 py-0.5 font-medium text-foreground">
+              Alt + S
+            </span>{" "}
+            to share instantly.
           </p>
         </DialogFooter>
       </DialogContent>
@@ -189,4 +191,3 @@ const ReelShareDialog = ({ reel, open, onOpenChange, onShared }) => {
 };
 
 export default ReelShareDialog;
-

@@ -3,11 +3,7 @@
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 // The tradition our educators actually teach from. Deliberately not a partner
 // or endorsement list — every claim here is one we can stand behind. The
@@ -34,9 +30,7 @@ export default function Sources() {
           className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_center,rgba(38,89,2,0.10)_1.5px,transparent_1.5px)]"
           style={{ backgroundSize: "28px 28px" }}
         />
-        <div
-          className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(45deg,rgba(0,153,0,0.06)_0_1px,transparent_1px_28px),repeating-linear-gradient(-45deg,rgba(0,153,0,0.06)_0_1px,transparent_1px_28px)]"
-        />
+        <div className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(45deg,rgba(0,153,0,0.06)_0_1px,transparent_1px_28px),repeating-linear-gradient(-45deg,rgba(0,153,0,0.06)_0_1px,transparent_1px_28px)]" />
         <div className="absolute start-1/2 top-0 h-1/2 w-2/3 -translate-x-1/2 rounded-full bg-gradient-to-b from-secondary/10 to-transparent blur-3xl" />
       </div>
 
@@ -99,20 +93,11 @@ export default function Sources() {
               </span>
 
               <div className="relative">
-                <span
-                  lang="ar"
-                  dir="rtl"
-                  className="mb-4 block text-3xl leading-tight text-accent"
-                >
+                <span lang="ar" dir="rtl" className="mb-4 block text-3xl leading-tight text-accent">
                   {s.ar}
                 </span>
 
-                <h3
-                  className={cn(
-                    poppins_600,
-                    "mb-2 text-xl text-ink font-stretch-110%"
-                  )}
-                >
+                <h3 className={cn(poppins_600, "mb-2 text-xl text-ink font-stretch-110%")}>
                   {t(`items.${s.id}.title`)}
                 </h3>
 

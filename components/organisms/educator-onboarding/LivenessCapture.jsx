@@ -45,8 +45,13 @@ const Phase = /** @type {const} */ ({
  * @param {() => void} props.onCancel   — called when user cancels; returns to step 1
  */
 export default function LivenessCapture({ onSuccess, onCancel }) {
-  const { consentRecord, setVerificationToken, clearVerificationToken, setError, retry: ctxRetry } =
-    useEducatorOnboarding();
+  const {
+    consentRecord,
+    setVerificationToken,
+    clearVerificationToken,
+    setError,
+    retry: ctxRetry,
+  } = useEducatorOnboarding();
   const { user } = useAuth();
 
   const [phase, setPhase] = useState(Phase.CAPTURING);
@@ -96,8 +101,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
         setVerificationToken(result.token);
         handleSuccess(result.token, session);
       } else {
-        const newPhase =
-          result.reason === "timeout" ? Phase.TIMEOUT : Phase.FAILURE;
+        const newPhase = result.reason === "timeout" ? Phase.TIMEOUT : Phase.FAILURE;
         setPhase(newPhase);
         setErrorMessage(
           result.message ??
@@ -146,9 +150,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       } catch (err) {
         toast.error(err?.message ?? "Failed to submit verification. Please retry.");
         setPhase(Phase.FAILURE);
-        setErrorMessage(
-          err?.message ?? "Could not submit your verification. Please try again."
-        );
+        setErrorMessage(err?.message ?? "Could not submit your verification. Please try again.");
       } finally {
         // SECURITY: clear the token from context as soon as the backend has it.
         clearVerificationToken();
@@ -196,24 +198,17 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       {phase === Phase.CAPTURING && (
         <>
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
-            <Loader2
-              className="h-10 w-10 text-accent animate-spin"
-              aria-hidden="true"
-            />
+            <Loader2 className="h-10 w-10 text-accent animate-spin" aria-hidden="true" />
           </div>
-          <h2
-            id="capture-heading"
-            className="text-xl font-semibold font-stretch-125%"
-          >
+          <h2 id="capture-heading" className="text-xl font-semibold font-stretch-125%">
             Verifying your identity…
           </h2>
           <p className="text-sm text-muted-foreground max-w-xs">
-            Please follow the on-screen prompts. Keep your face centred and
-            ensure your environment is well-lit.
+            Please follow the on-screen prompts. Keep your face centred and ensure your environment
+            is well-lit.
           </p>
           <p className="text-xs text-muted-foreground">
-            This step will time out after{" "}
-            <strong>{config.livenessTimeoutSeconds} seconds</strong>.
+            This step will time out after <strong>{config.livenessTimeoutSeconds} seconds</strong>.
           </p>
           <Button
             wide
@@ -244,10 +239,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
               />
             )}
           </div>
-          <h2
-            id="capture-heading"
-            className="text-xl font-semibold font-stretch-125%"
-          >
+          <h2 id="capture-heading" className="text-xl font-semibold font-stretch-125%">
             {submitting ? "Submitting verification…" : "Verified!"}
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -262,10 +254,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       {phase === Phase.FAILURE && (
         <>
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-            <AlertCircle
-              className="h-10 w-10 text-red-600 dark:text-red-400"
-              aria-hidden="true"
-            />
+            <AlertCircle className="h-10 w-10 text-red-600 dark:text-red-400" aria-hidden="true" />
           </div>
           <h2
             id="capture-heading"
@@ -310,10 +299,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       {phase === Phase.TIMEOUT && (
         <>
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-            <Clock
-              className="h-10 w-10 text-amber-600 dark:text-amber-400"
-              aria-hidden="true"
-            />
+            <Clock className="h-10 w-10 text-amber-600 dark:text-amber-400" aria-hidden="true" />
           </div>
           <h2
             id="capture-heading"
@@ -322,8 +308,8 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
             Verification timed out
           </h2>
           <p className="text-sm text-muted-foreground max-w-xs">
-            The verification step did not complete in time. Please check your
-            connection and try again.
+            The verification step did not complete in time. Please check your connection and try
+            again.
           </p>
           <div
             className="flex flex-col gap-3 w-full sm:flex-row-reverse"

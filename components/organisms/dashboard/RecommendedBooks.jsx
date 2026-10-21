@@ -4,10 +4,7 @@ import Cookies from "js-cookie";
 import RecommendedBookCard from "./R-BooksCard";
 import { cn } from "@/lib/utils";
 import { Inter_500 } from "@/lib/config/font.config";
-import {
-  fetchAllBooks,
-  fetchRecommendedBooks,
-} from "@/lib/actions/recommendations";
+import { fetchAllBooks, fetchRecommendedBooks } from "@/lib/actions/recommendations";
 import { toast } from "sonner";
 import LibraryBookSkeleton from "@/components/atoms/skeletons/LibraryBookSkeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
@@ -97,9 +94,7 @@ const RecommendedBooks = () => {
     loadBooks();
   }, []);
 
-  const sectionTitle = hasInterests
-    ? "Recommended Books for You"
-    : "Popular Books";
+  const sectionTitle = hasInterests ? "Recommended Books for You" : "Popular Books";
 
   const emptyMessage = hasInterests
     ? "No books match your interests yet. Try updating your profile interests!"
@@ -118,11 +113,7 @@ const RecommendedBooks = () => {
   if (loading) {
     return (
       <div>
-        <h3
-          className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}
-        >
-          {sectionTitle}
-        </h3>
+        <h3 className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}>{sectionTitle}</h3>
         <div className="grid sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <LibraryBookSkeleton key={i} />
@@ -135,11 +126,7 @@ const RecommendedBooks = () => {
   if (books.length === 0) {
     return (
       <div>
-        <h3
-          className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}
-        >
-          {sectionTitle}
-        </h3>
+        <h3 className={cn("text-xl font-bold mb-4 mt-10", Inter_500.className)}>{sectionTitle}</h3>
         <p className="text-muted-foreground text-center py-8">{emptyMessage}</p>
       </div>
     );

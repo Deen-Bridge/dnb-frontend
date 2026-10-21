@@ -37,11 +37,7 @@ import {
   getSessionSecurityConfig,
   DEFAULT_SESSION_SECURITY_CONFIG,
 } from "@/lib/actions/admin-session-config";
-import {
-  loginUrlWithReason,
-  SESSION_IDLE,
-  clearReauthMarker,
-} from "@/lib/auth/session-status";
+import { loginUrlWithReason, SESSION_IDLE, clearReauthMarker } from "@/lib/auth/session-status";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_600 } from "@/lib/config/font.config";
 
@@ -63,10 +59,7 @@ export default function AdminIdleGuard() {
 
   const [config, setConfig] = useState(null);
 
-  const isAdmin = useMemo(
-    () => Boolean(user) && normalizeRole(user.role) === ROLES.ADMIN,
-    [user]
-  );
+  const isAdmin = useMemo(() => Boolean(user) && normalizeRole(user.role) === ROLES.ADMIN, [user]);
   const onAdminRoute = Boolean(pathname && ADMIN_ROUTE.test(pathname));
 
   // Load the (stubbed) config once we know the user is an admin. Fail safe:
@@ -126,25 +119,16 @@ export default function AdminIdleGuard() {
             <ShieldAlert className="h-5 w-5 text-destructive" aria-hidden="true" />
             You&apos;ll be signed out soon
           </AlertDialogTitle>
-          <AlertDialogDescription
-            className={cn(poppins_400.className, "text-ink-muted")}
-          >
-            For security, your admin session will end after inactivity. You&apos;ll
-            be signed out in{" "}
-            <span
-              className="font-mono font-semibold text-destructive"
-              aria-live="polite"
-            >
+          <AlertDialogDescription className={cn(poppins_400.className, "text-ink-muted")}>
+            For security, your admin session will end after inactivity. You&apos;ll be signed out in{" "}
+            <span className="font-mono font-semibold text-destructive" aria-live="polite">
               {formatCountdown(remainingSeconds)}
             </span>
             .
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel
-            className="rounded-full"
-            onClick={handleTimeout}
-          >
+          <AlertDialogCancel className="rounded-full" onClick={handleTimeout}>
             <LogOut className="mr-1 h-4 w-4" aria-hidden="true" />
             Sign out now
           </AlertDialogCancel>

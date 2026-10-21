@@ -40,7 +40,8 @@ export const CONFIRM_TITLE = "Are you sure?";
 export const CONFIRM_DESCRIPTION = "This action cannot be undone.";
 export const CONFIRM_TYPE_TO_CONFIRM = "Type {phrase} to confirm";
 export const CONFIRM_DELETE_TITLE = "Delete {item}?";
-export const CONFIRM_DELETE_DESCRIPTION = "This will permanently delete {item}. This action cannot be undone.";
+export const CONFIRM_DELETE_DESCRIPTION =
+  "This will permanently delete {item}. This action cannot be undone.";
 
 export const SUCCESS_SAVED = "Changes saved successfully";
 export const SUCCESS_CREATED = "{item} created successfully";
@@ -62,7 +63,7 @@ export const ERROR_TIMEOUT = "Request timed out. Please try again.";
 export const EMPTY_NO_DATA = "No data available";
 export const EMPTY_NO_RESULTS = "No results found";
 export const EMPTY_NO_ITEMS = "No {items} yet";
-export const EMPTY_SEARCH_NO_RESULTS = "No results for \"{query}\"";
+export const EMPTY_SEARCH_NO_RESULTS = 'No results for "{query}"';
 
 export const PAGINATION_SHOWING = "Showing {from} to {to} of {total}";
 export const PAGINATION_PAGE = "Page {current} of {total}";

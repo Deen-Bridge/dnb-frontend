@@ -15,7 +15,8 @@ let mockHighlights: FeatureHighlight[] = [
     id: "welcome-ai-chat",
     selector: "[data-feature='ai-chat']",
     title: "New: AI Assistant",
-    message: "Ask our AI assistant any Islamic question. It provides scholarly answers with citations.",
+    message:
+      "Ask our AI assistant any Islamic question. It provides scholarly answers with citations.",
     placement: "bottom",
     priority: 10,
     enabled: true,
@@ -52,7 +53,9 @@ export interface CreateHighlightPayload {
   priority?: number;
 }
 
-export async function createHighlight(payload: CreateHighlightPayload): Promise<{ highlight: FeatureHighlight }> {
+export async function createHighlight(
+  payload: CreateHighlightPayload
+): Promise<{ highlight: FeatureHighlight }> {
   if (!payload.id || !payload.selector || !payload.message) {
     throw new Error("Missing required fields: id, selector, message");
   }
@@ -78,7 +81,10 @@ export async function createHighlight(payload: CreateHighlightPayload): Promise<
   return { highlight };
 }
 
-export async function updateHighlight(id: string, updates: Partial<Omit<FeatureHighlight, "id">>): Promise<{ highlight: FeatureHighlight }> {
+export async function updateHighlight(
+  id: string,
+  updates: Partial<Omit<FeatureHighlight, "id">>
+): Promise<{ highlight: FeatureHighlight }> {
   const index = mockHighlights.findIndex((h) => h.id === id);
   if (index === -1) {
     throw new Error(`Highlight "${id}" not found`);
@@ -108,11 +114,16 @@ export async function deleteHighlight(id: string): Promise<{ success: boolean }>
   return { success: true };
 }
 
-export async function toggleHighlight(id: string, enabled: boolean): Promise<{ highlight: FeatureHighlight }> {
+export async function toggleHighlight(
+  id: string,
+  enabled: boolean
+): Promise<{ highlight: FeatureHighlight }> {
   return updateHighlight(id, { enabled });
 }
 
-export async function reorderHighlights(order: Array<{ id: string; priority: number }>): Promise<{ success: boolean }> {
+export async function reorderHighlights(
+  order: Array<{ id: string; priority: number }>
+): Promise<{ success: boolean }> {
   for (const item of order) {
     const highlight = mockHighlights.find((h) => h.id === item.id);
     if (highlight) {
@@ -124,13 +135,16 @@ export async function reorderHighlights(order: Array<{ id: string; priority: num
   return { success: true };
 }
 
-export async function validateSelector(selector: string): Promise<{ valid: boolean; error?: string }> {
+export async function validateSelector(
+  selector: string
+): Promise<{ valid: boolean; error?: string }> {
   try {
     if (typeof document !== "undefined") {
       document.querySelector(selector);
     }
     return { valid: true };
-  } catch (error: any) { // TODO(types): DOMException from querySelector
+  } catch (error: any) {
+    // TODO(types): DOMException from querySelector
     return { valid: false, error: error?.message || "Invalid selector" };
   }
 }

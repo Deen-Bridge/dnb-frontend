@@ -4,11 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
 import Footer from "../(landingPage)/Footer";
 import Button from "@/components/atoms/form/Button";
@@ -123,9 +119,8 @@ export default function AboutPage() {
               "mx-auto max-w-2xl text-lg leading-relaxed text-ink-inverse-muted sm:text-xl font-stretch-110%"
             )}
           >
-            Bridging authentic Islamic knowledge and modern community — built in
-            the open, paid out on Stellar, and answerable to the people who use
-            it.
+            Bridging authentic Islamic knowledge and modern community — built in the open, paid out
+            on Stellar, and answerable to the people who use it.
           </p>
         </div>
       </section>
@@ -154,12 +149,7 @@ export default function AboutPage() {
               </div>
 
               <div className="space-y-6">
-                <h2
-                  className={cn(
-                    poppins_600,
-                    "text-3xl text-ink sm:text-4xl font-stretch-125%"
-                  )}
-                >
+                <h2 className={cn(poppins_600, "text-3xl text-ink sm:text-4xl font-stretch-125%")}>
                   Why we built it
                 </h2>
                 <p
@@ -168,10 +158,9 @@ export default function AboutPage() {
                     "text-lg leading-relaxed text-ink-muted font-stretch-110%"
                   )}
                 >
-                  Authentic Islamic learning online is scattered. Good teachers
-                  are hard to find, harder to pay, and a serious student ends up
-                  stitching together a syllabus from a dozen places — never
-                  quite sure what is reliable.
+                  Authentic Islamic learning online is scattered. Good teachers are hard to find,
+                  harder to pay, and a serious student ends up stitching together a syllabus from a
+                  dozen places — never quite sure what is reliable.
                 </p>
                 <p
                   className={cn(
@@ -179,10 +168,9 @@ export default function AboutPage() {
                     "text-lg leading-relaxed text-ink-muted font-stretch-110%"
                   )}
                 >
-                  Deen Bridge puts the courses, the library, the live circles,
-                  and the teachers in one place, and makes the money work too —
-                  educators are paid directly in USDC, in seconds, wherever they
-                  happen to live.
+                  Deen Bridge puts the courses, the library, the live circles, and the teachers in
+                  one place, and makes the money work too — educators are paid directly in USDC, in
+                  seconds, wherever they happen to live.
                 </p>
                 <div className="pt-2">
                   <Button
@@ -230,12 +218,7 @@ export default function AboutPage() {
                   <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-secondary/10">
                     {o.icon}
                   </div>
-                  <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-2 text-base text-ink font-stretch-110%"
-                    )}
-                  >
+                  <h3 className={cn(poppins_600, "mb-2 text-base text-ink font-stretch-110%")}>
                     {o.title}
                   </h3>
                   <p
@@ -286,19 +269,11 @@ export default function AboutPage() {
                     {v.icon}
                   </div>
                   <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-3 text-xl text-ink-inverse font-stretch-110%"
-                    )}
+                    className={cn(poppins_600, "mb-3 text-xl text-ink-inverse font-stretch-110%")}
                   >
                     {v.title}
                   </h3>
-                  <p
-                    className={cn(
-                      poppins_400,
-                      "text-sm leading-relaxed text-ink-inverse-muted"
-                    )}
-                  >
+                  <p className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}>
                     {v.desc}
                   </p>
                 </div>
@@ -325,8 +300,8 @@ export default function AboutPage() {
                   "mx-auto max-w-2xl text-lg text-ink-muted font-stretch-110%"
                 )}
               >
-                Three services, all open source under an MIT licence. Read them,
-                audit them, or send a pull request.
+                Three services, all open source under an MIT licence. Read them, audit them, or send
+                a pull request.
               </p>
             </div>
 
@@ -342,17 +317,10 @@ export default function AboutPage() {
                   <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-secondary/10">
                     {s.icon}
                   </div>
-                  <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-1 text-base text-ink font-stretch-110%"
-                    )}
-                  >
+                  <h3 className={cn(poppins_600, "mb-1 text-base text-ink font-stretch-110%")}>
                     {s.name}
                   </h3>
-                  <p className={cn(poppins_400, "mb-3 text-sm text-ink-muted")}>
-                    {s.role}
-                  </p>
+                  <p className={cn(poppins_400, "mb-3 text-sm text-ink-muted")}>{s.role}</p>
                   <span
                     className={cn(
                       poppins_500,

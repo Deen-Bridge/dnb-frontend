@@ -5,13 +5,7 @@ import { AlertTriangle, Award, Bell, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -88,10 +82,7 @@ export default function MentorCredentialExpiryPage() {
   }, [loadCredentials]);
 
   const filteredCredentials = useMemo(
-    () =>
-      credentials.filter((credential) =>
-        matchesCredentialExpiryFilter(credential, filter)
-      ),
+    () => credentials.filter((credential) => matchesCredentialExpiryFilter(credential, filter)),
     [credentials, filter]
   );
 
@@ -109,8 +100,7 @@ export default function MentorCredentialExpiryPage() {
   const expiredCount = useMemo(
     () =>
       credentials.filter(
-        (credential) =>
-          credential.expiryStatus === CREDENTIAL_EXPIRY_STATUS.EXPIRED
+        (credential) => credential.expiryStatus === CREDENTIAL_EXPIRY_STATUS.EXPIRED
       ).length,
     [credentials]
   );
@@ -144,12 +134,7 @@ export default function MentorCredentialExpiryPage() {
         title="Mentor credential expiry"
         subtitle="Review expiring credentials and send re-verification reminders"
         actions={
-          <Button
-            type="button"
-            variant="outline"
-            onClick={loadCredentials}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={loadCredentials} disabled={loading}>
             <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
@@ -180,10 +165,7 @@ export default function MentorCredentialExpiryPage() {
             </CardDescription>
           </div>
           <div className="w-full md:w-64">
-            <label
-              htmlFor="credential-expiry-filter"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="credential-expiry-filter" className="mb-2 block text-sm font-medium">
               Expiry window
             </label>
             <select
@@ -207,19 +189,26 @@ export default function MentorCredentialExpiryPage() {
               className="mb-4 flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100"
             >
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-              Showing representative credential data while the admin credential endpoint is unavailable.
+              Showing representative credential data while the admin credential endpoint is
+              unavailable.
             </div>
           )}
 
           {loading && (
-            <div role="status" className="flex min-h-48 items-center justify-center gap-2 text-muted-foreground">
+            <div
+              role="status"
+              className="flex min-h-48 items-center justify-center gap-2 text-muted-foreground"
+            >
               <Loader2 className="h-5 w-5 animate-spin" />
               Loading mentor credentials…
             </div>
           )}
 
           {!loading && error && (
-            <div role="alert" className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
+            <div
+              role="alert"
+              className="flex min-h-48 flex-col items-center justify-center gap-3 text-center"
+            >
               <p className="text-sm text-destructive">{error}</p>
               <Button type="button" variant="outline" onClick={loadCredentials}>
                 Try again
@@ -238,11 +227,21 @@ export default function MentorCredentialExpiryPage() {
               <table className="w-full min-w-[760px] text-left text-sm">
                 <thead>
                   <tr className="border-b text-muted-foreground">
-                    <th scope="col" className="px-3 py-3 font-medium">Mentor</th>
-                    <th scope="col" className="px-3 py-3 font-medium">Credential type</th>
-                    <th scope="col" className="px-3 py-3 font-medium">Expiry date</th>
-                    <th scope="col" className="px-3 py-3 font-medium">Status</th>
-                    <th scope="col" className="px-3 py-3 text-right font-medium">Action</th>
+                    <th scope="col" className="px-3 py-3 font-medium">
+                      Mentor
+                    </th>
+                    <th scope="col" className="px-3 py-3 font-medium">
+                      Credential type
+                    </th>
+                    <th scope="col" className="px-3 py-3 font-medium">
+                      Expiry date
+                    </th>
+                    <th scope="col" className="px-3 py-3 font-medium">
+                      Status
+                    </th>
+                    <th scope="col" className="px-3 py-3 text-right font-medium">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

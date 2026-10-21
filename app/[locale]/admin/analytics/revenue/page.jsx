@@ -18,13 +18,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -117,9 +111,7 @@ function StatCard({ icon: Icon, label, value, subtext, trend }) {
             >
               {label}
             </p>
-            <p className={cn(poppins_600.className, "text-3xl text-foreground")}>
-              {value}
-            </p>
+            <p className={cn(poppins_600.className, "text-3xl text-foreground")}>{value}</p>
             {subtext && (
               <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                 {subtext}
@@ -215,16 +207,10 @@ export default function RevenueAnalyticsPage() {
               <PieChartIcon className="h-5 w-5" />
               Revenue Split
             </CardTitle>
-            <CardDescription>
-              Distribution between courses and books
-            </CardDescription>
+            <CardDescription>Distribution between courses and books</CardDescription>
           </CardHeader>
           <CardContent>
-            <RevenueSplitChart
-              data={revenueByType}
-              config={chartConfig}
-              pieColors={PIE_COLORS}
-            />
+            <RevenueSplitChart data={revenueByType} config={chartConfig} pieColors={PIE_COLORS} />
             <div className="mt-4 flex justify-center gap-6">
               {revenueByType.map((item, index) => (
                 <div key={item.name} className="flex items-center gap-2">
@@ -232,9 +218,7 @@ export default function RevenueAnalyticsPage() {
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: PIE_COLORS[index] }}
                   />
-                  <span className={cn(poppins_500.className, "text-sm")}>
-                    {item.name}
-                  </span>
+                  <span className={cn(poppins_500.className, "text-sm")}>{item.name}</span>
                   <Badge variant="secondary" className="text-xs">
                     ${item.value.toLocaleString()}
                   </Badge>
@@ -251,16 +235,10 @@ export default function RevenueAnalyticsPage() {
               <TrendingUp className="h-5 w-5" />
               Monthly Trends
             </CardTitle>
-            <CardDescription>
-              Revenue comparison over time
-            </CardDescription>
+            <CardDescription>Revenue comparison over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <MonthlyTrendsChart
-              data={monthlyTrends}
-              config={chartConfig}
-              colors={COLORS}
-            />
+            <MonthlyTrendsChart data={monthlyTrends} config={chartConfig} colors={COLORS} />
           </CardContent>
         </Card>
       </div>
@@ -272,16 +250,10 @@ export default function RevenueAnalyticsPage() {
             <BarChart3 className="h-5 w-5" />
             Revenue by Category
           </CardTitle>
-          <CardDescription>
-            Breakdown of courses and books revenue per category
-          </CardDescription>
+          <CardDescription>Breakdown of courses and books revenue per category</CardDescription>
         </CardHeader>
         <CardContent>
-          <RevenueByCategoryChart
-            data={revenueByCategory}
-            config={chartConfig}
-            colors={COLORS}
-          />
+          <RevenueByCategoryChart data={revenueByCategory} config={chartConfig} colors={COLORS} />
         </CardContent>
       </Card>
 
@@ -289,9 +261,7 @@ export default function RevenueAnalyticsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Category Performance</CardTitle>
-          <CardDescription>
-            Detailed revenue breakdown by category
-          </CardDescription>
+          <CardDescription>Detailed revenue breakdown by category</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -299,17 +269,13 @@ export default function RevenueAnalyticsPage() {
               const total = cat.courses + cat.books;
               const coursesPercent = Math.round((cat.courses / total) * 100);
               const booksPercent = 100 - coursesPercent;
-              const maxTotal = Math.max(
-                ...revenueByCategory.map((c) => c.courses + c.books)
-              );
+              const maxTotal = Math.max(...revenueByCategory.map((c) => c.courses + c.books));
               const barWidth = (total / maxTotal) * 100;
 
               return (
                 <div key={cat.category}>
                   <div className="mb-2 flex items-center justify-between">
-                    <span className={cn(poppins_500.className, "text-sm")}>
-                      {cat.category}
-                    </span>
+                    <span className={cn(poppins_500.className, "text-sm")}>{cat.category}</span>
                     <span className={cn(poppins_600.className, "text-sm")}>
                       ${total.toLocaleString()}
                     </span>

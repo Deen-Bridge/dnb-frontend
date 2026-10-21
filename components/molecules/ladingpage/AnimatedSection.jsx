@@ -93,11 +93,7 @@ export default function AnimatedSection({
   );
 }
 
-export function AnimatedChild({
-  children,
-  variant = "fadeUp",
-  className = "",
-}) {
+export function AnimatedChild({ children, variant = "fadeUp", className = "" }) {
   const v = childVariants[variant] || childVariants.fadeUp;
 
   return (

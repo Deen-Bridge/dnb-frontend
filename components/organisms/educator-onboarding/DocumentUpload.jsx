@@ -18,14 +18,7 @@
  * - No component in this tree ever receives or renders a public asset URL.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   Camera,
@@ -49,11 +42,7 @@ import useDocumentUpload, { SLOT_STATE } from "@/hooks/useDocumentUpload";
 
 // ── Per-state presentation ─────────────────────────────────────────────────
 
-const BUSY_STATES = new Set([
-  SLOT_STATE.VALIDATING,
-  SLOT_STATE.REQUESTING,
-  SLOT_STATE.UPLOADING,
-]);
+const BUSY_STATES = new Set([SLOT_STATE.VALIDATING, SLOT_STATE.REQUESTING, SLOT_STATE.UPLOADING]);
 
 const STATUS_COPY = {
   [SLOT_STATE.VALIDATING]: "Checking file…",
@@ -71,19 +60,19 @@ function StatusPill({ state }) {
     state === SLOT_STATE.ACCEPTED
       ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
       : state === SLOT_STATE.REJECTED || state === SLOT_STATE.ERROR
-      ? "bg-destructive/10 text-destructive"
-      : state === SLOT_STATE.SCANNING
-      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-      : "bg-muted text-muted-foreground";
+        ? "bg-destructive/10 text-destructive"
+        : state === SLOT_STATE.SCANNING
+          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+          : "bg-muted text-muted-foreground";
 
   const Icon =
     state === SLOT_STATE.ACCEPTED
       ? CheckCircle2
       : state === SLOT_STATE.REJECTED
-      ? ShieldAlert
-      : state === SLOT_STATE.ERROR
-      ? AlertCircle
-      : Loader2;
+        ? ShieldAlert
+        : state === SLOT_STATE.ERROR
+          ? AlertCircle
+          : Loader2;
 
   return (
     <span
@@ -114,8 +103,7 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
 
   const isBusy = BUSY_STATES.has(slot.state);
   const hasFile = slot.state !== SLOT_STATE.EMPTY;
-  const canReplace =
-    hasFile && !isBusy && slot.state !== SLOT_STATE.VALIDATING;
+  const canReplace = hasFile && !isBusy && slot.state !== SLOT_STATE.VALIDATING;
 
   const handleFiles = useCallback(
     (fileList) => {
@@ -161,14 +149,10 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
               </span>
             )}
             {!definition.required && (
-              <span className="ml-2 text-xs font-normal text-muted-foreground">
-                Optional
-              </span>
+              <span className="ml-2 text-xs font-normal text-muted-foreground">Optional</span>
             )}
           </h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {definition.description}
-          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{definition.description}</p>
         </div>
         <StatusPill state={slot.state} />
       </header>
@@ -182,15 +166,11 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
           onDragLeave={handleDragLeave}
           className={cn(
             "mt-3 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 text-center transition-colors",
-            isDragging
-              ? "border-accent bg-accent/5"
-              : "border-border bg-background"
+            isDragging ? "border-accent bg-accent/5" : "border-border bg-background"
           )}
         >
           <Upload className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
-          <p className="text-xs text-muted-foreground">
-            Drag a file here, or
-          </p>
+          <p className="text-xs text-muted-foreground">Drag a file here, or</p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
               type="button"
@@ -233,21 +213,14 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <FileText
-                className="h-6 w-6 text-muted-foreground"
-                aria-hidden="true"
-              />
+              <FileText className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
             )}
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-foreground">
-              {slot.filename}
-            </p>
+            <p className="truncate text-sm font-medium text-foreground">{slot.filename}</p>
             {slot.size != null && (
-              <p className="text-xs text-muted-foreground">
-                {formatBytes(slot.size)}
-              </p>
+              <p className="text-xs text-muted-foreground">{formatBytes(slot.size)}</p>
             )}
 
             {/* Progress */}
@@ -267,9 +240,7 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
                     style={{ width: `${slot.progress}%` }}
                   />
                 </div>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  {slot.progress}%
-                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{slot.progress}%</p>
               </div>
             )}
 
@@ -279,8 +250,7 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
                 data-testid={`scan-pending-${definition.type}`}
                 className="mt-2 text-xs text-amber-600 dark:text-amber-400"
               >
-                Scan pending — you can continue; we&apos;ll tell you if
-                anything is wrong.
+                Scan pending — you can continue; we&apos;ll tell you if anything is wrong.
               </p>
             )}
 
@@ -423,9 +393,7 @@ export default function DocumentUpload({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [referencesKey]);
 
-  const requiredTypes = definitions
-    .filter((d) => d.required)
-    .map((d) => d.type);
+  const requiredTypes = definitions.filter((d) => d.required).map((d) => d.type);
 
   const allRequiredUploaded = requiredTypes.every((type) => {
     const state = slots[type]?.state;
@@ -435,12 +403,10 @@ export default function DocumentUpload({
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h2 className="text-xl font-bold text-foreground">
-          Upload your documents
-        </h2>
+        <h2 className="text-xl font-bold text-foreground">Upload your documents</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          These are stored privately and shared only with the reviewer handling
-          your application. They are never published.
+          These are stored privately and shared only with the reviewer handling your application.
+          They are never published.
         </p>
       </div>
 

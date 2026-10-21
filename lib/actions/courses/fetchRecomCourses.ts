@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/config/axios.config";
 
-export async function fetchRecomCourses(interests: any): Promise<any[]> { // TODO(types): Interests filter params
+export async function fetchRecomCourses(interests: any): Promise<any[]> {
+  // TODO(types): Interests filter params
   try {
     console.log("Fetching courses for user ID:", interests);
     const response = await axiosInstance.get("/api/courses/recom", { params: interests });

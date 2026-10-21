@@ -62,7 +62,8 @@ export default function TransactionDrawer({ transaction, open, onOpenChange }) {
                 Transaction Record Details
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground mt-1">
-                Platform Reference ID: <span className="font-mono font-semibold">{transaction._id}</span>
+                Platform Reference ID:{" "}
+                <span className="font-mono font-semibold">{transaction._id}</span>
               </DialogDescription>
             </div>
 
@@ -185,7 +186,10 @@ export default function TransactionDrawer({ transaction, open, onOpenChange }) {
                     {transaction.buyer?.name || transaction.buyer?.email || "N/A"}
                   </p>
                   {transaction.buyer?.email && (
-                    <a href={`mailto:${transaction.buyer.email}`} className="text-primary hover:underline text-[11px] print-url">
+                    <a
+                      href={`mailto:${transaction.buyer.email}`}
+                      className="text-primary hover:underline text-[11px] print-url"
+                    >
                       {transaction.buyer.email}
                     </a>
                   )}
@@ -212,7 +216,10 @@ export default function TransactionDrawer({ transaction, open, onOpenChange }) {
                     {transaction.creator?.name || transaction.creator?.email || "N/A"}
                   </p>
                   {transaction.creator?.email && (
-                    <a href={`mailto:${transaction.creator.email}`} className="text-primary hover:underline text-[11px] print-url">
+                    <a
+                      href={`mailto:${transaction.creator.email}`}
+                      className="text-primary hover:underline text-[11px] print-url"
+                    >
                       {transaction.creator.email}
                     </a>
                   )}

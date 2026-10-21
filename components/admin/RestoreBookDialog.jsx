@@ -14,12 +14,7 @@ import { Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 
-export default function RestoreBookDialog({
-  open,
-  onOpenChange,
-  book,
-  onRestored,
-}) {
+export default function RestoreBookDialog({ open, onOpenChange, book, onRestored }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -49,40 +44,24 @@ export default function RestoreBookDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className={cn(
-              "flex items-center gap-2",
-              poppins_500.className
-            )}
-          >
-            <RotateCcw
-              className="h-5 w-5 text-muted-foreground"
-              aria-hidden="true"
-            />
+          <DialogTitle className={cn("flex items-center gap-2", poppins_500.className)}>
+            <RotateCcw className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             Restore Book
           </DialogTitle>
           <DialogDescription className={poppins_400.className}>
-            This will restore <strong>{book?.title ?? "this book"}</strong> to
-            the catalog and reading views, returning it to its prior active
-            state.
+            This will restore <strong>{book?.title ?? "this book"}</strong> to the catalog and
+            reading views, returning it to its prior active state.
           </DialogDescription>
         </DialogHeader>
 
         {error && (
-          <p
-            role="alert"
-            className={cn("text-sm text-destructive", poppins_400.className)}
-          >
+          <p role="alert" className={cn("text-sm text-destructive", poppins_400.className)}>
             {error}
           </p>
         )}
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={submitting}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={submitting}>
             Cancel
           </Button>
           <Button
@@ -92,10 +71,7 @@ export default function RestoreBookDialog({
           >
             {submitting ? (
               <>
-                <Loader2
-                  className="h-4 w-4 mr-2 animate-spin"
-                  aria-hidden="true"
-                />
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                 Restoring…
               </>
             ) : (

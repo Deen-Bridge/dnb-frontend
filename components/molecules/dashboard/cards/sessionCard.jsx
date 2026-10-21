@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const SessionCard = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default SessionCard
+export default SessionCard;

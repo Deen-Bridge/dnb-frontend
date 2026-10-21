@@ -3,11 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
@@ -32,8 +28,7 @@ const ProfileUserInfo = ({ user }) => {
   // Check if current user is following the profile user and get counts
   useEffect(() => {
     const checkFollowStatus = async () => {
-      if (!currentUser?._id || !user?._id || currentUser._id === user._id)
-        return;
+      if (!currentUser?._id || !user?._id || currentUser._id === user._id) return;
 
       try {
         const result = await checkIfFollowing(user._id);
@@ -74,10 +69,7 @@ const ProfileUserInfo = ({ user }) => {
     if (!currentUser?._id || !user?._id) return;
     try {
       setLoading(true);
-      const conversationId = await joinOrCreateConversation(
-        currentUser._id,
-        user._id
-      );
+      const conversationId = await joinOrCreateConversation(currentUser._id, user._id);
       router.push(`/dashboard/messages/${conversationId}`);
     } catch (err) {
       console.log("Error starting conversation:", err);
@@ -117,9 +109,7 @@ const ProfileUserInfo = ({ user }) => {
     <div className="px-4 pb-5 pt-16 sm:px-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className={cn(poppins_600, "text-2xl text-ink sm:text-3xl")}>
-            {user?.name}
-          </h1>
+          <h1 className={cn(poppins_600, "text-2xl text-ink sm:text-3xl")}>{user?.name}</h1>
           {user?.role && (
             <span
               className={cn(
@@ -166,20 +156,12 @@ const ProfileUserInfo = ({ user }) => {
       {/* Stats */}
       <div className="mt-4 flex items-center gap-6">
         <div className="flex items-baseline gap-1.5">
-          <span className={cn(poppins_600, "text-lg text-ink")}>
-            {followersCount}
-          </span>
-          <span className={cn(poppins_400, "text-sm text-ink-muted")}>
-            Followers
-          </span>
+          <span className={cn(poppins_600, "text-lg text-ink")}>{followersCount}</span>
+          <span className={cn(poppins_400, "text-sm text-ink-muted")}>Followers</span>
         </div>
         <div className="flex items-baseline gap-1.5">
-          <span className={cn(poppins_600, "text-lg text-ink")}>
-            {followingCount}
-          </span>
-          <span className={cn(poppins_400, "text-sm text-ink-muted")}>
-            Following
-          </span>
+          <span className={cn(poppins_600, "text-lg text-ink")}>{followingCount}</span>
+          <span className={cn(poppins_400, "text-sm text-ink-muted")}>Following</span>
         </div>
       </div>
 

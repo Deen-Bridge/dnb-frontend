@@ -6,7 +6,7 @@ export const SESSION_END_REASONS = Object.freeze({
   SESSION_IDLE: "idle",
 } as const);
 
-export type SessionEndReason = typeof SESSION_END_REASONS[keyof typeof SESSION_END_REASONS];
+export type SessionEndReason = (typeof SESSION_END_REASONS)[keyof typeof SESSION_END_REASONS];
 
 export const SESSION_EXPIRED = SESSION_END_REASONS.SESSION_EXPIRED;
 export const SESSION_REVOKED = SESSION_END_REASONS.SESSION_REVOKED;
@@ -55,7 +55,8 @@ export function loginUrlWithReason(reason: string): string {
   return key ? `/login?reason=${key}` : "/login";
 }
 
-export function decodeJwt(token: unknown): Record<string, any> | null { // TODO(types): Decoded arbitrary JWT claims dictionary
+export function decodeJwt(token: unknown): Record<string, any> | null {
+  // TODO(types): Decoded arbitrary JWT claims dictionary
   if (typeof token !== "string") return null;
   const parts = token.split(".");
   if (parts.length !== 3) return null;
@@ -63,9 +64,7 @@ export function decodeJwt(token: unknown): Record<string, any> | null { // TODO(
     let base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     while (base64.length % 4) base64 += "=";
     const json =
-      typeof atob === "function"
-        ? atob(base64)
-        : Buffer.from(base64, "base64").toString("binary");
+      typeof atob === "function" ? atob(base64) : Buffer.from(base64, "base64").toString("binary");
     const decoded = decodeURIComponent(
       Array.prototype.map
         .call(json, (c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
@@ -97,8 +96,7 @@ export function clearReauthMarker(): void {
 
 export function getSessionStartedAt(token?: string | null): number | null {
   const claims = decodeJwt(token ?? readToken());
-  const iatMs =
-    claims && typeof claims.iat === "number" ? claims.iat * 1000 : null;
+  const iatMs = claims && typeof claims.iat === "number" ? claims.iat * 1000 : null;
   if (iatMs == null && lastReauthAt == null) return null;
   return Math.max(iatMs ?? 0, lastReauthAt ?? 0) || null;
 }

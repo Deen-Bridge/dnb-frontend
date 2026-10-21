@@ -26,11 +26,7 @@ import AdminTierGuard from "@/components/auth/AdminTierGuard";
 import MaintenanceScreen from "@/components/maintenance/MaintenanceScreen";
 import useMaintenanceMode from "@/hooks/useMaintenanceMode";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /** Convert an ISO timestamp to a `datetime-local` input value (local tz). */
 function isoToLocalInput(iso) {
@@ -56,8 +52,7 @@ function updatedLabel(iso) {
 }
 
 function MaintenanceContent() {
-  const { maintenance, isLoading, isSaving, enable, disable, setState } =
-    useMaintenanceMode();
+  const { maintenance, isLoading, isSaving, enable, disable, setState } = useMaintenanceMode();
 
   const [message, setMessage] = useState("");
   const [etaLocal, setEtaLocal] = useState("");
@@ -135,9 +130,7 @@ function MaintenanceContent() {
                 checked={enabled}
                 onCheckedChange={handleToggle}
                 disabled={isSaving}
-                aria-label={
-                  enabled ? "Disable maintenance mode" : "Enable maintenance mode"
-                }
+                aria-label={enabled ? "Disable maintenance mode" : "Enable maintenance mode"}
               />
               <span className={cn(poppins_500.className, "text-sm text-ink")}>
                 {enabled ? "On" : "Off"}
@@ -149,14 +142,11 @@ function MaintenanceContent() {
 
       {enabled ? (
         <div className="flex items-start gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
-          <ShieldAlert
-            className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
-            aria-hidden="true"
-          />
+          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />
           <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>
-            Maintenance is <strong className="text-ink">active</strong>. Learners
-            and logged-out visitors see the lock screen below; admins keep
-            working behind the persistent maintenance bar.
+            Maintenance is <strong className="text-ink">active</strong>. Learners and logged-out
+            visitors see the lock screen below; admins keep working behind the persistent
+            maintenance bar.
           </p>
         </div>
       ) : null}
@@ -165,10 +155,7 @@ function MaintenanceContent() {
         {/* Controls */}
         <div className="space-y-5 rounded-2xl border border-accent/10 bg-surface-raised p-5 shadow-sm">
           <div className="space-y-1.5">
-            <Label
-              htmlFor="maintenance-message"
-              className={cn(poppins_500.className, "text-ink")}
-            >
+            <Label htmlFor="maintenance-message" className={cn(poppins_500.className, "text-ink")}>
               Custom message (optional)
             </Label>
             <Textarea
@@ -180,8 +167,8 @@ function MaintenanceContent() {
               maxLength={280}
             />
             <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-              Shown to learners on the lock screen. Leave blank for the default
-              copy. {message.length}/280
+              Shown to learners on the lock screen. Leave blank for the default copy.{" "}
+              {message.length}/280
             </p>
           </div>
 
@@ -214,8 +201,7 @@ function MaintenanceContent() {
               ) : null}
             </div>
             <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-              Drives the live &ldquo;Back in ~1h 12m&rdquo; countdown on the lock
-              screen.
+              Drives the live &ldquo;Back in ~1h 12m&rdquo; countdown on the lock screen.
             </p>
           </div>
 
@@ -234,12 +220,7 @@ function MaintenanceContent() {
 
         {/* Live learner preview */}
         <div className="space-y-2">
-          <p
-            className={cn(
-              poppins_600.className,
-              "flex items-center gap-2 text-sm text-ink"
-            )}
-          >
+          <p className={cn(poppins_600.className, "flex items-center gap-2 text-sm text-ink")}>
             Learner preview
             <Badge
               variant="outline"
@@ -250,10 +231,7 @@ function MaintenanceContent() {
           </p>
           <div className="relative h-[440px] overflow-hidden rounded-2xl border border-accent/10 shadow-sm">
             <div className="pointer-events-none absolute left-0 top-0 w-[166.67%] origin-top-left scale-[0.6]">
-              <MaintenanceScreen
-                message={message.trim() || null}
-                etaAt={etaIso}
-              />
+              <MaintenanceScreen message={message.trim() || null} etaAt={etaIso} />
             </div>
           </div>
         </div>

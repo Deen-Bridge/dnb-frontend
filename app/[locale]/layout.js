@@ -9,12 +9,7 @@ import { ibmPlexArabic } from "@/lib/config/font.config";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import "../../styles/globals.css";
-import {
-  siteUrl,
-  siteName,
-  siteDescription,
-  isProduction,
-} from "@/lib/config/site.config";
+import { siteUrl, siteName, siteDescription, isProduction } from "@/lib/config/site.config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

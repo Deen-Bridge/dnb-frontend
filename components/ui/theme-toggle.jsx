@@ -48,12 +48,7 @@ const ThemeToggle = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-11"
-          aria-label="Change theme"
-        >
+        <Button variant="ghost" size="icon" className="size-11" aria-label="Change theme">
           <TriggerIcon className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>

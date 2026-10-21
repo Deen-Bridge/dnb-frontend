@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/config/axios.config";
 
-export const forgetPassword = async (email: string): Promise<any> => { // TODO(types): Response payload from forget-password request
+export const forgetPassword = async (email: string): Promise<any> => {
+  // TODO(types): Response payload from forget-password request
   try {
     const response = await axiosInstance.post("/auth/request-password-reset", {
       email,
@@ -16,7 +17,8 @@ export const resetPasswordWithOTP = async (
   email: string,
   otp: string,
   newPassword: string
-): Promise<any> => { // TODO(types): Response payload from reset-password request
+): Promise<any> => {
+  // TODO(types): Response payload from reset-password request
   try {
     const response = await axiosInstance.post("/auth/reset-password", {
       email,

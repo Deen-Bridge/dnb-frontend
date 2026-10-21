@@ -108,28 +108,25 @@ export default function useOptimisticList({
    * the list taken when the chain *starts* is the rollback baseline for every
    * step queued until it drains.
    */
-  const enqueue = useCallback(
-    (id, makeStep) => {
-      const queues = queuesRef.current;
-      let entry = queues.get(id);
-      if (!entry || !entry.active) {
-        entry = { chain: Promise.resolve(), baseline: itemsRef.current, active: true };
-        queues.set(id, entry);
-      }
-      const step = makeStep(() => entry.baseline);
-      const result = entry.chain.then(step, step);
-      const myTail = result.then(
-        () => undefined,
-        () => undefined
-      );
-      entry.chain = myTail;
-      myTail.then(() => {
-        if (entry.chain === myTail) entry.active = false;
-      });
-      return result;
-    },
-    []
-  );
+  const enqueue = useCallback((id, makeStep) => {
+    const queues = queuesRef.current;
+    let entry = queues.get(id);
+    if (!entry || !entry.active) {
+      entry = { chain: Promise.resolve(), baseline: itemsRef.current, active: true };
+      queues.set(id, entry);
+    }
+    const step = makeStep(() => entry.baseline);
+    const result = entry.chain.then(step, step);
+    const myTail = result.then(
+      () => undefined,
+      () => undefined
+    );
+    entry.chain = myTail;
+    myTail.then(() => {
+      if (entry.chain === myTail) entry.active = false;
+    });
+    return result;
+  }, []);
 
   const updateItem = useCallback(
     (id, options) => {
@@ -162,9 +159,7 @@ export default function useOptimisticList({
           const result = await run(optimisticItem);
           if (typeof commit === "function" && optimisticItem !== undefined) {
             const committed = commit(result, optimisticItem);
-            setItems((prev) =>
-              prev.map((item) => (getId(item) === id ? committed : item))
-            );
+            setItems((prev) => prev.map((item) => (getId(item) === id ? committed : item)));
           }
           onSuccess?.();
         } catch (err) {
@@ -183,8 +178,7 @@ export default function useOptimisticList({
 
   const removeItem = useCallback(
     (id, options) => {
-      const { run, errorMessage = defaultErrorMessage, onError, onSuccess } =
-        options || {};
+      const { run, errorMessage = defaultErrorMessage, onError, onSuccess } = options || {};
       if (typeof run !== "function") {
         throw new Error("useOptimisticList.removeItem: `run` is a required function.");
       }

@@ -5,7 +5,8 @@ const REDACTED = "[redacted]";
 const redactEmails = (value: unknown): unknown =>
   typeof value === "string" ? value.replace(EMAIL_REGEX, "[redacted-email]") : value;
 
-const scrubObjectValues = (obj: any): any => { // TODO(types): Sentry arbitrary extra/data dictionary
+const scrubObjectValues = (obj: any): any => {
+  // TODO(types): Sentry arbitrary extra/data dictionary
   if (!obj || typeof obj !== "object") return obj;
   for (const key of Object.keys(obj)) {
     if (SENSITIVE_KEYS.has(key)) {
@@ -17,7 +18,8 @@ const scrubObjectValues = (obj: any): any => { // TODO(types): Sentry arbitrary 
   return obj;
 };
 
-export const scrubSentryEvent = (event: any): any => { // TODO(types): Sentry Event object shape
+export const scrubSentryEvent = (event: any): any => {
+  // TODO(types): Sentry Event object shape
   if (event.request) {
     if (event.request.headers) {
       delete event.request.headers.Authorization;

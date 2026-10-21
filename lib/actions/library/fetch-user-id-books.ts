@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/config/axios.config";
 
-export async function fetchUserBooks(userId: string): Promise<any[]> { // TODO(types): Books array by user ID
+export async function fetchUserBooks(userId: string): Promise<any[]> {
+  // TODO(types): Books array by user ID
   try {
     const response = await axiosInstance.get(`/api/books/by-author/${userId}`);
     if (response.data && response.data.books) {

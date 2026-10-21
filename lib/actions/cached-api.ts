@@ -1,17 +1,14 @@
-import {
-  cachedFetch,
-  cacheKeys,
-  CACHE_CONFIG,
-  smartCache,
-} from "@/lib/utils/cache";
+import { cachedFetch, cacheKeys, CACHE_CONFIG, smartCache } from "@/lib/utils/cache";
 import { config } from "@/lib/config/env";
 
 const API_URL = config.apiUrl;
 
 export const coursesAPI = {
-  getAll: async (forceRefresh: boolean = false): Promise<any[]> => { // TODO(types): Courses array
+  getAll: async (forceRefresh: boolean = false): Promise<any[]> => {
+    // TODO(types): Courses array
     try {
-      const data = await cachedFetch<any[]>(`${API_URL}/api/courses`, { // TODO(types): Courses array
+      const data = await cachedFetch<any[]>(`${API_URL}/api/courses`, {
+        // TODO(types): Courses array
         cacheKey: cacheKeys.courses(),
         ttl: CACHE_CONFIG.COURSES,
         forceRefresh,
@@ -24,9 +21,11 @@ export const coursesAPI = {
     }
   },
 
-  getById: async (courseId: string, forceRefresh: boolean = false): Promise<any | null> => { // TODO(types): Single course record
+  getById: async (courseId: string, forceRefresh: boolean = false): Promise<any | null> => {
+    // TODO(types): Single course record
     try {
-      const data = await cachedFetch<any>(`${API_URL}/api/courses/${courseId}`, { // TODO(types): Single course record
+      const data = await cachedFetch<any>(`${API_URL}/api/courses/${courseId}`, {
+        // TODO(types): Single course record
         cacheKey: cacheKeys.course(courseId),
         ttl: CACHE_CONFIG.COURSES,
         forceRefresh,
@@ -49,9 +48,11 @@ export const coursesAPI = {
 };
 
 export const booksAPI = {
-  getAll: async (forceRefresh: boolean = false): Promise<any[]> => { // TODO(types): Books array
+  getAll: async (forceRefresh: boolean = false): Promise<any[]> => {
+    // TODO(types): Books array
     try {
-      const data = await cachedFetch<any[]>(`${API_URL}/api/books`, { // TODO(types): Books array
+      const data = await cachedFetch<any[]>(`${API_URL}/api/books`, {
+        // TODO(types): Books array
         cacheKey: cacheKeys.books(),
         ttl: CACHE_CONFIG.BOOKS,
         forceRefresh,
@@ -64,9 +65,11 @@ export const booksAPI = {
     }
   },
 
-  getById: async (bookId: string, forceRefresh: boolean = false): Promise<any | null> => { // TODO(types): Single book record
+  getById: async (bookId: string, forceRefresh: boolean = false): Promise<any | null> => {
+    // TODO(types): Single book record
     try {
-      const data = await cachedFetch<any>(`${API_URL}/api/books/${bookId}`, { // TODO(types): Single book record
+      const data = await cachedFetch<any>(`${API_URL}/api/books/${bookId}`, {
+        // TODO(types): Single book record
         cacheKey: cacheKeys.book(bookId),
         ttl: CACHE_CONFIG.BOOKS,
         forceRefresh,
@@ -89,9 +92,11 @@ export const booksAPI = {
 };
 
 export const spacesAPI = {
-  getAll: async (forceRefresh: boolean = false): Promise<any[]> => { // TODO(types): Spaces array
+  getAll: async (forceRefresh: boolean = false): Promise<any[]> => {
+    // TODO(types): Spaces array
     try {
-      const data = await cachedFetch<any[]>(`${API_URL}/api/spaces`, { // TODO(types): Spaces array
+      const data = await cachedFetch<any[]>(`${API_URL}/api/spaces`, {
+        // TODO(types): Spaces array
         cacheKey: cacheKeys.spaces(),
         ttl: CACHE_CONFIG.SPACES,
         forceRefresh,
@@ -104,9 +109,11 @@ export const spacesAPI = {
     }
   },
 
-  getById: async (spaceId: string, forceRefresh: boolean = false): Promise<any | null> => { // TODO(types): Single space record
+  getById: async (spaceId: string, forceRefresh: boolean = false): Promise<any | null> => {
+    // TODO(types): Single space record
     try {
-      const data = await cachedFetch<any>(`${API_URL}/api/spaces/${spaceId}`, { // TODO(types): Single space record
+      const data = await cachedFetch<any>(`${API_URL}/api/spaces/${spaceId}`, {
+        // TODO(types): Single space record
         cacheKey: cacheKeys.space(spaceId),
         ttl: CACHE_CONFIG.SPACES,
         forceRefresh,
@@ -125,9 +132,11 @@ export const spacesAPI = {
 };
 
 export const reelsAPI = {
-  getAll: async (forceRefresh: boolean = false): Promise<any[]> => { // TODO(types): Reels array
+  getAll: async (forceRefresh: boolean = false): Promise<any[]> => {
+    // TODO(types): Reels array
     try {
-      const data = await cachedFetch<any[]>(`${API_URL}/api/reels`, { // TODO(types): Reels array
+      const data = await cachedFetch<any[]>(`${API_URL}/api/reels`, {
+        // TODO(types): Reels array
         cacheKey: cacheKeys.reels(),
         ttl: CACHE_CONFIG.REELS,
         forceRefresh,
@@ -140,9 +149,11 @@ export const reelsAPI = {
     }
   },
 
-  getById: async (reelId: string, forceRefresh: boolean = false): Promise<any | null> => { // TODO(types): Single reel record
+  getById: async (reelId: string, forceRefresh: boolean = false): Promise<any | null> => {
+    // TODO(types): Single reel record
     try {
-      const data = await cachedFetch<any>(`${API_URL}/api/reels/${reelId}`, { // TODO(types): Single reel record
+      const data = await cachedFetch<any>(`${API_URL}/api/reels/${reelId}`, {
+        // TODO(types): Single reel record
         cacheKey: cacheKeys.reel(reelId),
         ttl: CACHE_CONFIG.REELS,
         forceRefresh,
@@ -161,9 +172,11 @@ export const reelsAPI = {
 };
 
 export const userAPI = {
-  getById: async (userId: string, forceRefresh: boolean = false): Promise<any | null> => { // TODO(types): User profile record
+  getById: async (userId: string, forceRefresh: boolean = false): Promise<any | null> => {
+    // TODO(types): User profile record
     try {
-      const data = await cachedFetch<any>(`${API_URL}/api/users/${userId}`, { // TODO(types): User profile record
+      const data = await cachedFetch<any>(`${API_URL}/api/users/${userId}`, {
+        // TODO(types): User profile record
         cacheKey: cacheKeys.user(userId),
         ttl: CACHE_CONFIG.USER_DATA,
         forceRefresh,
@@ -182,17 +195,17 @@ export const userAPI = {
 };
 
 export const searchAPI = {
-  search: async (query: string, forceRefresh: boolean = false): Promise<any> => { // TODO(types): Search results payload
+  search: async (query: string, forceRefresh: boolean = false): Promise<any> => {
+    // TODO(types): Search results payload
     try {
-      const data = await cachedFetch<any>( // TODO(types): Search results generic response
-        `${API_URL}/api/search?q=${encodeURIComponent(query)}`,
-        {
+      const data =
+        await cachedFetch<any> // TODO(types): Search results generic response
+        (`${API_URL}/api/search?q=${encodeURIComponent(query)}`, {
           cacheKey: cacheKeys.search(query),
           ttl: CACHE_CONFIG.SEARCH_RESULTS,
           forceRefresh,
           storage: "session",
-        }
-      );
+        });
       return data || { results: [] };
     } catch (error) {
       console.error("Error searching:", error);

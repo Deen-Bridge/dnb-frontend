@@ -29,7 +29,9 @@ describe("reel visibility moderation", () => {
   });
 
   it("allows an admin consumer to request hidden reels", async () => {
-    getMock.mockResolvedValue({ data: { success: true, reels: [{ id: "hidden", isHidden: true }] } });
+    getMock.mockResolvedValue({
+      data: { success: true, reels: [{ id: "hidden", isHidden: true }] },
+    });
 
     const result = await fetchReels({ includeHidden: true });
 

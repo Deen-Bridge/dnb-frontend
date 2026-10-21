@@ -1,6 +1,6 @@
 "use client";
-import React from 'react';
-import StarRatings from 'react-star-ratings';
+import React from "react";
+import StarRatings from "react-star-ratings";
 
 /**
  * StarRate - a reusable star rating component
@@ -18,11 +18,7 @@ const StarRate = ({ value = 0, onChange, maxStars = 5, editable = true, label })
   return (
     <div
       role={editable ? undefined : "img"}
-      aria-label={
-        editable
-          ? undefined
-          : `Rating: ${value} out of ${maxStars} stars`
-      }
+      aria-label={editable ? undefined : `Rating: ${value} out of ${maxStars} stars`}
     >
       <StarRatings
         rating={value}

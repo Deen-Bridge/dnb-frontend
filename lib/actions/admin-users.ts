@@ -18,7 +18,10 @@ export interface BanUserResult {
   };
 }
 
-export async function banUser(userId: string, context: BanUserContext = {}): Promise<BanUserResult> {
+export async function banUser(
+  userId: string,
+  context: BanUserContext = {}
+): Promise<BanUserResult> {
   const result = await withMockDelay<BanUserResult>({ user: { id: userId, status: "banned" } });
 
   logAuditEvent({

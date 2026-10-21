@@ -16,7 +16,8 @@ export const sendOtp = async (email: string): Promise<SendOtpResult> => {
       email,
     });
     return res.data;
-  } catch (error: any) { // TODO(types): Axios error from email service
+  } catch (error: any) {
+    // TODO(types): Axios error from email service
     console.log("Error Sending OTP:", error?.response?.data || error.message);
     return { success: false, message: "Failed to send OTP" };
   }

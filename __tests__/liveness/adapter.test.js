@@ -83,8 +83,12 @@ describe("MockLivenessAdapter — outcome: failure", () => {
 });
 
 describe("MockLivenessAdapter — outcome: timeout", () => {
-  beforeEach(() => { vi.useFakeTimers(); });
-  afterEach(() => { vi.useRealTimers(); });
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("does not resolve until cancel() is called, then emits { ok:false, reason:'timeout' }", async () => {
     const adapter = new MockLivenessAdapter({ outcome: "timeout" });
@@ -128,17 +132,13 @@ describe("MockLivenessAdapter — cancel() idempotency", () => {
 describe("Adapter factory — swappability", () => {
   it("returns a MockLivenessAdapter when no vendor env var is set", async () => {
     // Dynamic import so the mock of config works correctly in this module scope
-    const { getLivenessAdapter } = await import(
-      "@/lib/verification/liveness/index"
-    );
+    const { getLivenessAdapter } = await import("@/lib/verification/liveness/index");
     const adapter = getLivenessAdapter();
     expect(adapter).toBeInstanceOf(MockLivenessAdapter);
   });
 
   it("returned adapter satisfies the LivenessAdapter interface", async () => {
-    const { getLivenessAdapter } = await import(
-      "@/lib/verification/liveness/index"
-    );
+    const { getLivenessAdapter } = await import("@/lib/verification/liveness/index");
     const adapter = getLivenessAdapter();
     expect(typeof adapter.start).toBe("function");
     expect(typeof adapter.onResult).toBe("function");

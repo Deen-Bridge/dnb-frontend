@@ -3,13 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -131,10 +125,7 @@ export default function EmailBroadcastPage() {
   }, [audience, selectedRoles, selectedUsers]);
 
   const selectedTemplate = useMemo(
-    () =>
-      templates.find((template) => template.id === templateId) ||
-      templates[0] ||
-      null,
+    () => templates.find((template) => template.id === templateId) || templates[0] || null,
     [templates, templateId]
   );
 
@@ -149,9 +140,7 @@ export default function EmailBroadcastPage() {
 
   const toggleRole = (roleId) => {
     setSelectedRoles((prev) =>
-      prev.includes(roleId)
-        ? prev.filter((role) => role !== roleId)
-        : [...prev, roleId]
+      prev.includes(roleId) ? prev.filter((role) => role !== roleId) : [...prev, roleId]
     );
   };
 
@@ -196,8 +185,7 @@ export default function EmailBroadcastPage() {
                 Compose Content
               </CardTitle>
               <CardDescription>
-                Title and content map onto the selected template&apos;s subject
-                and body.
+                Title and content map onto the selected template&apos;s subject and body.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -253,9 +241,7 @@ export default function EmailBroadcastPage() {
               )}
               {selectedTemplate && (
                 <div className="rounded-lg bg-muted/50 p-3">
-                  <p className={cn(poppins_500.className, "text-sm")}>
-                    {selectedTemplate.label}
-                  </p>
+                  <p className={cn(poppins_500.className, "text-sm")}>{selectedTemplate.label}</p>
                   <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                     {selectedTemplate.description}
                   </p>
@@ -274,19 +260,16 @@ export default function EmailBroadcastPage() {
                 <Users className="h-4 w-4" />
                 Audience
               </CardTitle>
-              <CardDescription>
-                Who should receive this email?
-              </CardDescription>
+              <CardDescription>Who should receive this email?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <RadioGroup
-                value={audience}
-                onValueChange={setAudience}
-                className="space-y-3"
-              >
+              <RadioGroup value={audience} onValueChange={setAudience} className="space-y-3">
                 <div className="flex items-center gap-3">
                   <RadioGroupItem value="everyone" id="email-everyone" />
-                  <Label htmlFor="email-everyone" className="flex items-center gap-2 cursor-pointer">
+                  <Label
+                    htmlFor="email-everyone"
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <Globe className="h-4 w-4 text-muted-foreground" />
                     Everyone
                   </Label>
@@ -316,7 +299,10 @@ export default function EmailBroadcastPage() {
                 )}
                 <div className="flex items-center gap-3">
                   <RadioGroupItem value="specific" id="email-specific" />
-                  <Label htmlFor="email-specific" className="flex items-center gap-2 cursor-pointer">
+                  <Label
+                    htmlFor="email-specific"
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <User className="h-4 w-4 text-muted-foreground" />
                     Specific Users
                   </Label>
@@ -334,9 +320,7 @@ export default function EmailBroadcastPage() {
 
               <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
                 <div className="space-y-0.5">
-                  <p className={cn(poppins_500.className, "text-sm")}>
-                    Estimated Recipients
-                  </p>
+                  <p className={cn(poppins_500.className, "text-sm")}>Estimated Recipients</p>
                   <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                     Unknown counts show "—", never a fabricated zero
                   </p>
@@ -356,21 +340,27 @@ export default function EmailBroadcastPage() {
                 <Mail className="h-4 w-4" />
                 Email Preview
               </CardTitle>
-              <CardDescription>
-                How the email will look to recipients
-              </CardDescription>
+              <CardDescription>How the email will look to recipients</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className={cn(poppins_500.className, "text-xs uppercase tracking-wider text-muted-foreground")}>
+                <p
+                  className={cn(
+                    poppins_500.className,
+                    "text-xs uppercase tracking-wider text-muted-foreground"
+                  )}
+                >
                   Subject
                 </p>
-                <p className={cn(poppins_600.className, "mt-1 text-sm")}>
-                  {mapped.subject || "—"}
-                </p>
+                <p className={cn(poppins_600.className, "mt-1 text-sm")}>{mapped.subject || "—"}</p>
               </div>
               <div>
-                <p className={cn(poppins_500.className, "text-xs uppercase tracking-wider text-muted-foreground")}>
+                <p
+                  className={cn(
+                    poppins_500.className,
+                    "text-xs uppercase tracking-wider text-muted-foreground"
+                  )}
+                >
                   Body
                 </p>
                 <div className="mt-1 whitespace-pre-line rounded-lg border bg-muted/30 p-3">
@@ -400,9 +390,7 @@ export default function EmailBroadcastPage() {
               <Button
                 className="w-full"
                 onClick={handleSend}
-                disabled={
-                  sending || !selectedTemplate || !title.trim() || !content.trim()
-                }
+                disabled={sending || !selectedTemplate || !title.trim() || !content.trim()}
               >
                 {sending ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

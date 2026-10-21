@@ -35,7 +35,8 @@ export async function fetchDisputeEvidenceSignedUrl(
       expiresAt: "",
       error: res.data?.message || res.data?.error || "Signed URL not returned by server",
     };
-  } catch (error: any) { // TODO(types): Error from signed URL fetch
+  } catch (error: any) {
+    // TODO(types): Error from signed URL fetch
     // If backend endpoint is not yet connected or in dev mock mode
     if (error.response?.status === 404 || error.code === "ERR_NETWORK" || !error.response) {
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
@@ -126,7 +127,8 @@ export async function uploadAdminDisputeEvidence(
       success: false,
       error: res.data?.message || res.data?.error || "Upload rejected by server",
     };
-  } catch (error: any) { // TODO(types): Error from dispute evidence upload
+  } catch (error: any) {
+    // TODO(types): Error from dispute evidence upload
     if (error.response?.status === 404 || error.code === "ERR_NETWORK" || !error.response) {
       const evidenceId = `ev_admin_${Date.now().toString(36)}`;
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
@@ -139,7 +141,9 @@ export async function uploadAdminDisputeEvidence(
           uploadedAt: new Date().toISOString(),
           note: note || "",
           senderRole,
-          signedUrl: file ? `/api/admin/payments/disputes/${disputeId}/evidence/${evidenceId}/file?expires=${encodeURIComponent(expiresAt)}` : "",
+          signedUrl: file
+            ? `/api/admin/payments/disputes/${disputeId}/evidence/${evidenceId}/file?expires=${encodeURIComponent(expiresAt)}`
+            : "",
           expiresAt,
         },
       };

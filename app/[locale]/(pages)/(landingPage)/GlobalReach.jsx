@@ -13,57 +13,57 @@ import IslamicPattern, { ArabesqueDivider } from "@/components/molecules/ladingp
 // Muslim-majority countries and major cities with Muslim communities
 const markers = [
   // Middle East
-  { location: [21.3891, 39.8579], size: 0.08, id: "makkah" },       // Makkah
-  { location: [24.4672, 39.6112], size: 0.05, id: "medina" },       // Medina
-  { location: [25.2048, 55.2708], size: 0.04, id: "dubai" },        // Dubai/UAE
-  { location: [31.9497, 35.9329], size: 0.04, id: "amman" },        // Jordan
-  { location: [31.7683, 35.2137], size: 0.04, id: "jerusalem" },    // Jerusalem
-  { location: [33.3152, 44.3661], size: 0.04, id: "baghdad" },      // Iraq
-  { location: [35.6892, 51.3890], size: 0.05, id: "tehran" },       // Iran
-  { location: [36.2021, 37.1343], size: 0.04, id: "aleppo" },       // Syria
+  { location: [21.3891, 39.8579], size: 0.08, id: "makkah" }, // Makkah
+  { location: [24.4672, 39.6112], size: 0.05, id: "medina" }, // Medina
+  { location: [25.2048, 55.2708], size: 0.04, id: "dubai" }, // Dubai/UAE
+  { location: [31.9497, 35.9329], size: 0.04, id: "amman" }, // Jordan
+  { location: [31.7683, 35.2137], size: 0.04, id: "jerusalem" }, // Jerusalem
+  { location: [33.3152, 44.3661], size: 0.04, id: "baghdad" }, // Iraq
+  { location: [35.6892, 51.389], size: 0.05, id: "tehran" }, // Iran
+  { location: [36.2021, 37.1343], size: 0.04, id: "aleppo" }, // Syria
   // North Africa
-  { location: [30.0444, 31.2357], size: 0.05, id: "cairo" },        // Egypt
-  { location: [33.9716, -6.8498], size: 0.04, id: "rabat" },        // Morocco
-  { location: [36.7538, 3.0588], size: 0.04, id: "algiers" },       // Algeria
-  { location: [36.8065, 10.1815], size: 0.04, id: "tunis" },        // Tunisia
-  { location: [32.8872, 13.1913], size: 0.04, id: "tripoli" },      // Libya
+  { location: [30.0444, 31.2357], size: 0.05, id: "cairo" }, // Egypt
+  { location: [33.9716, -6.8498], size: 0.04, id: "rabat" }, // Morocco
+  { location: [36.7538, 3.0588], size: 0.04, id: "algiers" }, // Algeria
+  { location: [36.8065, 10.1815], size: 0.04, id: "tunis" }, // Tunisia
+  { location: [32.8872, 13.1913], size: 0.04, id: "tripoli" }, // Libya
   // Sub-Saharan Africa
-  { location: [6.5244, 3.3792], size: 0.05, id: "lagos" },          // Nigeria
-  { location: [14.6928, -17.4467], size: 0.04, id: "dakar" },       // Senegal
-  { location: [12.6392, -8.0029], size: 0.04, id: "bamako" },       // Mali
-  { location: [9.0579, 7.4951], size: 0.04, id: "abuja" },          // Nigeria (Abuja)
+  { location: [6.5244, 3.3792], size: 0.05, id: "lagos" }, // Nigeria
+  { location: [14.6928, -17.4467], size: 0.04, id: "dakar" }, // Senegal
+  { location: [12.6392, -8.0029], size: 0.04, id: "bamako" }, // Mali
+  { location: [9.0579, 7.4951], size: 0.04, id: "abuja" }, // Nigeria (Abuja)
   // South Asia
-  { location: [33.6844, 73.0479], size: 0.06, id: "islamabad" },    // Pakistan
-  { location: [23.8103, 90.4125], size: 0.05, id: "dhaka" },        // Bangladesh
-  { location: [28.6139, 77.2090], size: 0.04, id: "delhi" },        // India
+  { location: [33.6844, 73.0479], size: 0.06, id: "islamabad" }, // Pakistan
+  { location: [23.8103, 90.4125], size: 0.05, id: "dhaka" }, // Bangladesh
+  { location: [28.6139, 77.209], size: 0.04, id: "delhi" }, // India
   // Southeast Asia
-  { location: [-6.2088, 106.8456], size: 0.06, id: "jakarta" },     // Indonesia
-  { location: [3.139, 101.6869], size: 0.05, id: "kualalumpur" },   // Malaysia
+  { location: [-6.2088, 106.8456], size: 0.06, id: "jakarta" }, // Indonesia
+  { location: [3.139, 101.6869], size: 0.05, id: "kualalumpur" }, // Malaysia
   // Central Asia
-  { location: [41.2995, 69.2401], size: 0.04, id: "tashkent" },     // Uzbekistan
-  { location: [43.2228, 76.8512], size: 0.04, id: "almaty" },       // Kazakhstan
+  { location: [41.2995, 69.2401], size: 0.04, id: "tashkent" }, // Uzbekistan
+  { location: [43.2228, 76.8512], size: 0.04, id: "almaty" }, // Kazakhstan
   // Europe
-  { location: [41.0082, 28.9784], size: 0.05, id: "istanbul" },     // Turkey
-  { location: [43.8563, 18.4131], size: 0.03, id: "sarajevo" },     // Bosnia
+  { location: [41.0082, 28.9784], size: 0.05, id: "istanbul" }, // Turkey
+  { location: [43.8563, 18.4131], size: 0.03, id: "sarajevo" }, // Bosnia
   // Americas
-  { location: [40.7128, -74.006], size: 0.03, id: "newyork" },      // New York
-  { location: [29.7604, -95.3698], size: 0.03, id: "houston" },     // Houston
+  { location: [40.7128, -74.006], size: 0.03, id: "newyork" }, // New York
+  { location: [29.7604, -95.3698], size: 0.03, id: "houston" }, // Houston
 ];
 
 // Arcs connecting Makkah to major cities (Hajj/pilgrimage theme)
 const arcs = [
-  { from: [21.3891, 39.8579], to: [30.0444, 31.2357] },    // Makkah → Cairo
-  { from: [21.3891, 39.8579], to: [33.6844, 73.0479] },    // Makkah → Islamabad
-  { from: [21.3891, 39.8579], to: [-6.2088, 106.8456] },   // Makkah → Jakarta
-  { from: [21.3891, 39.8579], to: [36.7538, 10.1815] },    // Makkah → Tunis
-  { from: [21.3891, 39.8579], to: [41.0082, 28.9784] },    // Makkah → Istanbul
-  { from: [21.3891, 39.8579], to: [6.5244, 3.3792] },      // Makkah → Lagos
-  { from: [21.3891, 39.8579], to: [3.139, 101.6869] },     // Makkah → KL
-  { from: [21.3891, 39.8579], to: [25.2048, 55.2708] },    // Makkah → Dubai
-  { from: [21.3891, 39.8579], to: [35.6892, 51.3890] },    // Makkah → Tehran
-  { from: [21.3891, 39.8579], to: [23.8103, 90.4125] },    // Makkah → Dhaka
-  { from: [21.3891, 39.8579], to: [14.6928, -17.4467] },   // Makkah → Dakar
-  { from: [21.3891, 39.8579], to: [40.7128, -74.006] },    // Makkah → New York
+  { from: [21.3891, 39.8579], to: [30.0444, 31.2357] }, // Makkah → Cairo
+  { from: [21.3891, 39.8579], to: [33.6844, 73.0479] }, // Makkah → Islamabad
+  { from: [21.3891, 39.8579], to: [-6.2088, 106.8456] }, // Makkah → Jakarta
+  { from: [21.3891, 39.8579], to: [36.7538, 10.1815] }, // Makkah → Tunis
+  { from: [21.3891, 39.8579], to: [41.0082, 28.9784] }, // Makkah → Istanbul
+  { from: [21.3891, 39.8579], to: [6.5244, 3.3792] }, // Makkah → Lagos
+  { from: [21.3891, 39.8579], to: [3.139, 101.6869] }, // Makkah → KL
+  { from: [21.3891, 39.8579], to: [25.2048, 55.2708] }, // Makkah → Dubai
+  { from: [21.3891, 39.8579], to: [35.6892, 51.389] }, // Makkah → Tehran
+  { from: [21.3891, 39.8579], to: [23.8103, 90.4125] }, // Makkah → Dhaka
+  { from: [21.3891, 39.8579], to: [14.6928, -17.4467] }, // Makkah → Dakar
+  { from: [21.3891, 39.8579], to: [40.7128, -74.006] }, // Makkah → New York
 ];
 
 const stats = [
@@ -196,9 +196,7 @@ export default function GlobalReach() {
                   ))}
                 </div>
 
-                <p className="text-green-200/70 leading-relaxed">
-                  {t("description")}
-                </p>
+                <p className="text-green-200/70 leading-relaxed">{t("description")}</p>
 
                 {/* Feature highlights */}
                 <div className="space-y-3">

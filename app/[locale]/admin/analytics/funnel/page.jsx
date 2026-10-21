@@ -3,13 +3,7 @@
 import { useState, useMemo } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -18,16 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import {
   Filter,
@@ -96,39 +82,39 @@ const TIMEFRAMES = [
 
 const MOCK_DATA = {
   all: {
-    "7d":   { visitor: 12400, signup: 3720, first_purchase: 890, repeat_buyer: 215 },
-    "30d":  { visitor: 48200, signup: 14460, first_purchase: 3470, repeat_buyer: 830 },
-    "90d":  { visitor: 134000, signup: 40200, first_purchase: 9650, repeat_buyer: 2310 },
-    "6m":   { visitor: 261000, signup: 78300, first_purchase: 18790, repeat_buyer: 4510 },
-    "1y":   { visitor: 498000, signup: 149400, first_purchase: 35860, repeat_buyer: 8610 },
+    "7d": { visitor: 12400, signup: 3720, first_purchase: 890, repeat_buyer: 215 },
+    "30d": { visitor: 48200, signup: 14460, first_purchase: 3470, repeat_buyer: 830 },
+    "90d": { visitor: 134000, signup: 40200, first_purchase: 9650, repeat_buyer: 2310 },
+    "6m": { visitor: 261000, signup: 78300, first_purchase: 18790, repeat_buyer: 4510 },
+    "1y": { visitor: 498000, signup: 149400, first_purchase: 35860, repeat_buyer: 8610 },
   },
   student: {
-    "7d":   { visitor: 8700, signup: 2910, first_purchase: 710, repeat_buyer: 175 },
-    "30d":  { visitor: 33800, signup: 11590, first_purchase: 2830, repeat_buyer: 690 },
-    "90d":  { visitor: 94000, signup: 32640, first_purchase: 7920, repeat_buyer: 1920 },
-    "6m":   { visitor: 183000, signup: 63420, first_purchase: 15500, repeat_buyer: 3750 },
-    "1y":   { visitor: 349000, signup: 120800, first_purchase: 29520, repeat_buyer: 7170 },
+    "7d": { visitor: 8700, signup: 2910, first_purchase: 710, repeat_buyer: 175 },
+    "30d": { visitor: 33800, signup: 11590, first_purchase: 2830, repeat_buyer: 690 },
+    "90d": { visitor: 94000, signup: 32640, first_purchase: 7920, repeat_buyer: 1920 },
+    "6m": { visitor: 183000, signup: 63420, first_purchase: 15500, repeat_buyer: 3750 },
+    "1y": { visitor: 349000, signup: 120800, first_purchase: 29520, repeat_buyer: 7170 },
   },
   teacher: {
-    "7d":   { visitor: 2100, signup: 520, first_purchase: 120, repeat_buyer: 28 },
-    "30d":  { visitor: 8200, signup: 2050, first_purchase: 470, repeat_buyer: 110 },
-    "90d":  { visitor: 22800, signup: 5700, first_purchase: 1310, repeat_buyer: 310 },
-    "6m":   { visitor: 44400, signup: 11100, first_purchase: 2550, repeat_buyer: 600 },
-    "1y":   { visitor: 84600, signup: 21150, first_purchase: 4860, repeat_buyer: 1150 },
+    "7d": { visitor: 2100, signup: 520, first_purchase: 120, repeat_buyer: 28 },
+    "30d": { visitor: 8200, signup: 2050, first_purchase: 470, repeat_buyer: 110 },
+    "90d": { visitor: 22800, signup: 5700, first_purchase: 1310, repeat_buyer: 310 },
+    "6m": { visitor: 44400, signup: 11100, first_purchase: 2550, repeat_buyer: 600 },
+    "1y": { visitor: 84600, signup: 21150, first_purchase: 4860, repeat_buyer: 1150 },
   },
   admin: {
-    "7d":   { visitor: 320, signup: 45, first_purchase: 8, repeat_buyer: 2 },
-    "30d":  { visitor: 1200, signup: 170, first_purchase: 30, repeat_buyer: 7 },
-    "90d":  { visitor: 3400, signup: 480, first_purchase: 85, repeat_buyer: 20 },
-    "6m":   { visitor: 6600, signup: 930, first_purchase: 165, repeat_buyer: 40 },
-    "1y":   { visitor: 12600, signup: 1770, first_purchase: 315, repeat_buyer: 76 },
+    "7d": { visitor: 320, signup: 45, first_purchase: 8, repeat_buyer: 2 },
+    "30d": { visitor: 1200, signup: 170, first_purchase: 30, repeat_buyer: 7 },
+    "90d": { visitor: 3400, signup: 480, first_purchase: 85, repeat_buyer: 20 },
+    "6m": { visitor: 6600, signup: 930, first_purchase: 165, repeat_buyer: 40 },
+    "1y": { visitor: 12600, signup: 1770, first_purchase: 315, repeat_buyer: 76 },
   },
   guest: {
-    "7d":   { visitor: 1280, signup: 245, first_purchase: 52, repeat_buyer: 10 },
-    "30d":  { visitor: 5000, signup: 650, first_purchase: 140, repeat_buyer: 23 },
-    "90d":  { visitor: 13800, signup: 1380, first_purchase: 335, repeat_buyer: 60 },
-    "6m":   { visitor: 27000, signup: 2850, first_purchase: 575, repeat_buyer: 120 },
-    "1y":   { visitor: 51800, signup: 5680, first_purchase: 1165, repeat_buyer: 214 },
+    "7d": { visitor: 1280, signup: 245, first_purchase: 52, repeat_buyer: 10 },
+    "30d": { visitor: 5000, signup: 650, first_purchase: 140, repeat_buyer: 23 },
+    "90d": { visitor: 13800, signup: 1380, first_purchase: 335, repeat_buyer: 60 },
+    "6m": { visitor: 27000, signup: 2850, first_purchase: 575, repeat_buyer: 120 },
+    "1y": { visitor: 51800, signup: 5680, first_purchase: 1165, repeat_buyer: 214 },
   },
 };
 
@@ -218,12 +204,7 @@ function FunnelVisual({ stages, data }) {
                 {value.toLocaleString()}
               </span>
               {index > 0 && (
-                <span
-                  className={cn(
-                    poppins_400.className,
-                    "text-xs text-muted-foreground"
-                  )}
-                >
+                <span className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                   {getConversionRate(data[stages[0].key], value).toFixed(1)}% of visitors
                 </span>
               )}
@@ -235,10 +216,7 @@ function FunnelVisual({ stages, data }) {
                 <div className="flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1">
                   <TrendingDown className="h-3 w-3 text-destructive" />
                   <span
-                    className={cn(
-                      poppins_500.className,
-                      "text-xs tabular-nums text-destructive"
-                    )}
+                    className={cn(poppins_500.className, "text-xs tabular-nums text-destructive")}
                   >
                     {getDropOff(value, data[stages[index + 1].key]).toFixed(1)}% drop-off
                   </span>
@@ -261,19 +239,14 @@ function MetricDefinitions() {
           <HelpCircle className="h-5 w-5" />
           Metric Definitions
         </CardTitle>
-        <CardDescription>
-          How each funnel stage and conversion rate is calculated
-        </CardDescription>
+        <CardDescription>How each funnel stage and conversion rate is calculated</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 sm:grid-cols-2">
           {FUNNEL_STAGES.map((stage) => {
             const Icon = stage.icon;
             return (
-              <div
-                key={stage.key}
-                className="rounded-lg border p-4 space-y-2"
-              >
+              <div key={stage.key} className="rounded-lg border p-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <div
                     className="flex h-7 w-7 items-center justify-center rounded-lg"
@@ -281,9 +254,7 @@ function MetricDefinitions() {
                   >
                     <Icon className="h-4 w-4" style={{ color: stage.color }} />
                   </div>
-                  <span className={cn(poppins_600.className, "text-sm")}>
-                    {stage.label}
-                  </span>
+                  <span className={cn(poppins_600.className, "text-sm")}>{stage.label}</span>
                 </div>
                 <p
                   className={cn(
@@ -302,20 +273,17 @@ function MetricDefinitions() {
           <div className="flex items-start gap-2">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div className="space-y-1">
-              <p className={cn(poppins_500.className, "text-sm")}>
-                Conversion Rate
-              </p>
+              <p className={cn(poppins_500.className, "text-sm")}>Conversion Rate</p>
               <p
                 className={cn(
                   poppins_400.className,
                   "text-xs text-muted-foreground leading-relaxed"
                 )}
               >
-                The percentage of users at a given stage relative to the total
-                number of visitors. For example, &quot;First Purchase conversion rate&quot;
-                = (First Purchase count / Visitor count) × 100. Drop-off
-                percentages show the percentage lost between two adjacent
-                stages: ((Stage A - Stage B) / Stage A) × 100.
+                The percentage of users at a given stage relative to the total number of visitors.
+                For example, &quot;First Purchase conversion rate&quot; = (First Purchase count /
+                Visitor count) × 100. Drop-off percentages show the percentage lost between two
+                adjacent stages: ((Stage A - Stage B) / Stage A) × 100.
               </p>
             </div>
           </div>
@@ -400,10 +368,9 @@ export default function FunnelAnalyticsPage() {
               icon={Icon}
               label={stage.label}
               value={data[stage.key]}
-              subtext={`${getConversionRate(
-                data.visitor,
-                data[stage.key]
-              ).toFixed(1)}% of visitors`}
+              subtext={`${getConversionRate(data.visitor, data[stage.key]).toFixed(
+                1
+              )}% of visitors`}
             />
           );
         })}
@@ -415,9 +382,7 @@ export default function FunnelAnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Funnel Stages</CardTitle>
-            <CardDescription>
-              User progression from visitor to repeat buyer
-            </CardDescription>
+            <CardDescription>User progression from visitor to repeat buyer</CardDescription>
           </CardHeader>
           <CardContent>
             <FunnelVisual stages={FUNNEL_STAGES} data={data} />
@@ -428,17 +393,11 @@ export default function FunnelAnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Stage Comparison</CardTitle>
-            <CardDescription>
-              Absolute user counts at each funnel stage
-            </CardDescription>
+            <CardDescription>Absolute user counts at each funnel stage</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[380px] w-full">
-              <BarChart
-                data={chartData}
-                layout="vertical"
-                margin={{ left: 20, right: 20 }}
-              >
+              <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 20 }}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   horizontal={true}
@@ -451,9 +410,7 @@ export default function FunnelAnalyticsPage() {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(val) =>
-                    val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val
-                  }
+                  tickFormatter={(val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val)}
                 />
                 <YAxis
                   type="category"
@@ -465,11 +422,7 @@ export default function FunnelAnalyticsPage() {
                 />
                 <ChartTooltip
                   cursor={{ fill: "rgba(0,153,0,0.06)" }}
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value) => value.toLocaleString()}
-                    />
-                  }
+                  content={<ChartTooltipContent formatter={(value) => value.toLocaleString()} />}
                 />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {chartData.map((entry, index) => (
@@ -486,9 +439,7 @@ export default function FunnelAnalyticsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Conversion Rates</CardTitle>
-          <CardDescription>
-            Drop-off and conversion between each funnel stage
-          </CardDescription>
+          <CardDescription>Drop-off and conversion between each funnel stage</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -500,10 +451,7 @@ export default function FunnelAnalyticsPage() {
               const overallConversion = getConversionRate(data.visitor, toValue);
 
               return (
-                <div
-                  key={`${stage.key}-${next.key}`}
-                  className="rounded-lg border p-4 space-y-3"
-                >
+                <div key={`${stage.key}-${next.key}`} className="rounded-lg border p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className={cn(poppins_500.className, "text-xs text-muted-foreground")}>
                       {stage.label} → {next.label}
@@ -513,9 +461,7 @@ export default function FunnelAnalyticsPage() {
                     <span className={cn(poppins_600.className, "text-2xl tabular-nums")}>
                       {stageDropOff.toFixed(1)}%
                     </span>
-                    <span
-                      className={cn(poppins_400.className, "text-xs text-muted-foreground")}
-                    >
+                    <span className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                       drop-off
                     </span>
                   </div>
@@ -535,12 +481,7 @@ export default function FunnelAnalyticsPage() {
                       style={{ width: `${100 - stageDropOff}%` }}
                     />
                   </div>
-                  <p
-                    className={cn(
-                      poppins_400.className,
-                      "text-xs text-muted-foreground"
-                    )}
-                  >
+                  <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                     {overallConversion.toFixed(1)}% of all visitors reach {next.label}
                   </p>
                 </div>

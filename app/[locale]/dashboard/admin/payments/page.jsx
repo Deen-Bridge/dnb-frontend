@@ -34,13 +34,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,11 +47,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import AdminTierGuard from "@/components/auth/AdminTierGuard";
 import { refundPayment } from "@/lib/actions/admin-payments";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { cn } from "@/lib/utils";
 
 /* ── Mock data ────────────────────────────────────────────────────────────── */
@@ -123,9 +113,7 @@ const MOCK_PURCHASES = [
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
 
 function daysSince(iso) {
-  return Math.floor(
-    (Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24)
-  );
+  return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
 }
 
 function formatAmount(n, currency) {
@@ -165,7 +153,10 @@ function checkEligibility(purchase) {
 function RefundStatusBadge({ refundStatus, jobStatus }) {
   if (jobStatus === "pending") {
     return (
-      <Badge variant="outline" className="rounded-full bg-amber-500/10 text-amber-600 border-amber-500/20">
+      <Badge
+        variant="outline"
+        className="rounded-full bg-amber-500/10 text-amber-600 border-amber-500/20"
+      >
         <Clock className="h-3 w-3" aria-hidden="true" />
         Processing
       </Badge>
@@ -181,7 +172,10 @@ function RefundStatusBadge({ refundStatus, jobStatus }) {
   }
   if (refundStatus?.status === "refunded") {
     return (
-      <Badge variant="outline" className="rounded-full bg-secondary/10 text-secondary border-secondary/20">
+      <Badge
+        variant="outline"
+        className="rounded-full bg-secondary/10 text-secondary border-secondary/20"
+      >
         <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
         Refunded
       </Badge>
@@ -211,27 +205,15 @@ function EligibilityIndicator({ eligible, reason }) {
 
 /* ── Purchase Row ─────────────────────────────────────────────────────────── */
 
-function PurchaseRow({
-  purchase,
-  eligibility,
-  onSelect,
-  jobStatus,
-  refundAmount,
-}) {
+function PurchaseRow({ purchase, eligibility, onSelect, jobStatus, refundAmount }) {
   return (
     <tr className="border-b border-accent/10 last:border-0">
       <td className="py-3 pr-2">
-        <p className={cn(poppins_500.className, "text-sm text-ink")}>
-          {purchase.courseTitle}
-        </p>
-        <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-          {purchase.id}
-        </p>
+        <p className={cn(poppins_500.className, "text-sm text-ink")}>{purchase.courseTitle}</p>
+        <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>{purchase.id}</p>
       </td>
       <td className="py-3 pr-2">
-        <p className={cn(poppins_400.className, "text-sm text-ink")}>
-          {purchase.buyer}
-        </p>
+        <p className={cn(poppins_400.className, "text-sm text-ink")}>{purchase.buyer}</p>
       </td>
       <td className="py-3 pr-2">
         <p className={cn(poppins_500.className, "text-sm text-ink tabular-nums")}>
@@ -247,17 +229,11 @@ function PurchaseRow({
         </p>
       </td>
       <td className="py-3 pr-2">
-        <RefundStatusBadge
-          refundStatus={purchase.refundStatus}
-          jobStatus={jobStatus}
-        />
+        <RefundStatusBadge refundStatus={purchase.refundStatus} jobStatus={jobStatus} />
       </td>
       <td className="py-3">
         <div className="flex flex-col items-start gap-1">
-          <EligibilityIndicator
-            eligible={eligibility.eligible}
-            reason={eligibility.reason}
-          />
+          <EligibilityIndicator eligible={eligibility.eligible} reason={eligibility.reason} />
           {eligibility.eligible && !purchase.refundStatus && (
             <Button
               variant="outline"
@@ -333,9 +309,12 @@ function PaymentsContent() {
     setReason("");
   }, [selected, isPartial, refundAmount, reason]);
 
-  const handleRetry = useCallback((purchase) => {
-    handleSelect(purchase);
-  }, [handleSelect]);
+  const handleRetry = useCallback(
+    (purchase) => {
+      handleSelect(purchase);
+    },
+    [handleSelect]
+  );
 
   return (
     <PageShell>
@@ -350,10 +329,9 @@ function PaymentsContent() {
         <ShieldCheck className="h-4 w-4" />
         <AlertTitle>Refund policy</AlertTitle>
         <AlertDescription>
-          Purchases are eligible for refund within {POLICY_WINDOW_DAYS} days and
-          only if the buyer has consumed {MAX_CONSUMPTION_PCT}% or less of the
-          course content. Partial refunds are supported. All refund actions are
-          logged to the audit trail.
+          Purchases are eligible for refund within {POLICY_WINDOW_DAYS} days and only if the buyer
+          has consumed {MAX_CONSUMPTION_PCT}% or less of the course content. Partial refunds are
+          supported. All refund actions are logged to the audit trail.
         </AlertDescription>
       </Alert>
 
@@ -363,8 +341,7 @@ function PaymentsContent() {
           <XCircle className="h-4 w-4" />
           <AlertTitle>Refund failed</AlertTitle>
           <AlertDescription>
-            One or more refund attempts failed. Check the status column below
-            and retry if needed.
+            One or more refund attempts failed. Check the status column below and retry if needed.
           </AlertDescription>
         </Alert>
       )}
@@ -375,22 +352,52 @@ function PaymentsContent() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-accent/10">
-                <th className={cn(poppins_500.className, "pb-3 pt-4 px-4 text-xs text-ink-muted uppercase tracking-wider")}>
+                <th
+                  className={cn(
+                    poppins_500.className,
+                    "pb-3 pt-4 px-4 text-xs text-ink-muted uppercase tracking-wider"
+                  )}
+                >
                   Course
                 </th>
-                <th className={cn(poppins_500.className, "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider")}>
+                <th
+                  className={cn(
+                    poppins_500.className,
+                    "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider"
+                  )}
+                >
                   Buyer
                 </th>
-                <th className={cn(poppins_500.className, "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider")}>
+                <th
+                  className={cn(
+                    poppins_500.className,
+                    "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider"
+                  )}
+                >
                   Amount
                 </th>
-                <th className={cn(poppins_500.className, "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider")}>
+                <th
+                  className={cn(
+                    poppins_500.className,
+                    "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider"
+                  )}
+                >
                   Purchase date
                 </th>
-                <th className={cn(poppins_500.className, "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider")}>
+                <th
+                  className={cn(
+                    poppins_500.className,
+                    "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider"
+                  )}
+                >
                   Status
                 </th>
-                <th className={cn(poppins_500.className, "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider")}>
+                <th
+                  className={cn(
+                    poppins_500.className,
+                    "pb-3 pt-4 px-2 text-xs text-ink-muted uppercase tracking-wider"
+                  )}
+                >
                   Eligibility
                 </th>
               </tr>
@@ -415,9 +422,7 @@ function PaymentsContent() {
       {selected && (
         <Card className="border-accent/20">
           <CardHeader>
-            <CardTitle className={cn(poppins_600.className, "text-lg")}>
-              Refund details
-            </CardTitle>
+            <CardTitle className={cn(poppins_600.className, "text-lg")}>Refund details</CardTitle>
             <CardDescription>
               Review the refund for <strong>{selected.courseTitle}</strong>
             </CardDescription>
@@ -426,12 +431,16 @@ function PaymentsContent() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label className={cn(poppins_500.className, "text-ink-muted")}>Buyer wallet</Label>
-                <p className={cn(poppins_400.className, "mt-1 font-mono text-sm text-ink break-all")}>
+                <p
+                  className={cn(poppins_400.className, "mt-1 font-mono text-sm text-ink break-all")}
+                >
                   {selected.buyerWallet}
                 </p>
               </div>
               <div>
-                <Label className={cn(poppins_500.className, "text-ink-muted")}>Original amount</Label>
+                <Label className={cn(poppins_500.className, "text-ink-muted")}>
+                  Original amount
+                </Label>
                 <p className={cn(poppins_500.className, "mt-1 text-sm text-ink tabular-nums")}>
                   {formatAmount(selected.amount, selected.currency)}
                 </p>
@@ -450,7 +459,10 @@ function PaymentsContent() {
                 }}
                 className="h-4 w-4 rounded border-accent/30 text-accent focus:ring-accent"
               />
-              <Label htmlFor="partial-toggle" className={cn(poppins_400.className, "text-sm text-ink")}>
+              <Label
+                htmlFor="partial-toggle"
+                className={cn(poppins_400.className, "text-sm text-ink")}
+              >
                 Partial refund
               </Label>
             </div>
@@ -500,11 +512,7 @@ function PaymentsContent() {
                 <Wallet className="h-4 w-4" aria-hidden="true" />
                 Initiate refund
               </Button>
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={() => setSelected(null)}
-              >
+              <Button variant="outline" className="rounded-full" onClick={() => setSelected(null)}>
                 Cancel
               </Button>
             </div>
@@ -530,17 +538,20 @@ function PaymentsContent() {
                       )
                     : "—"}
                 </strong>{" "}
-                to buyer{" "}
-                <strong className="text-ink">{selected?.buyer}</strong>.
+                to buyer <strong className="text-ink">{selected?.buyer}</strong>.
               </span>
               {selected && (
-                <span className={cn(poppins_400.className, "block font-mono text-xs text-ink-muted break-all")}>
+                <span
+                  className={cn(
+                    poppins_400.className,
+                    "block font-mono text-xs text-ink-muted break-all"
+                  )}
+                >
                   Wallet: {selected.buyerWallet}
                 </span>
               )}
               <span className={cn(poppins_400.className, "block text-sm")}>
-                This action will be logged to the audit trail and cannot be
-                undone.
+                This action will be logged to the audit trail and cannot be undone.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -549,7 +560,10 @@ function PaymentsContent() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              className={cn(poppins_500.className, "rounded-full bg-destructive text-white hover:bg-destructive/90")}
+              className={cn(
+                poppins_500.className,
+                "rounded-full bg-destructive text-white hover:bg-destructive/90"
+              )}
               onClick={handleConfirm}
             >
               <RotateCcw className="h-4 w-4" aria-hidden="true" />

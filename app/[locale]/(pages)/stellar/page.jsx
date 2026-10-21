@@ -4,11 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
 import Footer from "../(landingPage)/Footer";
 import Button from "@/components/atoms/form/Button";
@@ -127,12 +123,7 @@ export default function StellarPage() {
             aria-label="Built on Stellar — visit stellar.org"
             className="group mb-8 inline-flex items-center gap-3 rounded-2xl bg-surface-raised px-5 py-3 shadow-lg transition-transform hover:scale-105"
           >
-            <span
-              className={cn(
-                poppins_500,
-                "text-xs uppercase tracking-wider text-ink-muted"
-              )}
-            >
+            <span className={cn(poppins_500, "text-xs uppercase tracking-wider text-ink-muted")}>
               Built on
             </span>
             {/* Palette PNG with an opaque white background — multiply drops the
@@ -162,10 +153,9 @@ export default function StellarPage() {
               "mx-auto max-w-2xl text-lg sm:text-xl leading-relaxed text-ink-inverse-muted font-stretch-110%"
             )}
           >
-            DeenBridge runs its payments on the Stellar network. That is how
-            educators get paid in seconds, how sadaqah stays transparent, and
-            how a learner anywhere in the world can enroll without a bank
-            standing in the way.
+            DeenBridge runs its payments on the Stellar network. That is how educators get paid in
+            seconds, how sadaqah stays transparent, and how a learner anywhere in the world can
+            enroll without a bank standing in the way.
           </p>
         </div>
       </section>
@@ -207,12 +197,7 @@ export default function StellarPage() {
                   <div className="mb-6 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary to-accent shadow-md transition-transform group-hover:scale-110">
                     {u.icon}
                   </div>
-                  <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-3 text-xl text-accent font-stretch-110%"
-                    )}
-                  >
+                  <h3 className={cn(poppins_600, "mb-3 text-xl text-accent font-stretch-110%")}>
                     {u.title}
                   </h3>
                   <p
@@ -270,19 +255,11 @@ export default function StellarPage() {
                     {f.id}
                   </span>
                   <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-2 text-lg text-ink-inverse font-stretch-110%"
-                    )}
+                    className={cn(poppins_600, "mb-2 text-lg text-ink-inverse font-stretch-110%")}
                   >
                     {f.title}
                   </h3>
-                  <p
-                    className={cn(
-                      poppins_400,
-                      "text-sm leading-relaxed text-ink-inverse-muted"
-                    )}
-                  >
+                  <p className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}>
                     {f.desc}
                   </p>
                 </div>
@@ -309,8 +286,7 @@ export default function StellarPage() {
                   "mx-auto max-w-2xl text-lg text-ink-muted font-stretch-110%"
                 )}
               >
-                We chose it for reasons that show up in your account, not in a
-                whitepaper
+                We chose it for reasons that show up in your account, not in a whitepaper
               </p>
             </div>
 
@@ -323,12 +299,7 @@ export default function StellarPage() {
                   <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-secondary/10">
                     {r.icon}
                   </div>
-                  <h3
-                    className={cn(
-                      poppins_600,
-                      "mb-2 text-base text-accent font-stretch-110%"
-                    )}
-                  >
+                  <h3 className={cn(poppins_600, "mb-2 text-base text-accent font-stretch-110%")}>
                     {r.title}
                   </h3>
                   <p
@@ -357,13 +328,10 @@ export default function StellarPage() {
               Ready to connect your wallet?
             </h3>
             <p
-              className={cn(
-                poppins_400,
-                "mx-auto mb-8 max-w-2xl text-ink-muted font-stretch-110%"
-              )}
+              className={cn(poppins_400, "mx-auto mb-8 max-w-2xl text-ink-muted font-stretch-110%")}
             >
-              Set it up once and you can enroll, give sadaqah, and receive
-              earnings without ever handing your funds to anyone.
+              Set it up once and you can enroll, give sadaqah, and receive earnings without ever
+              handing your funds to anyone.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button

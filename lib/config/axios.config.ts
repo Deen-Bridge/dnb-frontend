@@ -27,7 +27,8 @@ let failedQueue: Array<{
   reject: (reason?: any) => void; // TODO(types): Error reason type for failed promise queue
 }> = [];
 
-const processQueue = (error: any | null, token: string | null = null): void => { // TODO(types): Error object from refresh failure
+const processQueue = (error: any | null, token: string | null = null): void => {
+  // TODO(types): Error object from refresh failure
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -73,15 +74,15 @@ const isRetryableRequest = (request?: InternalAxiosRequestConfig): boolean => {
 // Add response interceptor to handle errors
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
-  async (error: any) => { // TODO(types): Generic error interceptor payload
+  async (error: any) => {
+    // TODO(types): Generic error interceptor payload
     const originalRequest = error.config as InternalAxiosRequestConfig | undefined;
 
     // Handle network errors
     if (error.code === "ERR_NETWORK") {
       console.error("Network error:", error);
       return Promise.reject({
-        message:
-          "Unable to connect to the server. Please check your internet connection.",
+        message: "Unable to connect to the server. Please check your internet connection.",
         originalError: error,
       });
     }
@@ -102,7 +103,12 @@ axiosInstance.interceptors.response.use(
       originalRequest?.url?.includes("/api/auth/refresh") ||
       originalRequest?.url?.includes("/api/auth/stellar/");
 
-    if (originalRequest && error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
+    if (
+      originalRequest &&
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthRoute
+    ) {
       if (isRefreshing) {
         return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -123,7 +129,12 @@ axiosInstance.interceptors.response.use(
         const Cookies = (await import("js-cookie")).default;
         Cookies.set("authToken", token, { expires: 1, path: "/" });
         if (user) {
-          const userInfo: Record<string, any> = { id: user.id, name: user.name, role: user.role, email: user.email }; // TODO(types): Profile property bag
+          const userInfo: Record<string, any> = {
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            email: user.email,
+          }; // TODO(types): Profile property bag
           if (user.avatar) userInfo.avatar = user.avatar;
           if (user.gender) userInfo.gender = user.gender;
           if (user.age) userInfo.age = user.age;

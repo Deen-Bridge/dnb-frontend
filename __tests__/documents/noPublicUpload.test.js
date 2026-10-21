@@ -43,19 +43,12 @@ function read(relativePath) {
 }
 
 describe("verification documents never use the unsigned Cloudinary preset", () => {
-  it.each(DOCUMENT_UPLOAD_SOURCES)(
-    "%s does not import the Cloudinary uploader",
-    (relativePath) => {
-      const source = read(relativePath);
+  it.each(DOCUMENT_UPLOAD_SOURCES)("%s does not import the Cloudinary uploader", (relativePath) => {
+    const source = read(relativePath);
 
-      expect(source).not.toMatch(
-        /(?:from\s*|require\(\s*)["'][^"']*cloudinaryUpload["']/
-      );
-      expect(source).not.toMatch(
-        /(?:from\s*|require\(\s*)["'][^"']*useCloudinaryUpload["']/
-      );
-    }
-  );
+    expect(source).not.toMatch(/(?:from\s*|require\(\s*)["'][^"']*cloudinaryUpload["']/);
+    expect(source).not.toMatch(/(?:from\s*|require\(\s*)["'][^"']*useCloudinaryUpload["']/);
+  });
 
   it.each(DOCUMENT_UPLOAD_SOURCES)(
     "%s never references an upload preset or api.cloudinary.com",
@@ -73,9 +66,7 @@ describe("verification documents never use the unsigned Cloudinary preset", () =
 
     // `secure_url` is Cloudinary's public asset URL. It must not appear
     // outside the explanatory comment that says why it is absent.
-    const codeOnly = source
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/^\s*\/\/.*$/gm, "");
+    const codeOnly = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
     expect(codeOnly).not.toContain("secure_url");
     expect(codeOnly).not.toContain("publicUrl");

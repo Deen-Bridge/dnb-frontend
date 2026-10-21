@@ -1,6 +1,6 @@
-import React from 'react'
-import Link from 'next/link';
-import { GalleryVerticalEnd } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import { GalleryVerticalEnd } from "lucide-react";
 const DnbLogo = () => {
   return (
     <div className="flex justify-center gap-2 md:justify-start">
@@ -11,7 +11,7 @@ const DnbLogo = () => {
         Deen Bridge
       </Link>
     </div>
-  )
-}
+  );
+};
 
 export default DnbLogo;

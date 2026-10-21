@@ -49,7 +49,14 @@ vi.mock("@/lib/actions/admin-highlights", () => ({
 import useAdminHighlights from "@/hooks/useAdminHighlights";
 
 const HIGHLIGHTS = [
-  { id: "welcome", selector: "[data-feature='welcome']", title: "Welcome", message: "Hi", priority: 1, enabled: true },
+  {
+    id: "welcome",
+    selector: "[data-feature='welcome']",
+    title: "Welcome",
+    message: "Hi",
+    priority: 1,
+    enabled: true,
+  },
 ];
 
 beforeEach(() => {

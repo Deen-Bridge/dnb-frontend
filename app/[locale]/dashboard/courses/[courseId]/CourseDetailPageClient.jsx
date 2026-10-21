@@ -32,36 +32,24 @@ import PaymentModal from "@/components/stellar/PaymentModal";
 import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 // Vidstack (@vidstack/react) is a large dependency only needed once a
 // learner actually opens the player, so it's kept out of the initial
 // course-page bundle and loaded on demand instead.
-const VidPlayerBox = dynamic(
-  () => import("@/components/atoms/dashboard/vid-player-box"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-full flex items-center justify-center rounded-xl bg-basic/90">
-        <div className="w-8 h-8 border-2 border-ink-inverse/30 border-t-ink-inverse rounded-full animate-spin" />
-      </div>
-    ),
-  }
-);
+const VidPlayerBox = dynamic(() => import("@/components/atoms/dashboard/vid-player-box"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center rounded-xl bg-basic/90">
+      <div className="w-8 h-8 border-2 border-ink-inverse/30 border-t-ink-inverse rounded-full animate-spin" />
+    </div>
+  ),
+});
 
 /* ── building blocks (design-system consistent) ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -73,11 +61,7 @@ const SectionHeading = ({ icon: Icon, title, subtitle }) => (
     </div>
     <div className="pt-0.5">
       <h2 className={cn(poppins_600, "text-lg text-ink")}>{title}</h2>
-      {subtitle && (
-        <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>
-          {subtitle}
-        </p>
-      )}
+      {subtitle && <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>{subtitle}</p>}
     </div>
   </div>
 );
@@ -96,13 +80,9 @@ export default function CourseDetailClient({ course }) {
   const hasCourse = useHasCourse(course?._id);
   const [purchased, setPurchased] = useState(false);
 
-  const {
-    progress,
-    reportProgress,
-    resetProgress,
-    resumeTime,
-    resumeLabel,
-  } = useCourseProgress(course?._id);
+  const { progress, reportProgress, resetProgress, resumeTime, resumeLabel } = useCourseProgress(
+    course?._id
+  );
 
   const [useResume, setUseResume] = useState(false);
   const [playerKey, setPlayerKey] = useState(0);
@@ -134,9 +114,7 @@ export default function CourseDetailClient({ course }) {
 
   const userReview = useMemo(() => {
     if (!user?._id || !course?.reviews) return null;
-    return course.reviews.find(
-      (r) => r.user?._id === user._id || r.user?.id === user._id
-    );
+    return course.reviews.find((r) => r.user?._id === user._id || r.user?.id === user._id);
   }, [user, course?.reviews]);
 
   const creatorHasWallet = course?.createdBy?.stellarWallet?.publicKey;
@@ -183,8 +161,7 @@ export default function CourseDetailClient({ course }) {
     return null;
   }
 
-  const canAccess =
-    hasCourse || purchased || user?._id === course.createdBy?._id;
+  const canAccess = hasCourse || purchased || user?._id === course.createdBy?._id;
 
   const isCreator = user?._id === course.createdBy?._id;
   const reviewCount = course.reviews?.length || 0;
@@ -244,13 +221,8 @@ export default function CourseDetailClient({ course }) {
                 className="group flex items-center gap-2.5"
               >
                 <Avatar className="h-9 w-9 rounded-lg">
-                  <AvatarImage
-                    src={course.createdBy?.avatar || "/images/img1.jpeg"}
-                    alt=""
-                  />
-                  <AvatarFallback>
-                    {course.createdBy?.name?.charAt(0) || "A"}
-                  </AvatarFallback>
+                  <AvatarImage src={course.createdBy?.avatar || "/images/img1.jpeg"} alt="" />
+                  <AvatarFallback>{course.createdBy?.name?.charAt(0) || "A"}</AvatarFallback>
                 </Avatar>
                 <div className="leading-tight">
                   <p className={cn(poppins_500, "text-sm text-ink group-hover:text-secondary")}>
@@ -309,53 +281,38 @@ export default function CourseDetailClient({ course }) {
                   </div>
                 </Panel>
 
-                {progress.percent > 0 &&
-                  !progress.completed &&
-                  resumeLabel &&
-                  !useResume && (
-                    <Panel className="flex flex-col items-center justify-between gap-3 border-accent/20 bg-accent/5 p-4 sm:flex-row">
-                      <div className="flex items-center gap-3">
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
-                          <Play className="h-5 w-5 text-accent" />
-                        </div>
-                        <div>
-                          <p className={cn(poppins_500, "text-sm text-ink")}>
-                            {resumeLabel}
-                          </p>
-                          <Progress
-                            value={progress.percent}
-                            className="mt-1.5 h-1.5 w-48"
-                          />
-                        </div>
+                {progress.percent > 0 && !progress.completed && resumeLabel && !useResume && (
+                  <Panel className="flex flex-col items-center justify-between gap-3 border-accent/20 bg-accent/5 p-4 sm:flex-row">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+                        <Play className="h-5 w-5 text-accent" />
                       </div>
-                      <div className="flex gap-2">
-                        <Button
-                          round
-                          className="bg-accent px-4 text-sm font-semibold text-white hover:bg-accent/90"
-                          onClick={handleResume}
-                        >
-                          <Play className="mr-1 h-4 w-4" />
-                          Resume
-                        </Button>
-                        <Button
-                          round
-                          outlined
-                          className="px-4 text-sm"
-                          onClick={handleStartOver}
-                        >
-                          <RotateCcw className="mr-1 h-4 w-4" />
-                          Start Over
-                        </Button>
+                      <div>
+                        <p className={cn(poppins_500, "text-sm text-ink")}>{resumeLabel}</p>
+                        <Progress value={progress.percent} className="mt-1.5 h-1.5 w-48" />
                       </div>
-                    </Panel>
-                  )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        round
+                        className="bg-accent px-4 text-sm font-semibold text-white hover:bg-accent/90"
+                        onClick={handleResume}
+                      >
+                        <Play className="mr-1 h-4 w-4" />
+                        Resume
+                      </Button>
+                      <Button round outlined className="px-4 text-sm" onClick={handleStartOver}>
+                        <RotateCcw className="mr-1 h-4 w-4" />
+                        Start Over
+                      </Button>
+                    </div>
+                  </Panel>
+                )}
 
                 {progress.completed && (
                   <Panel className="flex items-center gap-2 border-secondary/20 bg-secondary/5 p-4">
                     <CheckCircle2 className="h-5 w-5 text-secondary" />
-                    <span className={cn(poppins_500, "text-sm text-ink")}>
-                      Course Completed
-                    </span>
+                    <span className={cn(poppins_500, "text-sm text-ink")}>Course Completed</span>
                     <Button
                       round
                       outlined
@@ -393,15 +350,11 @@ export default function CourseDetailClient({ course }) {
                     <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
                       <Lock className="h-7 w-7 text-accent" />
                     </div>
-                    <h3 className={cn(poppins_600, "text-xl text-ink")}>
-                      Course Locked
-                    </h3>
+                    <h3 className={cn(poppins_600, "text-xl text-ink")}>Course Locked</h3>
                     <p className={cn(poppins_400, "text-sm text-ink-muted")}>
                       Purchase this course to unlock full access
                     </p>
-                    <div className={cn(poppins_600, "text-3xl text-accent")}>
-                      {priceLabel}
-                    </div>
+                    <div className={cn(poppins_600, "text-3xl text-accent")}>{priceLabel}</div>
                   </div>
                 </div>
                 <img
@@ -426,9 +379,7 @@ export default function CourseDetailClient({ course }) {
               <div className="mt-5 grid grid-cols-2 gap-3 border-t border-accent/10 pt-5 sm:grid-cols-3">
                 <div>
                   <p className={cn(poppins_400, "text-xs text-ink-muted")}>Duration</p>
-                  <p className={cn(poppins_500, "text-sm text-ink")}>
-                    {course.duration || "N/A"}
-                  </p>
+                  <p className={cn(poppins_500, "text-sm text-ink")}>{course.duration || "N/A"}</p>
                 </div>
                 <div>
                   <p className={cn(poppins_400, "text-xs text-ink-muted")}>Level</p>
@@ -450,9 +401,7 @@ export default function CourseDetailClient({ course }) {
               <SectionHeading
                 icon={MessageSquare}
                 title="Reviews"
-                subtitle={`${reviewCount} learner ${
-                  reviewCount === 1 ? "review" : "reviews"
-                }`}
+                subtitle={`${reviewCount} learner ${reviewCount === 1 ? "review" : "reviews"}`}
               />
 
               {!isCreator && canAccess && (
@@ -475,9 +424,7 @@ export default function CourseDetailClient({ course }) {
                   )}
                   {!submitted && !userReview && (
                     <div className="rounded-xl border border-accent/10 bg-surface p-4 sm:p-5">
-                      <h3 className={cn(poppins_600, "text-base text-ink")}>
-                        Leave a Review
-                      </h3>
+                      <h3 className={cn(poppins_600, "text-base text-ink")}>Leave a Review</h3>
                       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
                         <StarRate
                           value={rating}
@@ -486,9 +433,7 @@ export default function CourseDetailClient({ course }) {
                           editable={!submitting && !submitted}
                           label={
                             rating > 0
-                              ? `Your rating: ${rating} star${
-                                  rating > 1 ? "s" : ""
-                                }`
+                              ? `Your rating: ${rating} star${rating > 1 ? "s" : ""}`
                               : undefined
                           }
                         />
@@ -501,18 +446,14 @@ export default function CourseDetailClient({ course }) {
                           disabled={submitting || submitted}
                         />
                         {error && (
-                          <div className={cn(poppins_400, "text-sm text-red-600")}>
-                            {error}
-                          </div>
+                          <div className={cn(poppins_400, "text-sm text-red-600")}>{error}</div>
                         )}
                         <Button
                           wide
                           round
                           className="mt-1 bg-accent font-semibold text-white transition hover:bg-highlight"
                           type="submit"
-                          disabled={
-                            submitting || rating === 0 || review.trim() === ""
-                          }
+                          disabled={submitting || rating === 0 || review.trim() === ""}
                           loading={submitting}
                         >
                           Submit Review
@@ -538,9 +479,7 @@ export default function CourseDetailClient({ course }) {
               {canAccess && !isCreator && (
                 <div className="flex items-center gap-2 rounded-xl border border-secondary/20 bg-secondary/5 px-3 py-2">
                   <GraduationCap className="h-4 w-4 text-secondary" />
-                  <span className={cn(poppins_500, "text-xs text-ink")}>
-                    Enrolled
-                  </span>
+                  <span className={cn(poppins_500, "text-xs text-ink")}>Enrolled</span>
                 </div>
               )}
 
@@ -548,9 +487,7 @@ export default function CourseDetailClient({ course }) {
                 <p className={cn(poppins_400, "text-xs uppercase tracking-wider text-ink-muted")}>
                   Course Price
                 </p>
-                <div className={cn(poppins_600, "mt-1 text-4xl text-accent")}>
-                  {priceLabel}
-                </div>
+                <div className={cn(poppins_600, "mt-1 text-4xl text-accent")}>{priceLabel}</div>
               </div>
 
               {!hasCourse && !purchased && !isCreator ? (
@@ -577,9 +514,7 @@ export default function CourseDetailClient({ course }) {
                 <div className="space-y-3">
                   <div className="flex items-center justify-center gap-2 rounded-xl border border-secondary/20 bg-secondary/5 p-4 text-center">
                     <CheckCircle2 className="h-5 w-5 text-secondary" />
-                    <p className={cn(poppins_500, "text-sm text-ink")}>
-                      You own this course
-                    </p>
+                    <p className={cn(poppins_500, "text-sm text-ink")}>You own this course</p>
                   </div>
                   {progress.percent > 0 && (
                     <div className="rounded-xl border border-accent/10 bg-surface p-4">
@@ -600,7 +535,9 @@ export default function CourseDetailClient({ course }) {
 
               <div className="space-y-3 border-t border-accent/10 pt-5">
                 <div className="flex items-center justify-between">
-                  <span className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}>
+                  <span
+                    className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}
+                  >
                     <Users className="h-4 w-4 text-accent" />
                     Students Enrolled
                   </span>
@@ -609,16 +546,18 @@ export default function CourseDetailClient({ course }) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}>
+                  <span
+                    className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}
+                  >
                     <MessageSquare className="h-4 w-4 text-accent" />
                     Reviews
                   </span>
-                  <span className={cn(poppins_600, "text-sm text-ink")}>
-                    {reviewCount}
-                  </span>
+                  <span className={cn(poppins_600, "text-sm text-ink")}>{reviewCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}>
+                  <span
+                    className={cn(poppins_400, "flex items-center gap-2 text-sm text-ink-muted")}
+                  >
                     <Tag className="h-4 w-4 text-accent" />
                     Category
                   </span>

@@ -7,13 +7,10 @@ const getBackendBaseUrl = () => {
 };
 
 export async function GET(_request, { params }) {
-  const { bookId } = await params || {};
+  const { bookId } = (await params) || {};
 
   if (!bookId) {
-    return NextResponse.json(
-      { success: false, message: "bookId is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, message: "bookId is required" }, { status: 400 });
   }
 
   try {
@@ -32,16 +29,13 @@ export async function GET(_request, { params }) {
     });
 
     if (!backendResponse.ok) {
-      const errorBody = backendResponse.headers
-        .get("content-type")
-        ?.includes("application/json")
+      const errorBody = backendResponse.headers.get("content-type")?.includes("application/json")
         ? await backendResponse.json()
         : await backendResponse.text();
 
-      return NextResponse.json(
-        typeof errorBody === "string" ? { message: errorBody } : errorBody,
-        { status: backendResponse.status }
-      );
+      return NextResponse.json(typeof errorBody === "string" ? { message: errorBody } : errorBody, {
+        status: backendResponse.status,
+      });
     }
 
     const responseHeaders = new Headers();

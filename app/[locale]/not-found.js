@@ -3,5 +3,4 @@ function NotFound() {
   return <NotFoundComp />;
 }
 
-
-export default NotFound
+export default NotFound;

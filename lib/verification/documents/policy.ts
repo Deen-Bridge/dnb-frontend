@@ -6,7 +6,7 @@ export const DOCUMENT_TYPES = {
   SUPPORTING_DOCUMENT: "supporting_document",
 } as const;
 
-export type DocumentType = typeof DOCUMENT_TYPES[keyof typeof DOCUMENT_TYPES];
+export type DocumentType = (typeof DOCUMENT_TYPES)[keyof typeof DOCUMENT_TYPES];
 
 export interface DocumentSlot {
   type: DocumentType;
@@ -20,16 +20,14 @@ export const DOCUMENT_SLOTS: DocumentSlot[] = [
   {
     type: DOCUMENT_TYPES.GOVERNMENT_ID,
     label: "Government ID",
-    description:
-      "Passport, national ID card, or driver's licence. All four corners visible.",
+    description: "Passport, national ID card, or driver's licence. All four corners visible.",
     required: true,
     allowCamera: true,
   },
   {
     type: DOCUMENT_TYPES.TEACHING_CERTIFICATE,
     label: "Teaching or school certificate",
-    description:
-      "Ijazah, teaching licence, or a certificate from the institution you teach at.",
+    description: "Ijazah, teaching licence, or a certificate from the institution you teach at.",
     required: true,
     allowCamera: true,
   },
@@ -59,17 +57,16 @@ const MIME_LABELS: Record<string, string> = {
 };
 
 function normaliseMime(mime?: string): string {
-  const value = String(mime ?? "").toLowerCase().trim();
+  const value = String(mime ?? "")
+    .toLowerCase()
+    .trim();
   return value === "image/jpg" ? "image/jpeg" : value;
 }
 
 export function formatBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
-  const exponent = Math.min(
-    Math.floor(Math.log(bytes) / Math.log(1024)),
-    units.length - 1
-  );
+  const exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
   const value = bytes / 1024 ** exponent;
   return `${Math.round(value * 10) / 10} ${units[exponent]}`;
 }
@@ -83,7 +80,7 @@ export const REJECTION = {
   UNREADABLE: "unreadable",
 } as const;
 
-export type RejectionReason = typeof REJECTION[keyof typeof REJECTION];
+export type RejectionReason = (typeof REJECTION)[keyof typeof REJECTION];
 
 export interface ValidationResult {
   valid: boolean;
@@ -105,10 +102,7 @@ export async function validateDocumentFile(
   file: File | Blob,
   options: ValidateDocumentFileOptions = {}
 ): Promise<ValidationResult> {
-  const {
-    maxBytes = MAX_DOCUMENT_BYTES,
-    allowedMimeTypes = ALLOWED_MIME_TYPES,
-  } = options;
+  const { maxBytes = MAX_DOCUMENT_BYTES, allowedMimeTypes = ALLOWED_MIME_TYPES } = options;
 
   if (!file) {
     return reject(REJECTION.EMPTY, "No file selected.");
@@ -122,9 +116,7 @@ export async function validateDocumentFile(
   const allowed = allowedMimeTypes.map(normaliseMime);
 
   if (!allowed.includes(declaredMime)) {
-    const names = allowedMimeTypes
-      .map((mime) => MIME_LABELS[mime] ?? mime)
-      .join(", ");
+    const names = allowedMimeTypes.map((mime) => MIME_LABELS[mime] ?? mime).join(", ");
     return reject(
       REJECTION.TYPE_NOT_ALLOWED,
       `${
@@ -136,9 +128,7 @@ export async function validateDocumentFile(
   if (file.size > maxBytes) {
     return reject(
       REJECTION.TOO_LARGE,
-      `That file is ${formatBytes(file.size)}. The limit is ${formatBytes(
-        maxBytes
-      )}.`
+      `That file is ${formatBytes(file.size)}. The limit is ${formatBytes(maxBytes)}.`
     );
   }
 
@@ -146,10 +136,7 @@ export async function validateDocumentFile(
   try {
     inspection = await inspectFileSignature(file);
   } catch {
-    return reject(
-      REJECTION.UNREADABLE,
-      "That file couldn't be read. Try selecting it again."
-    );
+    return reject(REJECTION.UNREADABLE, "That file couldn't be read. Try selecting it again.");
   }
 
   const { detectedMime, hostileLabel } = inspection;

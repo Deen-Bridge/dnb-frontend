@@ -45,9 +45,7 @@ export default function LocaleSwitcher({ tone = "default", className }) {
       aria-label={t("languageSwitcherLabel")}
       className={cn(
         "inline-flex items-center rounded-full border p-0.5 text-xs font-medium",
-        inverse
-          ? "border-ink-inverse/25 bg-basic/30 backdrop-blur"
-          : "border-border bg-muted",
+        inverse ? "border-ink-inverse/25 bg-basic/30 backdrop-blur" : "border-border bg-muted",
         isPending && "opacity-60",
         className
       )}

@@ -3,13 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -213,9 +207,7 @@ const generateMockAnnouncements = () => {
     },
   ];
 
-  return items.sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
+  return items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 };
 
 export default function AnnouncementHistoryTable() {
@@ -339,15 +331,8 @@ export default function AnnouncementHistoryTable() {
         title="Announcement History"
         subtitle="View, edit, and manage all past and scheduled announcements"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchAnnouncements}
-            disabled={loading}
-          >
-            <RefreshCw
-              className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
-            />
+          <Button variant="outline" size="sm" onClick={fetchAnnouncements} disabled={loading}>
+            <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
             Refresh
           </Button>
         }
@@ -361,47 +346,35 @@ export default function AnnouncementHistoryTable() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <span className={cn(poppins_500.className, "text-sm block")}>
-                State
-              </span>
+              <span className={cn(poppins_500.className, "text-sm block")}>State</span>
               <div className="flex flex-wrap gap-2">
-                {["all", "draft", "scheduled", "sent", "cancelled"].map(
-                  (state) => (
-                    <Button
-                      key={state}
-                      variant={stateFilter === state ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setStateFilter(state)}
-                      className="capitalize"
-                    >
-                      {state === "all" ? "All States" : state}
-                    </Button>
-                  )
-                )}
+                {["all", "draft", "scheduled", "sent", "cancelled"].map((state) => (
+                  <Button
+                    key={state}
+                    variant={stateFilter === state ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setStateFilter(state)}
+                    className="capitalize"
+                  >
+                    {state === "all" ? "All States" : state}
+                  </Button>
+                ))}
               </div>
             </div>
             <div className="space-y-2">
-              <span className={cn(poppins_500.className, "text-sm block")}>
-                Audience
-              </span>
+              <span className={cn(poppins_500.className, "text-sm block")}>Audience</span>
               <div className="flex flex-wrap gap-2">
-                {["all", "students", "educators", "admins"].map(
-                  (audience) => (
-                    <Button
-                      key={audience}
-                      variant={
-                        audienceFilter === audience ? "default" : "outline"
-                      }
-                      size="sm"
-                      onClick={() => setAudienceFilter(audience)}
-                      className="capitalize"
-                    >
-                      {audience === "all"
-                        ? "All Audiences"
-                        : getAudienceLabel(audience)}
-                    </Button>
-                  )
-                )}
+                {["all", "students", "educators", "admins"].map((audience) => (
+                  <Button
+                    key={audience}
+                    variant={audienceFilter === audience ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAudienceFilter(audience)}
+                    className="capitalize"
+                  >
+                    {audience === "all" ? "All Audiences" : getAudienceLabel(audience)}
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
@@ -424,14 +397,10 @@ export default function AnnouncementHistoryTable() {
                   <TableHead className="min-w-[200px]">Title</TableHead>
                   <TableHead className="w-[130px]">Audience</TableHead>
                   <TableHead className="w-[120px]">State</TableHead>
-                  <TableHead className="w-[100px] text-center">
-                    Sent Count
-                  </TableHead>
+                  <TableHead className="w-[100px] text-center">Sent Count</TableHead>
                   <TableHead className="w-[150px]">Created By</TableHead>
                   <TableHead className="w-[160px]">Created At</TableHead>
-                  <TableHead className="w-[100px] text-right">
-                    Actions
-                  </TableHead>
+                  <TableHead className="w-[100px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -443,10 +412,7 @@ export default function AnnouncementHistoryTable() {
                   </TableRow>
                 ) : announcements.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
                       No announcements found matching your filters
                     </TableCell>
                   </TableRow>
@@ -455,8 +421,7 @@ export default function AnnouncementHistoryTable() {
                     const stateCfg = STATE_CONFIG[ann.state];
                     const StateIcon = stateCfg.icon;
                     const isEditing = editingId === ann.id;
-                    const isEditable =
-                      ann.state === "draft" || ann.state === "scheduled";
+                    const isEditable = ann.state === "draft" || ann.state === "scheduled";
                     const isReadOnly = ann.state === "sent";
 
                     return (
@@ -481,9 +446,7 @@ export default function AnnouncementHistoryTable() {
                         <TableCell>
                           <div className="flex items-center gap-1.5">
                             <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span className="text-sm">
-                              {getAudienceLabel(ann.audience)}
-                            </span>
+                            <span className="text-sm">{getAudienceLabel(ann.audience)}</span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -497,24 +460,15 @@ export default function AnnouncementHistoryTable() {
                         </TableCell>
                         <TableCell className="text-center">
                           {ann.sentCount !== null ? (
-                            <span
-                              className={cn(
-                                poppins_500.className,
-                                "text-sm tabular-nums"
-                              )}
-                            >
+                            <span className={cn(poppins_500.className, "text-sm tabular-nums")}>
                               {ann.sentCount.toLocaleString()}
                             </span>
                           ) : (
-                            <span className="text-sm text-muted-foreground">
-                              —
-                            </span>
+                            <span className="text-sm text-muted-foreground">—</span>
                           )}
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {ann.createdBy}
-                          </span>
+                          <span className="text-sm text-muted-foreground">{ann.createdBy}</span>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-muted-foreground">
@@ -544,20 +498,14 @@ export default function AnnouncementHistoryTable() {
                           ) : (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                >
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 {isEditable && (
                                   <>
-                                    <DropdownMenuItem
-                                      onClick={() => handleStartEdit(ann)}
-                                    >
+                                    <DropdownMenuItem onClick={() => handleStartEdit(ann)}>
                                       <Pencil className="h-4 w-4 mr-2" />
                                       Edit
                                     </DropdownMenuItem>
@@ -571,9 +519,7 @@ export default function AnnouncementHistoryTable() {
                                     <DropdownMenuSeparator />
                                   </>
                                 )}
-                                <DropdownMenuItem
-                                  onClick={() => handleDuplicateAsDraft(ann)}
-                                >
+                                <DropdownMenuItem onClick={() => handleDuplicateAsDraft(ann)}>
                                   <Copy className="h-4 w-4 mr-2" />
                                   Duplicate as Draft
                                 </DropdownMenuItem>
@@ -601,12 +547,7 @@ export default function AnnouncementHistoryTable() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
-              <p
-                className={cn(
-                  poppins_400.className,
-                  "text-sm text-muted-foreground"
-                )}
-              >
+              <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
@@ -622,9 +563,7 @@ export default function AnnouncementHistoryTable() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages || loading}
                 >
                   Next
@@ -648,8 +587,8 @@ export default function AnnouncementHistoryTable() {
             <AlertDialogTitle>Cancel Announcement</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to cancel &quot;
-              {cancelDialog.announcement?.title}&quot;? This action cannot be
-              undone. The announcement will not be sent.
+              {cancelDialog.announcement?.title}&quot;? This action cannot be undone. The
+              announcement will not be sent.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

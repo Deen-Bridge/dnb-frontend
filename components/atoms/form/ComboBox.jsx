@@ -12,18 +12,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CATEGORY_GROUPS } from "@/lib/categories";
 
 export default function CategoryCombobox({ category, setCategory, id }) {
   const [open, setOpen] = React.useState(false);
 
   return (
-
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
@@ -40,7 +35,11 @@ export default function CategoryCombobox({ category, setCategory, id }) {
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-0">
         <Command>
-<CommandInput placeholder="Search category..." aria-label="Search categories" className="h-9" />
+          <CommandInput
+            placeholder="Search category..."
+            aria-label="Search categories"
+            className="h-9"
+          />
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             {CATEGORY_GROUPS.map((group) => (
@@ -58,9 +57,7 @@ export default function CategoryCombobox({ category, setCategory, id }) {
                     <Check
                       className={cn(
                         "ml-auto h-4 w-4",
-                        category === subcategory.label
-                          ? "opacity-100"
-                          : "opacity-0"
+                        category === subcategory.label ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
@@ -70,6 +67,6 @@ export default function CategoryCombobox({ category, setCategory, id }) {
           </CommandList>
         </Command>
       </PopoverContent>
-      </Popover>
+    </Popover>
   );
 }

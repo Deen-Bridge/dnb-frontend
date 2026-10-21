@@ -12,27 +12,11 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  Table2,
-  Save,
-  Download,
-  Trash2,
-  Play,
-  Plus,
-  ListChecks,
-  Filter,
-  Eye,
-} from "lucide-react";
+import { Table2, Save, Download, Trash2, Play, Plus, ListChecks, Filter, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,17 +77,10 @@ function SavedQueriesPanel({ queries, activeQueryId, onLoad, onDelete, onOpenSav
           <ListChecks className="h-5 w-5" />
           Saved queries
         </CardTitle>
-        <CardDescription>
-          Rerun a previously saved report
-        </CardDescription>
+        <CardDescription>Rerun a previously saved report</CardDescription>
       </CardHeader>
       <CardContent>
-        <Button
-          type="button"
-          size="sm"
-          className="mb-4 w-full rounded-full"
-          onClick={onOpenSave}
-        >
+        <Button type="button" size="sm" className="mb-4 w-full rounded-full" onClick={onOpenSave}>
           <Plus className="mr-1 h-4 w-4" />
           Save current query
         </Button>
@@ -168,9 +145,7 @@ function DatasetSelector({ value, onChange }) {
           <Table2 className="h-5 w-5" />
           Dataset
         </CardTitle>
-        <CardDescription>
-          Choose which report to compose
-        </CardDescription>
+        <CardDescription>Choose which report to compose</CardDescription>
       </CardHeader>
       <CardContent>
         <Select value={value} onValueChange={onChange}>
@@ -260,9 +235,7 @@ function ColumnChooser({ dataset, selected, onToggle, onToggleAll }) {
   return (
     <div className="space-y-3 rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm">
       <div className="flex items-center justify-between gap-2">
-        <p className={cn(poppins_500.className, "text-sm text-ink")}>
-          Output columns
-        </p>
+        <p className={cn(poppins_500.className, "text-sm text-ink")}>Output columns</p>
         <Button
           type="button"
           variant="ghost"
@@ -292,9 +265,7 @@ function ColumnChooser({ dataset, selected, onToggle, onToggleAll }) {
 }
 
 function PreviewTable({ dataset, columns, rows, loading, error }) {
-  const visibleColumns = dataset.columns.filter((column) =>
-    columns.includes(column.key)
-  );
+  const visibleColumns = dataset.columns.filter((column) => columns.includes(column.key));
 
   return (
     <Card>
@@ -391,10 +362,7 @@ function ReportBuilderContent() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [queryName, setQueryName] = useState("");
 
-  const dataset = useMemo(
-    () => REPORT_DATASETS.find((d) => d.id === datasetId),
-    [datasetId]
-  );
+  const dataset = useMemo(() => REPORT_DATASETS.find((d) => d.id === datasetId), [datasetId]);
 
   useEffect(() => {
     let active = true;
@@ -457,9 +425,7 @@ function ReportBuilderContent() {
 
   const toggleAllColumns = () => {
     setSelectedColumns((prev) =>
-      prev.length === dataset.columns.length
-        ? []
-        : dataset.columns.map((column) => column.key)
+      prev.length === dataset.columns.length ? [] : dataset.columns.map((column) => column.key)
     );
   };
 
@@ -503,13 +469,9 @@ function ReportBuilderContent() {
   };
 
   const handleExport = () => {
-    const visibleColumns = dataset.columns.filter((column) =>
-      selectedColumns.includes(column.key)
-    );
+    const visibleColumns = dataset.columns.filter((column) => selectedColumns.includes(column.key));
     const headers = visibleColumns.map((column) => column.label);
-    const exportRows = rows.map((row) =>
-      visibleColumns.map((column) => row[column.key] ?? "")
-    );
+    const exportRows = rows.map((row) => visibleColumns.map((column) => row[column.key] ?? ""));
     downloadCsv({
       filename: `${datasetId}-report-${new Date().toISOString().slice(0, 10)}.csv`,
       headers,
@@ -567,9 +529,7 @@ function ReportBuilderContent() {
                 <Filter className="h-5 w-5" />
                 Filters
               </CardTitle>
-              <CardDescription>
-                Tune the report with the dataset&apos;s filter set
-              </CardDescription>
+              <CardDescription>Tune the report with the dataset&apos;s filter set</CardDescription>
             </CardHeader>
             <CardContent>
               <FilterControls dataset={dataset} filters={filters} onChange={updateFilter} />
@@ -582,9 +542,7 @@ function ReportBuilderContent() {
                 <ListChecks className="h-5 w-5" />
                 Columns
               </CardTitle>
-              <CardDescription>
-                Choose which columns appear in the output
-              </CardDescription>
+              <CardDescription>Choose which columns appear in the output</CardDescription>
             </CardHeader>
             <CardContent>
               <ColumnChooser
