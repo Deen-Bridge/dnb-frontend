@@ -418,9 +418,9 @@ export default function DocumentUpload({
       hasReportedRef.current = true;
       if (referencesKey === "{}") return;
     }
-    onChangeRef.current?.(references);
-    // `references` is recreated per render; `referencesKey` is the real trigger.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Reconstruct from the content key so progress-only renders do not emit
+    // duplicate reference maps.
+    onChangeRef.current?.(JSON.parse(referencesKey));
   }, [referencesKey]);
 
   const requiredTypes = definitions
