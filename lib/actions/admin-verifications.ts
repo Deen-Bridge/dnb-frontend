@@ -377,7 +377,7 @@ export async function fetchVerificationQueue(
   params: FetchVerificationQueueParams = {}
 ): Promise<FetchVerificationQueueResult> {
   try {
-    const res = await axiosInstance.get("/api/admin/educators/verifications", {
+    const res = await axiosInstance.get("/api/admin/educator-verification", {
       params,
       timeout: 2000,
       retryOnServerError: false,
