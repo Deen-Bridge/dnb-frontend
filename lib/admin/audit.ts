@@ -10,6 +10,8 @@ export const AUDIT_ACTIONS = Object.freeze({
   BAN: "user.ban",
   UNBAN: "user.unban",
   SUSPEND: "user.suspend",
+  PASSWORD_RESET_REQUIRED: "user.password_reset_required",
+  SESSIONS_REVOKED: "user.sessions_revoked",
 
   // Content moderation
   TAKEDOWN: "content.takedown",
@@ -58,6 +60,8 @@ const ACTION_CATEGORY: Record<string, AuditCategory> = Object.freeze({
   [AUDIT_ACTIONS.BAN]: "user",
   [AUDIT_ACTIONS.UNBAN]: "user",
   [AUDIT_ACTIONS.SUSPEND]: "user",
+  [AUDIT_ACTIONS.PASSWORD_RESET_REQUIRED]: "user",
+  [AUDIT_ACTIONS.SESSIONS_REVOKED]: "user",
   [AUDIT_ACTIONS.TAKEDOWN]: "moderation",
   [AUDIT_ACTIONS.RESTORE]: "moderation",
   [AUDIT_ACTIONS.REPORT_ESCALATE]: "moderation",
