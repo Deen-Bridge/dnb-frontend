@@ -31,6 +31,8 @@ import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
 import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
+import { changeUserRole } from "@/lib/actions/admin-users";
+import { toast } from "sonner";
 
 const VERIFICATION_BADGE_STYLES = {
   submitted: "bg-blue-100 text-blue-800 border-blue-200",
@@ -62,6 +64,8 @@ export default function AdminUserDetailPage({ params }) {
   const { userId } = use(params);
   const [reelsDialogOpen, setReelsDialogOpen] = useState(false);
   const [creatorReelsPaused, setCreatorReelsPaused] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("student");
+  const [roleSaving, setRoleSaving] = useState(false);
   const [user, setUser] = useState(null);
   const [verificationHistory, setVerificationHistory] = useState({
     source: null,
@@ -108,6 +112,7 @@ export default function AdminUserDetailPage({ params }) {
           };
         }
         setUser(resolvedUser);
+        setSelectedRole(resolvedUser.role === "educator" ? "mentor" : resolvedUser.role || "student");
 
         if (isMentorRecord(resolvedUser)) {
           try {
@@ -156,6 +161,7 @@ export default function AdminUserDetailPage({ params }) {
           ],
         };
         setUser(fallbackUser);
+        setSelectedRole("mentor");
         const history = await fetchEducatorVerificationHistory(userId, fallbackUser);
         if (!isActive) return;
         setVerificationHistory({
@@ -177,6 +183,48 @@ export default function AdminUserDetailPage({ params }) {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleRoleChange = async () => {
+    if (!user || !selectedRole) return;
+    const currentRole = user.role === "educator" ? "mentor" : user.role || "student";
+    if (selectedRole === currentRole) return;
+
+    if (!window.confirm(`Change ${user.name}'s role from ${currentRole} to ${selectedRole}? This may change the tools and access available to this account.`)) {
+      setSelectedRole(currentRole);
+      return;
+    }
+
+    if (selectedRole === "admin") {
+      const typedEmail = window.prompt(`Type ${user.email} to confirm granting administrator access.`);
+      if (typedEmail?.trim().toLowerCase() !== user.email?.trim().toLowerCase()) {
+        toast.error("Administrator role was not changed because the email did not match.");
+        setSelectedRole(currentRole);
+        return;
+      }
+    }
+
+    const reason = window.prompt("Reason for this role change (optional):");
+    if (reason === null) {
+      setSelectedRole(currentRole);
+      return;
+    }
+
+    setRoleSaving(true);
+    try {
+      const result = await changeUserRole(user._id || userId, selectedRole, {
+        email: user.email,
+        previousRole: currentRole,
+        reason,
+      });
+      setUser((current) => ({ ...current, role: result.user.role }));
+      toast.success(`Role changed to ${result.user.role}.`);
+    } catch (error) {
+      setSelectedRole(currentRole);
+      toast.error(error?.message || "The user's role could not be changed.");
+    } finally {
+      setRoleSaving(false);
+    }
   };
 
   const network = config.stellarNetwork;
@@ -290,6 +338,34 @@ export default function AdminUserDetailPage({ params }) {
                     </div>
                   )}
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none no-print">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Change account role</CardTitle>
+                <CardDescription className="text-xs">
+                  Role changes are saved only after the server confirms them. Granting admin access requires typing the account email.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <div className="w-full sm:max-w-xs">
+                  <label htmlFor="user-role" className="mb-1.5 block text-sm font-medium">New role</label>
+                  <select
+                    id="user-role"
+                    value={selectedRole}
+                    onChange={(event) => setSelectedRole(event.target.value)}
+                    disabled={roleSaving}
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  >
+                    <option value="student">Student</option>
+                    <option value="mentor">Educator</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+                <Button onClick={handleRoleChange} disabled={roleSaving || selectedRole === (user.role === "educator" ? "mentor" : user.role || "student")}>
+                  {roleSaving ? "Saving…" : "Save role"}
+                </Button>
               </CardContent>
             </Card>
 
