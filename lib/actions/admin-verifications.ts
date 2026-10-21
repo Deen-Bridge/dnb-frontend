@@ -432,7 +432,7 @@ export async function fetchVerificationDetail(
   applicationId: string
 ): Promise<{ application: VerificationApplication }> {
   try {
-    const res = await axiosInstance.get(`/api/admin/educators/verifications/${applicationId}`, {
+    const res = await axiosInstance.get(`/api/admin/educator-verification/${applicationId}`, {
       timeout: 2000,
       retryOnServerError: false,
     });
@@ -469,7 +469,7 @@ function statusFromDecisionConflict(error: any): string | undefined { // TODO(ty
 
 async function getCurrentVerificationStatus(applicationId: string): Promise<string> {
   const response = await axiosInstance.get(
-    `/api/admin/educators/verifications/${applicationId}`,
+    `/api/admin/educator-verification/${applicationId}`,
     { timeout: 2000, retryOnServerError: false }
   );
   const status = response?.data?.application?.status;
@@ -488,7 +488,7 @@ export async function approveVerification(
   let result: { application: { id: string; status: string } };
   try {
     const res = await axiosInstance.post(
-      `/api/admin/educators/verifications/${applicationId}/approve`,
+      `/api/admin/educator-verification/${applicationId}/approve`,
       {},
       { timeout: 2000, retryOnServerError: false }
     );
@@ -546,7 +546,7 @@ export async function rejectVerification(
   let result: { application: { id: string; status: string; reasonCategory?: string; notes?: string } };
   try {
     const res = await axiosInstance.post(
-      `/api/admin/educators/verifications/${applicationId}/reject`,
+      `/api/admin/educator-verification/${applicationId}/reject`,
       { reasonCategory, notes: notes || "" },
       { timeout: 2000, retryOnServerError: false }
     );
