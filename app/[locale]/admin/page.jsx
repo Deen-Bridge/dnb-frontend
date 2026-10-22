@@ -19,6 +19,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { fetchAdminOverview } from "@/lib/actions/admin-overview";
+import { fetchInternalTransactions } from "@/lib/actions/admin-reconciliation";
+import { downloadCsv } from "@/lib/utils/csv";
+import { toast } from "sonner";
 import SystemHealthWidget from "@/components/admin/SystemHealthWidget";
 import RecentActivityFeed from "@/components/admin/RecentActivityFeed";
 import {
@@ -36,6 +39,7 @@ import {
   X,
   Rocket,
   AlertTriangle,
+  Download,
 } from "lucide-react";
 
 // Persisted in localStorage so the bootstrap guidance can be dismissed
@@ -304,6 +308,44 @@ export default function AdminOverviewPage() {
   const [error, setError] = useState(null);
   const [dismissed, setDismissed] = useState(false);
 
+  const exportCurrentPeriod = async () => {
+    try {
+      const now = new Date();
+      const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const [overview, transactionResult] = await Promise.all([
+        fetchAdminOverview(),
+        fetchInternalTransactions({ from: periodStart.toISOString(), to: now.toISOString() }),
+      ]);
+      const transactions = (transactionResult?.transactions || []).filter((transaction) => {
+        const completedAt = new Date(transaction.completedAt);
+        return completedAt >= periodStart && completedAt <= now;
+      });
+      const stamp = now.toISOString().slice(0, 10);
+      const rows = [
+        ["Summary", "Users", overview.counts.students.value + overview.counts.mentors.value, "", "", "", ""],
+        ["Summary", "Courses", overview.counts.courses.value, "", "", "", ""],
+        ...transactions.map((transaction) => [
+          "Revenue",
+          transaction.reference,
+          transaction.amount,
+          transaction.currency,
+          transaction.buyer,
+          transaction.creator,
+          transaction.completedAt,
+        ]),
+      ];
+
+      downloadCsv({
+        filename: `deenbridge-admin-${stamp}.csv`,
+        headers: ["Type", "Metric or reference", "Amount or count", "Currency", "Buyer", "Creator", "Completed at"],
+        rows,
+      });
+      toast.success("Admin stats exported");
+    } catch (exportError) {
+      toast.error(exportError?.message || "Could not export admin stats");
+    }
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -401,6 +443,12 @@ export default function AdminOverviewPage() {
         icon={LayoutDashboard}
         title="Overview"
         subtitle="Monitor platform activity and complete your setup"
+        actions={(
+          <Button variant="outline" onClick={exportCurrentPeriod} className="gap-2">
+            <Download className="h-4 w-4" aria-hidden="true" />
+            Export current period
+          </Button>
+        )}
       />
 
       {isEmpty && guided && <WelcomeBanner />}
