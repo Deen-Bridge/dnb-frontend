@@ -167,11 +167,14 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
           >
             {videoPreview ? (
               <div className="relative h-full w-full overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption -- User preview during upload has no caption track */}
                 <video
                   src={videoPreview}
                   className="h-full w-full object-cover"
                   controls
-                />
+                >
+                  <track kind="captions" />
+                </video>
                 <button
                   type="button"
                   className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white hover:bg-black/80"
