@@ -14,13 +14,6 @@ import reactHooks from "eslint-plugin-react-hooks";
 export default [
   {
     ignores: [
-      "components/molecules/Modal.js",
-      "components/stellar/PaymentModal.jsx",
-      "components/organisms/reels/ReelUploadDialog.jsx",
-      "components/organisms/reels/ReelShareDialog.jsx",
-      "components/organisms/reels/ReelCommentsSheet.jsx",
-      "app/dashboard/library/read/**",
-      "**/BookReaderClient.jsx",
       "app/api/**",
       "app/manifest.js",
       "app/robots.js",
