@@ -559,39 +559,7 @@
       }
     },
     "testimonials": {
-      "title": "What Our Community Says",
-      "items": {
-        "zahra": {
-          "name": "Zahra Yusuf",
-          "role": "Student, Nigeria",
-          "quote": "Deen Bridge has helped me connect with sisters around the world and deepen my understanding of Islam. The community is so welcoming!"
-        },
-        "ahmad": {
-          "name": "Ustadh Ahmad",
-          "role": "Scholar, Egypt",
-          "quote": "I love how Deen Bridge makes authentic knowledge accessible to everyone. The platform is beautifully designed and easy to use."
-        },
-        "zayd": {
-          "name": "Zayd Khan",
-          "role": "Entrepreneur, UK",
-          "quote": "The spaces and events feature is a game changer. I've met so many inspiring Muslims and learned so much!"
-        },
-        "maryam": {
-          "name": "Maryam Abubakar",
-          "role": "Book Lover, Malaysia",
-          "quote": "The book recommendations are spot on. I've discovered gems I never would have found elsewhere!"
-        },
-        "suleiman": {
-          "name": "Imam Suleiman",
-          "role": "Imam, USA",
-          "quote": "Deen Bridge is a blessing for our Ummah. It's secure, supportive, and truly brings people together for good."
-        },
-        "aisha": {
-          "name": "Aisha Bello",
-          "role": "Mother, South Africa",
-          "quote": "My children and I use Deen Bridge to learn and grow together. The resources are trustworthy and engaging!"
-        }
-      }
+      "title": "What Our Community Says"
     },
     "why": {
       "heading": "Why Deen Bridge?",
