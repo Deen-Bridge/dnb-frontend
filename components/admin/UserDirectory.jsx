@@ -2,11 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Loader2, X } from "lucide-react";
+import { Download, Loader2, X } from "lucide-react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { fetchAdminUsers } from "@/lib/actions/admin-user-directory";
+import {
+  fetchAdminUsers,
+  fetchAllAdminUsers,
+} from "@/lib/actions/admin-user-directory";
 import {
   USER_ROLES,
   USER_STATUSES,
@@ -14,10 +18,24 @@ import {
   parseUserFilters,
   serializeUserFilters,
 } from "@/lib/admin/user-filters";
+import { USER_EXPORT_COLUMNS, toCsv } from "@/lib/admin/usersCsv";
 
 const SEARCH_DEBOUNCE_MS = 400;
 const selectClass =
   "h-10 w-full rounded-md border border-input bg-background px-3 text-sm";
+
+function downloadCsvFile(filename, csv) {
+  // Leading BOM lets Excel detect UTF-8 for non-ASCII names.
+  const blob = new Blob(["﻿", csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 
 export default function UserDirectory() {
   const router = useRouter();
@@ -29,6 +47,7 @@ export default function UserDirectory() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [exporting, setExporting] = useState(false);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
 
@@ -75,10 +94,66 @@ export default function UserDirectory() {
 
   const chips = getActiveChips(filters);
 
+  const exportDisabledReason = loading
+    ? "Wait for the list to finish loading"
+    : error
+      ? "The list failed to load, so there is nothing to export"
+      : users.length === 0
+        ? "No users match the current filters, so there is nothing to export"
+        : null;
+
+  const handleExport = async () => {
+    if (exporting || exportDisabledReason) return;
+    setExporting(true);
+    const toastId = toast.loading("Preparing export…");
+    try {
+      const rows = await fetchAllAdminUsers(filters, {
+        onProgress: ({ page, pages, fetched }) =>
+          toast.loading(
+            `Exporting users… page ${page}${pages ? ` of ${pages}` : ""} (${fetched} so far)`,
+            { id: toastId }
+          ),
+      });
+      if (rows.length === 0) {
+        toast.info("No users to export", { id: toastId });
+        return;
+      }
+      const date = new Date().toISOString().slice(0, 10);
+      downloadCsvFile(`users-${date}.csv`, toCsv(rows, USER_EXPORT_COLUMNS));
+      toast.success(`Exported ${rows.length} users`, { id: toastId });
+    } catch (err) {
+      toast.error(err?.message ?? "Export failed", { id: toastId });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <Card className="mb-6">
-      <CardHeader>
+      <CardHeader className="flex-row items-center justify-between gap-4 space-y-0">
         <CardTitle>User directory</CardTitle>
+        <span title={exportDisabledReason ?? undefined} className="inline-block">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={Boolean(exportDisabledReason) || exporting}
+            aria-describedby={exportDisabledReason ? "user-export-disabled-reason" : undefined}
+          >
+            {exporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            Export CSV
+          </Button>
+        </span>
+        {exportDisabledReason && (
+          <span id="user-export-disabled-reason" className="sr-only">
+            {exportDisabledReason}
+          </span>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 md:grid-cols-5">
