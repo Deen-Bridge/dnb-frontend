@@ -89,3 +89,88 @@ export async function changeUserRole(
 
   return { user: { id: userId, role: savedRole } };
 }
+
+/*
+ * Account security actions (issue #229).
+ *
+ * TODO(backend): BOTH endpoints below may not exist yet. Expected contract:
+ *
+ * 1) PUT /api/admin/users/:userId/password-reset-requirement
+ *    request:  { required: boolean, reason?: string }
+ *    response: { success: true, requirePasswordReset: boolean }
+ *    Semantics: when required is true, the user's next login must complete
+ *    the password reset flow before a session is issued.
+ *
+ * 2) POST /api/admin/users/:userId/sessions/revoke
+ *    request:  { reason?: string }
+ *    response: { success: true, revokedCount: number }
+ *    Semantics: server-side revocation of every refresh token for the user.
+ *    Existing access tokens are not individually tracked and expire on their own.
+ *
+ * Errors: non-2xx or { success: false, message } is surfaced to the caller.
+ */
+async function requestSecurityAction<T>(
+  userId: string,
+  request: () => Promise<{ data: T & { success?: boolean; message?: string } }>,
+  fallbackMessage: string
+): Promise<T> {
+  try {
+    const res = await request();
+    if (res.data?.success === false) throw new Error(res.data?.message || fallbackMessage);
+    return res.data;
+  } catch (e: any) {
+    throw new Error(e?.response?.data?.message || e?.message || fallbackMessage);
+  }
+}
+
+export interface SecurityActionContext {
+  email?: string;
+  reason?: string;
+}
+
+/** TODO(backend): see contract above. Forces the reset flow on the next login. */
+export async function setRequirePasswordReset(
+  userId: string,
+  required: boolean,
+  context: SecurityActionContext = {}
+): Promise<{ success: true; requirePasswordReset: boolean }> {
+  const data = await requestSecurityAction<{ requirePasswordReset: boolean }>(
+    userId,
+    () =>
+      axiosInstance.put(`/api/admin/users/${userId}/password-reset-requirement`, {
+        required,
+        reason: context.reason || undefined,
+      }),
+    "The password reset requirement could not be updated."
+  );
+  const saved = data.requirePasswordReset;
+  if (saved !== required) throw new Error("The server did not confirm the password reset requirement.");
+  logAuditEvent({
+    action: AUDIT_ACTIONS.PASSWORD_RESET_REQUIRED,
+    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    metadata: { required },
+  });
+  return { success: true, requirePasswordReset: saved };
+}
+
+/** TODO(backend): see contract above. Revokes all refresh tokens server-side. */
+export async function revokeAllSessions(
+  userId: string,
+  context: SecurityActionContext = {}
+): Promise<{ success: true; revokedCount: number }> {
+  const data = await requestSecurityAction<{ revokedCount?: number }>(
+    userId,
+    () =>
+      axiosInstance.post(`/api/admin/users/${userId}/sessions/revoke`, {
+        reason: context.reason || undefined,
+      }),
+    "The user's sessions could not be signed out."
+  );
+  const revokedCount = Number(data.revokedCount ?? 0);
+  logAuditEvent({
+    action: AUDIT_ACTIONS.SESSIONS_REVOKED,
+    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    metadata: { revokedCount },
+  });
+  return { success: true, revokedCount };
+}

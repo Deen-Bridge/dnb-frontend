@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Printer,
@@ -32,7 +33,14 @@ import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 import { config } from "@/lib/config/env";
 import { cn } from "@/lib/utils";
 import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
-import { changeUserRole, suspendUser, banUser, reinstateUser } from "@/lib/actions/admin-users";
+import {
+  changeUserRole,
+  suspendUser,
+  banUser,
+  reinstateUser,
+  setRequirePasswordReset,
+  revokeAllSessions,
+} from "@/lib/actions/admin-users";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canModerateUser } from "@/lib/admin/role-hierarchy";
@@ -75,6 +83,8 @@ export default function AdminUserDetailPage({ params }) {
   const [suspendDuration, setSuspendDuration] = useState("7");
   const [banReason, setBanReason] = useState("");
   const [modSaving, setModSaving] = useState(false);
+  const [securityAction, setSecurityAction] = useState(null); // "password-reset" | "sign-out" | null
+  const [securityStatus, setSecurityStatus] = useState(null); // { type: "success" | "error", message }
   const [verificationHistory, setVerificationHistory] = useState({
     source: null,
     events: [],
@@ -240,6 +250,58 @@ export default function AdminUserDetailPage({ params }) {
       () => reinstateUser(user._id || userId, { email: user.email }),
       "User reinstated."
     );
+  };
+
+  // TODO(backend): endpoints are not confirmed; see lib/actions/admin-users.ts for the contract.
+  const handleRequirePasswordResetChange = async (nextRequired) => {
+    const name = user.name || user.email;
+    const message = nextRequired
+      ? `Require ${name} to complete a password reset at their next login? They cannot use the account until the reset is done.`
+      : `Remove the password reset requirement for ${name}? They will be able to log in without resetting.`;
+    if (!window.confirm(message)) return;
+
+    setSecurityAction("password-reset");
+    setSecurityStatus(null);
+    try {
+      const result = await setRequirePasswordReset(user._id || userId, nextRequired, { email: user.email });
+      setUser((current) => ({ ...current, requirePasswordReset: result.requirePasswordReset }));
+      setSecurityStatus({
+        type: "success",
+        message: result.requirePasswordReset
+          ? "Password reset will be required at the next login."
+          : "Password reset requirement removed.",
+      });
+    } catch (error) {
+      setSecurityStatus({ type: "error", message: error?.message || "The password reset requirement could not be updated." });
+    } finally {
+      setSecurityAction(null);
+    }
+  };
+
+  const handleRevokeSessions = async () => {
+    const typedEmail = window.prompt(
+      `This signs ${user.email} out of every device and revokes all refresh tokens. Type the account email to confirm.`
+    );
+    if (typedEmail === null) return;
+    if (typedEmail.trim().toLowerCase() !== user.email?.trim().toLowerCase()) {
+      setSecurityStatus({ type: "error", message: "Sign-out cancelled because the email did not match." });
+      return;
+    }
+
+    setSecurityAction("sign-out");
+    setSecurityStatus(null);
+    try {
+      const result = await revokeAllSessions(user._id || userId, { email: user.email });
+      const count = result.revokedCount;
+      setSecurityStatus({
+        type: "success",
+        message: count === 1 ? "Signed out 1 session." : `Signed out ${count} sessions.`,
+      });
+    } catch (error) {
+      setSecurityStatus({ type: "error", message: error?.message || "The user's sessions could not be signed out." });
+    } finally {
+      setSecurityAction(null);
+    }
   };
 
   const handlePrint = () => {
@@ -511,6 +573,65 @@ export default function AdminUserDetailPage({ params }) {
                       <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
                     </div>
                   </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none no-print">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Account security</CardTitle>
+                <CardDescription className="text-xs">
+                  Each action asks for confirmation. The result is shown here once the server responds.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <label htmlFor="require-password-reset" className="block text-sm font-medium">
+                      Require password reset
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      The next login must complete the password reset flow.
+                    </p>
+                  </div>
+                  <Switch
+                    id="require-password-reset"
+                    checked={Boolean(user.requirePasswordReset)}
+                    disabled={!canModerateUser(actor?.role, user.role) || securityAction !== null}
+                    onCheckedChange={handleRequirePasswordResetChange}
+                  />
+                </div>
+                <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Sign out all sessions</p>
+                    <p className="text-xs text-muted-foreground">
+                      Revokes every refresh token for this account on the server. Requires typing the user&apos;s email.
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={handleRevokeSessions}
+                    disabled={!canModerateUser(actor?.role, user.role) || securityAction !== null}
+                  >
+                    {securityAction === "sign-out" ? "Signing out…" : "Sign out all sessions"}
+                  </Button>
+                </div>
+                {securityAction === "password-reset" && (
+                  <p role="status" className="text-xs text-muted-foreground">Saving password reset requirement…</p>
+                )}
+                {securityStatus && (
+                  <p
+                    role={securityStatus.type === "error" ? "alert" : "status"}
+                    className={cn(
+                      "rounded-md border px-3 py-2 text-sm",
+                      securityStatus.type === "error"
+                        ? "border-destructive/40 text-destructive"
+                        : "border-primary/30 text-foreground"
+                    )}
+                  >
+                    {securityStatus.message}
+                  </p>
                 )}
               </CardContent>
             </Card>
