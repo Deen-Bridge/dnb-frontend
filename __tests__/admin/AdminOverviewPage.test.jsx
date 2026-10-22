@@ -113,7 +113,8 @@ describe("AdminOverviewPage — empty database bootstrap", () => {
       );
     render(<AdminOverviewPage />);
 
-    expect(await screen.findByText("12")).toBeInTheDocument();
+    // "12" appears in both the KPI summary card and the mentors widget.
+    expect((await screen.findAllByText("12")).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryByText("Welcome to your new platform")).toBeNull();
     // Widget hint (with CTA) is replaced by the real count; the checklist row
     // keeps its label but is marked complete.
