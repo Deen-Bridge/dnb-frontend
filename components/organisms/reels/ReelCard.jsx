@@ -45,6 +45,7 @@ const ReelCard = ({
   const [muted, setMuted] = useState(true);
   const [posterUrl, setPosterUrl] = useState(reel.poster ?? null);
   const [posterDialogOpen, setPosterDialogOpen] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const { user } = useAuth();
   // UI-visibility gate only, not access control -- the real enforcement
@@ -61,6 +62,7 @@ const ReelCard = ({
     setLoveCount(reel.stats?.loves || 0);
     setMuted(true);
     setPosterUrl(reel.poster ?? null);
+    setDescriptionExpanded(false);
   }, [
     reel.id,
     reel.viewerState?.liked,
@@ -154,7 +156,10 @@ const ReelCard = ({
     >
       {/* Full-bleed 9:16 video column (letterboxed on wide screens) */}
       <div className="relative h-full w-full overflow-hidden bg-black sm:max-w-[460px]">
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        {/* Reels carry no caption/track data yet, so no <track> can be rendered.
+            The uploader's description is shown as visible text instead (see the
+            caption overlay below). Tracked in #549. */}
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption -- no caption data exists for reels yet; see #549 */}
         <video
           ref={videoRef}
           src={reel.video}
@@ -269,9 +274,26 @@ const ReelCard = ({
             </button>
           </div>
           {reel.description && (
-            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-white/90">
-              {reel.description}
-            </p>
+            <>
+              <p
+                id={`reel-${reel.id}-description`}
+                className={cn(
+                  "mt-2 text-sm leading-relaxed text-white/90",
+                  !descriptionExpanded && "line-clamp-3"
+                )}
+              >
+                {reel.description}
+              </p>
+              <button
+                type="button"
+                className="mt-1 rounded text-xs font-semibold text-white underline underline-offset-2 hover:text-white/80"
+                aria-expanded={descriptionExpanded}
+                aria-controls={`reel-${reel.id}-description`}
+                onClick={() => setDescriptionExpanded((prev) => !prev)}
+              >
+                {descriptionExpanded ? "Show less" : "Show full description"}
+              </button>
+            </>
           )}
           {reel.tags?.length ? (
             <p className="mt-1.5 text-xs font-medium text-white/80">
