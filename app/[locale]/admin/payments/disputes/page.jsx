@@ -166,7 +166,7 @@ function formatDate(timestamp) {
 }
 
 export default function DisputesPage() {
-  const [disputes, setDisputes] = useState(mockDisputes);
+  const [disputes, setDisputes] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDispute, setSelectedDispute] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -176,6 +176,9 @@ export default function DisputesPage() {
   // Viewer state for secure evidence viewing
   const [viewingEvidence, setViewingEvidence] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const filteredDisputes = useMemo(() => {
     if (statusFilter === "all") return disputes;
@@ -262,6 +265,13 @@ export default function DisputesPage() {
     setDetailOpen(false);
   }, []);
 
+  const handleRefresh = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
+    setDisputes([]);
+    setIsLoading(false);
+  }, []);
+
   return (
     <PageShell>
       <PageHeader
@@ -272,7 +282,7 @@ export default function DisputesPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setDisputes([...mockDisputes])}
+            onClick={handleRefresh}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -350,7 +360,27 @@ export default function DisputesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedDisputes.length === 0 ? (
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="py-8 text-center text-muted-foreground"
+                    >
+                      <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin opacity-50" />
+                      <p>Loading disputes…</p>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="py-8 text-center text-destructive"
+                    >
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>{error}</p>
+                    </TableCell>
+                  </TableRow>
+                ) : paginatedDisputes.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={8}
