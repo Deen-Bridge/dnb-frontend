@@ -44,6 +44,9 @@ import {
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { canModerateUser } from "@/lib/admin/role-hierarchy";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UserEnrollmentsTab from "@/components/admin/UserEnrollmentsTab";
+import UserPurchasesTab from "@/components/admin/UserPurchasesTab";
 
 const VERIFICATION_BADGE_STYLES = {
   submitted: "bg-blue-100 text-blue-800 border-blue-200",
@@ -808,6 +811,20 @@ export default function AdminUserDetailPage({ params }) {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Read-only enrollments and purchases (#228) */}
+            <Tabs defaultValue="enrollments" className="gap-3">
+              <TabsList>
+                <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
+                <TabsTrigger value="purchases">Purchases</TabsTrigger>
+              </TabsList>
+              <TabsContent value="enrollments">
+                <UserEnrollmentsTab enrolledCourses={user.enrolledCourses} />
+              </TabsContent>
+              <TabsContent value="purchases">
+                <UserPurchasesTab walletAddress={user.walletAddress} />
+              </TabsContent>
+            </Tabs>
 
             {/* Creator Controls Dialog */}
             <CreatorReelsControlDialog
