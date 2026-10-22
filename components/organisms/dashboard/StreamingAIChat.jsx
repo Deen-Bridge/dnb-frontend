@@ -6,6 +6,7 @@
  */
 
 "use client";
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import {
   Bot,
   CornerDownLeft,
@@ -91,7 +92,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
           }
         }
       } catch (error) {
-        console.error("Error loading chat history:", error);
+        captureClientError(error);
       }
     };
 
