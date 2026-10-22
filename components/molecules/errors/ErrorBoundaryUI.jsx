@@ -98,6 +98,8 @@ export default function ErrorBoundaryUI({
   title,
   description,
   homeHref = "/",
+  retryLabel = "Try again",
+  homeLabel = "Go home",
   className,
 }) {
   const [eventId, setEventId] = useState(null);
@@ -150,12 +152,12 @@ export default function ErrorBoundaryUI({
           onClick={() => (typeof reset === "function" ? reset() : undefined)}
         >
           <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
-          Try again
+          {retryLabel}
         </Button>
         <Button type="button" variant="outline" className="rounded-full" asChild>
           <Link href={homeHref}>
             <Home className="mr-1 h-4 w-4" aria-hidden="true" />
-            Go home
+            {homeLabel}
           </Link>
         </Button>
         <Button type="button" variant="ghost" className="rounded-full" asChild>

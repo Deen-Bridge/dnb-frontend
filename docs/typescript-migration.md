@@ -82,11 +82,13 @@ To maintain rigorous type safety across the repository:
 2. **Policy on `any`**:
    - Avoid `any` whenever possible; prefer `unknown`, generic parameters, or union types.
    - If `any` is temporarily unavoidable (e.g., untyped backend payload or mock harness), it **MUST** be accompanied by a `// TODO(types): <reason>` comment on the same line or immediately preceding it.
+   - Explicit `any` is linted: `@typescript-eslint/no-explicit-any` is enabled in `eslint.config.mjs` (currently at `warn`), and `npm run lint:any` fails CI when the tracked count grows. See [`docs/type-safety.md`](./type-safety.md) for the full guardrail, the escape-hatch format, and the tracked baseline.
    - CI and repo verification scripts check for unannotated `any` usages in migrated directories.
 
 Example:
 ```typescript
 // Allowed:
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- backend payload is not typed yet
 const handleLegacyData = (rawPayload: any) => { // TODO(types): Replace with backend legacy response schema
   console.log(rawPayload);
 };

@@ -16,7 +16,8 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -85,6 +86,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AdminEmptyState } from "@/components/molecules/admin/empty-state";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
 import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
@@ -524,7 +526,7 @@ function UnifiedReportsContent() {
           e.preventDefault();
           if (reports[selectedIndex]) {
             const target = reports[selectedIndex].target;
-            window.location.href = getTargetAdminLink(target);
+            router.push(getTargetAdminLink(target));
           }
           break;
         case "o":
@@ -746,12 +748,12 @@ function UnifiedReportsContent() {
                     </TableCell>
                   </TableRow>
                 ) : reports.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
-                      <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>No reports found</p>
-                    </TableCell>
-                  </TableRow>
+                  <AdminEmptyState
+                    colSpan={8}
+                    icon={Flag}
+                    title="No reports found"
+                    description="Reports matching these filters will appear here."
+                  />
                 ) : (
                   reports.map((report, index) => {
                     const contentType = CONTENT_TYPES[report.target.type];

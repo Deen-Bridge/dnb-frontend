@@ -19,6 +19,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { fetchAdminOverview } from "@/lib/actions/admin-overview";
+import SystemHealthWidget from "@/components/admin/SystemHealthWidget";
+import RecentActivityFeed from "@/components/admin/RecentActivityFeed";
 import {
   LayoutDashboard,
   Users,
@@ -402,6 +404,10 @@ export default function AdminOverviewPage() {
       />
 
       {isEmpty && guided && <WelcomeBanner />}
+
+      <SystemHealthWidget />
+
+      <RecentActivityFeed />
 
       {/* Overview widgets — guided hints instead of zeros on a fresh database */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -72,7 +72,7 @@ const SectionHeading = ({ title, subtitle }) => (
 const HOW_IT_WORKS = [
   { icon: MousePointerClick, text: "Choose an amount to give" },
   { icon: PenLine, text: "Sign the payment in your Stellar wallet" },
-  { icon: Landmark, text: "It funds the on-chain scholarship pool" },
+  { icon: Landmark, text: "Your donation reaches the Sadaqah fund on Stellar" },
 ];
 
 export default function SadaqahPage() {
@@ -242,7 +242,7 @@ export default function SadaqahPage() {
               "text-xs uppercase tracking-wider text-ink-inverse-muted"
             )}
           >
-            Scholarship Pool Balance
+            Sadaqah Fund Balance
           </p>
           <p
             dir="ltr"
@@ -307,15 +307,13 @@ export default function SadaqahPage() {
                 "mt-3 max-w-xl leading-relaxed text-ink-muted"
               )}
             >
-              Give a charity that keeps on giving. Your donation funds
-              scholarships for students of knowledge, held in a transparent
-              on-chain USDC fund on Stellar — publicly verifiable, from your
-              wallet to the pool.
+              Give Sadaqah directly to the transparent USDC fund on Stellar.
+              Each payment is signed from your wallet and can be verified on
+              the network.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Chip icon={ShieldCheck}>On-chain transparency</Chip>
               <Chip icon={Coins}>USDC on Stellar</Chip>
-              <Chip icon={Sparkles}>Funds scholarships</Chip>
             </div>
             <a
               href="/transparency"
@@ -341,7 +339,7 @@ export default function SadaqahPage() {
             title={step === "success" ? "Donation Complete!" : "Make a Donation"}
             subtitle={
               {
-                amount: "Choose an amount to donate to the scholarship fund",
+                amount: "Choose an amount to give to the Sadaqah fund",
                 confirm: "Sign with your wallet, or scan the QR with a mobile wallet",
                 processing: "Processing your donation…",
                 success: "May Allah accept it from you",

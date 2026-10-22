@@ -51,8 +51,6 @@ export const AUDIT_CATEGORIES = Object.freeze([
 
 export type AuditCategory = typeof AUDIT_CATEGORIES[number];
 
-const KNOWN_ACTIONS: ReadonlySet<string> = new Set(Object.values(AUDIT_ACTIONS));
-
 const ACTION_CATEGORY: Record<string, AuditCategory> = Object.freeze({
   [AUDIT_ACTIONS.ROLE_CHANGE]: "user",
   [AUDIT_ACTIONS.ROLE_DEMOTE]: "user",
@@ -100,21 +98,12 @@ export interface AuditEventParams {
   summary?: string;
 }
 
-function resolveActor(): { id: string; name: string } | null {
-  if (typeof document === "undefined") return null;
-  try {
-    const raw = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("userInfo="))
-      ?.split("=")[1];
-    if (!raw) return null;
-    const user = JSON.parse(decodeURIComponent(raw));
-    const id = user?.id || user?._id;
-    if (!id) return null;
-    return { id: String(id), name: user?.name || user?.email || "Admin" };
-  } catch {
-    return null;
-  }
+function reportAuditFailure(): void {
+  void import("@sentry/nextjs")
+    .then(({ captureException }) => {
+      captureException(new Error("[audit] Failed to persist audit event"));
+    })
+    .catch(() => undefined);
 }
 
 function normalizeTarget(target?: AuditTarget): NormalizedAuditTarget {
@@ -127,36 +116,15 @@ function normalizeTarget(target?: AuditTarget): NormalizedAuditTarget {
 }
 
 export function logAuditEvent({ action, target, metadata = {}, summary }: AuditEventParams = {}): void {
-  const timestamp = new Date().toISOString();
-  const actor = resolveActor();
   const normalizedTarget = normalizeTarget(target);
   const category = (action && ACTION_CATEGORY[action]) || "system";
 
   if (!action) {
-    console.warn("[audit] logAuditEvent called without an action", {
-      target: normalizedTarget,
-      metadata,
-    });
     return;
-  }
-  if (!KNOWN_ACTIONS.has(action)) {
-    console.warn(
-      `[audit] Unknown action "${action}" — logging anyway. Add it to AUDIT_ACTIONS in lib/admin/audit.js.`
-    );
   }
 
   const derivedSummary =
     summary || `${action} on ${normalizedTarget.label}`.trim();
-
-  const event = {
-    action,
-    category,
-    actor,
-    target: normalizedTarget,
-    metadata,
-    summary: derivedSummary,
-    timestamp,
-  };
 
   Promise.resolve()
     .then(() =>
@@ -164,14 +132,15 @@ export function logAuditEvent({ action, target, metadata = {}, summary }: AuditE
         action,
         category,
         target: normalizedTarget,
+        metadata,
         summary: derivedSummary,
       })
     )
-    .catch((error: unknown) => {
-      console.error("[audit] Failed to persist audit event; falling back to console.", {
-        event,
-        error: error instanceof Error ? error.message : error,
-      });
+    .then((result) => {
+      if ("success" in result && result.success === false) reportAuditFailure();
+    })
+    .catch(() => {
+      reportAuditFailure();
     });
 }
 

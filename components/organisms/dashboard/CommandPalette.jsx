@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/command";
 import { searchQuery } from "@/hooks/useSearch";
 import { useCan } from "@/hooks/useCan";
-import { CAPABILITIES } from "@/lib/auth/roles";
+import { CAPABILITIES, ROLES } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 import {
   poppins_400,
@@ -41,6 +41,7 @@ import {
   AlertCircle,
   ArrowRight,
   LayoutGrid,
+  ShieldCheck,
 } from "lucide-react";
 
 const RECENT_SEARCHES_KEY = "dnb_recent_searches";
@@ -93,6 +94,55 @@ const primaryDestinations = [
   { name: "Earnings", href: "/dashboard/earnings", icon: DollarSign },
 ];
 
+// Static /admin/* pages (dynamic [id] routes are reachable from their lists).
+const adminDestinations = [
+  ["Admin Home", "/admin"],
+  ["Users", "/admin/users"],
+  ["Educators", "/admin/educators"],
+  ["Verification", "/admin/verification"],
+  ["Verifications", "/admin/verifications"],
+  ["Courses (Admin)", "/admin/courses"],
+  ["Categories (Admin)", "/admin/categories"],
+  ["Books (Admin)", "/admin/books"],
+  ["Book Approval Queue", "/admin/books/approval-queue"],
+  ["Book Import", "/admin/books/import"],
+  ["Spaces (Admin)", "/admin/spaces"],
+  ["Space Recordings", "/admin/spaces/recordings"],
+  ["Reels (Admin)", "/admin/reels"],
+  ["Reports", "/admin/reports"],
+  ["Report Reasons", "/admin/reports/reasons"],
+  ["Announcements", "/admin/announcements"],
+  ["Announcement History", "/admin/announcements/history"],
+  ["Emails", "/admin/emails"],
+  ["Transactions", "/admin/transactions"],
+  ["Payment Disputes", "/admin/payments/disputes"],
+  ["Reconciliation", "/admin/reconciliation"],
+  ["Activity Monitor", "/admin/activity-monitor"],
+  ["Audit Log", "/admin/audit-log"],
+  ["Audit Logs", "/admin/audit-logs"],
+  ["Privacy", "/admin/privacy"],
+  ["Analytics: Funnel", "/admin/analytics/funnel"],
+  ["Analytics: Learning", "/admin/analytics/learning"],
+  ["Analytics: Revenue", "/admin/analytics/revenue"],
+  ["Analytics: Search", "/admin/analytics/search"],
+  ["Settings", "/admin/settings"],
+  ["Settings: Branding", "/admin/settings/branding"],
+  ["Settings: Capacity", "/admin/settings/capacity"],
+  ["Settings: Feature Flags", "/admin/settings/flags"],
+  ["Settings: Integrations", "/admin/settings/integrations"],
+  ["Settings: Policies", "/admin/settings/policies"],
+  ["Settings: Preferences", "/admin/settings/preferences"],
+].map(([name, href]) => ({ name, href, icon: ShieldCheck }));
+
+/**
+ * Grouped "Go to" sources. `adminOnly` groups are dropped entirely for
+ * non-admins (same role source as AdminRouteGuard: the auth store's role).
+ */
+export const destinationGroups = [
+  { id: "goto", heading: "Go to", items: primaryDestinations },
+  { id: "admin", heading: "Admin", items: adminDestinations, adminOnly: true },
+];
+
 const quickActions = [
   {
     name: "Create Course",
@@ -105,11 +155,14 @@ const quickActions = [
 
 export function CommandPalette() {
   const router = useRouter();
-  const { can } = useCan();
+  const { can, role } = useCan();
   // Hide capability-gated quick actions the current user can't perform
   // (defense-in-depth; the server remains the source of truth).
   const visibleQuickActions = quickActions.filter(
     (action) => !action.capability || can(action.capability)
+  );
+  const visibleGroups = destinationGroups.filter(
+    (group) => !group.adminOnly || role === ROLES.ADMIN
   );
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -560,24 +613,27 @@ export function CommandPalette() {
 
             {recentSearches.length > 0 && <CommandSeparator />}
 
-            {/* Go To Navigation Links */}
-            <CommandGroup heading="Go to">
-              {primaryDestinations.map((dest) => (
-                <CommandItem
-                  key={dest.name}
-                  value={`goto-${dest.name}`}
-                  onSelect={() => handleSelect(dest.href)}
-                  className="cursor-pointer"
-                >
-                  <dest.icon className="h-4 w-4 text-accent" />
-                  <span className={cn(poppins_500, "text-ink")}>
-                    {dest.name}
-                  </span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-
-            <CommandSeparator />
+            {/* Go To Navigation Links (admin group only for admins) */}
+            {visibleGroups.map((group) => (
+              <React.Fragment key={group.id}>
+                <CommandGroup heading={group.heading}>
+                  {group.items.map((dest) => (
+                    <CommandItem
+                      key={dest.href}
+                      value={`${group.id}-${dest.name}`}
+                      onSelect={() => handleSelect(dest.href)}
+                      className="cursor-pointer"
+                    >
+                      <dest.icon className="h-4 w-4 text-accent" />
+                      <span className={cn(poppins_500, "text-ink")}>
+                        {dest.name}
+                      </span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                <CommandSeparator />
+              </React.Fragment>
+            ))}
 
             {/* Quick Actions */}
             <CommandGroup heading="Quick Actions">

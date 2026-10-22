@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -63,24 +63,12 @@ const ReelCommentsSheet = ({
     return false;
   };
 
-  useEffect(() => {
-    if (!open) {
-      mountedRef.current = false;
-      setComments([]);
-      setPage(1);
-      setHasMore(true);
-      return;
-    }
-    mountedRef.current = true;
-    loadComments(1, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, reel?.id]);
-
-  const loadComments = async (nextPage, reset = false) => {
-    if (!reel?.id) return;
+  const reelId = reel?.id;
+  const loadComments = useCallback(async (nextPage, reset = false) => {
+    if (!reelId) return;
     setLoading(true);
     try {
-      const response = await fetchReelComments(reel.id, {
+      const response = await fetchReelComments(reelId, {
         page: nextPage,
         limit: 20,
       });
@@ -103,7 +91,19 @@ const ReelCommentsSheet = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [reelId]);
+
+  useEffect(() => {
+    if (!open) {
+      mountedRef.current = false;
+      setComments([]);
+      setPage(1);
+      setHasMore(true);
+      return;
+    }
+    mountedRef.current = true;
+    loadComments(1, true);
+  }, [open, reelId, loadComments]);
 
   const handlePost = async () => {
     if (!newComment.trim()) return;

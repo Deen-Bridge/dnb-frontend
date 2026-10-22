@@ -26,13 +26,11 @@ export async function logAdminAction({
   metadata = {},
 }: LogAdminActionParams): Promise<LogAdminActionResult> {
   if (!action || !category || !target || !summary) {
-    console.error("logAdminAction: Missing required fields");
     return { success: false, error: "Missing required fields" };
   }
 
   const validCategories = ["user", "course", "payment", "moderation", "system"];
   if (!validCategories.includes(category)) {
-    console.error(`logAdminAction: Invalid category "${category}"`);
     return { success: false, error: `Invalid category: ${category}` };
   }
 
@@ -80,10 +78,7 @@ export async function logAdminAction({
       logId: data.id,
     };
   } catch (error) {
-    console.error("logAdminAction: Failed to log action", error);
-
     if (process.env.NODE_ENV === "development") {
-      console.warn("logAdminAction: Audit logging failed but continuing in development mode");
       return {
         success: true,
         logId: `dev_${Date.now()}`,

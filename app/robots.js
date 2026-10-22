@@ -18,6 +18,9 @@ export default function robots() {
         // /blog, /login and /signup are intentionally crawlable.
         disallow: [
           "/dashboard/",
+          "/admin/",
+          "/en/admin/",
+          "/ar/admin/",
           "/account/",
           "/api/",
           "/verify-email",

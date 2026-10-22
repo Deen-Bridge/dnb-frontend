@@ -3,7 +3,7 @@
 A standardized, **non-blocking (fire-and-forget)** wrapper every admin mutation
 flow calls right after a privileged action succeeds. A logging failure can
 **never** break or block the triggering UI: errors are swallowed and reported
-to the console with the structured event.
+to telemetry as a generic error without attaching audit event or user data.
 
 ## API
 
@@ -12,11 +12,11 @@ import { logAuditEvent, withAudit, AUDIT_ACTIONS } from "@/lib/admin/audit";
 ```
 
 - **`AUDIT_ACTIONS`** — frozen map of typed action constants (use these instead
-  of freeform strings). Unknown actions are warned about but still logged.
+  of freeform strings). Unknown actions are still logged under the `system`
+  category without emitting a warning.
 - **`logAuditEvent({ action, target, metadata, summary })`** — fire-and-forget.
-  Returns `void`; **do not `await` it** in your critical path. Resolves the
-  actor client-side (best-effort hint; the backend re-resolves authoritatively),
-  derives the category, and POSTs in the background.
+  Returns `void`; **do not `await` it** in your critical path. Derives the
+  category and POSTs in the background; the backend resolves the actor.
 - **`withAudit(action, target, mutationFn, metadata?)`** — one-liner helper:
   runs `mutationFn`, and only if it resolves fires the audit event, returning
   the mutation's result. `target` may be a descriptor or `(result) => descriptor`.
