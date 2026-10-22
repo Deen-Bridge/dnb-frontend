@@ -114,14 +114,29 @@ export default function Page({ params }) {
 
   // Fetch user info for all senders (for avatars)
   useEffect(() => {
+    let active = true;
     const uniqueSenderIds = [...new Set(messages.map((m) => m.senderId))];
-    uniqueSenderIds.forEach(async (id) => {
-      if (!userCache[id]) {
-        const res = await getUserById(id);
-        setUserCache((prev) => ({ ...prev, [id]: res?.user }));
-      }
+    const missingIds = uniqueSenderIds.filter((id) => !userCache[id]);
+    Promise.all(
+      missingIds.map(async (id) => {
+        try {
+          const res = await getUserById(id);
+          return [id, res?.user];
+        } catch (error) {
+          console.log("Failed to fetch sender info:", error);
+          return null;
+        }
+      })
+    ).then((entries) => {
+      if (!active) return;
+      const resolved = entries.filter(Boolean);
+      if (resolved.length === 0) return;
+      setUserCache((prev) => ({ ...prev, ...Object.fromEntries(resolved) }));
     });
-    // eslint-disable-next-line
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed off `messages` only; userCache is read-through (checked before fetching) and including it would re-run the effect on every cache write
   }, [messages]);
   useEffect(() => {
     if (!room) return;
