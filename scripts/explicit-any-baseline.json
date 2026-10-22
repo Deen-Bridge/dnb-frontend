@@ -2,7 +2,7 @@
   "rule": "@typescript-eslint/no-explicit-any",
   "issue": "https://github.com/Deen-Bridge/dnb-frontend/issues/523",
   "note": "Tracked backlog of explicit `any` sites. Regenerate with `npm run lint:any -- --update` after a per-module typing issue (#514-#522) removes sites. The count must never increase.",
-  "total": 397,
+  "total": 396,
   "files": {
     "components/stellar/PaymentModal.tsx": 10,
     "components/stellar/StellarProvider.tsx": 7,
@@ -111,7 +111,6 @@
     "lib/stellar/stellarErrors.ts": 3,
     "lib/utils/cache.ts": 10,
     "lib/utils/cloudinaryUpload.ts": 3,
-    "lib/validation/password.ts": 1,
     "lib/verification/liveness/onfido-adapter.ts": 1,
     "lib/verification/liveness/persona-adapter.ts": 1,
     "types/api.ts": 1,
