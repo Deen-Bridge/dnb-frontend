@@ -62,8 +62,8 @@ const features = [
     icon: HandHeart,
     title: "Sadaqah Jariyah",
     href: "/dashboard/sadaqah",
-    desc: "Give to an on-chain scholarship fund for students of knowledge. Every contribution is publicly verifiable, from your wallet to the pool.",
-    points: ["On-chain transparency", "Funds scholarships"],
+    desc: "Give Sadaqah directly to the Sadaqah USDC fund. Each contribution is signed from your wallet and publicly verifiable on Stellar.",
+    points: ["On-chain transparency", "Wallet-signed giving"],
   },
   {
     icon: Wallet,

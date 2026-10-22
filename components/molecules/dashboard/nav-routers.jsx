@@ -10,6 +10,7 @@ import {
   Play,
   LaptopMinimal,
   HeartHandshake,
+  GraduationCap,
   ShoppingBag,
   DollarSign,
   Bookmark,
@@ -72,6 +73,11 @@ const links = [
     key: "sadaqah",
     link: "/dashboard/sadaqah",
     icon: HeartHandshake,
+  },
+  {
+    key: "scholarships",
+    link: "/dashboard/scholarships",
+    icon: GraduationCap,
   },
   {
     key: "purchases",

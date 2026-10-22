@@ -97,6 +97,7 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
           }
         }
       } catch (e) {
+        console.error("Failed to load public educator profile:", e);
         setError(true);
       } finally {
         setLoading(false);
@@ -137,7 +138,9 @@ export default function PublicEducatorPage({ params, educator: educatorProp }) {
           text: educator?.bio || `Check out ${educator?.name} on DeenBridge`,
           url,
         });
-      } catch {}
+      } catch {
+        // Sharing can be dismissed by the user; cancellation is not an error.
+      }
     } else {
       try {
         await navigator.clipboard.writeText(url);
