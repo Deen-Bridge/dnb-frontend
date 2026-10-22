@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Category & Taxonomy Management UI (#248)
+ * Category & Taxonomy Management UI (#481)
  *
  * Course categories manager for administrators:
  * - Lists all categories with live course counts and taxonomy order
  * - Create, rename with case-insensitive uniqueness validation
- * - Archive / Unarchive controls (no hard delete, preventing orphaned catalogs)
- * - Persistent drag/order controls
+ * - Archive / Restore controls backed by the category activation flag
+ * - Persistent ordering controls
  */
 
 import { useState, useCallback, useEffect, useMemo } from "react";
@@ -63,84 +63,13 @@ import {
   BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const SEED_CATEGORIES = [
-  {
-    id: "cat-1",
-    name: "Quran & Tafsir",
-    slug: "quran-tafsir",
-    description: "Quranic recitations, tajweed rules, and in-depth exegesis.",
-    courseCount: 42,
-    order: 1,
-    status: "active", // 'active' | 'archived'
-    createdAt: "2026-01-15T08:00:00Z",
-  },
-  {
-    id: "cat-2",
-    name: "Hadith Studies",
-    slug: "hadith-studies",
-    description: "Prophetic traditions, methodology, and narrations.",
-    courseCount: 28,
-    order: 2,
-    status: "active",
-    createdAt: "2026-01-18T10:30:00Z",
-  },
-  {
-    id: "cat-3",
-    name: "Islamic Jurisprudence (Fiqh)",
-    slug: "islamic-jurisprudence-fiqh",
-    description: "Classical and contemporary rulings across various madhabs.",
-    courseCount: 35,
-    order: 3,
-    status: "active",
-    createdAt: "2026-02-01T12:00:00Z",
-  },
-  {
-    id: "cat-4",
-    name: "Arabic Language",
-    slug: "arabic-language",
-    description: "Grammar, morphology, vocabulary, and conversational fluency.",
-    courseCount: 19,
-    order: 4,
-    status: "active",
-    createdAt: "2026-02-10T14:15:00Z",
-  },
-  {
-    id: "cat-5",
-    name: "Islamic History & Civilizations",
-    slug: "islamic-history-civilizations",
-    description: "Chronicles of Islamic empires, scholars, and key events.",
-    courseCount: 12,
-    order: 5,
-    status: "active",
-    createdAt: "2026-02-14T09:45:00Z",
-  },
-  {
-    id: "cat-6",
-    name: "Legacy Audio Archives",
-    slug: "legacy-audio-archives",
-    description: "Deprecated audio-only seminar imports.",
-    courseCount: 8,
-    order: 6,
-    status: "archived",
-    createdAt: "2025-11-20T11:00:00Z",
-  },
-];
+import axiosInstance from "@/lib/config/axios.config";
 
 export default function CategoryTaxonomyManagementPage() {
-  const [categories, setCategories] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("dnb_course_categories");
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {
-          // fallback to seed
-        }
-      }
-    }
-    return SEED_CATEGORIES;
-  });
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all"); // 'all' | 'active' | 'archived'
@@ -157,13 +86,30 @@ export default function CategoryTaxonomyManagementPage() {
   const [formError, setFormError] = useState("");
   const [notification, setNotification] = useState(null);
 
-  // Save to persistent storage
-  const persistCategories = useCallback((updated) => {
-    setCategories(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("dnb_course_categories", JSON.stringify(updated));
+  const loadCategories = useCallback(async () => {
+    setLoading(true);
+    setLoadError("");
+    try {
+      const { data } = await axiosInstance.get("/api/categories");
+      const rows = Array.isArray(data) ? data : data?.categories;
+      if (!Array.isArray(rows)) throw new Error("The categories response was invalid.");
+      setCategories(rows.map((item, index) => ({
+        ...item,
+        id: item.id ?? item._id,
+        description: item.description ?? "",
+        courseCount: Number(item.courseCount ?? item.count ?? 0),
+        order: Number(item.order ?? item.position ?? index + 1),
+        status: item.status ?? (item.isActive === false || item.archived ? "archived" : "active"),
+      })));
+    } catch (error) {
+      setCategories([]);
+      setLoadError(error?.response?.data?.message || error?.message || "Could not load categories. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }, []);
+
+  useEffect(() => { loadCategories(); }, [loadCategories]);
 
   const showNotification = (msg, type = "success") => {
     setNotification({ message: msg, type });
@@ -191,7 +137,7 @@ export default function CategoryTaxonomyManagementPage() {
   };
 
   // Handle Create
-  const handleCreateCategory = (e) => {
+  const handleCreateCategory = async (e) => {
     e.preventDefault();
     const error = validateCategoryName(formData.name);
     if (error) {
@@ -205,26 +151,26 @@ export default function CategoryTaxonomyManagementPage() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    const newCategory = {
-      id: `cat-${Date.now()}`,
-      name: formData.name.trim(),
-      slug: newSlug,
-      description: formData.description.trim() || "No description provided.",
-      courseCount: 0,
-      order: categories.length + 1,
-      status: "active",
-      createdAt: new Date().toISOString(),
-    };
-
-    persistCategories([...categories, newCategory]);
-    setCreateDialogOpen(false);
-    setFormData({ name: "", description: "" });
-    setFormError("");
-    showNotification(`Category '${newCategory.name}' created successfully.`);
+    setSaving(true);
+    try {
+      await axiosInstance.post("/api/categories", {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        order: categories.length + 1,
+        isActive: true,
+      });
+      await loadCategories();
+      setCreateDialogOpen(false);
+      setFormData({ name: "", description: "" });
+      setFormError("");
+      showNotification(`Category '${formData.name.trim()}' created successfully.`);
+    } catch (error) {
+      setFormError(error?.response?.data?.message || "Could not create category. Please try again.");
+    } finally { setSaving(false); }
   };
 
   // Handle Edit/Rename
-  const handleEditCategory = (e) => {
+  const handleEditCategory = async (e) => {
     e.preventDefault();
     if (!selectedCategory) return;
 
@@ -234,51 +180,50 @@ export default function CategoryTaxonomyManagementPage() {
       return;
     }
 
-    const updated = categories.map((c) => {
-      if (c.id === selectedCategory.id) {
-        return {
-          ...c,
-          name: formData.name.trim(),
-          description: formData.description.trim(),
-        };
-      }
-      return c;
-    });
-
-    persistCategories(updated);
-    setEditDialogOpen(false);
-    setSelectedCategory(null);
-    setFormData({ name: "", description: "" });
-    setFormError("");
-    showNotification(`Category updated successfully.`);
+    setSaving(true);
+    try {
+      await axiosInstance.patch(`/api/categories/${selectedCategory.id}`, {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+      });
+      await loadCategories();
+      setEditDialogOpen(false);
+      setSelectedCategory(null);
+      setFormData({ name: "", description: "" });
+      setFormError("");
+      showNotification("Category updated successfully.");
+    } catch (error) {
+      setFormError(error?.response?.data?.message || "Could not update category. Please try again.");
+    } finally { setSaving(false); }
   };
 
   // Handle Archive / Restore
-  const handleToggleArchive = () => {
+  const handleToggleArchive = async () => {
     if (!selectedCategory) return;
     const isArchiving = selectedCategory.status === "active";
-    const updated = categories.map((c) => {
-      if (c.id === selectedCategory.id) {
-        return {
-          ...c,
-          status: isArchiving ? "archived" : "active",
-        };
-      }
-      return c;
-    });
-
-    persistCategories(updated);
-    setArchiveDialogOpen(false);
-    setSelectedCategory(null);
-    showNotification(
-      isArchiving
-        ? `Category '${selectedCategory.name}' archived. Existing courses remain linked; new assignments blocked.`
-        : `Category '${selectedCategory.name}' restored to active status.`
-    );
+    setSaving(true);
+    try {
+      await axiosInstance.patch(`/api/categories/${selectedCategory.id}`, {
+        isActive: !isArchiving,
+      });
+      // The public list endpoint filters inactive categories, so preserve the
+      // successful archive locally until the next explicit reload.
+      setCategories((current) => current.map((category) => category.id === selectedCategory.id
+        ? { ...category, status: isArchiving ? "archived" : "active" }
+        : category));
+      setArchiveDialogOpen(false);
+      setSelectedCategory(null);
+      showNotification(isArchiving
+        ? `Category '${selectedCategory.name}' archived.`
+        : `Category '${selectedCategory.name}' restored to active status.`);
+    } catch (error) {
+      setLoadError(error?.response?.data?.message || "Could not update category status.");
+      setArchiveDialogOpen(false);
+    } finally { setSaving(false); }
   };
 
   // Reorder up/down
-  const handleMoveOrder = (index, direction) => {
+  const handleMoveOrder = async (index, direction) => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= categories.length) return;
 
@@ -288,7 +233,13 @@ export default function CategoryTaxonomyManagementPage() {
 
     // Update sequence indices
     const updated = reordered.map((item, idx) => ({ ...item, order: idx + 1 }));
-    persistCategories(updated);
+    setCategories(updated);
+    try {
+      await Promise.all(updated.map((item) => axiosInstance.patch(`/api/categories/${item.id}`, { order: item.order })));
+    } catch (error) {
+      setLoadError(error?.response?.data?.message || "Could not save category order. Reloading current order.");
+      await loadCategories();
+    }
   };
 
   // Filtered categories
@@ -329,6 +280,13 @@ export default function CategoryTaxonomyManagementPage() {
       </PageHeader>
 
       {/* Notification Toast */}
+      {loadError && (
+        <div role="alert" className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          <span>{loadError}</span>
+          <Button variant="outline" size="sm" onClick={loadCategories} disabled={loading}>Retry</Button>
+        </div>
+      )}
+
       {notification && (
         <div
           className={cn(
@@ -404,10 +362,14 @@ export default function CategoryTaxonomyManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCategories.length === 0 ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">Loading categories…</TableCell>
+                </TableRow>
+              ) : filteredCategories.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
-                    No categories found matching your criteria.
+                    {categories.length === 0 ? "No categories are available yet." : "No categories found matching your criteria."}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -578,7 +540,7 @@ export default function CategoryTaxonomyManagementPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Category</Button>
+              <Button type="submit" disabled={saving}>{saving ? "Creating…" : "Create Category"}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -633,7 +595,7 @@ export default function CategoryTaxonomyManagementPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save Changes"}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -665,6 +627,7 @@ export default function CategoryTaxonomyManagementPage() {
             </Button>
             <Button
               onClick={handleToggleArchive}
+              disabled={saving}
               variant={selectedCategory?.status === "active" ? "destructive" : "default"}
             >
               {selectedCategory?.status === "active"
