@@ -100,7 +100,6 @@ const adminDestinations = [
   ["Users", "/admin/users"],
   ["Educators", "/admin/educators"],
   ["Verification", "/admin/verification"],
-  ["Verifications", "/admin/verifications"],
   ["Courses (Admin)", "/admin/courses"],
   ["Categories (Admin)", "/admin/categories"],
   ["Books (Admin)", "/admin/books"],
