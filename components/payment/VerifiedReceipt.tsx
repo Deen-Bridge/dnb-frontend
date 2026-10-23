@@ -57,7 +57,7 @@ function toVerificationEvidence(props: VerifiedReceiptProps): PaymentVerificatio
     network: normalizedNetwork,
     expectedNetwork: props.expectedNetwork ?? null,
     txHash: props.hash ?? null,
-    ledgerSequence: props.ledgerSequence ?? (props.status === "confirmed" ? 1 : null),
+    ledgerSequence: props.ledgerSequence ?? null,
     ledgerTime: props.ledgerTime ?? null,
     verifiedAt: props.verifiedAt ?? null,
     isLoading: props.isLoading ?? false,

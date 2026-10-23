@@ -24,6 +24,7 @@ import { useStellar } from "./StellarProvider";
 import useStellarPayment from "@/hooks/useStellarPayment";
 import Sep7QrCode from "./Sep7QrCode";
 import { VerifiedReceipt } from "@/components/payment/VerifiedReceipt";
+import { resolveBackendReceiptNetwork } from "@/lib/stellar/verifiedPaymentReceipt";
 import {
   mapStellarError,
   isUserRejection,
@@ -59,6 +60,7 @@ export default function PaymentModal({
     walletInfo,
     connectWallet,
     network,
+    walletNetwork,
     isConnecting,
     hasWalletExtension,
     networkMismatch,
@@ -476,9 +478,16 @@ export default function PaymentModal({
                         ? result.transaction.ledger
                         : null,
                     ledgerTime: result.transaction.createdAt ?? null,
-                    network: network === "mainnet" || network === "testnet" ? network : null,
+                    network: resolveBackendReceiptNetwork(result.transaction),
                     expectedNetwork:
-                      network === "mainnet" || network === "testnet" ? network : null,
+                      walletNetwork?.toLowerCase() === "public" ||
+                      walletNetwork?.toLowerCase() === "mainnet"
+                        ? "mainnet"
+                        : walletNetwork?.toLowerCase() === "testnet"
+                          ? "testnet"
+                          : network === "mainnet" || network === "testnet"
+                            ? network
+                            : null,
                     amount: item?.price !== undefined ? String(item.price) : null,
                     assetCode: "USDC",
                   }}

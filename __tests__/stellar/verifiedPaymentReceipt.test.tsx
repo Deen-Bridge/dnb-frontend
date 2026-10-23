@@ -144,10 +144,24 @@ describe("buildVerifiedPaymentReceipt & VerifiedReceipt (#589)", () => {
         }}
       />
     );
-    expect(screen.getByText(/Network Mismatch/i)).toBeInTheDocument();
+    expect(screen.getByText("Network Mismatch — Verification Failed")).toBeInTheDocument();
     expect(
       screen.getByText("Backend receipt network does not match active Stellar network")
     ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /view verified transaction/i })).not.toBeInTheDocument();
+  });
+
+  it("does not fabricate a ledger sequence or explorer link for confirmed legacy props without ledgerSequence", () => {
+    render(
+      <VerifiedReceipt
+        status="confirmed"
+        hash={VALID_HASH}
+        network="testnet"
+        amount="15.00"
+        asset="USDC"
+      />
+    );
+    expect(screen.getByText("Pending Backend Ledger Verification")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /view verified transaction/i })).not.toBeInTheDocument();
   });
 });

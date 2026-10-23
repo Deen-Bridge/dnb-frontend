@@ -180,3 +180,31 @@ export function buildVerifiedPaymentReceipt(
     ariaLive: isFailureState ? "assertive" : "polite",
   };
 }
+
+/**
+ * Extracts the backend-reported Stellar network from a payment submission transaction
+ * payload (`network` field or `explorerUrl` path segment), returning `null` when absent
+ * so callers never substitute the client wallet network as backend evidence.
+ */
+export function resolveBackendReceiptNetwork(
+  transaction: { network?: unknown; explorerUrl?: unknown } | null | undefined
+): StellarPublicNetwork | null {
+  if (!transaction || typeof transaction !== "object") {
+    return null;
+  }
+  const rawNet = typeof transaction.network === "string" ? transaction.network.trim().toLowerCase() : "";
+  if (rawNet === "mainnet" || rawNet === "public") {
+    return "mainnet";
+  }
+  if (rawNet === "testnet") {
+    return "testnet";
+  }
+  const url = typeof transaction.explorerUrl === "string" ? transaction.explorerUrl.toLowerCase() : "";
+  if (url.includes("/testnet/") || url.includes("network=testnet")) {
+    return "testnet";
+  }
+  if (url.includes("/public/") || url.includes("/mainnet/") || url.includes("network=public")) {
+    return "mainnet";
+  }
+  return null;
+}
