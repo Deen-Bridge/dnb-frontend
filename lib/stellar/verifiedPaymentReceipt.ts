@@ -111,8 +111,9 @@ export function buildVerifiedPaymentReceipt(
         ? "pending"
         : "unknown");
 
+  // Keep an established confirmation visible during a background refetch unless
+  // failure, error, or network-mismatch signals supersede it.
   const isConfirmed =
-    !isLoading &&
     !errorMessage &&
     !networkMismatch &&
     evidence.backendVerified &&
@@ -128,12 +129,12 @@ export function buildVerifiedPaymentReceipt(
     statusLabel = networkMismatch
       ? "Network Mismatch — Verification Failed"
       : "Payment Verification Failed";
-  } else if (isLoading) {
-    state = "pending_verification";
-    statusLabel = "Loading Verification Status";
   } else if (isConfirmed) {
     state = "verified_on_chain";
     statusLabel = "Confirmed on Stellar Ledger";
+  } else if (isLoading) {
+    state = "pending_verification";
+    statusLabel = "Loading Verification Status";
   } else if (
     status === "pending" ||
     (status === "verified" && (Boolean(rawHash) || validLedger !== null))
@@ -162,7 +163,7 @@ export function buildVerifiedPaymentReceipt(
     statusLabel,
     network: networkMismatch ? null : network,
     networkBadge: networkMismatch ? "Network Mismatch" : networkBadge,
-    txHash: isConfirmed ? validHash : state === "pending_verification" ? rawHash : null,
+    txHash: isConfirmed ? validHash : state === "pending_verification" ? validHash : null,
     ledgerSequence: isConfirmed ? validLedger : null,
     ledgerTime: isConfirmed ? evidence.ledgerTime?.trim() || null : null,
     verifiedAt: isConfirmed ? evidence.verifiedAt?.trim() || null : null,

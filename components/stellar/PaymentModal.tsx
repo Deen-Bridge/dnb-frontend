@@ -23,6 +23,7 @@ import {
 import { useStellar } from "./StellarProvider";
 import useStellarPayment from "@/hooks/useStellarPayment";
 import Sep7QrCode from "./Sep7QrCode";
+import { VerifiedReceipt } from "@/components/payment/VerifiedReceipt";
 import {
   mapStellarError,
   isUserRejection,
@@ -464,6 +465,25 @@ export default function PaymentModal({
               <p className="text-muted-foreground mt-2">
                 You now have access to &quot;{item?.title}&quot;
               </p>
+              {result?.transaction?.hash && (
+                <VerifiedReceipt
+                  evidence={{
+                    backendVerified: Boolean(result?.transaction?.ledger),
+                    verificationStatus: result?.transaction?.ledger ? "verified" : "pending",
+                    txHash: result.transaction.hash,
+                    ledgerSequence:
+                      typeof result.transaction.ledger === "number"
+                        ? result.transaction.ledger
+                        : null,
+                    ledgerTime: result.transaction.createdAt ?? null,
+                    network: network === "mainnet" || network === "testnet" ? network : null,
+                    expectedNetwork:
+                      network === "mainnet" || network === "testnet" ? network : null,
+                    amount: item?.price !== undefined ? String(item.price) : null,
+                    assetCode: "USDC",
+                  }}
+                />
+              )}
               {result?.transaction?.explorerUrl && (
                 <a
                   href={result.transaction.explorerUrl}
