@@ -30,6 +30,8 @@ describe("resolveSafeRedirectTarget (#568)", () => {
     expect(resolveSafeRedirectTarget("/%5cevil.example")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget("/%E0%A4%A")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget("/dashboard\r\nSet-Cookie: bad=1")).toBe("/dashboard");
+    expect(resolveSafeRedirectTarget("/%C2%85")).toBe("/dashboard");
+    expect(resolveSafeRedirectTarget("/courses\u0085next")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget(null, "/admin")).toBe("/admin");
   });
 

@@ -1,12 +1,14 @@
 const DEFAULT_FALLBACK_PATH = "/dashboard";
 const SENTINEL_ORIGIN = "https://deenbridge.local";
+const UNSAFE_PATH_CHARS = /[\p{Cc}\\]/u;
 const REDIRECT_QUERY_KEYS = ["returnTo", "callbackUrl", "redirect", "next"] as const;
 
 /**
  * Validates post-login and wallet callback redirect targets to prevent open-redirect phishing (#568).
  * Only single-slash relative internal paths are permitted; protocol-relative (`//evil.com`,
- * `/a/..//evil.com`), encoded separator tricks (`/%2f/evil.com`, `/%5cevil.com`), external URLs,
- * and `javascript:`/`data:` schemes fall back to `fallback` (default `/dashboard`).
+ * `/a/..//evil.com`), encoded separator tricks (`/%2f/evil.com`, `/%5cevil.com`), Unicode Cc
+ * control characters (ASCII + C1), external URLs, and `javascript:`/`data:` schemes fall back
+ * to `fallback` (default `/dashboard`).
  *
  * @param rawTarget - Untrusted redirect parameter value.
  * @param fallback - Safe internal path used when `rawTarget` is missing or rejected.
@@ -21,11 +23,7 @@ export function resolveSafeRedirectTarget(
   }
 
   const trimmed = rawTarget.trim();
-  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.startsWith("/\\") || trimmed.includes("\\")) {
-    return fallback;
-  }
-
-  if (/[\x00-\x1f\x7f]/.test(trimmed)) {
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || UNSAFE_PATH_CHARS.test(trimmed)) {
     return fallback;
   }
 
@@ -38,8 +36,7 @@ export function resolveSafeRedirectTarget(
   if (
     !decodedOnce.startsWith("/") ||
     decodedOnce.startsWith("//") ||
-    decodedOnce.includes("\\") ||
-    /[\x00-\x1f\x7f]/.test(decodedOnce)
+    UNSAFE_PATH_CHARS.test(decodedOnce)
   ) {
     return fallback;
   }
@@ -52,7 +49,7 @@ export function resolveSafeRedirectTarget(
     if (
       !parsed.pathname.startsWith("/") ||
       parsed.pathname.startsWith("//") ||
-      parsed.pathname.includes("\\")
+      UNSAFE_PATH_CHARS.test(parsed.pathname)
     ) {
       return fallback;
     }
@@ -65,8 +62,7 @@ export function resolveSafeRedirectTarget(
     if (
       !decodedPathname.startsWith("/") ||
       decodedPathname.startsWith("//") ||
-      decodedPathname.includes("\\") ||
-      /[\x00-\x1f\x7f]/.test(decodedPathname)
+      UNSAFE_PATH_CHARS.test(decodedPathname)
     ) {
       return fallback;
     }
