@@ -164,4 +164,22 @@ describe("buildVerifiedPaymentReceipt & VerifiedReceipt (#589)", () => {
     expect(screen.getByText("Pending Backend Ledger Verification")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /view verified transaction/i })).not.toBeInTheDocument();
   });
+
+  it("returns null when explorerUrl contains conflicting testnet and public markers", () => {
+    expect(
+      resolveBackendReceiptNetwork({
+        explorerUrl: `https://stellar.expert/explorer/public/tx/${VALID_HASH}?network=testnet`,
+      })
+    ).toBeNull();
+    expect(
+      resolveBackendReceiptNetwork({
+        explorerUrl: `https://stellar.expert/explorer/testnet/tx/${VALID_HASH}`,
+      })
+    ).toBe("testnet");
+    expect(
+      resolveBackendReceiptNetwork({
+        explorerUrl: `https://stellar.expert/explorer/public/tx/${VALID_HASH}`,
+      })
+    ).toBe("mainnet");
+  });
 });

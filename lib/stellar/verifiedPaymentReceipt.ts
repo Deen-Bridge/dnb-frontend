@@ -193,17 +193,32 @@ export function resolveBackendReceiptNetwork(
     return null;
   }
   const rawNet = typeof transaction.network === "string" ? transaction.network.trim().toLowerCase() : "";
-  if (rawNet === "mainnet" || rawNet === "public") {
-    return "mainnet";
+  if (rawNet) {
+    if (rawNet === "mainnet" || rawNet === "public") {
+      return "mainnet";
+    }
+    if (rawNet === "testnet") {
+      return "testnet";
+    }
+    return null;
   }
-  if (rawNet === "testnet") {
+  const url = typeof transaction.explorerUrl === "string" ? transaction.explorerUrl.trim().toLowerCase() : "";
+  if (!url) {
+    return null;
+  }
+  const hasTestnet = url.includes("/testnet/") || url.includes("network=testnet");
+  const hasMainnet =
+    url.includes("/public/") ||
+    url.includes("/mainnet/") ||
+    url.includes("network=public") ||
+    url.includes("network=mainnet");
+  if (hasTestnet && hasMainnet) {
+    return null;
+  }
+  if (hasTestnet) {
     return "testnet";
   }
-  const url = typeof transaction.explorerUrl === "string" ? transaction.explorerUrl.toLowerCase() : "";
-  if (url.includes("/testnet/") || url.includes("network=testnet")) {
-    return "testnet";
-  }
-  if (url.includes("/public/") || url.includes("/mainnet/") || url.includes("network=public")) {
+  if (hasMainnet) {
     return "mainnet";
   }
   return null;
