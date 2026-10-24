@@ -81,8 +81,9 @@ describe("PaymentModal Component", () => {
     stellarPaymentMock.executePayment.mockResolvedValue({
       success: true,
       transaction: {
-        hash: "0x1234567890",
-        explorerUrl: "https://stellar.expert/explorer/testnet/tx/0x1234567890",
+        hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ledger: 1024,
+        explorerUrl: "https://stellar.expert/explorer/testnet/tx/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       },
     });
     stellarPaymentMock.cancelPayment.mockResolvedValue(undefined);
@@ -324,7 +325,7 @@ describe("PaymentModal Component", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("View on Stellar Explorer")).toHaveAttribute(
       "href",
-      "https://stellar.expert/explorer/testnet/tx/0x1234567890"
+      "https://stellar.expert/explorer/testnet/tx/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     );
     expect(onSuccess).toHaveBeenCalledTimes(1);
 
