@@ -65,6 +65,51 @@ describe("buildVerifiedPaymentReceipt & VerifiedReceipt (#589)", () => {
     expect(malformedPending.explorerUrl).toBeNull();
   });
 
+  it("collapses a failed backend verification into the failed state and strips confirmation data", () => {
+    const failed = buildVerifiedPaymentReceipt({
+      backendVerified: false,
+      verificationStatus: "failed",
+      txHash: VALID_HASH,
+      network: "testnet",
+      expectedNetwork: "testnet",
+      ledgerSequence: 512340,
+      amount: "45.00",
+      assetCode: "USDC",
+      assetIssuer: ISSUER,
+    });
+    expect(failed.state).toBe("failed_verification");
+    expect(failed.statusLabel).toBe("Payment Verification Failed");
+    expect(failed.isFinalConfirmation).toBe(false);
+    expect(failed.txHash).toBeNull();
+    expect(failed.ledgerSequence).toBeNull();
+    expect(failed.explorerUrl).toBeNull();
+    expect(failed.amount).toBeNull();
+    expect(failed.ariaRole).toBe("alert");
+    expect(failed.ariaLive).toBe("assertive");
+  });
+
+  it("reports a backend receipt network that disagrees with the active network as a mismatch", () => {
+    const mismatched = buildVerifiedPaymentReceipt({
+      backendVerified: true,
+      verificationStatus: "verified",
+      txHash: VALID_HASH,
+      network: "testnet",
+      expectedNetwork: "mainnet",
+      ledgerSequence: 512340,
+      amount: "45.00",
+    });
+    expect(mismatched.state).toBe("failed_verification");
+    expect(mismatched.statusLabel).toBe("Network Mismatch — Verification Failed");
+    expect(mismatched.isFinalConfirmation).toBe(false);
+    expect(mismatched.network).toBeNull();
+    expect(mismatched.networkBadge).toBe("Network Mismatch");
+    expect(mismatched.explorerUrl).toBeNull();
+    expect(mismatched.errorMessage).toBe(
+      "Backend receipt network does not match active Stellar network"
+    );
+    expect(mismatched.ariaRole).toBe("alert");
+  });
+
   it("renders accessible verified, pending, failed, mismatched-network, loading, and error states in VerifiedReceipt", () => {
     const { rerender } = render(
       <VerifiedReceipt
