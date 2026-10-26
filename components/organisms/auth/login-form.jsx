@@ -3,6 +3,7 @@
 import { login } from "@/hooks/useAuth";
 import { useStellarAuth } from "@/hooks/useStellarAuth";
 import { normalizeRole, ROLES } from "@/lib/auth/roles";
+import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
 import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
 import {
@@ -64,8 +65,8 @@ export function LoginForm({ className, ...props }) {
 
       setTimeout(() => {
         // The hard reload intentionally refreshes the auth cookie/session after login.
-        window.location.href =
-          normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+        const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
       }, 500);
     } catch {
       // login() already shows toast on failure
@@ -78,8 +79,8 @@ export function LoginForm({ className, ...props }) {
       if (result && !result.unregistered) {
         setTimeout(() => {
           // The hard reload intentionally refreshes the auth cookie/session after login.
-          window.location.href =
-            normalizeRole(result?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+          const roleFallback = normalizeRole(result?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+          window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
         }, 500);
       }
     } catch {
