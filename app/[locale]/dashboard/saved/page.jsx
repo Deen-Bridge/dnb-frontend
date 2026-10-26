@@ -15,8 +15,10 @@ import { getBookmarkedCourses } from "@/lib/actions/courses/bookmark-course";
 import { getBookmarkedBooks } from "@/lib/actions/library/bookmark-book";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import { cn } from "@/lib/utils";
+import { useRouter } from "@/i18n/navigation";
 
 export default function SavedPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("courses");
   const [courses, setCourses] = useState([]);
   const [books, setBooks] = useState([]);
@@ -149,7 +151,7 @@ export default function SavedPage() {
               <Button
                 variant="outline"
                 className="rounded-full"
-                onClick={() => (window.location.href = "/dashboard/courses")}
+                onClick={() => router.push("/dashboard/courses")}
               >
                 Browse Courses
               </Button>
@@ -178,7 +180,7 @@ export default function SavedPage() {
             <Button
               variant="outline"
               className="rounded-full"
-              onClick={() => (window.location.href = "/dashboard/library")}
+              onClick={() => router.push("/dashboard/library")}
             >
               Browse Library
             </Button>

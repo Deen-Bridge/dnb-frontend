@@ -49,7 +49,7 @@ This repository is the web client. The platform is composed of three services:
 - 🎓 **Stellar Scholarship Escrow** — private scholarship applications with two-review selection, Soroban USDC funding, and arbiter-reviewed milestone releases
 - 👛 **Multi-Wallet Support** — Freighter, xBull, and Albedo via Stellar Wallets Kit
 - 🔒 **Role-Based Access** — student, mentor, and admin experiences
-- 🛡️ **Admin Area** — role-tiered admin access (staff / super-admin) with isolated gating logic ([architecture guide](docs/admin-architecture.md))
+- 🛡️ **Admin Area** — role-tiered admin access (staff / super-admin) with isolated gating logic ([architecture guide](docs/admin-architecture.md)); see the [admin route map](docs/admin-routes.md) for route status and API wiring.
 - 👥 **Team Management** — super-admin-only admin roster with invite links and demote/revoke actions guarded by step-up confirmation
 
 ## 🛠️ Tech Stack
@@ -108,7 +108,7 @@ See `.env.example` for the full variable list with example values.
 
 ## Contributing
 
-- All pull requests target the **`dev`** branch (`main` is releases only)
+- Pull requests target **`main`** and are squash-merged automatically when repository checks and review gates pass.
 - CI (lint + build) must pass before review
 - Claim or confirm an issue with the maintainers before starting substantial work.
 

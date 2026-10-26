@@ -1,4 +1,5 @@
 "use client";
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Plus, Trash2, MessageSquare } from "lucide-react";
@@ -29,7 +30,7 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
         setChatHistory(data.chats || []);
       }
     } catch (error) {
-      console.error("Error fetching chat history:", error);
+      captureClientError(error);
     } finally {
       setLoadingHistory(false);
     }

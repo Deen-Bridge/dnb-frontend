@@ -1,4 +1,5 @@
 "use client"
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -21,16 +22,11 @@ const ForgetPassword = ({ className, onSuccess, ...props }) => {
 
         try {
             // Simulate API call for password reset
-            console.log('Sending password reset email to:', formData.email);
             // Add your API call logic here
-            try {
-                await forgetPassword(formData.email)
-            } catch (e) {
-                console.log("Error during login:", error.message);
-            }
+            await forgetPassword(formData.email)
             toast.success('Password reset link sent to your email!');
         } catch (error) {
-            console.log('Error sending password reset email:', error);
+            captureClientError(error);
         } finally {
             setIsLoading(false);
         }

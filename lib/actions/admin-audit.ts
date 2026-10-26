@@ -47,6 +47,7 @@ export interface AuditLogEntry {
   category: string;
   target: AuditTarget;
   summary: string;
+  metadata?: Record<string, unknown>;
   ip: string | null;
 }
 
@@ -540,11 +541,12 @@ export interface LogAdminActionParams {
   category: string;
   target?: AuditTarget;
   summary?: string;
+  metadata?: Record<string, unknown>;
   actor?: AuditActor | null;
   ip?: string | null;
 }
 
-export async function logAdminAction({ action, category, target, summary }: LogAdminActionParams): Promise<{ log: AuditLogEntry }> {
+export async function logAdminAction({ action, category, target, summary, metadata }: LogAdminActionParams): Promise<{ log: AuditLogEntry }> {
   const log: AuditLogEntry = {
     id: `log-${Math.random().toString(36).slice(2, 10)}`,
     timestamp: new Date().toISOString(),
@@ -553,6 +555,7 @@ export async function logAdminAction({ action, category, target, summary }: LogA
     category,
     target: target || { label: "—", href: null },
     summary: summary || "",
+    ...(metadata ? { metadata } : {}),
     ip: null,
   };
   AUDIT_LOGS.unshift(log);

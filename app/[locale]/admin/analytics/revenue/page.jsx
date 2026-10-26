@@ -14,7 +14,7 @@
  *   pages (~well under the recharts-inflated baseline). Do NOT statically import
  *   `recharts` or `@/components/ui/chart` here — charts stay async-only.
  */
-import { useState } from "react";
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
@@ -27,13 +27,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { DateRangeFilter } from "@/components/admin/DateRangeFilter";
 import {
   TrendingUp,
   DollarSign,
@@ -41,7 +35,6 @@ import {
   GraduationCap,
   PieChart as PieChartIcon,
   BarChart3,
-  Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
@@ -145,8 +138,6 @@ function StatCard({ icon: Icon, label, value, subtext, trend }) {
 }
 
 export default function RevenueAnalyticsPage() {
-  const [timeRange, setTimeRange] = useState("6m");
-
   const totalRevenue = revenueByType.reduce((sum, item) => sum + item.value, 0);
   const coursesRevenue = revenueByType.find((r) => r.name === "Courses")?.value || 0;
   const booksRevenue = revenueByType.find((r) => r.name === "Books")?.value || 0;
@@ -158,19 +149,11 @@ export default function RevenueAnalyticsPage() {
         title="Revenue Analytics"
         subtitle="Breakdown of platform revenue by product type and category"
         actions={
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[140px]">
-              <Calendar className="mr-2 h-4 w-4" />
-              <SelectValue placeholder="Time range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1m">Last Month</SelectItem>
-              <SelectItem value="3m">Last 3 Months</SelectItem>
-              <SelectItem value="6m">Last 6 Months</SelectItem>
-              <SelectItem value="1y">Last Year</SelectItem>
-              <SelectItem value="all">All Time</SelectItem>
-            </SelectContent>
-          </Select>
+          // Range lives in the URL (?from=&to=); read it with
+          // useDateRangeParams() / parseDateRange() when wiring real data.
+          <Suspense fallback={null}>
+            <DateRangeFilter />
+          </Suspense>
         }
       />
 

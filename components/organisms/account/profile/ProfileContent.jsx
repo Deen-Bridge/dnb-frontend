@@ -30,7 +30,14 @@ const ProfileContent = ({ selectedTab, profileId }) => {
     case "following":
       return <FollowingTab key="following" profileId={profileId} />;
     default:
-      return <div>Coming soon...</div>;
+      return (
+        <div
+          className="rounded-xl border border-accent/10 bg-surface-raised p-6 text-center text-sm text-ink-muted"
+          role="status"
+        >
+          No profile content is available for this section.
+        </div>
+      );
   }
 };
 
@@ -56,7 +63,6 @@ const CoursesTab = ({ profileId }) => {
       setError(null);
       try {
         if (profileId) {
-          console.log("Fetching courses for profileId:", profileId);
           const data = await fetchUserCourses(profileId);
           setUserCourses(data);
         } else {
@@ -122,7 +128,6 @@ const BooksTab = ({ profileId }) => {
       setIsLoading(true);
       setError(null);
       try {
-        console.log("Fetching books for profileId:", profileId);
         const data = await fetchUserBooks(profileId);
         setUserBooks(data);
       } catch (err) {
@@ -182,9 +187,7 @@ const SpaceTab = ({ profileId }) => {
       setError(null);
       try {
         if (profileId) {
-          console.log("Fetching spaces for profileId:", profileId);
           const data = await fetchUserSpaces(profileId);
-          console.log("Fetched spaces data:", data);
           setUserSpaces(data.spaces || []);
         } else {
           setUserSpaces([]);
@@ -244,34 +247,21 @@ const FollowersTab = ({ profileId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("FollowersTab useEffect triggered:", {
-      authLoading,
-      profileId,
-    });
 
     if (authLoading || !profileId) {
-      console.log(
-        "FollowersTab: Skipping fetch due to authLoading or no profileId"
-      );
       setIsLoading(false);
       return;
     }
 
     const getFollowersData = async () => {
-      console.log("FollowersTab: Starting to fetch data");
       setIsLoading(true);
       setError(null);
       try {
-        console.log("Fetching followers for profileId:", profileId);
         const [followersData, countData] = await Promise.all([
           getFollowers(profileId),
           getFollowersCount(profileId),
         ]);
 
-        console.log("FollowersTab API responses:", {
-          followersData,
-          countData,
-        });
 
         if (followersData.success) {
           setFollowers(followersData.followers || []);
@@ -285,7 +275,6 @@ const FollowersTab = ({ profileId }) => {
         setFollowersCount(0);
         setError("Failed to fetch followers. Please check your connection.");
       } finally {
-        console.log("FollowersTab: Finished fetching data");
         setIsLoading(false);
       }
     };
@@ -293,7 +282,6 @@ const FollowersTab = ({ profileId }) => {
     getFollowersData();
   }, [profileId, authLoading]);
 
-  console.log("FollowersTab render:", { isLoading, followersCount, error });
 
   if (error) {
     return (
@@ -365,34 +353,21 @@ const FollowingTab = ({ profileId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("FollowingTab useEffect triggered:", {
-      authLoading,
-      profileId,
-    });
 
     if (authLoading || !profileId) {
-      console.log(
-        "FollowingTab: Skipping fetch due to authLoading or no profileId"
-      );
       setIsLoading(false);
       return;
     }
 
     const getFollowingData = async () => {
-      console.log("FollowingTab: Starting to fetch data");
       setIsLoading(true);
       setError(null);
       try {
-        console.log("Fetching following for profileId:", profileId);
         const [followingData, countData] = await Promise.all([
           getFollowing(profileId),
           getFollowingCount(profileId),
         ]);
 
-        console.log("FollowingTab API responses:", {
-          followingData,
-          countData,
-        });
 
         if (followingData.success) {
           setFollowing(followingData.following || []);
@@ -406,7 +381,6 @@ const FollowingTab = ({ profileId }) => {
         setFollowingCount(0);
         setError("Failed to fetch following. Please check your connection.");
       } finally {
-        console.log("FollowingTab: Finished fetching data");
         setIsLoading(false);
       }
     };
@@ -414,7 +388,6 @@ const FollowingTab = ({ profileId }) => {
     getFollowingData();
   }, [profileId, authLoading]);
 
-  console.log("FollowingTab render:", { isLoading, followingCount, error });
 
   if (error) {
     return (

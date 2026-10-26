@@ -62,7 +62,6 @@ function TableRow({
   return (
     (<tr
       data-slot="table-row"
-      tabIndex={0}
       className={cn(
         "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring",
         className

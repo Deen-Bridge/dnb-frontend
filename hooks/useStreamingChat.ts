@@ -1,17 +1,53 @@
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 
+/** One entry of the `history` array sent on the final `done` event. Shape is owned by the backend. */
+export type ChatHistoryEntry = Record<string, unknown>;
+
+/** `metadata` event: announces the chat id for this stream. */
+export interface MetadataEvent {
+  type: "metadata";
+  chat_id?: string | null;
+}
+
+/** `content` event: one incremental text chunk of the assistant reply. */
+export interface ContentEvent {
+  type: "content";
+  text: string;
+}
+
+/** `done` event: terminates the stream, optionally carrying the chat id and history. */
+export interface DoneEvent {
+  type: "done";
+  chat_id?: string | null;
+  history?: ChatHistoryEntry[];
+}
+
+/** `error` event: the backend reported a failure mid-stream. */
+export interface ErrorEvent {
+  type: "error";
+  message?: string;
+}
+
+/** Discriminated union of every SSE `data:` payload this hook consumes. */
+export type StreamEvent = MetadataEvent | ContentEvent | DoneEvent | ErrorEvent;
+
+/** JSON body returned (instead of a stream) when the stream fails to start. */
+interface ErrorResponseBody {
+  message?: string;
+}
+
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
   isStreaming?: boolean;
   isError?: boolean;
-  [key: string]: any; // TODO(types): Message metadata
+  [key: string]: unknown; // Message metadata
 }
 
 export interface SendMessageResult {
   chatId: string | null;
-  history: any[]; // TODO(types): Chat history payload
+  history: ChatHistoryEntry[];
   response: string;
 }
 
@@ -20,10 +56,29 @@ export interface UseStreamingChatResult {
   isStreaming: boolean;
   chatId: string | null;
   error: string | null;
-  sendMessage: (message: string, context?: any) => Promise<SendMessageResult | undefined>; // TODO(types): Additional context
+  sendMessage: (message: string, context?: unknown) => Promise<SendMessageResult | undefined>;
   stopStreaming: () => void;
   newConversation: () => void;
   setMessagesFromHistory: (historyMessages: ChatMessage[]) => void;
+}
+
+function getErrorMessage(err: unknown): string | undefined {
+  if (typeof err === "object" && err !== null && "message" in err) {
+    const { message } = err as { message?: unknown };
+    if (typeof message === "string") {
+      return message;
+    }
+  }
+  return undefined;
+}
+
+function isAbortError(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "name" in err &&
+    (err as { name?: unknown }).name === "AbortError"
+  );
 }
 
 export function useStreamingChat(
@@ -37,7 +92,7 @@ export function useStreamingChat(
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const sendMessage = useCallback(
-    async (message: string, context: any = null): Promise<SendMessageResult | undefined> => { // TODO(types): Context parameter
+    async (message: string, context: unknown = null): Promise<SendMessageResult | undefined> => {
       if (!message?.trim()) {
         toast.error("Please enter a message");
         return;
@@ -71,7 +126,7 @@ export function useStreamingChat(
 
         const contentType = response.headers.get("content-type");
         if (contentType?.includes("application/json")) {
-          const errorData = await response.json();
+          const errorData = (await response.json()) as ErrorResponseBody;
           throw new Error(errorData.message || "Failed to start streaming");
         }
 
@@ -83,7 +138,7 @@ export function useStreamingChat(
 
         let aiMessageContent = "";
         let currentChatId = chatId;
-        let history: any[] = []; // TODO(types): History array
+        let history: ChatHistoryEntry[] = [];
 
         setMessages((prev) => [
           ...prev,
@@ -103,7 +158,7 @@ export function useStreamingChat(
           for (const line of lines) {
             if (line.startsWith("data: ")) {
               try {
-                const data = JSON.parse(line.slice(6));
+                const data = JSON.parse(line.slice(6)) as StreamEvent;
 
                 switch (data.type) {
                   case "metadata":
@@ -167,16 +222,16 @@ export function useStreamingChat(
           history: history,
           response: aiMessageContent,
         };
-      } catch (err: any) { // TODO(types): Error from streaming chat
-        if (err?.name === "AbortError") {
+      } catch (err: unknown) {
+        if (isAbortError(err)) {
           console.log("Stream aborted");
           return;
         }
 
         console.error("Streaming error:", err);
-        setError(err?.message || "Failed to get AI response");
+        setError(getErrorMessage(err) || "Failed to get AI response");
 
-        const errorMessage = err?.message || "Failed to get AI response";
+        const errorMessage = getErrorMessage(err) || "Failed to get AI response";
         toast.error(errorMessage);
 
         setMessages((prev) => {
