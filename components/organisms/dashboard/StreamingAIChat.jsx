@@ -198,7 +198,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       "text-lg md:text-xl text-ink-muted max-w-xl mx-auto leading-relaxed"
                     )}
                   >
-                    I'm your Islamic AI assistant powered by knowledge of the{" "}
+                    I&apos;m your Islamic AI assistant powered by knowledge of the{" "}
                     <span className={cn(poppins_600, "text-ink")}>Quran</span> and{" "}
                     <span className={cn(poppins_600, "text-highlight")}>Hadith</span>
                     . Experience real-time streaming responses!

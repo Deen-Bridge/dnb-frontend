@@ -48,6 +48,9 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          # The app's type-check + page-data pass outgrew Node's default heap
+          # (the build aborts with "JavaScript heap out of memory").
+          NODE_OPTIONS: --max-old-space-size=6144
           # Optional -- Sentry source-map upload auto-skips when the token is
           # absent, so CI stays green without these secrets configured.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -104,6 +107,9 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          # The app's type-check + page-data pass outgrew Node's default heap
+          # (the build aborts with "JavaScript heap out of memory").
+          NODE_OPTIONS: --max-old-space-size=6144
 
       - name: Start production server
         run: |
@@ -149,6 +155,9 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          # The app's type-check + page-data pass outgrew Node's default heap
+          # (the build aborts with "JavaScript heap out of memory").
+          NODE_OPTIONS: --max-old-space-size=6144
 
       - name: Start production server
         run: |

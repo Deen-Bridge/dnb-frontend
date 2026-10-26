@@ -456,15 +456,29 @@ export interface VerificationContext {
   email?: string;
 }
 
-function statusFromDecisionConflict(error: any): string | undefined { // TODO(types): Axios error from a verification decision
-  const data = error?.response?.data;
+/** The slice of an Axios error a verification decision (approve/reject) reads. */
+interface DecisionError {
+  response?: {
+    status?: number;
+    data?: {
+      application?: { status?: string };
+      currentApplication?: { status?: string };
+      currentStatus?: string;
+      status?: string;
+      details?: { status?: string };
+    };
+  };
+}
+
+function statusFromDecisionConflict(error: unknown): string | undefined {
+  const data = (error as DecisionError | undefined)?.response?.data;
   const status =
     data?.application?.status ??
     data?.currentApplication?.status ??
     data?.currentStatus ??
     data?.status ??
     data?.details?.status;
-  return Object.values(VERIFICATION_STATUS).includes(status) ? status : undefined;
+  return status && (Object.values(VERIFICATION_STATUS) as string[]).includes(status) ? status : undefined;
 }
 
 async function getCurrentVerificationStatus(applicationId: string): Promise<string> {
@@ -493,7 +507,8 @@ export async function approveVerification(
       { timeout: 2000, retryOnServerError: false }
     );
     result = res?.data ?? { application: { id: applicationId, status: "approved" } };
-  } catch (err: any) { // TODO(types): Error from verification approve
+  } catch (caught) {
+    const err = caught as DecisionError;
     if (err?.response?.status === 409) {
       const status = statusFromDecisionConflict(err) || await getCurrentVerificationStatus(applicationId);
       return { application: { id: applicationId, status }, conflict: true };
@@ -553,7 +568,8 @@ export async function rejectVerification(
     result = res?.data ?? {
       application: { id: applicationId, status: "rejected", reasonCategory, notes },
     };
-  } catch (err: any) { // TODO(types): Error from verification reject
+  } catch (caught) {
+    const err = caught as DecisionError;
     if (err?.response?.status === 409) {
       const status = statusFromDecisionConflict(err) || await getCurrentVerificationStatus(applicationId);
       return { application: { id: applicationId, status }, conflict: true };
