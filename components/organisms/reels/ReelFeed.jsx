@@ -1,6 +1,7 @@
 "use client";
 
 
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Button from "@/components/atoms/form/Button";
 import ReelCard from "./ReelCard";
@@ -134,7 +135,7 @@ const ReelFeedInner = () => {
         );
       }
     } catch (error) {
-      console.error("Failed to register share:", error);
+      captureClientError(error);
     }
   }, []);
 
@@ -156,7 +157,7 @@ const ReelFeedInner = () => {
         );
       }
     } catch (error) {
-      console.error("Failed to record view:", error);
+      captureClientError(error);
     }
   }, []);
 

@@ -7,7 +7,6 @@ import RecommendedCourseCard from "./R-CourseCard";
 
 
 const RecommendedBookCard = ({ book }) => {
-    console.log("RecommendedBookCard user id ", book.author?._id);
     return (
         <div className="bg-card rounded-xl overflow-hidden shadow-md w-full">
 

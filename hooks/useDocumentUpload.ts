@@ -82,6 +82,23 @@ export interface UploadDocumentResult {
   reference?: DocumentReference;
 }
 
+interface UploadPipelineError extends Error {
+  code?: string;
+}
+
+type RemoveDocumentError = Error;
+
+function isUploadPipelineError(error: unknown): error is UploadPipelineError {
+  return (
+    error instanceof Error &&
+    (!("code" in error) || typeof error.code === "string")
+  );
+}
+
+function isRemoveDocumentError(error: unknown): error is RemoveDocumentError {
+  return error instanceof Error;
+}
+
 export interface UseDocumentUploadReturn {
   slots: Record<string, SlotInfo>;
   getSlot: (documentType: string) => SlotInfo;
@@ -257,13 +274,14 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
         }
 
         return { ok: true, reference };
-      } catch (err: any) { // TODO(types): Upload pipeline error
-        if (err?.code === "ERR_CANCELED") {
+      } catch (error: unknown) {
+        const uploadError = isUploadPipelineError(error) ? error : undefined;
+        if (uploadError?.code === "ERR_CANCELED") {
           return { ok: false, reason: "cancelled" };
         }
         patchSlot(documentType, {
           state: SLOT_STATE.ERROR,
-          error: err?.message ?? "Upload failed",
+          error: uploadError?.message ?? "Upload failed",
           errorReason: "upload_failed",
           reference: null,
         });
@@ -284,9 +302,10 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
       if (existingId) {
         try {
           await removeDocumentRequest(existingId);
-        } catch (err: any) { // TODO(types): Error from remove document
+        } catch (error: unknown) {
+          const removeError = isRemoveDocumentError(error) ? error : undefined;
           patchSlot(documentType, {
-            error: err?.message ?? "Could not remove the document",
+            error: removeError?.message ?? "Could not remove the document",
             errorReason: "remove_failed",
           });
           return { ok: false };

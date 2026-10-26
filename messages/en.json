@@ -525,6 +525,34 @@
         "primary": "Start earning",
         "secondary": "How payments work"
       },
+      "flow": {
+        "title": "What happens when you pay",
+        "intro": "DeenBridge never holds your money. Each payment is built for you, signed by you in your own wallet, and then settled on Stellar.",
+        "steps": {
+          "prepare": {
+            "title": "DeenBridge prepares the payment",
+            "desc": "The platform builds an unsigned USDC payment for the exact price of what you are buying."
+          },
+          "sign": {
+            "title": "You sign it in your wallet",
+            "desc": "Approve it in Freighter, xBull or Albedo. Your keys and your funds stay with you."
+          },
+          "submit": {
+            "title": "The signed payment is submitted",
+            "desc": "Your signed transaction is sent to the Stellar network."
+          },
+          "settle": {
+            "title": "The educator is paid",
+            "desc": "Stellar settles the payment in seconds, for a network fee of a fraction of a cent."
+          }
+        },
+        "live": {
+          "loading": "Connecting to the Stellar {network} network…",
+          "ledger": "Live from the Stellar {network}: ledger {ledger} closed at {time} UTC.",
+          "unavailable": "Live network data is unavailable right now. The steps above describe the payment flow either way.",
+          "link": "View on stellar.expert"
+        }
+      },
       "highlights": {
         "usdc": {
           "title": "Paid in USDC",
