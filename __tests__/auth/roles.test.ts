@@ -15,6 +15,13 @@ import {
   can,
 } from "@/lib/auth/roles";
 
+// Several cases below deliberately pass malformed input, so they cast to the
+// real parameter types instead of widening to `any`.
+type IsVerifiedArg = Parameters<typeof isVerified>[0];
+type RoleAllowsUser = Parameters<typeof roleAllows>[0];
+type CanAction = Parameters<typeof can>[0];
+type CanUser = Parameters<typeof can>[1];
+
 const ALL_CAPS = Object.values(CAPABILITIES);
 const VERIFIED_CAPS = [
   CAPABILITIES.COURSE_CREATE,
@@ -110,7 +117,7 @@ describe("isVerified", () => {
     ["string", "verified"],
     ["number", 1],
   ])("is false for %s input", (_label, input) => {
-    expect(isVerified(input as any)).toBe(false);
+    expect(isVerified(input as unknown as IsVerifiedArg)).toBe(false);
   });
 });
 
@@ -161,7 +168,7 @@ describe("roleAllows", () => {
     ["unknown role", { role: "superuser" }],
     ["non-string role", { role: 1 }],
   ])("denies with %s", (_label, user) => {
-    expect(roleAllows(user as any, CAPABILITIES.COURSE_CREATE)).toBe(false);
+    expect(roleAllows(user as unknown as RoleAllowsUser, CAPABILITIES.COURSE_CREATE)).toBe(false);
   });
 
   it.each([
@@ -223,6 +230,6 @@ describe("can", () => {
     ["user with no role", CAPABILITIES.COURSE_CREATE, { isVerified: true }],
     ["user with unknown role", CAPABILITIES.COURSE_CREATE, { role: "superuser", isVerified: true }],
   ])("denies with %s", (_label, action, user) => {
-    expect(can(action as any, user as any)).toBe(false);
+    expect(can(action as unknown as CanAction, user as unknown as CanUser)).toBe(false);
   });
 });

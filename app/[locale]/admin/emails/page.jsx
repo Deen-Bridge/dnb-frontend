@@ -338,7 +338,7 @@ export default function EmailBroadcastPage() {
                     Estimated Recipients
                   </p>
                   <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
-                    Unknown counts show "—", never a fabricated zero
+                    Unknown counts show &quot;—&quot;, never a fabricated zero
                   </p>
                 </div>
                 <RecipientEstimate estimate={estimate} loading={estimateLoading} />

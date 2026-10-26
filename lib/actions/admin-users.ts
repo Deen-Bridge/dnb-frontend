@@ -7,13 +7,20 @@ export interface ModerationContext {
   email?: string;
 }
 
+/** The slice of an Axios error these actions read the server message from. */
+interface ApiErrorLike {
+  message?: string;
+  response?: { data?: { message?: string } };
+}
+
 // TODO(backend): endpoints below are assumed; confirm paths/payloads with the API.
 async function postModeration(userId: string, action: "suspend" | "ban" | "reinstate", body: Record<string, unknown>) {
   try {
     const res = await axiosInstance.post(`/api/admin/users/${userId}/${action}`, body);
     if (res.data?.success === false) throw new Error(res.data?.message);
     return res.data;
-  } catch (e: any) {
+  } catch (caught) {
+    const e = caught as ApiErrorLike;
     throw new Error(e?.response?.data?.message || e?.message || `Could not ${action} this user.`);
   }
 }
@@ -118,7 +125,8 @@ async function requestSecurityAction<T>(
     const res = await request();
     if (res.data?.success === false) throw new Error(res.data?.message || fallbackMessage);
     return res.data;
-  } catch (e: any) {
+  } catch (caught) {
+    const e = caught as ApiErrorLike;
     throw new Error(e?.response?.data?.message || e?.message || fallbackMessage);
   }
 }

@@ -219,7 +219,7 @@ export default function UserPurchasesTab({ walletAddress }) {
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold">Purchases</CardTitle>
         <CardDescription className="text-xs">
-          Payments made by this learner's wallet. Read-only.
+          Payments made by this learner&apos;s wallet. Read-only.
           {state.total > state.transactions.length && !state.loading
             ? ` Showing the latest ${state.transactions.length} of ${state.total}.`
             : ""}

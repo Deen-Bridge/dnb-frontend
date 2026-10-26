@@ -51,7 +51,7 @@ export default function Testimonials() {
                   className="flex-shrink-0 w-[260px] sm:w-[320px] lg:w-[350px] mx-2 sm:mx-4 rounded-3xl bg-surface-raised backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-5 sm:p-7 lg:p-8 flex flex-col border-0 border-accent/10"
                 >
                   <blockquote className="italic text-sm sm:text-base lg:text-lg text-ink-muted mb-3 sm:mb-4 font-stretch-110% flex-1">
-                    "{t(`items.${item.id}.quote`)}"
+                    &quot;{t(`items.${item.id}.quote`)}&quot;
                   </blockquote>
                   <div className="flex items-center gap-4">
 
@@ -78,7 +78,7 @@ export default function Testimonials() {
                   className="flex-shrink-0 w-[260px] sm:w-[320px] lg:w-[350px] mx-2 sm:mx-4 rounded-3xl bg-surface-raised backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all p-5 sm:p-7 lg:p-8 flex flex-col border-0 border-accent/10"
                 >
                   <blockquote className="italic text-sm sm:text-base lg:text-lg text-ink-muted mb-3 sm:mb-4 font-stretch-110% flex-1">
-                    "{t(`items.${item.id}.quote`)}"
+                    &quot;{t(`items.${item.id}.quote`)}&quot;
                   </blockquote>
                   <div className="flex items-center gap-4">
 
