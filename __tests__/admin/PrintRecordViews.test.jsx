@@ -22,6 +22,13 @@ vi.mock("@/lib/config/env", () => ({
   },
 }));
 
+// The user detail page reads the signed-in admin to decide which moderation
+// actions are allowed, so it needs an auth context.
+vi.mock("@/hooks/useAuth", () => {
+  const useAuth = () => ({ user: { _id: "usr_admin", role: "admin" }, isAuthenticated: true, loading: false });
+  return { useAuth, default: useAuth };
+});
+
 const getUserByIdMock = vi.hoisted(() => vi.fn());
 const fetchVerificationHistoryMock = vi.hoisted(() => vi.fn());
 
@@ -190,23 +197,20 @@ describe("Print-Friendly Views for Records (#338)", () => {
     expect(screen.getByText("Reviewer B")).toBeInTheDocument();
   });
 
-  it("DisputesPage detail modal renders print-root container and print record button", async () => {
-    const { container } = render(<DisputesPage />);
+  it("DisputesPage renders its queue with no sample disputes", async () => {
+    render(<DisputesPage />);
 
     expect(await screen.findByText("Disputes Queue")).toBeInTheDocument();
-
-    // Click first dispute row to open detail modal
-    const row = screen.getByText("Ahmad Patel");
-    fireEvent.click(row);
-
-    // Verify detail modal print-root and print record button
-    expect(await screen.findByText("Tx Reference")).toBeInTheDocument();
-
-    const printBtn = screen.getByRole("button", { name: "Print record" });
-    expect(printBtn).toBeInTheDocument();
-    expect(printBtn.className).toContain("no-print");
-
-    fireEvent.click(printBtn);
-    expect(window.print).toHaveBeenCalledTimes(1);
+    // The built-in sample disputes were removed (#500); until the page loads
+    // disputes from the admin API it starts empty.
+    expect(screen.getByText("No disputes found")).toBeInTheDocument();
+    expect(screen.queryByText("Ahmad Patel")).not.toBeInTheDocument();
   });
+
+  // The dispute detail modal (print-root container + "Print record" button)
+  // can only be opened from a dispute row, and the page has no disputes
+  // source yet. Restore the original assertions once the list is wired to
+  // the admin API: open the first row, expect "Tx Reference", a "Print record"
+  // button with the `no-print` class, and `window.print` called once on click.
+  it.todo("DisputesPage detail modal renders print-root container and print record button");
 });

@@ -23,6 +23,12 @@ const eslintConfig = [
       "mobile/**",
     ],
   },
+  {
+    // Flat config only matches *.js/*.mjs/*.cjs by default. Without this,
+    // every .jsx file (most of the app) is silently skipped, and `eslint
+    // contexts` fails outright because that folder only contains .jsx.
+    files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
+  },
   ...compat.extends("next/core-web-vitals"),
   {
     // #523 — explicit-`any` guardrail.

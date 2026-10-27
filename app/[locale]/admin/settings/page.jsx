@@ -264,7 +264,7 @@ export default function AdminSettingsHub() {
           <CardContent>
             {filteredSettings.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                No settings found matching "{searchQuery}"
+                No settings found matching &quot;{searchQuery}&quot;
               </p>
             ) : (
               <div className="space-y-2">

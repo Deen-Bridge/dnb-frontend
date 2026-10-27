@@ -88,8 +88,20 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
     [onSuccess, clearVerificationToken]
   );
 
+  // The capture session reads the *latest* user, consent record and callbacks
+  // through this ref, so a re-render that merely hands us a new object or
+  // callback identity (e.g. a background auth refresh) never restarts an
+  // in-progress camera capture. Capture (re)starts only on mount and Retry.
+  const latestRef = useRef({});
+  useEffect(() => {
+    latestRef.current = { user, consentRecord, handleSuccess, setError, setVerificationToken };
+  });
+
   // ── Start / restart capture ───────────────────────────────────────────────
   const startCapture = useCallback(() => {
+    const { user, consentRecord, handleSuccess, setError, setVerificationToken } =
+      latestRef.current;
+
     // Clean up any previous adapter instance
     adapterRef.current?.cancel();
     clearTimeout(timeoutRef.current);
@@ -155,7 +167,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       );
       setError({ phase: newPhase, message: err?.message });
     });
-  }, [user, consentRecord, retryCount, handleSuccess, setError, setVerificationToken]);
+  }, []);
 
   // ── Retry ─────────────────────────────────────────────────────────────────
   const handleRetry = () => {
@@ -180,7 +192,7 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
       adapterRef.current?.cancel();
       clearTimeout(timeoutRef.current);
     };
-  }, [startCapture]);
+  }, [startCapture, retryCount]); // re-run on retry
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (

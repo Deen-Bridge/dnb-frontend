@@ -59,6 +59,14 @@ const Page = () => {
     fetchSpaces();
   };
 
+  // Hooks must run on every render, so call this before the early return below.
+  const tabFiltered = spaces.filter((space) =>
+    selectedTab === "all" ? true : space?.status === selectedTab
+  );
+
+  const { flaggedCount, showFlaggedOnly, toggleFlaggedOnly, filteredItems } =
+    useFlaggedContent(tabFiltered);
+
   if (error) {
     return (
       <NetworkErrorComp
@@ -67,13 +75,6 @@ const Page = () => {
       />
     );
   }
-
-  const tabFiltered = spaces.filter((space) =>
-    selectedTab === "all" ? true : space?.status === selectedTab
-  );
-
-  const { flaggedCount, showFlaggedOnly, toggleFlaggedOnly, filteredItems } =
-    useFlaggedContent(tabFiltered);
 
   const filteredSpaces = filteredItems;
 

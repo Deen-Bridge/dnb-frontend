@@ -109,10 +109,12 @@ const LiveLedger = ({ t, network }) => {
   return (
     <p className={cn(poppins_400, "text-sm text-ink-inverse-muted")}>
       <span className="mr-2 inline-block size-2 rounded-full bg-secondary motion-safe:animate-pulse" aria-hidden="true" />
-      {t("flow.live.ledger", {
+      {t.rich("flow.live.ledger", {
         network,
-        ledger: ledger.toLocaleString("en-US"),
-        time: new Date(closedAt).toISOString().slice(11, 19),
+        // Figures are LTR islands so digits never visually reverse inside the
+        // right-to-left (Arabic) sentence.
+        ledger: <span dir="ltr">{ledger.toLocaleString("en-US")}</span>,
+        time: <span dir="ltr">{new Date(closedAt).toISOString().slice(11, 19)}</span>,
       })}{" "}
       <Link
         href={`https://stellar.expert/explorer/${explorerNetwork}/ledger/${ledger}`}
