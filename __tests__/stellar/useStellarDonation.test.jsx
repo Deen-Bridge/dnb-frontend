@@ -118,7 +118,7 @@ describe("useStellarDonation", () => {
   });
 
   it("returns false and reports a failed donation submission", async () => {
-    axiosMock.post.mockRejectedValue(new Error("network rejected"));
+    axiosMock.post.mockRejectedValue(new Error("network unavailable"));
     const { result } = renderHook(() => useStellarDonation());
 
     let submission;
@@ -131,7 +131,7 @@ describe("useStellarDonation", () => {
 
     expect(submission).toBe(false);
     expect(toastMock.error).toHaveBeenCalledWith(
-      "Donation failed: network rejected"
+      "Donation failed: network unavailable"
     );
     expect(stellarMock.refreshBalance).not.toHaveBeenCalled();
     expect(result.current.isProcessing).toBe(false);

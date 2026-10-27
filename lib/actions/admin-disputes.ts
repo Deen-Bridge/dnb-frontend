@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 import { validateDocumentFile } from "@/lib/verification/documents/policy";
 
@@ -46,7 +47,7 @@ export async function fetchDisputeEvidenceSignedUrl(
         fileName: `evidence_${evidenceId}`,
       };
     }
-    console.error("Failed to fetch dispute evidence signed URL:", error);
+    logger.error("Failed to fetch dispute evidence signed URL:", error);
     return {
       success: false,
       signedUrl: "",
@@ -145,7 +146,7 @@ export async function uploadAdminDisputeEvidence(
       };
     }
 
-    console.error("Failed to upload admin dispute evidence:", error);
+    logger.error("Failed to upload admin dispute evidence:", error);
     return {
       success: false,
       error: error.response?.data?.message || error.message || "Failed to upload evidence",

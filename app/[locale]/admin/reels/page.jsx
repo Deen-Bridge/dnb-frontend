@@ -314,7 +314,7 @@ export default function AdminReelsManagementPage() {
                 {activeCreator.isPaused ? (
                   <>
                     <PlayCircle className="h-4 w-4" />
-                    Resume Creator's Reels
+                    Resume Creator&apos;s Reels
                   </>
                 ) : (
                   <>

@@ -47,6 +47,7 @@ import { canModerateUser } from "@/lib/admin/role-hierarchy";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserEnrollmentsTab from "@/components/admin/UserEnrollmentsTab";
 import UserPurchasesTab from "@/components/admin/UserPurchasesTab";
+import UserActivityTimeline from "@/components/admin/UserActivityTimeline";
 
 const VERIFICATION_BADGE_STYLES = {
   submitted: "bg-blue-100 text-blue-800 border-blue-200",
@@ -817,12 +818,16 @@ export default function AdminUserDetailPage({ params }) {
               <TabsList>
                 <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
                 <TabsTrigger value="purchases">Purchases</TabsTrigger>
+                <TabsTrigger value="activity">Activity</TabsTrigger>
               </TabsList>
               <TabsContent value="enrollments">
                 <UserEnrollmentsTab enrolledCourses={user.enrolledCourses} />
               </TabsContent>
               <TabsContent value="purchases">
                 <UserPurchasesTab walletAddress={user.walletAddress} />
+              </TabsContent>
+              <TabsContent value="activity">
+                <UserActivityTimeline user={user} />
               </TabsContent>
             </Tabs>
 

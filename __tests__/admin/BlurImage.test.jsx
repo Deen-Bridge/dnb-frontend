@@ -16,7 +16,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 vi.mock("next/image", () => ({
   __esModule: true,
   default: (props) => {
-    // eslint-disable-next-line no-unused-vars
     const { priority, fill, ...imgProps } = props;
     return <img {...imgProps} />;
   },

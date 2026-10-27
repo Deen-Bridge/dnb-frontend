@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { DecisionPanel } from "@/app/[locale]/admin/verification/[id]/page";
+import DecisionPanel from "@/app/[locale]/admin/verification/[id]/DecisionPanel";
 
 vi.mock("@/lib/admin/audit", () => ({ logAuditEvent: vi.fn(), AUDIT_ACTIONS: {} }));
 vi.mock("@/lib/config/axios.config", () => ({ default: { get: vi.fn(), post: vi.fn() } }));

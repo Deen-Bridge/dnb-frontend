@@ -490,7 +490,7 @@ export default function DataPrivacyPage() {
                 <li>Messages will be <strong>permanently deleted</strong></li>
                 <li>Learning progress will be <strong>anonymized</strong></li>
                 <li>Purchase history will be <strong>anonymized</strong></li>
-                <li>Created content will show as "Deleted User"</li>
+                <li>Created content will show as &quot;Deleted User&quot;</li>
               </ul>
             </div>
 

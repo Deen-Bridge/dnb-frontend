@@ -162,7 +162,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
       {fields.length === 0 && (
         <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-xl space-y-3">
           <p className="text-sm text-muted-foreground">
-            No lessons added yet. Click "Add Lesson" to start building your curriculum.
+            No lessons added yet. Click &quot;Add Lesson&quot; to start building your curriculum.
           </p>
           <ShadcnButton
             type="button"

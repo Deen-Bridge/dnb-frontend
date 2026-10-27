@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export async function fetchCourses(): Promise<any[]> { // TODO(types): Courses array returned from API
@@ -8,7 +9,7 @@ export async function fetchCourses(): Promise<any[]> { // TODO(types): Courses a
     }
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
-    console.log("Error fetching courses:", error);
+    logger.error("Error fetching courses:", error);
     return [];
   }
 }

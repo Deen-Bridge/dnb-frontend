@@ -188,7 +188,7 @@ function PlayerErrorState({ message, thumbnail }) {
       className="relative w-full h-full flex flex-col items-center justify-center gap-2 rounded-xl bg-black text-white overflow-hidden"
     >
       {thumbnail && (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- decorative error-state backdrop from an arbitrary remote URL with no fixed dimensions
         <img
           src={thumbnail}
           alt=""
