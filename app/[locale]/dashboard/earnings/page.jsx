@@ -196,15 +196,6 @@ export default function EarningsPage() {
     );
   }
 
-  const chartConfig = {
-    revenue: {
-      label: "Revenue",
-      theme: {
-        light: "var(--color-secondary)",
-        dark: "var(--color-secondary)",
-      },
-    },
-  };
 
   return (
     <PageShell>
@@ -307,48 +298,7 @@ export default function EarningsPage() {
                 No revenue data for this period
               </div>
             ) : (
-              <ChartContainer config={chartConfig} className="h-72 w-full">
-                <BarChart data={chartData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    className="stroke-accent"
-                    strokeOpacity={0.12}
-                  />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(val) => {
-                      const d = new Date(val + "T00:00:00");
-                      return d.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      });
-                    }}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(val) => `$${val}`}
-                  />
-                  <ChartTooltip
-                    cursor={{ fill: "rgba(0,153,0,0.06)" }}
-                    content={
-                      <ChartTooltipContent
-                        formatter={(value) => `$${value.toFixed(2)}`}
-                      />
-                    }
-                  />
-                  <Bar
-                    dataKey="revenue"
-                    fill="var(--color-revenue)"
-                    radius={[6, 6, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
+              <RevenueChart data={chartData} />
             )}
           </Panel>
 

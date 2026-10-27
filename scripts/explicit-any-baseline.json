@@ -2,7 +2,7 @@
   "rule": "@typescript-eslint/no-explicit-any",
   "issue": "https://github.com/Deen-Bridge/dnb-frontend/issues/523",
   "note": "Tracked backlog of explicit `any` sites. Regenerate with `npm run lint:any -- --update` after a per-module typing issue (#514-#522) removes sites. The count must never increase.",
-  "total": 396,
+  "total": 372,
   "files": {
     "components/stellar/PaymentModal.tsx": 10,
     "components/stellar/StellarProvider.tsx": 7,
@@ -17,7 +17,6 @@
     "hooks/useCache.ts": 4,
     "hooks/useCloudinaryUpload.ts": 2,
     "hooks/useCourseProgress.ts": 4,
-    "hooks/useDocumentUpload.ts": 2,
     "hooks/useDraftAutosave.ts": 3,
     "hooks/useEarnings.ts": 3,
     "hooks/useFeatureFlag.ts": 2,
@@ -36,7 +35,6 @@
     "hooks/useStellarAuth.ts": 10,
     "hooks/useStellarDonation.ts": 10,
     "hooks/useStellarPayment.ts": 12,
-    "hooks/useStreamingChat.ts": 6,
     "hooks/useUnreadMessages.ts": 4,
     "hooks/useVerificationStatus.ts": 1,
     "lib/actions/admin-book-payouts.ts": 1,
@@ -47,7 +45,7 @@
     "lib/actions/admin-session-config.ts": 1,
     "lib/actions/admin-spaces.ts": 6,
     "lib/actions/admin-transactions.ts": 1,
-    "lib/actions/admin-verifications.ts": 4,
+    "lib/actions/admin-verifications.ts": 2,
     "lib/actions/ai/load-chat-history.ts": 3,
     "lib/actions/ai/streaming-chat-action.ts": 3,
     "lib/actions/auth/changePassword.ts": 1,
@@ -69,7 +67,6 @@
     "lib/actions/educators/submitLiveness.ts": 1,
     "lib/actions/educators/uploadDocument.ts": 3,
     "lib/actions/library/addReview.ts": 2,
-    "lib/actions/library/bookmark-book.ts": 7,
     "lib/actions/library/create-book.ts": 2,
     "lib/actions/library/edit-book.ts": 2,
     "lib/actions/library/fetch-books.ts": 1,
@@ -82,7 +79,6 @@
     "lib/actions/messages/listen-to-typing.ts": 2,
     "lib/actions/notifications.ts": 8,
     "lib/actions/push-notifications.ts": 2,
-    "lib/actions/recommendations.ts": 4,
     "lib/actions/reels-action.ts": 11,
     "lib/actions/reviews/shared.ts": 12,
     "lib/actions/spaces/create-space.ts": 3,
@@ -104,8 +100,6 @@
     "lib/data.tsx": 1,
     "lib/search-fallback.ts": 1,
     "lib/sentry/pii.ts": 4,
-    "lib/services/emails/emailVerification.ts": 1,
-    "lib/services/emails/forgetPassword.ts": 2,
     "lib/services/notifications.ts": 1,
     "lib/stellar/horizon.ts": 7,
     "lib/stellar/stellarErrors.ts": 3,
@@ -117,5 +111,5 @@
     "types/shims.d.ts": 13,
     "types/stellar.ts": 1
   },
-  "updatedAt": "2026-10-21"
+  "updatedAt": "2026-10-26"
 }

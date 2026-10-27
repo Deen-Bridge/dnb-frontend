@@ -220,11 +220,13 @@ function InviteDialog({ open, onClose, onCreateInvite }) {
   );
 }
 
-function MemberRow({ member, currentUserId }) {
+/**
+ * Demote / revoke state plus the step-up confirmation dialog for one member.
+ * Shared by the desktop table row and the mobile card so both layouts behave
+ * the same.
+ */
+function useMemberActions(member) {
   const [pendingAction, setPendingAction] = useState(null);
-  const tier = getAdminTier(member);
-  const isSelf = member.id === currentUserId;
-  const isSuperAdminMember = tier === TIERS.SUPER_ADMIN;
 
   const confirmPhrase = member.email;
   const description =
@@ -240,6 +242,27 @@ function MemberRow({ member, currentUserId }) {
     }
     setPendingAction(null);
   };
+
+  const dialog = (
+    <StepUpConfirmDialog
+      open={pendingAction !== null}
+      onOpenChange={(next) => !next && setPendingAction(null)}
+      title={pendingAction === "demote" ? "Demote admin" : "Revoke admin access"}
+      description={description}
+      confirmPhrase={confirmPhrase}
+      confirmLabel={pendingAction === "demote" ? "Demote" : "Revoke"}
+      onConfirm={handleConfirm}
+    />
+  );
+
+  return { setPendingAction, dialog };
+}
+
+function MemberRow({ member, currentUserId }) {
+  const { setPendingAction, dialog } = useMemberActions(member);
+  const tier = getAdminTier(member);
+  const isSelf = member.id === currentUserId;
+  const isSuperAdminMember = tier === TIERS.SUPER_ADMIN;
 
   return (
     <>
@@ -312,16 +335,73 @@ function MemberRow({ member, currentUserId }) {
         </TableCell>
       </TableRow>
 
-      <StepUpConfirmDialog
-        open={pendingAction !== null}
-        onOpenChange={(next) => !next && setPendingAction(null)}
-        title={pendingAction === "demote" ? "Demote admin" : "Revoke admin access"}
-        description={description}
-        confirmPhrase={confirmPhrase}
-        confirmLabel={pendingAction === "demote" ? "Demote" : "Revoke"}
-        onConfirm={handleConfirm}
-      />
+      {dialog}
     </>
+  );
+}
+
+/** Mobile layout of a team member (the table row is hidden below `md`). */
+function MemberCard({ member, currentUserId }) {
+  const { setPendingAction, dialog } = useMemberActions(member);
+  const tier = getAdminTier(member);
+  const isSelf = member.id === currentUserId;
+  const isSuperAdminMember = tier === TIERS.SUPER_ADMIN;
+
+  return (
+    <div className="p-3 space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Avatar className="h-8 w-8 border border-accent/10 shrink-0">
+            <AvatarImage src={member.avatar || "/images/dnb-nobg.png"} alt={member.name} />
+            <AvatarFallback className="bg-surface-raised text-xs">{initials(member.name)}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className={cn(poppins_500.className, "text-sm text-ink truncate")}>
+              {member.name}
+              {isSelf && (
+                <span className={cn(poppins_400.className, "ml-1.5 text-xs text-ink-muted")}>(you)</span>
+              )}
+            </p>
+            <p className={cn(poppins_400.className, "text-xs text-ink-muted truncate")}>{member.email}</p>
+          </div>
+        </div>
+        {!isSelf && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 shrink-0" aria-label={`Actions for ${member.name}`}>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="border-accent/10">
+              {isSuperAdminMember && (
+                <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("demote")}>
+                  <UserMinus className="h-4 w-4" />
+                  Demote to staff
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("revoke")}>
+                <UserX className="h-4 w-4" />
+                Revoke access
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+      <div className="flex items-center gap-2 text-xs text-ink-muted">
+        <Badge variant="outline" className={cn("rounded-full capitalize text-[10px]", tierBadge[tier])}>
+          {tierLabel[tier] || tier}
+        </Badge>
+        <span>·</span>
+        <span>{lastActiveLabel(member.lastActiveAt)}</span>
+        {member.addedBy?.name && (
+          <>
+            <span>·</span>
+            <span>by {member.addedBy.name}</span>
+          </>
+        )}
+      </div>
+      {dialog}
+    </div>
   );
 }
 
@@ -417,65 +497,9 @@ function AdminTeamContent() {
 
           {/* Mobile Card View */}
           <div className="md:hidden divide-y divide-accent/10">
-            {membersWithActions.map((member) => {
-              const tier = getAdminTier(member);
-              const isSelf = member.id === (user?._id || user?.id);
-              return (
-                <div key={member.id} className="p-3 space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Avatar className="h-8 w-8 border border-accent/10 shrink-0">
-                        <AvatarImage src={member.avatar || "/images/dnb-nobg.png"} alt={member.name} />
-                        <AvatarFallback className="bg-surface-raised text-xs">{initials(member.name)}</AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className={cn(poppins_500.className, "text-sm text-ink truncate")}>
-                          {member.name}
-                          {isSelf && (
-                            <span className={cn(poppins_400.className, "ml-1.5 text-xs text-ink-muted")}>(you)</span>
-                          )}
-                        </p>
-                        <p className={cn(poppins_400.className, "text-xs text-ink-muted truncate")}>{member.email}</p>
-                      </div>
-                    </div>
-                    {!isSelf && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 shrink-0" aria-label={`Actions for ${member.name}`}>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="border-accent/10">
-                          {isSuperAdminMember && (
-                            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("demote")}>
-                              <UserMinus className="h-4 w-4" />
-                              Demote to staff
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("revoke")}>
-                            <UserX className="h-4 w-4" />
-                            Revoke access
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-ink-muted">
-                    <Badge variant="outline" className={cn("rounded-full capitalize text-[10px]", tierBadge[tier])}>
-                      {tierLabel[tier] || tier}
-                    </Badge>
-                    <span>·</span>
-                    <span>{lastActiveLabel(member.lastActiveAt)}</span>
-                    {member.addedBy?.name && (
-                      <>
-                        <span>·</span>
-                        <span>by {member.addedBy.name}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {membersWithActions.map((member) => (
+              <MemberCard key={member.id} member={member} currentUserId={user?._id || user?.id} />
+            ))}
           </div>
         </div>
       )}

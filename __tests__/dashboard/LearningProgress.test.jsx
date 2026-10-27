@@ -1,36 +1,19 @@
 /**
  * LearningProgress — dashboard study-progress card
  * ------------------------------------------------
- * The card ships a chart region plus the "coming soon" placeholder that
- * #504 tracks. Both have to keep rendering until the monthly activity
- * pipeline lands:
+ * Until the monthly activity pipeline lands, the card shows an honest empty
+ * state ("No activity yet", #504) instead of a "coming soon" placeholder or
+ * an invisible chart. These tests pin:
  *   - the card chrome (title, description, footer copy),
- *   - the "coming soon" placeholder for the empty state,
- *   - the chart itself, wired up with a "course" and a "book" series.
+ *   - the empty state and that no chart is mounted on the card,
+ *   - the chart component itself (a "course" and a "book" series, no data
+ *     points), which stays ready for when the activity feed is connected.
  *
  * `recharts` is mocked so the chart's series configuration can be asserted
- * without depending on SVG layout in jsdom, and `next/dynamic` is mocked so
- * the lazily imported chart actually mounts outside of the Next.js runtime.
+ * without depending on SVG layout in jsdom.
  */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-
-vi.mock("next/dynamic", async () => {
-  const React = await import("react");
-  return {
-    default: (loader) => {
-      const Lazy = React.lazy(loader);
-      const DynamicComponent = (props) =>
-        React.createElement(
-          React.Suspense,
-          { fallback: null },
-          React.createElement(Lazy, props)
-        );
-      DynamicComponent.displayName = "DynamicComponent";
-      return DynamicComponent;
-    },
-  };
-});
 
 vi.mock("recharts", () => ({
   ResponsiveContainer: ({ children }) => (
@@ -52,21 +35,26 @@ vi.mock("recharts", () => ({
 }));
 
 import LearningProgress from "@/components/organisms/dashboard/LearningProgress";
+import LearningProgressChart from "@/components/organisms/dashboard/LearningProgressChart";
 
 describe("LearningProgress", () => {
   it("renders the study progress card with its title and description", () => {
     render(<LearningProgress />);
 
     expect(screen.getByText("Study Progress")).toBeInTheDocument();
-    expect(screen.getByText("Monthly activity breakdown")).toBeInTheDocument();
+    expect(screen.getByText("Monthly study activity")).toBeInTheDocument();
   });
 
-  it("shows the coming soon placeholder while there is no monthly activity", () => {
+  it("shows an honest empty state while there is no monthly activity", () => {
     render(<LearningProgress />);
 
+    expect(screen.getByText("No activity yet")).toBeInTheDocument();
     expect(
-      screen.getByText("Monthly activity data coming soon")
+      screen.getByText(
+        "Your course and reading activity will appear here once you get started."
+      )
     ).toBeInTheDocument();
+    expect(screen.queryByText(/coming soon/i)).not.toBeInTheDocument();
   });
 
   it("explains what is being tracked in the footer", () => {
@@ -77,17 +65,16 @@ describe("LearningProgress", () => {
     ).toBeInTheDocument();
   });
 
-  it("mounts the chart alongside the placeholder", async () => {
+  it("does not mount a chart on the card until there is data to plot", () => {
     render(<LearningProgress />);
 
-    expect(await screen.findByTestId("bar-chart")).toBeInTheDocument();
-    expect(screen.getByText("Monthly activity data coming soon")).toBeInTheDocument();
+    expect(screen.queryByTestId("bar-chart")).not.toBeInTheDocument();
   });
+});
 
-  it("plots a course and a book series", async () => {
-    render(<LearningProgress />);
-
-    await screen.findByTestId("bar-chart");
+describe("LearningProgressChart", () => {
+  it("plots a course and a book series", () => {
+    render(<LearningProgressChart />);
 
     const series = screen
       .getAllByTestId("bar")
@@ -96,11 +83,9 @@ describe("LearningProgress", () => {
     expect(series).toEqual(["course", "book"]);
   });
 
-  it("plots no data points until the monthly activity feed is connected", async () => {
-    render(<LearningProgress />);
+  it("plots no data points until the monthly activity feed is connected", () => {
+    render(<LearningProgressChart />);
 
-    const chart = await screen.findByTestId("bar-chart");
-
-    expect(chart.getAttribute("data-points")).toBe("0");
+    expect(screen.getByTestId("bar-chart").getAttribute("data-points")).toBe("0");
   });
 });

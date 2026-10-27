@@ -96,7 +96,7 @@ const Page = ({ params }) => {
           "mb-8 bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-left text-3xl text-transparent md:text-4xl"
         )}
       >
-        Search Results for "{searchparam}"
+        Search Results for &quot;{searchparam}&quot;
       </h1>
       {loading ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

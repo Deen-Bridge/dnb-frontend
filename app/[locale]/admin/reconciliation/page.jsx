@@ -1,4 +1,4 @@
-"tuse client";
+"use client";
 
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
