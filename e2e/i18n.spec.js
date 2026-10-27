@@ -36,7 +36,9 @@ test("/ar serves Arabic right-to-left with real translated copy", async ({
 test("financial figures stay LTR inside the RTL layout", async ({ page }) => {
   // The Stellar section shows a live ledger number and close time. Serve a
   // fixed Horizon response so the test does not depend on the real network.
-  await page.route("https://horizon-testnet.stellar.org/ledgers**", (route) =>
+  // Match both the testnet and mainnet Horizon hosts, whichever network the
+  // client bundle was built for.
+  await page.route(/^https:\/\/horizon(-testnet)?\.stellar\.org\/ledgers/, (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
