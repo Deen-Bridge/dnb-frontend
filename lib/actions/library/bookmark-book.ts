@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 import type { Book } from "@/types/api";
 
@@ -26,7 +27,7 @@ export const toggleBookBookmark = async (bookId: string): Promise<BookmarkMutati
     );
     return response.data;
   } catch (error: unknown) {
-    console.error("Error toggling book bookmark:", error);
+    logger.error("Error toggling book bookmark:", error);
     throw toRethrowable(error);
   }
 };
@@ -36,7 +37,7 @@ export const getBookmarkedBooks = async (): Promise<BookmarkedBooksResponse> => 
     const response = await axiosInstance.get("/api/books/bookmarks");
     return response.data;
   } catch (error: unknown) {
-    console.error("Error fetching bookmarked books:", error);
+    logger.error("Error fetching bookmarked books:", error);
     throw toRethrowable(error);
   }
 };
@@ -48,7 +49,7 @@ export const checkIfBookBookmarked = async (bookId: string): Promise<boolean> =>
     );
     return Boolean(response.data?.isBookmarked);
   } catch (error: unknown) {
-    console.error("Error checking book bookmark status:", error);
+    logger.error("Error checking book bookmark status:", error);
     throw toRethrowable(error);
   }
 };
@@ -60,7 +61,7 @@ export const removeBookBookmark = async (bookId: string): Promise<BookmarkMutati
     );
     return response.data;
   } catch (error: unknown) {
-    console.error("Error removing book bookmark:", error);
+    logger.error("Error removing book bookmark:", error);
     throw toRethrowable(error);
   }
 };

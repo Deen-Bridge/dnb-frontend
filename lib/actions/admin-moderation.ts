@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
 
 const MOCK_DELAY_MS = 300;
@@ -72,8 +73,11 @@ export async function notifyEducator(
   type?: string,
   details?: Record<string, any> // TODO(types): Educator notification details
 ): Promise<{ success: boolean }> {
-  // Stub for actual notification service call
-  console.log(`[Notification Service] Notifying educator ${educatorId}: ${type}`, details);
+  // Stub for actual notification service call.
+  // `details` holds moderation notes about a user, so it is never logged:
+  // only the routing identifiers are, and only outside production.
+  void details;
+  logger.debug(`[Notification Service] Notifying educator ${educatorId}: ${type}`);
   return { success: true };
 }
 

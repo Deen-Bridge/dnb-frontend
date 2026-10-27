@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 import type { Book, Course } from "@/types/api";
 
@@ -23,7 +24,7 @@ export const fetchRecommendedCourses = async (
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching recommended courses:", error);
+    logger.error("Error fetching recommended courses:", error);
     throw error;
   }
 };
@@ -33,7 +34,7 @@ export const fetchAllCourses = async (): Promise<RecommendationsResponse<Course>
     const response = await axiosInstance.get("/api/courses");
     return response.data;
   } catch (error) {
-    console.error("Error fetching all courses:", error);
+    logger.error("Error fetching all courses:", error);
     throw error;
   }
 };
@@ -47,7 +48,7 @@ export const fetchRecommendedBooks = async (
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching recommended books:", error);
+    logger.error("Error fetching recommended books:", error);
     throw error;
   }
 };
@@ -57,7 +58,7 @@ export const fetchAllBooks = async (): Promise<RecommendationsResponse<Book>> =>
     const response = await axiosInstance.get("/api/books");
     return response.data;
   } catch (error) {
-    console.error("Error fetching all books:", error);
+    logger.error("Error fetching all books:", error);
     throw error;
   }
 };

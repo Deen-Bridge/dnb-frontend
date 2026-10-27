@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export interface TransactionUser {
@@ -232,7 +233,7 @@ export async function fetchGlobalTransactions(params: FetchTransactionsParams = 
     if (error.response?.status === 404 || error.code === "ERR_NETWORK" || !error.response) {
       return filterMockTransactions(generateMockTransactions(), queryParams);
     }
-    console.error("Failed to fetch global transactions:", error);
+    logger.error("Failed to fetch global transactions:", error);
     return {
       success: false,
       transactions: [],

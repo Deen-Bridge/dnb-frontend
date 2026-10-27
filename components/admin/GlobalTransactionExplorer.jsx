@@ -157,7 +157,7 @@ export default function GlobalTransactionExplorer() {
 
   useEffect(() => {
     loadTransactions();
-    // eslint-disable-next-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadTransactions is a stable callback that already closes over filters/page/limit; listing it would refetch on every identity change
   }, [pagination.page, pagination.limit]);
 
   const handleFilterChange = (key, value) => {

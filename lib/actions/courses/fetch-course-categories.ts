@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 import {
   ISLAMIC_CATEGORIES,
@@ -45,7 +46,7 @@ export async function fetchCourseCategories(): Promise<EnrichedCategoryItem[]> {
       return merged;
     }
   } catch (error: any) { // TODO(types): Axios error on categories endpoint
-    console.warn(
+    logger.warn(
       "[categories] /api/courses/categories unavailable, deriving counts client-side.",
       error?.message || error
     );
@@ -80,7 +81,7 @@ export async function fetchCoursesByCategory(slug: string, sortKey: string = "ne
     if (error?.response) {
       throw error;
     }
-    console.warn(
+    logger.warn(
       "[categories] category-scoped fetch failed, falling back to full list.",
       error?.message || error
     );

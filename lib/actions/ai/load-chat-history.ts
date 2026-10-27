@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { cachedFetch, cacheKeys, CACHE_CONFIG } from "@/lib/utils/cache";
 import { config } from "@/lib/config/env";
 
@@ -24,7 +25,7 @@ export const loadChatHistory = async (userId: string, forceRefresh: boolean = fa
 
     return data || { chats: [] };
   } catch (error) {
-    console.error("Error loading chat history:", error);
+    logger.error("Error loading chat history:", error);
     return { chats: [] };
   }
 };
@@ -45,7 +46,7 @@ export const loadChatMessages = async (chatId: string, forceRefresh: boolean = f
       content: msg.text || msg.content || "",
     }));
   } catch (error) {
-    console.error("Error loading chat messages:", error);
+    logger.error("Error loading chat messages:", error);
     return [];
   }
 };

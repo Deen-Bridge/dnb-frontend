@@ -1,3 +1,5 @@
+import { logger } from "@/lib/logger";
+
 export interface StreamChatParams {
   message: string;
   chatId?: string | null;
@@ -93,7 +95,7 @@ export async function streamChat({
                 throw new Error(data.message || "Streaming error");
             }
           } catch (parseError) {
-            console.error("Error parsing SSE data:", parseError);
+            logger.error("Error parsing SSE data:", parseError);
           }
         }
       }
@@ -105,7 +107,7 @@ export async function streamChat({
       response: fullResponse,
     };
   } catch (error) {
-    console.error("Streaming error:", error);
+    logger.error("Streaming error:", error);
     onError(error);
     throw error;
   }

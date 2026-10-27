@@ -225,7 +225,7 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
             {slot.previewUrl ? (
               // Local object URL for the file the user just picked — never a
               // remote asset, so next/image would add nothing here.
-              // eslint-disable-next-line @next/next/no-img-element
+              // eslint-disable-next-line @next/next/no-img-element -- local object URL of the picked file; next/image cannot optimize a blob:
               <img
                 src={slot.previewUrl}
                 alt={`Preview of ${slot.filename}`}
