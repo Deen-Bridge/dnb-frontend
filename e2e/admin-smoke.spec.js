@@ -42,6 +42,11 @@ import {
  *     report-resolution moderation entries, proving the audit spine.
  */
 
+// The team page renders each member twice — a desktop table row and a mobile
+// card, one of them hidden by CSS — so text assertions look at the visible copy.
+const visibleText = (root, text) =>
+  root.getByText(text, { exact: true }).filter({ visible: true });
+
 const ADMIN_TEAM_URL = "/dashboard/admin/team";
 const AUDIT_LOGS_URL = "/dashboard/admin/audit-logs";
 
@@ -95,9 +100,9 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
     const cookies = await context.cookies();
     expect(cookies.some((c) => c.name === "userInfo")).toBe(true);
 
-    // The login form self-navigates to /dashboard on success — let that settle
-    // so it can't abort our later navigation to the admin surface.
-    await page.waitForURL(/\/dashboard(\/|$)/, { timeout: 15_000 });
+    // The login form self-navigates on success (admins land on /admin) — let
+    // that settle so it can't abort our later navigation to the admin surface.
+    await page.waitForURL(/\/admin(\/|$)/, { timeout: 15_000 });
   });
 
   // This app renders two identical <main> content subtrees in this
@@ -122,9 +127,7 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
     // Assert on emails: names repeat in the "Added by" column, emails are
     // unique per row.
     for (const member of SEED_ADMIN_ROSTER) {
-      await expect(
-        surface.getByText(member.email, { exact: true })
-      ).toBeVisible();
+      await expect(visibleText(surface, member.email)).toBeVisible();
     }
     await expect(surface.getByText(/only super admins/i)).toHaveCount(0);
   });
@@ -146,13 +149,9 @@ test("admin smoke: login → team → revoke (ban) → audit trail", async ({
 
     // Member removed from the list — the ban-equivalent mutation succeeded
     // (this is the flow that fires the fire-and-forget audit event).
-    await expect(
-      surface.getByText(SEED_REVOKE_TARGET.email, { exact: true })
-    ).toHaveCount(0);
+    await expect(visibleText(surface, SEED_REVOKE_TARGET.email)).toHaveCount(0);
     // Other members remain.
-    await expect(
-      surface.getByText(SEED_ADMIN_ROSTER[0].email, { exact: true })
-    ).toBeVisible();
+    await expect(visibleText(surface, SEED_ADMIN_ROSTER[0].email)).toBeVisible();
   });
 
   await test.step("audit trail surfaces the ban + resolve-report moderation entries", async () => {
