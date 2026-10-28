@@ -23,6 +23,11 @@ import {
 import { useStellar } from "./StellarProvider";
 import useStellarPayment from "@/hooks/useStellarPayment";
 import Sep7QrCode from "./Sep7QrCode";
+import { VerifiedReceipt } from "@/components/payment/VerifiedReceipt";
+import {
+  buildVerifiedPaymentReceipt,
+  resolveBackendReceiptNetwork,
+} from "@/lib/stellar/verifiedPaymentReceipt";
 import {
   mapStellarError,
   isUserRejection,
@@ -58,6 +63,7 @@ export default function PaymentModal({
     walletInfo,
     connectWallet,
     network,
+    walletNetwork,
     isConnecting,
     hasWalletExtension,
     networkMismatch,
@@ -464,17 +470,53 @@ export default function PaymentModal({
               <p className="text-muted-foreground mt-2">
                 You now have access to &quot;{item?.title}&quot;
               </p>
-              {result?.transaction?.explorerUrl && (
-                <a
-                  href={result.transaction.explorerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-primary mt-4 hover:underline"
-                >
-                  View on Stellar Explorer{" "}
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              )}
+              {(() => {
+                const receiptEvidence = result?.transaction?.hash
+                  ? {
+                      backendVerified: Boolean(result?.transaction?.ledger),
+                      verificationStatus: (result?.transaction?.ledger
+                        ? "verified"
+                        : "pending") as "verified" | "pending",
+                      txHash: result.transaction.hash,
+                      ledgerSequence:
+                        typeof result.transaction.ledger === "number"
+                          ? result.transaction.ledger
+                          : null,
+                      ledgerTime: result.transaction.createdAt ?? null,
+                      network: resolveBackendReceiptNetwork(result.transaction),
+                      expectedNetwork:
+                        walletNetwork?.toLowerCase() === "public" ||
+                        walletNetwork?.toLowerCase() === "mainnet"
+                          ? ("mainnet" as const)
+                          : walletNetwork?.toLowerCase() === "testnet"
+                            ? ("testnet" as const)
+                            : network === "mainnet" || network === "testnet"
+                              ? network
+                              : null,
+                      amount: item?.price !== undefined ? String(item.price) : null,
+                      assetCode: "USDC",
+                    }
+                  : null;
+                const verifiedExplorerUrl = receiptEvidence
+                  ? buildVerifiedPaymentReceipt(receiptEvidence).explorerUrl
+                  : null;
+                return (
+                  <>
+                    {receiptEvidence && <VerifiedReceipt evidence={receiptEvidence} />}
+                    {verifiedExplorerUrl && (
+                      <a
+                        href={verifiedExplorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm text-primary mt-4 hover:underline"
+                      >
+                        View on Stellar Explorer{" "}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
 
