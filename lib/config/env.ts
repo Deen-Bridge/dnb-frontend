@@ -25,6 +25,9 @@ const raw = {
   NEXT_PUBLIC_AI_API_URL: process.env.NEXT_PUBLIC_AI_API_URL,
   NEXT_PUBLIC_STELLAR_NETWORK: process.env.NEXT_PUBLIC_STELLAR_NETWORK,
   NEXT_PUBLIC_DONATION_WALLET: process.env.NEXT_PUBLIC_DONATION_WALLET,
+  // "Continue with Google" OAuth client ID. Public by design (Google Identity
+  // Services expects it client-side); must match the backend's GOOGLE_CLIENT_ID.
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   // Public VAPID key used to subscribe the browser to Web Push (issue #197).
   // Only the *public* half lives client-side; the private key stays on the
   // backend, so exposing this via NEXT_PUBLIC_ is safe.
@@ -64,6 +67,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_AI_API_URL: z.string().url().optional(),
   NEXT_PUBLIC_STELLAR_NETWORK: z.enum(["testnet", "mainnet"]).optional(),
   NEXT_PUBLIC_DONATION_WALLET: z.string().optional(),
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional(),
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().optional(),
   NEXT_PUBLIC_JITSI_DOMAIN: z.string().optional(),
@@ -129,6 +133,13 @@ export const config = Object.freeze({
   get vapidPublicKey() {
     const key = env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
     return key || null;
+  },
+
+  // null when unset so callers can hide/disable the Google button instead of
+  // rendering it broken — mirrors donationWallet/vapidPublicKey above.
+  get googleClientId() {
+    const id = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim();
+    return id || null;
   },
 
   get cloudinaryCloudName() {
