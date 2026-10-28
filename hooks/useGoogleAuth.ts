@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
@@ -24,6 +24,9 @@ export interface UseGoogleAuthResult {
 export function useGoogleAuth(): UseGoogleAuthResult {
   const [isPending, setIsPending] = useState<boolean>(false);
   const googleAuthAvailable = Boolean(config.googleClientId);
+  // Guards against an older exchange's response landing after a newer one
+  // (e.g. two overlapping clicks) and clobbering the session it just set.
+  const latestRequestId = useRef(0);
 
   const loginWithGoogle = useCallback(async (idToken: string): Promise<User | null> => {
     if (!idToken) {
@@ -31,9 +34,14 @@ export function useGoogleAuth(): UseGoogleAuthResult {
       return null;
     }
 
+    const requestId = ++latestRequestId.current;
     setIsPending(true);
     try {
       const res = await axiosInstance.post(GOOGLE_PATH, { idToken });
+      if (requestId !== latestRequestId.current) {
+        return null;
+      }
+
       const { token, user } = res.data || {};
       if (!token || !user) {
         throw new Error("Invalid response from server");
@@ -43,6 +51,9 @@ export function useGoogleAuth(): UseGoogleAuthResult {
       toast.success("Signed in with Google");
       return user as User;
     } catch (error: unknown) {
+      if (requestId !== latestRequestId.current) {
+        return null;
+      }
       if (axios.isAxiosError(error) && error.response?.status === 503) {
         toast.error(
           "Continue with Google is not available yet. Please use email login."
@@ -56,7 +67,9 @@ export function useGoogleAuth(): UseGoogleAuthResult {
       }
       return null;
     } finally {
-      setIsPending(false);
+      if (requestId === latestRequestId.current) {
+        setIsPending(false);
+      }
     }
   }, []);
 

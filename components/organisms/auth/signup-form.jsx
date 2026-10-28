@@ -187,7 +187,11 @@ export function SignupForm({ className, ...props }) {
               <FormItem>
                 <FormLabel>Role</FormLabel>
                 <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={isGooglePending}
+                  >
                     <SelectTrigger className="w-[180px]" aria-label="Role">
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
@@ -227,10 +231,14 @@ export function SignupForm({ className, ...props }) {
                 </div>
                 {watchedRole === "student" ? (
                   <div
+                    // `inert` (not just pointer-events-none) so a keyboard user
+                    // can't tab into or activate this while email signup is
+                    // submitting — CSS alone leaves it focusable.
+                    inert={form.formState.isSubmitting}
+                    aria-disabled={form.formState.isSubmitting}
                     className={cn(
                       "w-full flex justify-center",
-                      form.formState.isSubmitting &&
-                        "pointer-events-none opacity-50"
+                      form.formState.isSubmitting && "opacity-50"
                     )}
                   >
                     <GoogleLogin
