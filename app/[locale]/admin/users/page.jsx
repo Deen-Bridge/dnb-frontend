@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Award, Bell, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
@@ -13,6 +13,7 @@ import {
   fetchExpiringMentorCredentials,
   matchesCredentialExpiryFilter,
 } from "@/lib/actions/admin-credential-expiry";
+import UserDirectory from "@/components/admin/UserDirectory";
 import { sendReverificationReminder } from "@/lib/services/reverification-reminders";
 
 const FILTERS = [
@@ -140,6 +141,10 @@ export default function MentorCredentialExpiryPage() {
           </Button>
         }
       />
+
+      <Suspense fallback={null}>
+        <UserDirectory />
+      </Suspense>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

@@ -102,7 +102,7 @@ function StepUpConfirmDialog({
           <p className={cn(poppins_400.className, "text-sm text-ink-muted")}>
             This action is sensitive and cannot be undone. Type{" "}
             <span className={cn(poppins_500.className, "font-mono text-ink")}>
-              "{confirmPhrase}"
+              &quot;{confirmPhrase}&quot;
             </span>{" "}
             to confirm.
           </p>

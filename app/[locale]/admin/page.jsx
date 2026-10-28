@@ -13,6 +13,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { fetchAdminOverview } from "@/lib/actions/admin-overview";
+import { fetchInternalTransactions } from "@/lib/actions/admin-reconciliation";
+import { downloadCsv } from "@/lib/utils/csv";
+import { toast } from "sonner";
+import SystemHealthWidget from "@/components/admin/SystemHealthWidget";
+import RecentActivityFeed from "@/components/admin/RecentActivityFeed";
 import {
   LayoutDashboard,
   Users,
@@ -28,6 +33,7 @@ import {
   X,
   Rocket,
   AlertTriangle,
+  Download,
 } from "lucide-react";
 
 // Persisted in localStorage so the bootstrap guidance can be dismissed
@@ -189,6 +195,50 @@ function OverviewWidget({ widget, metric, guided }) {
   );
 }
 
+// KPI summary row. Only counts returned by fetchAdminOverview are shown; labels
+// come from the snapshot. Revenue, deltas and active/published breakdowns are
+// not in the helper yet, so they are intentionally absent.
+const KPI_CARDS = [
+  { key: "mentors", icon: Users },
+  { key: "courses", icon: GraduationCap },
+  { key: "students", icon: Sparkles },
+  { key: "transactions", icon: ArrowRightLeft },
+];
+
+function KpiCard({ metric, icon: Icon }) {
+  const isEmpty = metric.value === 0;
+
+  return (
+    <Card>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 space-y-1">
+            <p
+              className={cn(
+                poppins_500.className,
+                "text-xs uppercase tracking-wider text-muted-foreground"
+              )}
+            >
+              {metric.label}
+            </p>
+            <p className={cn(poppins_600.className, "text-2xl text-foreground")}>
+              {isEmpty ? "—" : metric.value.toLocaleString()}
+            </p>
+            {isEmpty && (
+              <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
+                No data yet
+              </p>
+            )}
+          </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
+            <Icon className="h-5 w-5 text-accent" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function WelcomeBanner() {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-accent/10 bg-gradient-to-br from-secondary/15 via-highlight/10 to-accent/10 p-6 sm:p-8">
@@ -293,6 +343,60 @@ export default function AdminOverviewPage() {
   const [error, setError] = useState(null);
   const [dismissed, setDismissed] = useState(false);
 
+  const exportCurrentPeriod = async () => {
+    try {
+      const now = new Date();
+      const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const [overview, transactionResult] = await Promise.all([
+        fetchAdminOverview(),
+        fetchInternalTransactions({ from: periodStart.toISOString(), to: now.toISOString() }),
+      ]);
+      const transactions = (transactionResult?.transactions || []).filter((transaction) => {
+        const completedAt = new Date(transaction.completedAt);
+        return completedAt >= periodStart && completedAt <= now;
+      });
+      const stamp = now.toISOString().slice(0, 10);
+      const rows = [
+        [
+          "Summary",
+          "Users",
+          overview.counts.students.value + overview.counts.mentors.value,
+          "",
+          "",
+          "",
+          "",
+        ],
+        ["Summary", "Courses", overview.counts.courses.value, "", "", "", ""],
+        ...transactions.map((transaction) => [
+          "Revenue",
+          transaction.reference,
+          transaction.amount,
+          transaction.currency,
+          transaction.buyer,
+          transaction.creator,
+          transaction.completedAt,
+        ]),
+      ];
+
+      downloadCsv({
+        filename: `deenbridge-admin-${stamp}.csv`,
+        headers: [
+          "Type",
+          "Metric or reference",
+          "Amount or count",
+          "Currency",
+          "Buyer",
+          "Creator",
+          "Completed at",
+        ],
+        rows,
+      });
+      toast.success("Admin stats exported");
+    } catch (exportError) {
+      toast.error(exportError?.message || "Could not export admin stats");
+    }
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -352,6 +456,11 @@ export default function AdminOverviewPage() {
           subtitle="Monitor platform activity and complete your setup"
         />
         <Skeleton className="h-28 w-full rounded-2xl" />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {KPI_CARDS.map((card) => (
+            <Skeleton key={card.key} className="h-24 w-full rounded-2xl" />
+          ))}
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <Skeleton key={index} className="h-32 w-full rounded-2xl" />
@@ -384,9 +493,26 @@ export default function AdminOverviewPage() {
         icon={LayoutDashboard}
         title="Overview"
         subtitle="Monitor platform activity and complete your setup"
+        actions={
+          <Button variant="outline" onClick={exportCurrentPeriod} className="gap-2">
+            <Download className="h-4 w-4" aria-hidden="true" />
+            Export current period
+          </Button>
+        }
       />
 
       {isEmpty && guided && <WelcomeBanner />}
+
+      {/* KPI summary row — numbers from the snapshot only */}
+      <section aria-label="Platform summary" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {KPI_CARDS.map(({ key, icon }) => (
+          <KpiCard key={key} metric={data.counts[key]} icon={icon} />
+        ))}
+      </section>
+
+      <SystemHealthWidget />
+
+      <RecentActivityFeed />
 
       {/* Overview widgets — guided hints instead of zeros on a fresh database */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

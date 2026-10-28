@@ -205,7 +205,7 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
             {slot.previewUrl ? (
               // Local object URL for the file the user just picked — never a
               // remote asset, so next/image would add nothing here.
-              // eslint-disable-next-line @next/next/no-img-element
+              // eslint-disable-next-line @next/next/no-img-element -- local object URL of the picked file; next/image cannot optimize a blob:
               <img
                 src={slot.previewUrl}
                 alt={`Preview of ${slot.filename}`}
@@ -388,9 +388,9 @@ export default function DocumentUpload({
       hasReportedRef.current = true;
       if (referencesKey === "{}") return;
     }
-    onChangeRef.current?.(references);
-    // `references` is recreated per render; `referencesKey` is the real trigger.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Reconstruct from the content key so progress-only renders do not emit
+    // duplicate reference maps.
+    onChangeRef.current?.(JSON.parse(referencesKey));
   }, [referencesKey]);
 
   const requiredTypes = definitions.filter((d) => d.required).map((d) => d.type);

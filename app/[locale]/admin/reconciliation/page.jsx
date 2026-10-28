@@ -58,65 +58,10 @@ const STATUS_CONFIG = {
   },
 };
 
-// Generate mock reconciliation data
-const generateMockData = (dateFrom, dateTo) => {
-  const transactions = [];
-  const daysDiff = Math.ceil((dateTo - dateFrom) / (1000 * 60 * 60 * 24));
-
-  for (let i = 0; i < Math.min(daysDiff * 3, 50); i++) {
-    const date = new Date(
-      dateFrom.getTime() + Math.random() * (dateTo.getTime() - dateFrom.getTime())
-    );
-
-    // 80% matched, 10% missing, 10% mismatch
-    const rand = Math.random();
-    let status;
-    let platformAmount;
-    let onChainAmount;
-
-    if (rand < 0.8) {
-      status = "matched";
-      platformAmount = Math.floor(Math.random() * 200 + 10);
-      onChainAmount = platformAmount;
-    } else if (rand < 0.9) {
-      status = "missing-on-chain";
-      platformAmount = Math.floor(Math.random() * 200 + 10);
-      onChainAmount = null;
-    } else {
-      status = "amount-mismatch";
-      platformAmount = Math.floor(Math.random() * 200 + 10);
-      onChainAmount =
-        platformAmount + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5 + 1);
-    }
-
-    const txHash =
-      status !== "missing-on-chain"
-        ? `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`
-        : null;
-
-    transactions.push({
-      id: `txn_${i}_${Date.now()}`,
-      platformId: `PLT-${String(100000 + i).slice(1)}`,
-      timestamp: date.toISOString(),
-      creatorEmail: `educator${(i % 10) + 1}@example.com`,
-      creatorId: `usr_${1000 + (i % 10)}`,
-      itemType: Math.random() > 0.5 ? "course" : "book",
-      itemTitle: Math.random() > 0.5 ? `Course ${i + 1}` : `Book ${i + 1}`,
-      platformAmount,
-      onChainAmount,
-      currency: "USDC",
-      txHash,
-      status,
-    });
-  }
-
-  return transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-};
-
 // Stellar explorer URL
-const getStellarExplorerUrl = (txHash) => {
+function getStellarExplorerUrl(txHash) {
   return `https://stellar.expert/explorer/public/tx/${txHash}`;
-};
+}
 
 function formatDateRange(range) {
   if (!range?.from) return "Select date range";
@@ -134,6 +79,7 @@ export default function PayoutReconciliationPage() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch reconciliation data
   const handleSearch = useCallback(async () => {
@@ -141,13 +87,28 @@ export default function PayoutReconciliationPage() {
 
     setLoading(true);
     setHasSearched(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    const data = generateMockData(dateRange.from, dateRange.to);
-    setTransactions(data);
-    setLoading(false);
+    try {
+      const params = new URLSearchParams({
+        from: dateRange.from.toISOString(),
+        to: dateRange.to.toISOString(),
+      });
+      const res = await fetch(`/api/admin/reconciliation?${params.toString()}`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+      const payload = await res.json();
+      setTransactions(Array.isArray(payload?.transactions) ? payload.transactions : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load reconciliation data");
+      setTransactions([]);
+    } finally {
+      setLoading(false);
+    }
   }, [dateRange]);
 
   // Calculate stats
@@ -273,6 +234,21 @@ export default function PayoutReconciliationPage() {
         </CardContent>
       </Card>
 
+      {/* Error State */}
+      {hasSearched && error && !loading && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="flex items-center gap-3 py-4">
+            <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div>
+              <p className={cn(poppins_600.className, "text-red-800")}>
+                Failed to load reconciliation data
+              </p>
+              <p className={cn(poppins_400.className, "text-sm text-red-700")}>{error}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Results */}
       {hasSearched && (
         <>
@@ -323,7 +299,7 @@ export default function PayoutReconciliationPage() {
                 <AlertTriangle className="h-6 w-6 text-red-600" />
                 <div>
                   <p className={cn(poppins_600.className, "text-red-800")}>
-                    {discrepancyCount} Discrepanc{discrepancyCount === 1 ? "y" : "ies"} Found
+                    {discrepancyCount} Discrepanc{discrepancyCount === 1 ? "y" : "ines"} Found
                   </p>
                   <p className={cn(poppins_400.className, "text-sm text-red-700")}>
                     Review the highlighted rows below for manual investigation
@@ -362,81 +338,62 @@ export default function PayoutReconciliationPage() {
                         <TableHead className="text-right">Platform Amount</TableHead>
                         <TableHead className="text-right">On-Chain Amount</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Links</TableHead>
+                        <TableHead>TX Hash</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {transactions.map((tx) => {
-                        const statusConfig = STATUS_CONFIG[tx.status];
-                        const StatusIcon = statusConfig.icon;
-                        const isDiscrepancy = tx.status !== "matched";
-
+                      {transactions.map((t) => {
+                        const config = STATUS_CONFIG[t.status] || STATUS_CONFIG.matched;
+                        const StatusIcon = config.icon;
+                        const isDiscrepancy =
+                          t.status === "missing-on-chain" || t.status === "amount-mismatch";
                         return (
                           <TableRow
-                            key={tx.id}
-                            className={cn(
-                              isDiscrepancy && statusConfig.bgColor,
-                              isDiscrepancy && "hover:opacity-90"
-                            )}
+                            key={t.platformId}
+                            className={cn(isDiscrepancy && "bg-red-50/50")}
                           >
-                            <TableCell className="font-mono text-sm">{tx.platformId}</TableCell>
-                            <TableCell className="text-sm">
-                              {format(new Date(tx.timestamp), "MMM d, HH:mm")}
+                            <TableCell className="font-medium">{t.platformId}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {t.timestamp ? format(new Date(t.timestamp), "PPp") : "N/A"}
                             </TableCell>
-                            <TableCell className="text-sm">{tx.creatorEmail}</TableCell>
+                            <TableCell>{t.creatorEmail}</TableCell>
                             <TableCell>
-                              <div className="text-sm">
-                                <Badge variant="outline" className="mr-2 text-xs">
-                                  {tx.itemType}
-                                </Badge>
-                                {tx.itemTitle}
+                              <span className="text-xs text-muted-foreground">{t.itemType}</span>
+                              <br />
+                              {t.itemTitle}
+                            </TableCell>
+                            <TableCell className="text-right font-medium">
+                              {t.platformAmount}
+                            </TableCell>
+                            <TableCell className="text-right font-medium">
+                              {t.onChainAmount ?? "N/A"}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <StatusIcon className={cn("h-4 w-4", config.color)} />
+                                <span
+                                  className={cn(poppins_500.className, "text-sm", config.color)}
+                                >
+                                  {config.label}
+                                </span>
                               </div>
                             </TableCell>
-                            <TableCell className="text-right font-mono">
-                              ${tx.platformAmount.toFixed(2)}
-                            </TableCell>
-                            <TableCell
-                              className={cn(
-                                "text-right font-mono",
-                                tx.status === "amount-mismatch" && "text-amber-700 font-bold"
+                            <TableCell>
+                              {t.txHash ? (
+                                <a
+                                  href={getStellarExplorerUrl(t.txHash)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                                >
+                                  <span className="font-mono text-xs">
+                                    {t.txHash.slice(0, 8)}...{t.txHash.slice(-8)}
+                                  </span>
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">N/A</span>
                               )}
-                            >
-                              {tx.onChainAmount !== null ? `$${tx.onChainAmount.toFixed(2)}` : "—"}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={cn(
-                                  "text-xs gap-1",
-                                  statusConfig.color,
-                                  statusConfig.borderColor
-                                )}
-                              >
-                                <StatusIcon className="h-3 w-3" />
-                                {statusConfig.label}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                  <a href={`/admin/transactions/${tx.id}`}>
-                                    Platform
-                                    <ArrowUpRight className="ml-1 h-3 w-3" />
-                                  </a>
-                                </Button>
-                                {tx.txHash && (
-                                  <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                    <a
-                                      href={getStellarExplorerUrl(tx.txHash)}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      Stellar
-                                      <ExternalLink className="ml-1 h-3 w-3" />
-                                    </a>
-                                  </Button>
-                                )}
-                              </div>
                             </TableCell>
                           </TableRow>
                         );

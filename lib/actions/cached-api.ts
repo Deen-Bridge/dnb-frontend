@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { cachedFetch, cacheKeys, CACHE_CONFIG, smartCache } from "@/lib/utils/cache";
 import { config } from "@/lib/config/env";
 
@@ -16,7 +17,7 @@ export const coursesAPI = {
       });
       return data || [];
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      logger.error("Error fetching courses:", error);
       return [];
     }
   },
@@ -33,7 +34,7 @@ export const coursesAPI = {
       });
       return data;
     } catch (error) {
-      console.error(`Error fetching course ${courseId}:`, error);
+      logger.error(`Error fetching course ${courseId}:`, error);
       return null;
     }
   },
@@ -60,7 +61,7 @@ export const booksAPI = {
       });
       return data || [];
     } catch (error) {
-      console.error("Error fetching books:", error);
+      logger.error("Error fetching books:", error);
       return [];
     }
   },
@@ -77,7 +78,7 @@ export const booksAPI = {
       });
       return data;
     } catch (error) {
-      console.error(`Error fetching book ${bookId}:`, error);
+      logger.error(`Error fetching book ${bookId}:`, error);
       return null;
     }
   },
@@ -104,7 +105,7 @@ export const spacesAPI = {
       });
       return data || [];
     } catch (error) {
-      console.error("Error fetching spaces:", error);
+      logger.error("Error fetching spaces:", error);
       return [];
     }
   },
@@ -121,7 +122,7 @@ export const spacesAPI = {
       });
       return data;
     } catch (error) {
-      console.error(`Error fetching space ${spaceId}:`, error);
+      logger.error(`Error fetching space ${spaceId}:`, error);
       return null;
     }
   },
@@ -144,7 +145,7 @@ export const reelsAPI = {
       });
       return data || [];
     } catch (error) {
-      console.error("Error fetching reels:", error);
+      logger.error("Error fetching reels:", error);
       return [];
     }
   },
@@ -161,7 +162,7 @@ export const reelsAPI = {
       });
       return data;
     } catch (error) {
-      console.error(`Error fetching reel ${reelId}:`, error);
+      logger.error(`Error fetching reel ${reelId}:`, error);
       return null;
     }
   },
@@ -184,7 +185,7 @@ export const userAPI = {
       });
       return data;
     } catch (error) {
-      console.error(`Error fetching user ${userId}:`, error);
+      logger.error(`Error fetching user ${userId}:`, error);
       return null;
     }
   },
@@ -208,7 +209,7 @@ export const searchAPI = {
         });
       return data || { results: [] };
     } catch (error) {
-      console.error("Error searching:", error);
+      logger.error("Error searching:", error);
       return { results: [] };
     }
   },
@@ -225,7 +226,6 @@ export const clearAllCaches = (): void => {
   booksAPI.clearCache();
   spacesAPI.clearCache();
   reelsAPI.clearCache();
-  console.log("✅ All API caches cleared");
 };
 
 const cachedApi = {

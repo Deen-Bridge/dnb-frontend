@@ -1,0 +1,5 @@
+export async function fetchRevenueReport(fetcher = fetch) {
+  const res = await fetcher("/api/stellar/reports", { credentials: "include" });
+  if (!res.ok) throw new Error(`Revenue report failed (${res.status})`);
+  return res.json();
+}

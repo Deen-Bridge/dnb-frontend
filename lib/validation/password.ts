@@ -283,12 +283,25 @@ export function passwordStrength(
   };
 }
 
-export function refinePassword<T extends z.ZodTypeAny>(
-  schema: T,
-  { field = "password" } = {}
-): z.ZodEffects<T> {
-  return schema.superRefine((data: any, ctx: z.RefinementCtx) => {
-    // TODO(types): Sibling fields inference on dynamic zod schema
+/**
+ * The sibling fields the password refine reads: the password field (named by
+ * `field`, default "password") plus the `name` and `email` used for the
+ * personal-info rule. Other fields on the schema are not constrained.
+ */
+export type PasswordSiblings<K extends string = "password"> = Record<K, string> & {
+  name?: string;
+  email?: string;
+};
+
+export function refinePassword<
+  K extends string = "password",
+  T extends z.ZodType<PasswordSiblings<K>, z.ZodTypeDef, unknown> = z.ZodType<
+    PasswordSiblings<K>,
+    z.ZodTypeDef,
+    unknown
+  >,
+>(schema: T, { field = "password" as K }: { field?: K } = {}): z.ZodEffects<T> {
+  return schema.superRefine((data, ctx) => {
     const issues = passwordIssues(data?.[field] ?? "", {
       name: data?.name ?? "",
       email: data?.email ?? "",

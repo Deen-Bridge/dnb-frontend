@@ -1,5 +1,6 @@
 "use client";
 
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -67,7 +68,7 @@ const RecentChats = () => {
           const response = await getUserById(participantId);
           return { participantId, user: response?.user || null };
         } catch (error) {
-          console.error("Failed to fetch user for recent chats:", error);
+          captureClientError(error);
           return { participantId, user: null };
         }
       })

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export interface PayoutSettlement {
@@ -117,7 +118,7 @@ export async function fetchBookPayouts(
       params: queryParams,
     });
   } catch (error: any) {
-    console.error("Failed to fetch book payouts:", error);
+    logger.error("Failed to fetch book payouts:", error);
     return {
       success: false,
       error: error?.response?.data?.message || error?.message || "Failed to fetch payout summary",

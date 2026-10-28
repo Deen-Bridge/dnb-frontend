@@ -24,7 +24,8 @@ function readLocalProgress(userId: string, courseId: string): StoredProgressData
   try {
     const raw = localStorage.getItem(getStorageKey(userId, courseId));
     return raw ? JSON.parse(raw) : null;
-  } catch {
+  } catch (error) {
+    console.warn("Unable to read locally cached course progress:", error);
     return null;
   }
 }
@@ -33,14 +34,18 @@ function writeLocalProgress(userId: string, courseId: string, data: StoredProgre
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(getStorageKey(userId, courseId), JSON.stringify(data));
-  } catch {}
+  } catch (error) {
+    console.warn("Unable to save locally cached course progress:", error);
+  }
 }
 
 function removeLocalProgress(userId: string, courseId: string): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(getStorageKey(userId, courseId));
-  } catch {}
+  } catch (error) {
+    console.warn("Unable to remove locally cached course progress:", error);
+  }
 }
 
 function calcPercent(positionSeconds: number, durationSeconds: number): number {
@@ -148,7 +153,10 @@ export function useCourseProgress(courseId: string): UseCourseProgressResult {
       } catch (err: any) {
         // TODO(types): Axios error from progress fetch
         if (err?.response?.status === 404 || err?.response?.status === 405) {
+          console.warn("Course progress API is unavailable; continuing with local progress.", err);
           backendAvailable = false;
+        } else {
+          console.error("Failed to fetch course progress:", err);
         }
       } finally {
         setLoading(false);
@@ -173,7 +181,10 @@ export function useCourseProgress(courseId: string): UseCourseProgressResult {
       } catch (err: any) {
         // TODO(types): Axios error from progress update
         if (err?.response?.status === 404 || err?.response?.status === 405) {
+          console.warn("Course progress API is unavailable; progress remains saved locally.", err);
           backendAvailable = false;
+        } else {
+          console.error("Failed to sync course progress:", err);
         }
       }
     },
@@ -328,7 +339,10 @@ export function useAllCourseProgress(): {
       } catch (err: any) {
         // TODO(types): Axios error from all progress fetch
         if (err?.response?.status === 404 || err?.response?.status === 405) {
+          console.warn("Course progress API is unavailable; loading cached progress instead.", err);
           backendAvailable = false;
+        } else {
+          console.error("Failed to fetch all course progress:", err);
         }
         loadAllFromLocal();
       } finally {
@@ -360,7 +374,9 @@ export function useAllCourseProgress(): {
                     durationSeconds: data.durationSeconds,
                   };
                 }
-              } catch {}
+              } catch (error) {
+                console.warn(`Unable to read cached progress entry "${key}":`, error);
+              }
             }
           }
         }

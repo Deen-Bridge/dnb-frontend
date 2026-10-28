@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export async function fetchCourses(): Promise<any[]> {
@@ -9,7 +10,7 @@ export async function fetchCourses(): Promise<any[]> {
     }
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
-    console.log("Error fetching courses:", error);
+    logger.error("Error fetching courses:", error);
     return [];
   }
 }

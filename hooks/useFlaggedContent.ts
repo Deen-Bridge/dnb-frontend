@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo } from "react";
 
 export interface FlaggedItem {
   flagCount?: number;
-  [key: string]: any; // TODO(types): Flagged item properties
 }
 
 export interface UseFlaggedContentOptions {

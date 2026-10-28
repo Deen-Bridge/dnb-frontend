@@ -54,82 +54,11 @@ import {
   Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { poppins_400, poppins_500 } from "@/lib/config/font.config";
 import TakeDownBookDialog from "@/components/admin/TakeDownBookDialog";
 import RestoreBookDialog from "@/components/admin/RestoreBookDialog";
 import BlurImage from "@/components/ui/blur-image";
 import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
 import BookPayoutPanel from "@/components/admin/BookPayoutPanel";
-
-// Mock books data — replace with real API call
-const generateMockBooks = () => [
-  {
-    _id: "bk_001",
-    title: "Introduction to Fiqh",
-    author: { _id: "a1", name: "Sheikh Ahmad", avatar: null, role: "Educator" },
-    category: "Fiqh",
-    price: 0,
-    image: "/images/placeholder.jpg",
-    readCount: 342,
-    status: "active",
-    takenDownReason: null,
-  },
-  {
-    _id: "bk_002",
-    title: "Understanding Hadith Sciences",
-    author: { _id: "a2", name: "Dr. Fatima", avatar: null, role: "Scholar" },
-    category: "Hadith",
-    price: 12.99,
-    image: "/images/placeholder.jpg",
-    readCount: 518,
-    status: "active",
-    takenDownReason: null,
-  },
-  {
-    _id: "bk_003",
-    title: "Seerah of the Prophet ﷺ",
-    author: { _id: "a3", name: "Sheikh Omar", avatar: null, role: "Educator" },
-    category: "Seerah",
-    price: 0,
-    image: "/images/placeholder.jpg",
-    readCount: 891,
-    status: "taken-down",
-    takenDownReason: "content-violation",
-  },
-  {
-    _id: "bk_004",
-    title: "Tajweed Made Simple",
-    author: { _id: "a4", name: "Ustadh Ibrahim", avatar: null, role: "Teacher" },
-    category: "Quran",
-    price: 5.0,
-    image: "/images/placeholder.jpg",
-    readCount: 127,
-    status: "active",
-    takenDownReason: null,
-  },
-  {
-    _id: "bk_005",
-    title: "Aqeedah Fundamentals",
-    author: { _id: "a5", name: "Dr. Yusuf", avatar: null, role: "Scholar" },
-    category: "Aqeedah",
-    price: 0,
-    image: "/images/placeholder.jpg",
-    readCount: 204,
-    status: "taken-down",
-    takenDownReason: "dmca",
-  },
-  {
-    _id: "bk_006",
-    title: "Islamic Ethics & Character",
-    author: { _id: "a6", name: "Sister Maryam", avatar: null, role: "Educator" },
-    category: "Ethics",
-    price: 7.5,
-    image: "/images/placeholder.jpg",
-    readCount: 67,
-    status: "active",
-    takenDownReason: null,
-  },
-];
 
 const STATUS_TABS = [
   { value: "all", label: "All Books", icon: BookOpen },
@@ -147,6 +76,7 @@ const REASON_LABELS = {
 export default function AdminBooksPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [takedownDialogOpen, setTakedownDialogOpen] = useState(false);
@@ -158,9 +88,22 @@ export default function AdminBooksPage() {
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 300));
-    setBooks(generateMockBooks());
-    setLoading(false);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/books", {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to load books (${res.status})`);
+      }
+      const data = await res.json();
+      setBooks(Array.isArray(data?.books) ? data.books : []);
+    } catch (err) {
+      setError(err?.message ?? "Failed to load books");
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -284,6 +227,17 @@ export default function AdminBooksPage() {
                     <TableCell colSpan={6} className="py-8 text-center">
                       <Loader2 className="h-6 w-6 animate-spin mx-auto" aria-hidden="true" />
                       <span className="sr-only">Loading books</span>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-8 text-center">
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-destructive" />
+                      <p className="text-sm text-destructive">{error}</p>
+                      <Button variant="outline" size="sm" className="mt-3" onClick={fetchBooks}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Retry
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ) : filteredBooks.length === 0 ? (

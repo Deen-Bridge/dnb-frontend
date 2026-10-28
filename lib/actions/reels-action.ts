@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 const defaultPagination = {
@@ -43,7 +44,7 @@ export const fetchReels = async ({
     }
     return res.data;
   } catch (error) {
-    console.error("Error fetching reels:", error);
+    logger.error("Error fetching reels:", error);
     return {
       success: false,
       reels: [],
@@ -84,7 +85,7 @@ export const fetchReelById = async (reelId: string): Promise<any | null> => {
     const res = await axiosInstance.get(`/api/reels/${reelId}`);
     return res.data;
   } catch (error) {
-    console.error(`Error fetching reel ${reelId}:`, error);
+    logger.error(`Error fetching reel ${reelId}:`, error);
     return null;
   }
 };
@@ -99,7 +100,7 @@ export const uploadReel = async (formData: FormData): Promise<any> => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error uploading reel:", error);
+    logger.error("Error uploading reel:", error);
     throw error;
   }
 };
@@ -110,7 +111,7 @@ export const reactToReel = async (reelId: string, type: string): Promise<any> =>
     const res = await axiosInstance.post(`/api/reels/${reelId}/react`, { type });
     return res.data;
   } catch (error) {
-    console.error(`Error reacting to reel ${reelId}:`, error);
+    logger.error(`Error reacting to reel ${reelId}:`, error);
     throw error;
   }
 };
@@ -123,7 +124,7 @@ export const commentOnReel = async (reelId: string, text: string): Promise<any> 
     });
     return res.data;
   } catch (error) {
-    console.error(`Error commenting on reel ${reelId}:`, error);
+    logger.error(`Error commenting on reel ${reelId}:`, error);
     throw error;
   }
 };
@@ -152,7 +153,7 @@ export const fetchReelComments = async (
     });
     return res.data;
   } catch (error) {
-    console.error(`Error fetching comments for reel ${reelId}:`, error);
+    logger.error(`Error fetching comments for reel ${reelId}:`, error);
     return {
       success: false,
       comments: [],
@@ -170,7 +171,7 @@ export const deleteReelComment = async (reelId: string, commentId: string): Prom
     const res = await axiosInstance.delete(`/api/reels/${reelId}/comments/${commentId}`);
     return res.data;
   } catch (error) {
-    console.error(`Error deleting comment ${commentId} for reel ${reelId}:`, error);
+    logger.error(`Error deleting comment ${commentId} for reel ${reelId}:`, error);
     throw error;
   }
 };
@@ -181,7 +182,7 @@ export const shareReel = async (reelId: string): Promise<any> => {
     const res = await axiosInstance.post(`/api/reels/${reelId}/share`);
     return res.data;
   } catch (error) {
-    console.error(`Error sharing reel ${reelId}:`, error);
+    logger.error(`Error sharing reel ${reelId}:`, error);
     throw error;
   }
 };
@@ -192,7 +193,7 @@ export const recordReelView = async (reelId: string): Promise<any | null> => {
     const res = await axiosInstance.post(`/api/reels/${reelId}/view`);
     return res.data;
   } catch (error) {
-    console.error(`Error recording view for reel ${reelId}:`, error);
+    logger.error(`Error recording view for reel ${reelId}:`, error);
     return null;
   }
 };

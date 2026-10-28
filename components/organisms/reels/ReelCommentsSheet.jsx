@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { captureClientError } from "@/lib/sentry/captureClientError";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,6 +48,36 @@ const ReelCommentsSheet = ({ reel, open, onOpenChange, onCommentAdded, onComment
     return false;
   };
 
+  const reelId = reel?.id;
+  const loadComments = useCallback(
+    async (nextPage, reset = false) => {
+      if (!reelId) return;
+      setLoading(true);
+      try {
+        const response = await fetchReelComments(reelId, {
+          page: nextPage,
+          limit: 20,
+        });
+
+        if (!response?.success) {
+          setHasMore(false);
+          return;
+        }
+
+        const mapped = response.comments?.map((comment) => mapComment(comment)) || [];
+
+        setComments((prev) => (reset ? mapped : [...prev.filter(Boolean), ...mapped]));
+        setPage(response.page);
+        setHasMore(response.hasMore);
+      } catch (error) {
+        captureClientError(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [reelId]
+  );
+
   useEffect(() => {
     if (!open) {
       mountedRef.current = false;
@@ -57,34 +88,7 @@ const ReelCommentsSheet = ({ reel, open, onOpenChange, onCommentAdded, onComment
     }
     mountedRef.current = true;
     loadComments(1, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, reel?.id]);
-
-  const loadComments = async (nextPage, reset = false) => {
-    if (!reel?.id) return;
-    setLoading(true);
-    try {
-      const response = await fetchReelComments(reel.id, {
-        page: nextPage,
-        limit: 20,
-      });
-
-      if (!response?.success) {
-        setHasMore(false);
-        return;
-      }
-
-      const mapped = response.comments?.map((comment) => mapComment(comment)) || [];
-
-      setComments((prev) => (reset ? mapped : [...prev.filter(Boolean), ...mapped]));
-      setPage(response.page);
-      setHasMore(response.hasMore);
-    } catch (error) {
-      console.error("Failed to load comments:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [open, reelId, loadComments]);
 
   const handlePost = async () => {
     if (!newComment.trim()) return;
@@ -101,7 +105,7 @@ const ReelCommentsSheet = ({ reel, open, onOpenChange, onCommentAdded, onComment
         onCommentAdded?.(mapped, response?.stats);
       }
     } catch (error) {
-      console.error("Failed to post comment:", error);
+      captureClientError(error);
     } finally {
       setPosting(false);
     }
@@ -117,7 +121,7 @@ const ReelCommentsSheet = ({ reel, open, onOpenChange, onCommentAdded, onComment
         onCommentDeleted?.(commentId, response?.stats);
       }
     } catch (error) {
-      console.error("Failed to delete comment:", error);
+      captureClientError(error);
     } finally {
       setDeleting((prev) => {
         const next = { ...prev };

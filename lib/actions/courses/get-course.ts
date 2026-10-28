@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export async function getCourseById(courseId: string): Promise<any | null> {
@@ -9,7 +10,7 @@ export async function getCourseById(courseId: string): Promise<any | null> {
     }
     return response.data ?? null;
   } catch (error) {
-    console.log("Error fetching course:", error);
+    logger.error("Error fetching course:", error);
     return null;
   }
 }

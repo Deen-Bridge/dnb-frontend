@@ -1,6 +1,7 @@
 "use client";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { GraduationCap, Bookmark, Plus } from "lucide-react";
 import CourseCard from "@/components/molecules/dashboard/cards/courseCard";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
@@ -132,7 +133,7 @@ const CoursesPageContent = () => {
               <Button
                 variant="outline"
                 className="rounded-full"
-                onClick={() => (window.location.href = "/dashboard/courses/create")}
+                onClick={() => router.push("/dashboard/courses/create")}
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Create
@@ -222,7 +223,7 @@ const CoursesPageContent = () => {
               <Button
                 variant="outline"
                 className="rounded-full"
-                onClick={() => (window.location.href = "/dashboard/courses/create")}
+                onClick={() => router.push("/dashboard/courses/create")}
               >
                 Create Course
               </Button>

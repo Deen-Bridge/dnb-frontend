@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -41,90 +41,6 @@ import {
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
-// Mock audit log data
-const mockAuditLogs = [
-  {
-    id: "1",
-    timestamp: "2024-01-15T14:32:00Z",
-    action: "user.login",
-    actor: "admin@deenbridge.com",
-    target: "User: john@example.com",
-    ip: "192.168.1.100",
-    status: "success",
-    details: "Successful login via email",
-  },
-  {
-    id: "2",
-    timestamp: "2024-01-15T14:28:00Z",
-    action: "settings.update",
-    actor: "admin@deenbridge.com",
-    target: "Platform Fee",
-    ip: "192.168.1.100",
-    status: "success",
-    details: "Changed platform fee from 5% to 4.5%",
-  },
-  {
-    id: "3",
-    timestamp: "2024-01-15T13:45:00Z",
-    action: "user.ban",
-    actor: "moderator@deenbridge.com",
-    target: "User: spammer@example.com",
-    ip: "192.168.1.101",
-    status: "success",
-    details: "User banned for TOS violation",
-  },
-  {
-    id: "4",
-    timestamp: "2024-01-15T12:30:00Z",
-    action: "content.approve",
-    actor: "moderator@deenbridge.com",
-    target: "Course: Intro to Tajweed",
-    ip: "192.168.1.101",
-    status: "success",
-    details: "Course approved after review",
-  },
-  {
-    id: "5",
-    timestamp: "2024-01-15T11:15:00Z",
-    action: "payment.refund",
-    actor: "admin@deenbridge.com",
-    target: "Transaction: TXN-12345",
-    ip: "192.168.1.100",
-    status: "success",
-    details: "Refund processed for $29.99",
-  },
-  {
-    id: "6",
-    timestamp: "2024-01-14T16:00:00Z",
-    action: "user.login",
-    actor: "unknown",
-    target: "User: admin@deenbridge.com",
-    ip: "10.0.0.55",
-    status: "failed",
-    details: "Failed login attempt - invalid password",
-  },
-  {
-    id: "7",
-    timestamp: "2024-01-14T15:30:00Z",
-    action: "api.access",
-    actor: "system",
-    target: "API Key: pk_live_xxx",
-    ip: "203.0.113.50",
-    status: "success",
-    details: "API key accessed from new IP",
-  },
-  {
-    id: "8",
-    timestamp: "2024-01-14T14:00:00Z",
-    action: "content.reject",
-    actor: "moderator@deenbridge.com",
-    target: "Book: Untitled Draft",
-    ip: "192.168.1.101",
-    status: "success",
-    details: "Content rejected - copyright concerns",
-  },
-];
-
 // Retention policy configuration
 const RETENTION_DAYS = 90;
 const retentionEndDate = new Date();
@@ -134,6 +50,7 @@ retentionEndDate.setDate(retentionEndDate.getDate() - RETENTION_DAYS);
 const actionIcons = {
   "user.login": User,
   "user.ban": AlertTriangle,
+  "user.update": User,
   "settings.update": Settings,
   "content.approve": Shield,
   "content.reject": Shield,
@@ -150,6 +67,7 @@ const datePresets = [
   { label: "Last 90 days", days: 90 },
 ];
 
+// Format a timestamp for display
 function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleString("en-US", {
@@ -167,6 +85,7 @@ function getStatusColor(status) {
     : "bg-red-100 text-red-600 border-red-200";
 }
 
+// Audit log page backed by the real admin audit-log endpoint
 export default function AuditLogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
@@ -175,9 +94,48 @@ export default function AuditLogPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const [logs, setLogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchLogs() {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/admin/audit-log", {
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) {
+          throw new Error(`Failed to load audit log (${res.status})`);
+        }
+        const data = await res.json();
+        if (!cancelled) {
+          setLogs(Array.isArray(data?.logs) ? data.logs : []);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load audit log");
+          setLogs([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchLogs();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Filter logs
   const filteredLogs = useMemo(() => {
-    return mockAuditLogs.filter((log) => {
+    return logs.filter((log) => {
       const matchesSearch =
         searchQuery === "" ||
         log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -196,7 +154,7 @@ export default function AuditLogPage() {
 
       return matchesSearch && matchesAction && matchesStatus && matchesDate;
     });
-  }, [searchQuery, actionFilter, statusFilter, dateRange]);
+  }, [logs, searchQuery, actionFilter, statusFilter, dateRange]);
 
   // Pagination
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
@@ -205,6 +163,7 @@ export default function AuditLogPage() {
     currentPage * itemsPerPage
   );
 
+  // Export the currently filtered logs to CSV
   // Export to CSV
   const exportToCSV = () => {
     const headers = ["Timestamp", "Action", "Actor", "Target", "IP Address", "Status", "Details"];
@@ -270,6 +229,7 @@ export default function AuditLogPage() {
         </CardContent>
       </Card>
 
+      {/* Audit Log Table */}
       {/* Filters */}
       <Card>
         <CardHeader>
@@ -360,6 +320,7 @@ export default function AuditLogPage() {
       </Card>
 
       {/* Audit Log Table */}
+      {/* Audit Log Table */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Audit Events ({filteredLogs.length})</CardTitle>
@@ -367,6 +328,7 @@ export default function AuditLogPage() {
             Showing {paginatedLogs.length} of {filteredLogs.length} events
           </CardDescription>
         </CardHeader>
+        {/* Table content */}
         <CardContent>
           <div className="rounded-lg border overflow-x-auto">
             {/* Desktop Table */}
@@ -383,7 +345,19 @@ export default function AuditLogPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedLogs.length === 0 ? (
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                        Loading audit events…
+                      </TableCell>
+                    </TableRow>
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-red-600">
+                        {error}
+                      </TableCell>
+                    </TableRow>
+                  ) : paginatedLogs.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                         No audit events found matching your filters
@@ -428,7 +402,11 @@ export default function AuditLogPage() {
 
             {/* Mobile Card View */}
             <div className="md:hidden divide-y">
-              {paginatedLogs.length === 0 ? (
+              {isLoading ? (
+                <div className="py-8 text-center text-muted-foreground">Loading audit events…</div>
+              ) : error ? (
+                <div className="py-8 text-center text-red-600">{error}</div>
+              ) : paginatedLogs.length === 0 ? (
                 <div className="py-8 text-center text-muted-foreground">
                   No audit events found matching your filters
                 </div>
@@ -467,6 +445,7 @@ export default function AuditLogPage() {
           </div>
 
           {/* Pagination */}
+          {/* Pagination controls */}
           {totalPages > 1 && (
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>

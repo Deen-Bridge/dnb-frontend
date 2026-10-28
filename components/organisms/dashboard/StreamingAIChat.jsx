@@ -6,6 +6,7 @@
  */
 
 "use client";
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import { Bot, CornerDownLeft, Mic, Paperclip, ImageIcon, StopCircle, Sparkles } from "lucide-react";
 import Button from "@/components/atoms/form/Button";
 import { Label } from "@/components/ui/label";
@@ -72,7 +73,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
           }
         }
       } catch (error) {
-        console.error("Error loading chat history:", error);
+        captureClientError(error);
       }
     };
 
@@ -178,7 +179,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       "text-lg md:text-xl text-ink-muted max-w-xl mx-auto leading-relaxed"
                     )}
                   >
-                    I'm your Islamic AI assistant powered by knowledge of the{" "}
+                    I&apos;m your Islamic AI assistant powered by knowledge of the{" "}
                     <span className={cn(poppins_600, "text-ink")}>Quran</span> and{" "}
                     <span className={cn(poppins_600, "text-highlight")}>Hadith</span>. Experience
                     real-time streaming responses!
@@ -426,7 +427,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <span className="sr-only">Attach file</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Attach File (Coming Soon)</TooltipContent>
+                  <TooltipContent side="top">File attachments are not available yet</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -435,7 +436,9 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <span className="sr-only">Attach Image</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Attach Image (Coming Soon)</TooltipContent>
+                  <TooltipContent side="top">
+                    Image attachments are not available yet
+                  </TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -445,7 +448,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <span className="sr-only">Use Microphone</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">Use Microphone (Coming Soon)</TooltipContent>
+                  <TooltipContent side="top">Voice input is not available yet</TooltipContent>
                 </Tooltip>
               </div>
               <div className="flex gap-2">

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export async function toggleCourseBookmark(courseId: string): Promise<any> {
@@ -6,7 +7,7 @@ export async function toggleCourseBookmark(courseId: string): Promise<any> {
     const response = await axiosInstance.post(`/api/courses/${courseId}/bookmark`);
     return response.data;
   } catch (error) {
-    console.error("Error toggling bookmark:", error);
+    logger.error("Error toggling bookmark:", error);
     throw error;
   }
 }
@@ -17,7 +18,7 @@ export async function getBookmarkedCourses(): Promise<any> {
     const response = await axiosInstance.get("/api/courses/bookmarks");
     return response.data;
   } catch (error) {
-    console.error("Error fetching bookmarked courses:", error);
+    logger.error("Error fetching bookmarked courses:", error);
     throw error;
   }
 }
@@ -27,7 +28,7 @@ export async function checkIfBookmarked(courseId: string): Promise<boolean> {
     const response = await axiosInstance.get(`/api/courses/${courseId}/bookmark/check`);
     return Boolean(response.data?.isBookmarked);
   } catch (error) {
-    console.error("Error checking bookmark status:", error);
+    logger.error("Error checking bookmark status:", error);
     return false;
   }
 }
@@ -38,7 +39,7 @@ export async function removeBookmark(courseId: string): Promise<any> {
     const response = await axiosInstance.delete(`/api/courses/${courseId}/bookmark`);
     return response.data;
   } catch (error) {
-    console.error("Error removing bookmark:", error);
+    logger.error("Error removing bookmark:", error);
     throw error;
   }
 }

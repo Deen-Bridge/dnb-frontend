@@ -30,11 +30,29 @@ test("/ar serves Arabic right-to-left with real translated copy", async ({ page 
 });
 
 test("financial figures stay LTR inside the RTL layout", async ({ page }) => {
+  // The Stellar section shows a live ledger number and close time. Serve a
+  // fixed Horizon response so the test does not depend on the real network.
+  // Match both the testnet and mainnet Horizon hosts, whichever network the
+  // client bundle was built for.
+  await page.route(/^https:\/\/horizon(-testnet)?\.stellar\.org\/ledgers/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: { "access-control-allow-origin": "*" },
+      body: JSON.stringify({
+        _embedded: {
+          records: [{ sequence: 1234567, closed_at: "2026-10-26T12:34:56Z" }],
+        },
+      }),
+    })
+  );
+
   await page.goto("/ar");
-  // The Stellar section renders settle time / USDC figures wrapped in dir="ltr"
-  // so digits never visually reverse under RTL.
-  const ltrIsland = page.locator('[dir="ltr"]').first();
-  await expect(ltrIsland).toBeVisible();
+
+  // Each figure is wrapped in dir="ltr" so digits never visually reverse
+  // inside the right-to-left sentence.
+  await expect(page.locator('[dir="ltr"]', { hasText: "1,234,567" }).first()).toBeVisible();
+  await expect(page.locator('[dir="ltr"]', { hasText: "12:34:56" }).first()).toBeVisible();
 });
 
 test("language switcher swaps locale on the current route and persists", async ({ page }) => {

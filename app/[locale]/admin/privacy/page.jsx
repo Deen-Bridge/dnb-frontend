@@ -114,83 +114,29 @@ const DATA_POLICY = [
   },
 ];
 
-// Mock export requests
-const mockExportRequests = [
-  {
-    id: "exp_1",
-    userId: "usr_123",
-    userEmail: "john@example.com",
-    requestedAt: "2024-01-15T10:30:00Z",
-    status: "completed",
-    completedAt: "2024-01-15T10:45:00Z",
-    downloadUrl: "/api/exports/exp_1/download",
-    expiresAt: "2024-01-22T10:45:00Z",
-  },
-  {
-    id: "exp_2",
-    userId: "usr_456",
-    userEmail: "jane@example.com",
-    requestedAt: "2024-01-15T14:00:00Z",
-    status: "processing",
-    completedAt: null,
-    downloadUrl: null,
-    expiresAt: null,
-  },
-  {
-    id: "exp_3",
-    userId: "usr_789",
-    userEmail: "bob@example.com",
-    requestedAt: "2024-01-14T09:00:00Z",
-    status: "pending",
-    completedAt: null,
-    downloadUrl: null,
-    expiresAt: null,
-  },
-];
-
-// Mock deletion requests
-const mockDeletionRequests = [
-  {
-    id: "del_1",
-    userId: "usr_321",
-    userEmail: "alice@example.com",
-    requestedAt: "2024-01-15T11:00:00Z",
-    status: "pending",
-    reason: "No longer using the platform",
-    scheduledFor: "2024-01-22T11:00:00Z",
-  },
-  {
-    id: "del_2",
-    userId: "usr_654",
-    userEmail: "charlie@example.com",
-    requestedAt: "2024-01-14T16:00:00Z",
-    status: "completed",
-    reason: "Privacy concerns",
-    completedAt: "2024-01-14T16:30:00Z",
-  },
-];
-
 export default function DataPrivacyPage() {
-  const [exportRequests, setExportRequests] = useState(mockExportRequests);
-  const [deletionRequests, setDeletionRequests] = useState(mockDeletionRequests);
+  const [exportRequests, setExportRequests] = useState([]);
+  const [deletionRequests, setDeletionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [processing, setProcessing] = useState({});
   const [isRefetching, setIsRefetching] = useState(false);
 
+  // TODO(#privacy-wiring): fetch export/deletion requests from the real
+  // admin privacy endpoint and wire handleTriggerExport / handleProcessDeletion.
+
   // Trigger export job
   const handleTriggerExport = useCallback(async (requestId) => {
     setProcessing((prev) => ({ ...prev, [requestId]: true }));
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setExportRequests((prev) =>
-      prev.map((req) => (req.id === requestId ? { ...req, status: "processing" } : req))
-    );
-
-    setProcessing((prev) => ({ ...prev, [requestId]: false }));
+    try {
+      const res = await fetch(`/api/admin/privacy/exports/${requestId}/process`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Failed to trigger export");
+    } finally {
+      setProcessing((prev) => ({ ...prev, [requestId]: false }));
+    }
   }, []);
 
   // Process deletion request
@@ -199,16 +145,15 @@ export default function DataPrivacyPage() {
 
     setProcessing((prev) => ({ ...prev, [selectedRequest.id]: true }));
     setShowDeleteConfirm(false);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setDeletionRequests((prev) =>
-      prev.map((req) => (req.id === selectedRequest.id ? { ...req, status: "processing" } : req))
-    );
-
-    setProcessing((prev) => ({ ...prev, [selectedRequest.id]: false }));
-    setSelectedRequest(null);
+    try {
+      const res = await fetch(`/api/admin/privacy/deletions/${selectedRequest.id}/process`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Failed to process deletion");
+    } finally {
+      setProcessing((prev) => ({ ...prev, [selectedRequest.id]: false }));
+      setSelectedRequest(null);
+    }
   }, [selectedRequest]);
 
   // Stats
@@ -531,7 +476,7 @@ export default function DataPrivacyPage() {
                 <li>
                   Purchase history will be <strong>anonymized</strong>
                 </li>
-                <li>Created content will show as "Deleted User"</li>
+                <li>Created content will show as &quot;Deleted User&quot;</li>
               </ul>
             </div>
 

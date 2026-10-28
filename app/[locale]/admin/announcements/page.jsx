@@ -44,6 +44,7 @@ import {
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { AnnouncementAnalytics } from "@/components/admin/announcement-analytics";
+import { toast } from "sonner";
 
 const DRAFT_KEY = "dnb-announcement-draft";
 
@@ -70,7 +71,8 @@ function loadDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch {
+  } catch (error) {
+    console.warn("Unable to load the saved announcement draft:", error);
     return null;
   }
 }
@@ -79,14 +81,22 @@ function saveDraft(data) {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...data, savedAt: new Date().toISOString() }));
-  } catch {}
+  } catch (error) {
+    console.error("Unable to save the announcement draft:", error);
+    return false;
+  }
+  return true;
 }
 
 function clearDraft() {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(DRAFT_KEY);
-  } catch {}
+  } catch (error) {
+    console.error("Unable to remove the saved announcement draft:", error);
+    return false;
+  }
+  return true;
 }
 
 function RichTextToolbar({ onCommand, onLink }) {
@@ -167,6 +177,7 @@ export default function AnnouncementsPage() {
   const [sent, setSent] = useState(false);
   const [previewTab, setPreviewTab] = useState("write");
   const autoSaveTimer = useRef(null);
+  const draftSaveWarningShown = useRef(false);
 
   // Load draft on mount
   useEffect(() => {
@@ -183,8 +194,14 @@ export default function AnnouncementsPage() {
   useEffect(() => {
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
-      saveDraft(form);
-      setSavedAt(new Date().toISOString());
+      const saved = saveDraft(form);
+      if (!saved && !draftSaveWarningShown.current) {
+        toast.error("Your announcement draft could not be saved on this device.");
+        draftSaveWarningShown.current = true;
+      } else if (saved) {
+        draftSaveWarningShown.current = false;
+      }
+      if (saved) setSavedAt(new Date().toISOString());
     }, 2000);
     return () => clearTimeout(autoSaveTimer.current);
   }, [form]);
@@ -224,7 +241,10 @@ export default function AnnouncementsPage() {
   }, []);
 
   const handleClearDraft = useCallback(() => {
-    clearDraft();
+    if (!clearDraft()) {
+      toast.error("The saved announcement draft could not be removed.");
+      return;
+    }
     setForm(INITIAL_FORM);
     setHasDraft(false);
     setSavedAt(null);
@@ -236,7 +256,9 @@ export default function AnnouncementsPage() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setSending(false);
     setSent(true);
-    clearDraft();
+    if (!clearDraft()) {
+      toast.error("The announcement was prepared, but its saved draft could not be removed.");
+    }
     setTimeout(() => setSent(false), 3000);
   }, []);
 
@@ -245,7 +267,9 @@ export default function AnnouncementsPage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setSending(false);
     setSent(true);
-    clearDraft();
+    if (!clearDraft()) {
+      toast.error("The announcement was scheduled, but its saved draft could not be removed.");
+    }
     setTimeout(() => setSent(false), 3000);
   }, []);
 

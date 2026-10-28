@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -45,14 +45,15 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
-  FileText,
   Loader2,
   AlertTriangle,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
 import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
+import axiosInstance from "@/lib/config/axios.config";
 
 const STATUS_CONFIG = {
   "pending-review": {
@@ -77,104 +78,6 @@ const STATUS_CONFIG = {
   },
 };
 
-const mockBooks = [
-  {
-    id: "bk_301",
-    title: "The Complete Guide to Salah",
-    uploader: { id: "usr_e1", name: "Sheikh Ibrahim", email: "ibrahim@example.com" },
-    submittedAt: "2026-08-24T09:30:00Z",
-    status: "pending-review",
-    price: 14.99,
-    pages: 320,
-    category: "Worship",
-    description:
-      "A comprehensive guide covering every aspect of daily prayers, from wudu to the sunnah acts.",
-  },
-  {
-    id: "bk_302",
-    title: "Stories of the Prophets for Children",
-    uploader: { id: "usr_e2", name: "Dr. Amina Yusuf", email: "amina@example.com" },
-    submittedAt: "2026-08-23T14:15:00Z",
-    status: "pending-review",
-    price: 9.99,
-    pages: 180,
-    category: "Children",
-    description:
-      "Beautifully illustrated stories of the prophets designed for young readers ages 7-12.",
-  },
-  {
-    id: "bk_303",
-    title: "Advanced Tafsir Studies",
-    uploader: { id: "usr_e3", name: "Ustadh Omar Ali", email: "omar@example.com" },
-    submittedAt: "2026-08-22T11:00:00Z",
-    status: "pending-review",
-    price: 29.99,
-    pages: 540,
-    category: "Quranic Studies",
-    description: "In-depth tafsir analysis with linguistic breakdowns and historical context.",
-  },
-  {
-    id: "bk_304",
-    title: "Islamic Finance Simplified",
-    uploader: { id: "usr_e4", name: "Sheikh Ahmad Darwish", email: "ahmad.d@example.com" },
-    submittedAt: "2026-08-20T08:45:00Z",
-    status: "approved",
-    price: 19.99,
-    pages: 280,
-    category: "Finance",
-    description: "A practical guide to halal investing and everyday financial decisions.",
-  },
-  {
-    id: "bk_305",
-    title: "Seerah of the Prophet (ﷺ) - Vol. 2",
-    uploader: { id: "usr_e5", name: "Dr. Khadija Noor", email: "khadija@example.com" },
-    submittedAt: "2026-08-19T16:20:00Z",
-    status: "rejected",
-    price: 24.99,
-    pages: 450,
-    category: "Seerah",
-    description: "Continuation of the prophetic biography covering the Medinan period.",
-    rejectionReason:
-      "Content overlaps significantly with Volume 1. Please revise to focus on unique events.",
-  },
-  {
-    id: "bk_306",
-    title: "Daily Adhkar & Supplications",
-    uploader: { id: "usr_e6", name: "Imam Hassan Malik", email: "hassan@example.com" },
-    submittedAt: "2026-08-18T10:10:00Z",
-    status: "changes-requested",
-    price: 6.99,
-    pages: 120,
-    category: "Spirituality",
-    description: "A pocket-sized collection of morning and evening adhkar with translations.",
-    changeNotes:
-      "Please include transliteration alongside the Arabic text and add pronunciation guides.",
-  },
-  {
-    id: "bk_307",
-    title: "Youth & Identity in the Modern World",
-    uploader: { id: "usr_e7", name: "Ustadha Maryam J.", email: "maryam.j@example.com" },
-    submittedAt: "2026-08-25T07:00:00Z",
-    status: "pending-review",
-    price: 12.99,
-    pages: 210,
-    category: "Youth",
-    description:
-      "Addressing the challenges Muslim youth face in maintaining identity in Western societies.",
-  },
-  {
-    id: "bk_308",
-    title: "Introduction to Arabic Morphology",
-    uploader: { id: "usr_e8", name: "Dr. Khalid Hassan", email: "khalid@example.com" },
-    submittedAt: "2026-08-21T13:30:00Z",
-    status: "pending-review",
-    price: 22.99,
-    pages: 380,
-    category: "Language",
-    description: "A structured approach to understanding Arabic word patterns and derivation.",
-  },
-];
-
 function formatAge(timestamp) {
   return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 }
@@ -190,7 +93,9 @@ function formatDate(timestamp) {
 }
 
 export default function BookApprovalQueuePage() {
-  const [books, setBooks] = useState(mockBooks);
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedBook, setSelectedBook] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -199,6 +104,24 @@ export default function BookApprovalQueuePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [processing, setProcessing] = useState(false);
   const itemsPerPage = 10;
+
+  const fetchBooks = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axiosInstance.get("/api/admin/books/approval-queue");
+      setBooks(Array.isArray(data) ? data : (data?.items ?? []));
+    } catch (err) {
+      setError(err?.message || "Failed to load submissions");
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks]);
 
   const filteredBooks = useMemo(() => {
     if (statusFilter === "all") return books;
@@ -236,38 +159,22 @@ export default function BookApprovalQueuePage() {
   const confirmAction = useCallback(async () => {
     if (!selectedBook || !actionType) return;
     setProcessing(true);
-    await new Promise((r) => setTimeout(r, 800));
-
-    setBooks((prev) =>
-      prev.map((b) => {
-        if (b.id !== selectedBook.id) return b;
-        if (actionType === "approve") {
-          return { ...b, status: "approved" };
-        }
-        if (actionType === "reject") {
-          return { ...b, status: "rejected", rejectionReason: actionNotes };
-        }
-        if (actionType === "changes-requested") {
-          return { ...b, status: "changes-requested", changeNotes: actionNotes };
-        }
-        return b;
-      })
-    );
-
-    setSelectedBook((prev) => {
-      if (!prev) return prev;
-      if (actionType === "approve") return { ...prev, status: "approved" };
-      if (actionType === "reject")
-        return { ...prev, status: "rejected", rejectionReason: actionNotes };
-      if (actionType === "changes-requested")
-        return { ...prev, status: "changes-requested", changeNotes: actionNotes };
-      return prev;
-    });
-
-    setProcessing(false);
-    setActionType(null);
-    setActionNotes("");
-  }, [selectedBook, actionType, actionNotes]);
+    try {
+      await axiosInstance.post(
+        `/api/admin/books/approval-queue/${selectedBook.id}/${actionType}`,
+        actionType === "approve" ? {} : { notes: actionNotes }
+      );
+      setDetailOpen(false);
+      setSelectedBook(null);
+      setActionType(null);
+      setActionNotes("");
+      await fetchBooks();
+    } catch (err) {
+      setError(err?.message || "Failed to process submission");
+    } finally {
+      setProcessing(false);
+    }
+  }, [selectedBook, actionType, actionNotes, fetchBooks]);
 
   return (
     <PageShell>
@@ -278,7 +185,7 @@ export default function BookApprovalQueuePage() {
         actions={
           <div className="flex items-center gap-3">
             <MediaBlurToggle className="hidden lg:flex" />
-            <Button variant="outline" size="sm" onClick={() => setBooks([...mockBooks])}>
+            <Button variant="outline" size="sm" onClick={fetchBooks}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
@@ -353,10 +260,28 @@ export default function BookApprovalQueuePage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedBooks.length === 0 ? (
+                {loading ? (
                   <TableRow>
                     <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                      <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin opacity-50" />
+                      <p>Loading submissions…</p>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-500" />
+                      <p className="text-red-600 dark:text-red-400">{error}</p>
+                      <Button variant="outline" size="sm" className="mt-3" onClick={fetchBooks}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Retry
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ) : paginatedBooks.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                      <Inbox className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No submissions found</p>
                     </TableCell>
                   </TableRow>

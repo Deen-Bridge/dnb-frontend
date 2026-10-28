@@ -781,7 +781,7 @@ const SettingsPage = () => {
                       ))}
                     </div>
                     <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                      Scales most of the interface. Some elements keep a fixed size and won't
+                      Scales most of the interface. Some elements keep a fixed size and won&apos;t
                       change.
                     </p>
                   </div>

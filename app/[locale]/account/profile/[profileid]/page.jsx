@@ -13,7 +13,7 @@ import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { poppins_500 } from "@/lib/config/font.config";
 import { PageShell } from "@/components/ui/page-shell";
-const page = ({ params }) => {
+const ProfilePage = ({ params }) => {
   const { profileid } = use(params);
   const [selectedTab, setSelectedTab] = useState("courses");
   const [user, setUser] = useState(null);
@@ -79,4 +79,4 @@ const page = ({ params }) => {
     </PageShell>
   );
 };
-export default page;
+export default ProfilePage;

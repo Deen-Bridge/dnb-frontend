@@ -78,6 +78,9 @@ const DISPUTE_STATES = {
   },
 };
 
+// TODO: Replace these UI fixtures with disputes from the admin API. Evidence
+// links must come from the authenticated, short-lived signed-URL endpoint; do
+// not put third-party or permanent file URLs in this page.
 const mockDisputes = [
   {
     id: "dsp_001",
@@ -100,8 +103,7 @@ const mockDisputes = [
         uploadedAt: "2026-08-22T10:20:00Z",
         senderRole: "buyer",
         note: "Screenshot of black video player error.",
-        signedUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        availability: "pending",
       },
     ],
   },
@@ -130,8 +132,7 @@ const mockDisputes = [
         uploadedAt: "2026-08-21T15:00:00Z",
         senderRole: "educator",
         note: "Original table of contents document.",
-        signedUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        availability: "pending",
       },
     ],
   },
@@ -167,7 +168,7 @@ function formatDate(timestamp) {
 }
 
 export default function DisputesPage() {
-  const [disputes, setDisputes] = useState(mockDisputes);
+  const [disputes, setDisputes] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDispute, setSelectedDispute] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -177,6 +178,9 @@ export default function DisputesPage() {
   // Viewer state for secure evidence viewing
   const [viewingEvidence, setViewingEvidence] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const filteredDisputes = useMemo(() => {
     if (statusFilter === "all") return disputes;
@@ -261,6 +265,13 @@ export default function DisputesPage() {
     setDetailOpen(false);
   }, []);
 
+  const handleRefresh = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
+    setDisputes([]);
+    setIsLoading(false);
+  }, []);
+
   return (
     <PageShell>
       <PageHeader
@@ -268,7 +279,7 @@ export default function DisputesPage() {
         title="Disputes Queue"
         subtitle="Manage buyer vs educator payment disputes with secure evidence viewing"
         actions={
-          <Button variant="outline" size="sm" onClick={() => setDisputes([...mockDisputes])}>
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
@@ -341,7 +352,21 @@ export default function DisputesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedDisputes.length === 0 ? (
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                      <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin opacity-50" />
+                      <p>Loading disputes…</p>
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-8 text-center text-destructive">
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>{error}</p>
+                    </TableCell>
+                  </TableRow>
+                ) : paginatedDisputes.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -703,6 +728,11 @@ export default function DisputesPage() {
                             <p className="text-[10px] text-muted-foreground">
                               Uploaded {new Date(item.uploadedAt).toLocaleDateString()}
                             </p>
+                            {item.availability === "pending" && (
+                              <p className="text-[10px] text-muted-foreground">
+                                Evidence URL pending secure retrieval.
+                              </p>
+                            )}
                           </div>
 
                           <div className="pt-3">

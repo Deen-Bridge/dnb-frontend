@@ -304,7 +304,7 @@ export default function IntegrationsPage() {
             <p className={cn(poppins_500.className, "text-sm text-amber-800")}>Security Notice</p>
             <p className={cn(poppins_400.className, "text-xs text-amber-700")}>
               API keys are shown only once when created. Store them securely. Rotate keys
-              immediately if you suspect they've been compromised.
+              immediately if you suspect they&apos;ve been compromised.
             </p>
           </div>
         </CardContent>

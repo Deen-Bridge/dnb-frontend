@@ -4,6 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import { captureClientError } from "@/lib/sentry/captureClientError";
 
 export interface Sep7QrCodeProps {
   uri?: string;
@@ -23,7 +24,7 @@ export default function Sep7QrCode({ uri, size = 168, caption }: Sep7QrCodeProps
       toast.success("Payment URI copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy URI:", error);
+      captureClientError(error);
       toast.error("Failed to copy URI");
     }
   };

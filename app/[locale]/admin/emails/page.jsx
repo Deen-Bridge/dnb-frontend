@@ -322,7 +322,7 @@ export default function EmailBroadcastPage() {
                 <div className="space-y-0.5">
                   <p className={cn(poppins_500.className, "text-sm")}>Estimated Recipients</p>
                   <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
-                    Unknown counts show "—", never a fabricated zero
+                    Unknown counts show &quot;—&quot;, never a fabricated zero
                   </p>
                 </div>
                 <RecipientEstimate estimate={estimate} loading={estimateLoading} />

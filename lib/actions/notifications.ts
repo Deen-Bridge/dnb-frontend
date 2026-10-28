@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
 export interface NotificationItem {
@@ -39,7 +40,7 @@ export const fetchNotifications = async (
     };
   } catch (error: any) {
     // TODO(types): Axios error from notification fetch
-    console.error("Error fetching notifications:", error?.message);
+    logger.error("Error fetching notifications:", error?.message);
     return {
       success: false,
       error: error?.message,
@@ -66,7 +67,7 @@ export const markNotificationAsRead = async (
     return { success: true, notification: res.data?.notification };
   } catch (error: any) {
     // TODO(types): Axios error from mark notification as read
-    console.error("Error marking notification as read:", error?.message);
+    logger.error("Error marking notification as read:", error?.message);
     return { success: false, error: error?.message };
   }
 };
@@ -83,7 +84,7 @@ export const markAllNotificationsAsRead = async (): Promise<MarkAllNotifications
     return { success: true, count: res.data?.count ?? 0 };
   } catch (error: any) {
     // TODO(types): Axios error from mark all read
-    console.error("Error marking all notifications as read:", error?.message);
+    logger.error("Error marking all notifications as read:", error?.message);
     return { success: false, error: error?.message };
   }
 };
@@ -105,7 +106,7 @@ export const deleteNotification = async (
     };
   } catch (error: any) {
     // TODO(types): Axios error from delete notification
-    console.error("Error deleting notification:", error?.message);
+    logger.error("Error deleting notification:", error?.message);
     return { success: false, error: error?.message };
   }
 };
@@ -122,7 +123,7 @@ export const getNotificationSettings = async (): Promise<NotificationSettingsRes
     return { success: true, settings: res.data?.settings || res.data || {} };
   } catch (error: any) {
     // TODO(types): Axios error from get settings
-    console.error("Error fetching notification settings:", error?.message);
+    logger.error("Error fetching notification settings:", error?.message);
     return { success: false, error: error?.message, settings: {} };
   }
 };

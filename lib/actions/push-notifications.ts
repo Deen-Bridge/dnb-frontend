@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { isSupported, getMessaging, getToken, onMessage, Messaging } from "firebase/messaging";
 import app from "@/lib/config/firebase.config";
 
@@ -43,7 +44,7 @@ export async function getFcmToken(): Promise<string | null> {
     return token || null;
   } catch (err: any) {
     // TODO(types): FCM error
-    console.error("[push] Failed to retrieve FCM token:", err?.message || err);
+    logger.error("[push] Failed to retrieve FCM token:", err?.message || err);
     return null;
   }
 }

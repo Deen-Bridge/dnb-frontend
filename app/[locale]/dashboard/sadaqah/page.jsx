@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PageShell } from "@/components/ui/page-shell";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -283,16 +284,16 @@ export default function SadaqahPage() {
               <Chip icon={ShieldCheck}>On-chain transparency</Chip>
               <Chip icon={Coins}>USDC on Stellar</Chip>
             </div>
-            <a
+            <Link
               href="/transparency"
               className={cn(
-                poppins_500,
+                poppins_500.className,
                 "mt-5 inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-colors hover:text-secondary hover:underline"
               )}
             >
               Watch donations arrive live
               <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+            </Link>
           </div>
         </Panel>
 

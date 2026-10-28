@@ -1,5 +1,6 @@
 "use client";
 
+import { captureClientError } from "@/lib/sentry/captureClientError";
 import React, { useState, useEffect } from "react";
 import Button from "@/components/atoms/form/Button";
 import { cn } from "@/lib/utils";
@@ -36,7 +37,7 @@ const ProfileUserInfo = ({ user }) => {
           setFollowing(result.isFollowing);
         }
       } catch (error) {
-        console.log("Error checking follow status:", error);
+        captureClientError(error);
       }
     };
 
@@ -57,7 +58,7 @@ const ProfileUserInfo = ({ user }) => {
           setFollowingCount(followingResult.count || 0);
         }
       } catch (error) {
-        console.log("Error fetching counts:", error);
+        captureClientError(error);
       }
     };
 
