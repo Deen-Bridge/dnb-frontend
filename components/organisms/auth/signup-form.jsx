@@ -71,6 +71,7 @@ export function SignupForm({ className, ...props }) {
   // values of those fields, not the submitted ones.
   const watchedName = form.watch("name");
   const watchedEmail = form.watch("email");
+  const watchedRole = form.watch("role");
 
   const handleSignup = async (data) => {
     setError("");
@@ -218,16 +219,28 @@ export function SignupForm({ className, ...props }) {
                     </span>
                   </div>
                 </div>
-                <div className="w-full flex justify-center">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSignup}
-                    onError={() =>
-                      toast.error("Google sign-in failed. Please try again.")
-                    }
-                    text="signup_with"
-                    width="320"
-                  />
-                </div>
+                {watchedRole === "mentor" ? (
+                  // Google signup always creates a "student" account (the backend
+                  // has no way to receive this form's role selection), which would
+                  // silently skip the educator identity-verification flow. Rather
+                  // than mis-route educators, point them back at the form above.
+                  <p className="text-xs text-muted-foreground text-center">
+                    Continue with Google is available for students. As an
+                    educator, please sign up with the form above so we can
+                    verify your application.
+                  </p>
+                ) : (
+                  <div className="w-full flex justify-center">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSignup}
+                      onError={() =>
+                        toast.error("Google sign-in failed. Please try again.")
+                      }
+                      text="signup_with"
+                      width="320"
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>
