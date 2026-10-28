@@ -5,6 +5,10 @@ import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import ErrorMessage from "@/components/atoms/form/Error";
+import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { normalizeRole, ROLES } from "@/lib/auth/roles";
+import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
 import {
   Select,
   SelectContent,
@@ -51,6 +55,11 @@ export function SignupForm({ className, ...props }) {
   const [registered, setRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [registeredRole, setRegisteredRole] = useState("");
+  const {
+    loginWithGoogle,
+    isPending: isGooglePending,
+    googleAuthAvailable,
+  } = useGoogleAuth();
 
   const form = useForm({
     resolver: zodResolver(signupSchemaWithPolicy),
@@ -74,6 +83,18 @@ export function SignupForm({ className, ...props }) {
     } catch (err) {
       setError(err?.message || "Signup failed. Please try again.");
       toast.error(err?.message || "Signup failed. Please try again.");
+    }
+  };
+
+  // Google already verifies the email, so unlike email/password signup there's
+  // no "check your inbox" step — a successful sign-in logs the user straight in.
+  const handleGoogleSignup = async (credentialResponse) => {
+    const user = await loginWithGoogle(credentialResponse?.credential);
+    if (user) {
+      setTimeout(() => {
+        const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+      }, 500);
     }
   };
 
@@ -180,10 +201,35 @@ export function SignupForm({ className, ...props }) {
               loaderColor="white"
               loaderSize={24}
               type="submit"
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting || isGooglePending}
             >
               Sign Up
             </Button>
+
+            {googleAuthAvailable && (
+              <>
+                <div className="relative my-1">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      or
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSignup}
+                    onError={() =>
+                      toast.error("Google sign-in failed. Please try again.")
+                    }
+                    text="signup_with"
+                    width="320"
+                  />
+                </div>
+              </>
+            )}
           </div>
           <div className="text-center text-sm">
             Already have an account?{" "}
