@@ -2,6 +2,9 @@
 
 import { login } from "@/hooks/useAuth";
 import { useStellarAuth } from "@/hooks/useStellarAuth";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { GoogleLogin } from "@react-oauth/google";
+import { toast } from "sonner";
 import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
 import Button from "@/components/atoms/form/Button";
@@ -42,6 +45,11 @@ export function LoginForm({ className, ...props }) {
     stellarAuthAvailable,
     kitInitialized,
   } = useStellarAuth();
+  const {
+    loginWithGoogle,
+    isPending: isGooglePending,
+    googleAuthAvailable,
+  } = useGoogleAuth();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -50,6 +58,7 @@ export function LoginForm({ className, ...props }) {
 
   const stellarDisabled =
     isStellarPending ||
+    isGooglePending ||
     form.formState.isSubmitting ||
     !kitInitialized ||
     stellarAuthAvailable === false;
@@ -85,6 +94,21 @@ export function LoginForm({ className, ...props }) {
       }
     } catch {
       // loginWithStellar already toasts failures
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const user = await loginWithGoogle(credentialResponse?.credential);
+      if (user) {
+        setTimeout(() => {
+          // The hard reload intentionally refreshes the auth cookie/session after login.
+          const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+          window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+        }, 500);
+      }
+    } catch {
+      // loginWithGoogle already toasts failures
     }
   };
 
@@ -175,7 +199,7 @@ export function LoginForm({ className, ...props }) {
               loaderColor="white"
               loaderSize={24}
               type="submit"
-              disabled={form.formState.isSubmitting || isStellarPending}
+              disabled={form.formState.isSubmitting || isStellarPending || isGooglePending}
             >
               Login
             </Button>
@@ -190,6 +214,19 @@ export function LoginForm({ className, ...props }) {
                 </span>
               </div>
             </div>
+
+            {googleAuthAvailable && (
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleLogin}
+                  onError={() =>
+                    toast.error("Google sign-in failed. Please try again.")
+                  }
+                  text="continue_with"
+                  width="320"
+                />
+              </div>
+            )}
 
             {stellarAuthAvailable === false ? (
               <Tooltip>

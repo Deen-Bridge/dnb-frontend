@@ -95,12 +95,13 @@ axiosInstance.interceptors.response.use(
       });
     }
 
-    // Handle 401 - attempt token refresh (skip for login/register/refresh/stellar-auth endpoints)
+    // Handle 401 - attempt token refresh (skip for login/register/refresh/stellar-auth/google-auth endpoints)
     const isAuthRoute =
       originalRequest?.url?.includes("/api/auth/login") ||
       originalRequest?.url?.includes("/api/auth/register") ||
       originalRequest?.url?.includes("/api/auth/refresh") ||
-      originalRequest?.url?.includes("/api/auth/stellar/");
+      originalRequest?.url?.includes("/api/auth/stellar/") ||
+      originalRequest?.url?.includes("/api/auth/google");
 
     if (originalRequest && error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
