@@ -89,11 +89,14 @@ export function formatTime12h(timeStr?: string): string {
   return `${hours}:${minutes} ${ampm}`;
 }
 
-export async function fetchPrayerTimes(location?: PrayerLocation | null): Promise<PrayerTimesResult> {
+export async function fetchPrayerTimes(
+  location?: PrayerLocation | null
+): Promise<PrayerTimesResult> {
   const todayStr = new Date().toISOString().split("T")[0];
-  const locationKey = location?.lat && location?.lng
-    ? `${location.lat.toFixed(2)},${location.lng.toFixed(2)}`
-    : (location?.city || location?.name || "default");
+  const locationKey =
+    location?.lat && location?.lng
+      ? `${location.lat.toFixed(2)},${location.lng.toFixed(2)}`
+      : location?.city || location?.name || "default";
 
   if (typeof window !== "undefined") {
     try {
@@ -204,8 +207,17 @@ export async function fetchPrayerTimes(location?: PrayerLocation | null): Promis
   }
 }
 
-export function getNextPrayerInfo(timings?: PrayerTimings | null, timezone: string | null = null): NextPrayerInfo {
-  if (!timings) return { nextPrayerName: "Fajr", nextPrayerTimeFormatted: "05:00 AM", remainingSeconds: 0, isTomorrow: false };
+export function getNextPrayerInfo(
+  timings?: PrayerTimings | null,
+  timezone: string | null = null
+): NextPrayerInfo {
+  if (!timings)
+    return {
+      nextPrayerName: "Fajr",
+      nextPrayerTimeFormatted: "05:00 AM",
+      remainingSeconds: 0,
+      isTomorrow: false,
+    };
 
   let nowInTz = new Date();
   if (timezone) {
@@ -229,7 +241,10 @@ export function getNextPrayerInfo(timings?: PrayerTimings | null, timezone: stri
     prayerDate.setHours(h, m, 0, 0);
 
     if (prayerDate > nowInTz) {
-      const remainingSeconds = Math.max(0, Math.floor((prayerDate.getTime() - nowInTz.getTime()) / 1000));
+      const remainingSeconds = Math.max(
+        0,
+        Math.floor((prayerDate.getTime() - nowInTz.getTime()) / 1000)
+      );
       return {
         nextPrayerName: name,
         nextPrayerTimeFormatted: formatTime12h(timeStr),
@@ -247,7 +262,10 @@ export function getNextPrayerInfo(timings?: PrayerTimings | null, timezone: stri
   tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
   tomorrowFajr.setHours(fh, fm, 0, 0);
 
-  const remainingSeconds = Math.max(0, Math.floor((tomorrowFajr.getTime() - nowInTz.getTime()) / 1000));
+  const remainingSeconds = Math.max(
+    0,
+    Math.floor((tomorrowFajr.getTime() - nowInTz.getTime()) / 1000)
+  );
 
   return {
     nextPrayerName: "Fajr",

@@ -27,8 +27,7 @@ export default function MediaBlurToggle({
   label = "Blur media by default",
   description,
 }) {
-  const { blurEnabled, toggleBlur, reducedMotion, loaded } =
-    useMediaBlurContext();
+  const { blurEnabled, toggleBlur, reducedMotion, loaded } = useMediaBlurContext();
 
   if (!loaded) return null;
 
@@ -37,18 +36,13 @@ export default function MediaBlurToggle({
     : "Sensitive images are blurred until hovered or clicked";
 
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between gap-4",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center justify-between gap-4", className)}>
       <div className="flex flex-col gap-0.5">
         <Label
           htmlFor="media-blur-toggle"
           className={cn(
             "text-sm font-medium leading-none cursor-pointer",
-            reducedMotion && "opacity-50 cursor-not-allowed",
+            reducedMotion && "opacity-50 cursor-not-allowed"
           )}
         >
           {label}

@@ -6,7 +6,7 @@ export const ROLES = Object.freeze({
   ADMIN: "admin",
 } as const);
 
-export type Role = typeof ROLES[keyof typeof ROLES];
+export type Role = (typeof ROLES)[keyof typeof ROLES];
 
 export const CAPABILITIES = Object.freeze({
   COURSE_CREATE: "course:create",
@@ -15,7 +15,7 @@ export const CAPABILITIES = Object.freeze({
   SPACE_CREATE: "space:create",
 } as const);
 
-export type Capability = typeof CAPABILITIES[keyof typeof CAPABILITIES];
+export type Capability = (typeof CAPABILITIES)[keyof typeof CAPABILITIES];
 
 const ROLE_CAPABILITIES: Record<Role, readonly Capability[]> = Object.freeze({
   [ROLES.STUDENT]: Object.freeze([]),
@@ -48,7 +48,8 @@ export function normalizeRole(role: unknown): Role | null {
   return null;
 }
 
-export function isVerified(user?: Partial<User> | Record<string, any> | null): boolean { // TODO(types): User object with potential verification flags
+export function isVerified(user?: Partial<User> | Record<string, any> | null): boolean {
+  // TODO(types): User object with potential verification flags
   if (!user || typeof user !== "object") return false;
   if ((user as any).isVerified === true) return true; // TODO(types): Verification flag variations
   if ((user as any).educatorVerified === true) return true; // TODO(types): Verification flag variations
@@ -66,7 +67,11 @@ export function requiresVerification(action: Capability | string): boolean {
   return VERIFICATION_REQUIRED.has(action as Capability);
 }
 
-export function roleAllows(user?: Partial<User> | Record<string, any> | null, action?: Capability | string): boolean { // TODO(types): User object
+export function roleAllows(
+  user?: Partial<User> | Record<string, any> | null,
+  action?: Capability | string
+): boolean {
+  // TODO(types): User object
   if (!user || !action) return false;
   const role = normalizeRole((user as any).role); // TODO(types): Role property on user
   if (!role) return false;
@@ -74,7 +79,11 @@ export function roleAllows(user?: Partial<User> | Record<string, any> | null, ac
   return (ROLE_CAPABILITIES[role] || []).includes(action as Capability);
 }
 
-export function can(action?: Capability | string, user?: Partial<User> | Record<string, any> | null): boolean { // TODO(types): User object
+export function can(
+  action?: Capability | string,
+  user?: Partial<User> | Record<string, any> | null
+): boolean {
+  // TODO(types): User object
   if (!action || !user || typeof user !== "object") return false;
 
   const role = normalizeRole((user as any).role); // TODO(types): Role property on user

@@ -54,9 +54,7 @@ const formatDuration = (minutes, t) => {
   if (minutes < 60) return t("duration.mins", { count: minutes });
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins === 0
-    ? t("duration.hr", { count: hours })
-    : t("duration.hrMin", { hours, mins });
+  return mins === 0 ? t("duration.hr", { count: hours }) : t("duration.hrMin", { hours, mins });
 };
 
 // Rows are separated by weight within the single green hue — no second
@@ -142,9 +140,7 @@ const ContentCard = ({ item, row }) => {
             )}
           >
             <RowIcon className="size-3 shrink-0" />
-            <span className="truncate">
-              {t(`${row.key}.${item.id}.category`)}
-            </span>
+            <span className="truncate">{t(`${row.key}.${item.id}.category`)}</span>
           </span>
           {item.status === "live" && (
             <span
@@ -159,18 +155,11 @@ const ContentCard = ({ item, row }) => {
           )}
         </div>
 
-        <h3
-          className={cn(
-            poppins_600,
-            "mb-2 line-clamp-1 text-xl text-ink font-stretch-110%"
-          )}
-        >
+        <h3 className={cn(poppins_600, "mb-2 line-clamp-1 text-xl text-ink font-stretch-110%")}>
           {t(`${row.key}.${item.id}.title`)}
         </h3>
 
-        <p className={cn(poppins_500, "mb-1 text-xs", row.tone.byline)}>
-          {row.byline(item, t)}
-        </p>
+        <p className={cn(poppins_500, "mb-1 text-xs", row.tone.byline)}>{row.byline(item, t)}</p>
 
         <p
           className={cn(
@@ -205,10 +194,7 @@ const FeaturedContent = () => {
   const t = useTranslations("landing.featured");
 
   return (
-    <section
-      id="explore"
-      className="relative w-full overflow-hidden bg-surface py-20 sm:py-28"
-    >
+    <section id="explore" className="relative w-full overflow-hidden bg-surface py-20 sm:py-28">
       {/* Decorative motif — green on white, same treatment as WhyDeenBridge */}
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute start-0 top-0 h-1/2 w-1/2 rounded-full bg-gradient-to-br from-secondary/10 to-transparent blur-3xl" />
@@ -274,12 +260,7 @@ const FeaturedContent = () => {
                     <RowIcon className="size-4" />
                   </span>
                   <div className="text-start">
-                    <h3
-                      className={cn(
-                        poppins_600,
-                        "text-base text-ink font-stretch-110%"
-                      )}
-                    >
+                    <h3 className={cn(poppins_600, "text-base text-ink font-stretch-110%")}>
                       {t(`rows.${row.key}.label`)}
                     </h3>
                     <p className={cn(poppins_400, "text-xs text-ink-muted")}>

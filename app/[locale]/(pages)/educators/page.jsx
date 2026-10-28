@@ -4,11 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
 import Footer from "../(landingPage)/Footer";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
@@ -72,12 +68,7 @@ const EducatorCard = ({ educator }) => {
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <h3
-            className={cn(
-              poppins_600,
-              "truncate text-lg text-ink font-stretch-110%"
-            )}
-          >
+          <h3 className={cn(poppins_600, "truncate text-lg text-ink font-stretch-110%")}>
             {educator.name}
           </h3>
           <p className={cn(poppins_400, "truncate text-xs text-highlight")}>
@@ -92,8 +83,7 @@ const EducatorCard = ({ educator }) => {
           "mb-5 line-clamp-2 min-h-[2.5rem] text-sm leading-relaxed text-ink-muted font-stretch-110%"
         )}
       >
-        {educator.bio ||
-          "Teaching on DeenBridge and sharing knowledge with the Ummah."}
+        {educator.bio || "Teaching on DeenBridge and sharing knowledge with the Ummah."}
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -149,10 +139,7 @@ export default function EducatorsPage() {
       if (filter === "books" && e.books === 0) return false;
       if (filter === "spaces" && e.spaces === 0) return false;
       if (!q) return true;
-      return (
-        e.name.toLowerCase().includes(q) ||
-        (e.bio || "").toLowerCase().includes(q)
-      );
+      return e.name.toLowerCase().includes(q) || (e.bio || "").toLowerCase().includes(q);
     });
   }, [educators, query, filter]);
 
@@ -190,8 +177,8 @@ export default function EducatorsPage() {
               "mx-auto max-w-2xl text-lg leading-relaxed text-ink-inverse-muted font-stretch-110%"
             )}
           >
-            The teachers, authors, and hosts who write the books, build the
-            courses, and lead the live spaces on DeenBridge.
+            The teachers, authors, and hosts who write the books, build the courses, and lead the
+            live spaces on DeenBridge.
           </p>
 
           {!loading && !error && educators.length > 0 && (
@@ -203,22 +190,10 @@ export default function EducatorsPage() {
                 { n: meta?.spaces ?? 0, label: "spaces" },
               ].map((s) => (
                 <div key={s.label} className="text-center">
-                  <div
-                    className={cn(
-                      poppins_600,
-                      "text-2xl text-secondary font-stretch-110%"
-                    )}
-                  >
+                  <div className={cn(poppins_600, "text-2xl text-secondary font-stretch-110%")}>
                     {s.n}
                   </div>
-                  <div
-                    className={cn(
-                      poppins_400,
-                      "text-xs text-ink-inverse-muted"
-                    )}
-                  >
-                    {s.label}
-                  </div>
+                  <div className={cn(poppins_400, "text-xs text-ink-inverse-muted")}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -283,15 +258,8 @@ export default function EducatorsPage() {
               ) : visible.length === 0 ? (
                 <div className="rounded-3xl border border-accent/10 bg-surface-raised px-6 py-20 text-center">
                   <Users className="mx-auto mb-4 size-10 text-accent/40" />
-                  <h2
-                    className={cn(
-                      poppins_600,
-                      "mb-2 text-xl text-ink font-stretch-110%"
-                    )}
-                  >
-                    {educators.length === 0
-                      ? "No educators yet"
-                      : "No educators match that search"}
+                  <h2 className={cn(poppins_600, "mb-2 text-xl text-ink font-stretch-110%")}>
+                    {educators.length === 0 ? "No educators yet" : "No educators match that search"}
                   </h2>
                   <p
                     className={cn(

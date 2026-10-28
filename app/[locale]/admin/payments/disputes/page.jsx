@@ -3,13 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -97,8 +91,10 @@ const mockDisputes = [
     amount: 49.99,
     transactionId: "PLT-10042",
     state: "open",
-    buyerStatement: "I purchased this course but the video lectures won't load. Requesting a full refund.",
-    educatorStatement: "The course content is fully functional. The buyer may have connectivity issues.",
+    buyerStatement:
+      "I purchased this course but the video lectures won't load. Requesting a full refund.",
+    educatorStatement:
+      "The course content is fully functional. The buyer may have connectivity issues.",
     evidenceList: [
       {
         id: "ev_001_1",
@@ -117,12 +113,17 @@ const mockDisputes = [
     buyer: { id: "usr_b2", name: "Fatima Al-Rashid", email: "fatima@example.com" },
     educator: { id: "usr_e2", name: "Dr. Amina Yusuf", email: "amina@example.com" },
     item: { type: "book", name: "Seerah Illustrated", id: "bk_205" },
-    amount: 12.50,
+    amount: 12.5,
     transactionId: "PLT-10038",
     state: "awaiting-evidence",
     buyerStatement: "The book description said 300 pages but the downloaded PDF is only 50 pages.",
-    educatorStatement: "The 300-page count includes appendices and index. The main content is complete.",
-    evidenceRequest: { target: "buyer", requestedAt: "2026-08-21T14:00:00Z", message: "Please provide a screenshot of the misleading listing." },
+    educatorStatement:
+      "The 300-page count includes appendices and index. The main content is complete.",
+    evidenceRequest: {
+      target: "buyer",
+      requestedAt: "2026-08-21T14:00:00Z",
+      message: "Please provide a screenshot of the misleading listing.",
+    },
     evidenceList: [
       {
         id: "ev_002_1",
@@ -141,10 +142,11 @@ const mockDisputes = [
     buyer: { id: "usr_b3", name: "Yusuf Khan", email: "yusuf@example.com" },
     educator: { id: "usr_e3", name: "Ustadh Omar Ali", email: "omar@example.com" },
     item: { type: "course", name: "Quran Memorization Plan", id: "crs_112" },
-    amount: 75.00,
+    amount: 75.0,
     transactionId: "PLT-10035",
     state: "resolved-refund",
-    buyerStatement: "The educator never responded to my questions and the course hasn't been updated.",
+    buyerStatement:
+      "The educator never responded to my questions and the course hasn't been updated.",
     educatorStatement: "I have been on medical leave. I apologize for the lack of communication.",
     resolution: "Full refund issued. Course delisted pending educator return.",
     evidenceList: [],
@@ -234,9 +236,7 @@ export default function DisputesPage() {
   const updateDisputeState = useCallback((disputeId, newState, resolution) => {
     setDisputes((prev) =>
       prev.map((d) =>
-        d.id === disputeId
-          ? { ...d, state: newState, ...(resolution ? { resolution } : {}) }
-          : d
+        d.id === disputeId ? { ...d, state: newState, ...(resolution ? { resolution } : {}) } : d
       )
     );
     setSelectedDispute((prev) =>
@@ -279,11 +279,7 @@ export default function DisputesPage() {
         title="Disputes Queue"
         subtitle="Manage buyer vs educator payment disputes with secure evidence viewing"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-          >
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
@@ -337,12 +333,8 @@ export default function DisputesPage() {
       {/* Disputes Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            Disputes ({filteredDisputes.length})
-          </CardTitle>
-          <CardDescription>
-            Buyer vs educator payment disputes requiring review
-          </CardDescription>
+          <CardTitle className="text-lg">Disputes ({filteredDisputes.length})</CardTitle>
+          <CardDescription>Buyer vs educator payment disputes requiring review</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border">
@@ -362,30 +354,21 @@ export default function DisputesPage() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                       <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin opacity-50" />
                       <p>Loading disputes…</p>
                     </TableCell>
                   </TableRow>
                 ) : error ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="py-8 text-center text-destructive"
-                    >
+                    <TableCell colSpan={8} className="py-8 text-center text-destructive">
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>{error}</p>
                     </TableCell>
                   </TableRow>
                 ) : paginatedDisputes.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No disputes found</p>
                     </TableCell>
@@ -446,11 +429,7 @@ export default function DisputesPage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={cn(
-                              "text-xs",
-                              stateConfig?.color,
-                              stateConfig?.bgColor
-                            )}
+                            className={cn("text-xs", stateConfig?.color, stateConfig?.bgColor)}
                           >
                             {stateConfig?.label}
                           </Badge>
@@ -537,12 +516,7 @@ export default function DisputesPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
-              <p
-                className={cn(
-                  poppins_400.className,
-                  "text-sm text-muted-foreground"
-                )}
-              >
+              <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
@@ -558,9 +532,7 @@ export default function DisputesPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                 >
                   Next
@@ -578,7 +550,6 @@ export default function DisputesPage() {
           {selectedDispute && (
             <div className="print-root space-y-4">
               <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
-
                 <div>
                   <DialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -608,11 +579,15 @@ export default function DisputesPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                     <div>
                       <span className="text-muted-foreground block">Tx Reference</span>
-                      <span className="font-mono font-semibold">{selectedDispute.transactionId}</span>
+                      <span className="font-mono font-semibold">
+                        {selectedDispute.transactionId}
+                      </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground block">Amount</span>
-                      <span className="font-mono font-semibold">${selectedDispute.amount.toFixed(2)} USDC</span>
+                      <span className="font-mono font-semibold">
+                        ${selectedDispute.amount.toFixed(2)} USDC
+                      </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground block">Item</span>
@@ -648,7 +623,10 @@ export default function DisputesPage() {
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {selectedDispute.buyer.name} &middot;{" "}
-                      <a href={`mailto:${selectedDispute.buyer.email}`} className="text-primary hover:underline print-url">
+                      <a
+                        href={`mailto:${selectedDispute.buyer.email}`}
+                        className="text-primary hover:underline print-url"
+                      >
                         {selectedDispute.buyer.email}
                       </a>
                     </CardDescription>
@@ -672,7 +650,10 @@ export default function DisputesPage() {
                     </CardTitle>
                     <CardDescription className="text-xs">
                       {selectedDispute.educator.name} &middot;{" "}
-                      <a href={`mailto:${selectedDispute.educator.email}`} className="text-primary hover:underline print-url">
+                      <a
+                        href={`mailto:${selectedDispute.educator.email}`}
+                        className="text-primary hover:underline print-url"
+                      >
                         {selectedDispute.educator.email}
                       </a>
                     </CardDescription>
@@ -719,7 +700,8 @@ export default function DisputesPage() {
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2 min-w-0">
-                                {item.fileType?.includes("pdf") || item.fileName?.endsWith(".pdf") ? (
+                                {item.fileType?.includes("pdf") ||
+                                item.fileName?.endsWith(".pdf") ? (
                                   <FileText className="h-4 w-4 text-red-500 shrink-0" />
                                 ) : (
                                   <ImageIcon className="h-4 w-4 text-blue-500 shrink-0" />
@@ -780,8 +762,7 @@ export default function DisputesPage() {
               </Card>
 
               {/* Resolution / Actions */}
-              {selectedDispute.state === "open" ||
-              selectedDispute.state === "awaiting-evidence" ? (
+              {selectedDispute.state === "open" || selectedDispute.state === "awaiting-evidence" ? (
                 <DialogFooter className="no-print flex flex-wrap gap-2 sm:justify-start pt-2">
                   <Button
                     variant="outline"
@@ -794,9 +775,7 @@ export default function DisputesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      requestEvidence(selectedDispute.id, "educator")
-                    }
+                    onClick={() => requestEvidence(selectedDispute.id, "educator")}
                   >
                     <Send className="h-4 w-4 mr-2" />
                     Request Evidence from Educator
@@ -849,4 +828,3 @@ export default function DisputesPage() {
     </PageShell>
   );
 }
-

@@ -1,7 +1,7 @@
 // app/api/report-reasons/[id]/route.js
-import { NextResponse } from 'next/server';
-import { getReasonById, updateReason, mergeReason } from '@/lib/report-reasons-store';
-import { REPORT_REASON_GROUPS } from '@/lib/reportReasons';
+import { NextResponse } from "next/server";
+import { getReasonById, updateReason, mergeReason } from "@/lib/report-reasons-store";
+import { REPORT_REASON_GROUPS } from "@/lib/reportReasons";
 
 export async function PUT(request, { params }) {
   const { id } = params;
@@ -9,7 +9,7 @@ export async function PUT(request, { params }) {
   const existing = getReasonById(id);
 
   if (!existing) {
-    return NextResponse.json({ error: 'Reason not found.' }, { status: 404 });
+    return NextResponse.json({ error: "Reason not found." }, { status: 404 });
   }
 
   const updates = {};
@@ -36,7 +36,10 @@ export async function DELETE(request, { params }) {
 
   if (!mergeInto) {
     return NextResponse.json(
-      { error: 'mergeInto is required to preserve historical data. Merging is the supported way to remove a reason.' },
+      {
+        error:
+          "mergeInto is required to preserve historical data. Merging is the supported way to remove a reason.",
+      },
       { status: 400 }
     );
   }
@@ -44,7 +47,7 @@ export async function DELETE(request, { params }) {
   const result = mergeReason(id, mergeInto);
 
   if (!result) {
-    return NextResponse.json({ error: 'Reason not found.' }, { status: 404 });
+    return NextResponse.json({ error: "Reason not found." }, { status: 404 });
   }
 
   return NextResponse.json(result);

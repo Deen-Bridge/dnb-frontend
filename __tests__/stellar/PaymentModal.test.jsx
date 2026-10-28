@@ -89,27 +89,13 @@ describe("PaymentModal Component", () => {
   });
 
   it("does not render dialog content when isOpen is false", () => {
-    render(
-      <PaymentModal
-        isOpen={false}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={false} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
     expect(screen.queryByText("Purchase Course")).not.toBeInTheDocument();
   });
 
   it("renders purchase preview with item details and connected wallet info", async () => {
     await act(async () => {
-      render(
-        <PaymentModal
-          isOpen={true}
-          onClose={vi.fn()}
-          item={MOCK_ITEM}
-          itemType="course"
-        />
-      );
+      render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
     });
 
     expect(screen.getByText("Purchase Course")).toBeInTheDocument();
@@ -126,14 +112,7 @@ describe("PaymentModal Component", () => {
     stellarContextMock.connectedWallet = null;
     stellarContextMock.hasWalletExtension = false;
 
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     expect(screen.getByText("No Stellar wallet detected")).toBeInTheDocument();
     expect(screen.getByText("Install Freighter")).toBeInTheDocument();
@@ -145,14 +124,7 @@ describe("PaymentModal Component", () => {
     stellarContextMock.connectedWallet = null;
     stellarContextMock.hasWalletExtension = true;
 
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="book"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="book" />);
 
     expect(screen.getByText("Purchase Book")).toBeInTheDocument();
     expect(screen.getByText("Connect your Stellar wallet to continue")).toBeInTheDocument();
@@ -167,20 +139,11 @@ describe("PaymentModal Component", () => {
     stellarContextMock.networkMismatch = true;
 
     await act(async () => {
-      render(
-        <PaymentModal
-          isOpen={true}
-          onClose={vi.fn()}
-          item={MOCK_ITEM}
-          itemType="course"
-        />
-      );
+      render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
     });
 
     expect(screen.getByText("Wrong Network")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Your wallet is on a different network/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Your wallet is on a different network/i)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /continue/i })).not.toBeInTheDocument();
   });
 
@@ -194,14 +157,7 @@ describe("PaymentModal Component", () => {
       },
     ]);
 
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     await waitFor(() => {
       expect(screen.getByText("USDC Trustline Missing")).toBeInTheDocument();
@@ -216,14 +172,7 @@ describe("PaymentModal Component", () => {
     stellarContextMock.walletInfo.usdcBalance = "10.00"; // Item price is 45
 
     await act(async () => {
-      render(
-        <PaymentModal
-          isOpen={true}
-          onClose={vi.fn()}
-          item={MOCK_ITEM}
-          itemType="course"
-        />
-      );
+      render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
     });
 
     const button = screen.getByRole("button", { name: "Insufficient Balance" });
@@ -231,14 +180,7 @@ describe("PaymentModal Component", () => {
   });
 
   it("progresses to confirm step after clicking continue", async () => {
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     const continueButton = screen.getByRole("button", { name: /continue/i });
     fireEvent.click(continueButton);
@@ -258,14 +200,7 @@ describe("PaymentModal Component", () => {
   });
 
   it("toggles SEP-7 QR code in confirm step", async () => {
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     fireEvent.click(screen.getByRole("button", { name: /continue/i }));
 
@@ -277,14 +212,7 @@ describe("PaymentModal Component", () => {
   });
 
   it("returns from confirm to preview on clicking Back button", async () => {
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     fireEvent.click(screen.getByRole("button", { name: /continue/i }));
     await screen.findByText("Please confirm the transaction in your wallet extension.");
@@ -319,9 +247,7 @@ describe("PaymentModal Component", () => {
 
     expect(await screen.findByText("Payment Complete!")).toBeInTheDocument();
     expect(screen.getByText("Payment Successful!")).toBeInTheDocument();
-    expect(
-      screen.getByText(`You now have access to "${MOCK_ITEM.title}"`)
-    ).toBeInTheDocument();
+    expect(screen.getByText(`You now have access to "${MOCK_ITEM.title}"`)).toBeInTheDocument();
     expect(screen.getByText("View on Stellar Explorer")).toHaveAttribute(
       "href",
       "https://stellar.expert/explorer/testnet/tx/0x1234567890"
@@ -337,14 +263,7 @@ describe("PaymentModal Component", () => {
   it("handles payment execution failure state", async () => {
     stellarPaymentMock.executePayment.mockResolvedValue(false);
 
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     fireEvent.click(screen.getByRole("button", { name: /continue/i }));
     await screen.findByRole("button", { name: /sign & pay/i });
@@ -352,23 +271,14 @@ describe("PaymentModal Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /sign & pay/i }));
 
     expect(await screen.findByText("Payment Failed")).toBeInTheDocument();
-    expect(
-      screen.getByText("Transaction failed. Please try again.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Transaction failed. Please try again.")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /close/i }).length).toBeGreaterThan(0);
   });
 
   it("handles thrown mapped Stellar error during confirm execution", async () => {
     stellarPaymentMock.executePayment.mockRejectedValue(new Error("op_underfunded"));
 
-    render(
-      <PaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        item={MOCK_ITEM}
-        itemType="course"
-      />
-    );
+    render(<PaymentModal isOpen={true} onClose={vi.fn()} item={MOCK_ITEM} itemType="course" />);
 
     fireEvent.click(screen.getByRole("button", { name: /continue/i }));
     await screen.findByRole("button", { name: /sign & pay/i });
@@ -379,22 +289,13 @@ describe("PaymentModal Component", () => {
     expect(
       screen.getByText("You don't have enough USDC to complete this transaction.")
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("Add more USDC to your wallet and try again.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Add more USDC to your wallet and try again.")).toBeInTheDocument();
   });
 
   it("cancels pending transaction on clicking Cancel button in preview", async () => {
     const onClose = vi.fn();
     await act(async () => {
-      render(
-        <PaymentModal
-          isOpen={true}
-          onClose={onClose}
-          item={MOCK_ITEM}
-          itemType="course"
-        />
-      );
+      render(<PaymentModal isOpen={true} onClose={onClose} item={MOCK_ITEM} itemType="course" />);
     });
 
     const cancelBtn = screen.getByRole("button", { name: "Cancel" });

@@ -36,7 +36,8 @@ export const fallbackCourses: FallbackCourse[] = [
   {
     id: "course-101",
     title: "Fiqh of Purification & Salah",
-    description: "Comprehensive practical course on ritual purity, ablution, and prayer jurisprudence.",
+    description:
+      "Comprehensive practical course on ritual purity, ablution, and prayer jurisprudence.",
     category: "Fiqh",
     price: 0,
     type: "course",
@@ -156,7 +157,8 @@ const fallbackSpaces: FallbackSpace[] = [
   },
 ];
 
-export function getLocalSearchResults(term?: string): any[] { // TODO(types): Mixed search entity results array
+export function getLocalSearchResults(term?: string): any[] {
+  // TODO(types): Mixed search entity results array
   if (!term || !term.trim()) return [];
   const q = term.trim().toLowerCase();
 

@@ -72,16 +72,15 @@ function buildSummary(
   creatorWallet: string,
   creatorName: string
 ): BookPayoutSummary {
-  const confirmed = settlements.filter(
-    (s) => s.status && s.status.toLowerCase() === "confirmed"
-  );
+  const confirmed = settlements.filter((s) => s.status && s.status.toLowerCase() === "confirmed");
   return {
     bookId: params.bookId,
     title: params.bookTitle || "Book",
     creatorName: creatorName || params.creatorName || "Unknown author",
     creatorWallet,
     unitsSold: confirmed.length,
-    grossUsdc: Math.round(confirmed.reduce((sum, s) => sum + (Number(s.amount) || 0), 0) * 100) / 100,
+    grossUsdc:
+      Math.round(confirmed.reduce((sum, s) => sum + (Number(s.amount) || 0), 0) * 100) / 100,
     settlements,
   };
 }
@@ -122,15 +121,11 @@ export async function fetchBookPayouts(
     logger.error("Failed to fetch book payouts:", error);
     return {
       success: false,
-      error:
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to fetch payout summary",
+      error: error?.response?.data?.message || error?.message || "Failed to fetch payout summary",
     };
   }
 
-  const txList: AdminTransactionRecord[] =
-    (res.data && res.data.transactions) || [];
+  const txList: AdminTransactionRecord[] = (res.data && res.data.transactions) || [];
 
   const matched = txList.filter((tx) => {
     if (tx.itemType?.toLowerCase() !== "book") return false;

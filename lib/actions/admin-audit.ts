@@ -8,7 +8,7 @@ export const AUDIT_CATEGORIES = Object.freeze([
   "system",
 ] as const);
 
-export type AuditCategory = typeof AUDIT_CATEGORIES[number];
+export type AuditCategory = (typeof AUDIT_CATEGORIES)[number];
 
 function withMockDelay<T>(value: T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), MOCK_DELAY_MS));
@@ -546,7 +546,13 @@ export interface LogAdminActionParams {
   ip?: string | null;
 }
 
-export async function logAdminAction({ action, category, target, summary, metadata }: LogAdminActionParams): Promise<{ log: AuditLogEntry }> {
+export async function logAdminAction({
+  action,
+  category,
+  target,
+  summary,
+  metadata,
+}: LogAdminActionParams): Promise<{ log: AuditLogEntry }> {
   const log: AuditLogEntry = {
     id: `log-${Math.random().toString(36).slice(2, 10)}`,
     timestamp: new Date().toISOString(),

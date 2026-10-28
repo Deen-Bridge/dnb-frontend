@@ -67,9 +67,7 @@ export default function ReauthPromptDialog({
     <Dialog open={open} onOpenChange={(next) => !isSubmitting && onOpenChange?.(next)}>
       <DialogContent className="border border-accent/10 bg-surface-raised sm:max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <DialogTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <ShieldAlert className="h-5 w-5 text-secondary" aria-hidden="true" />
             {title}
           </DialogTitle>
@@ -80,10 +78,7 @@ export default function ReauthPromptDialog({
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-1.5">
-            <Label
-              htmlFor="reauth-password"
-              className={cn(poppins_500.className, "text-ink")}
-            >
+            <Label htmlFor="reauth-password" className={cn(poppins_500.className, "text-ink")}>
               Password
             </Label>
             <div className="relative">

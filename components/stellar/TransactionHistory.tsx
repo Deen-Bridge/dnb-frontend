@@ -195,32 +195,22 @@ export default function TransactionHistory() {
                           <GraduationCap className="h-4 w-4 text-muted-foreground" />
                         )}
                         <div>
-                          <p className="font-medium line-clamp-1">
-                            {tx.itemTitle}
-                          </p>
-                          <p className="text-xs text-muted-foreground capitalize">
-                            {tx.itemType}
-                          </p>
+                          <p className="font-medium line-clamp-1">{tx.itemTitle}</p>
+                          <p className="text-xs text-muted-foreground capitalize">{tx.itemType}</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <span className="font-semibold">${tx.amount}</span>
-                      <span className="text-muted-foreground text-sm ml-1">
-                        USDC
-                      </span>
+                      <span className="text-muted-foreground text-sm ml-1">USDC</span>
                     </TableCell>
                     <TableCell>
                       <div>
                         <p className="font-medium">
-                          {role === "buyer"
-                            ? tx.creator?.name
-                            : tx.buyer?.name}
+                          {role === "buyer" ? tx.creator?.name : tx.buyer?.name}
                         </p>
                         <p className="text-xs text-muted-foreground font-mono">
-                          {truncateAddress(
-                            role === "buyer" ? tx.creatorWallet : tx.buyerWallet
-                          )}
+                          {truncateAddress(role === "buyer" ? tx.creatorWallet : tx.buyerWallet)}
                         </p>
                       </div>
                     </TableCell>
@@ -233,9 +223,7 @@ export default function TransactionHistory() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm">
-                        {formatDate(tx.createdAt)}
-                      </span>
+                      <span className="text-sm">{formatDate(tx.createdAt)}</span>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -243,7 +231,8 @@ export default function TransactionHistory() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={(e: any) => { // TODO(types): Mouse event
+                          onClick={(e: any) => {
+                            // TODO(types): Mouse event
                             e.stopPropagation();
                             handleOpenDrawer(tx);
                           }}
@@ -275,16 +264,13 @@ export default function TransactionHistory() {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Page {pagination.page} of {pagination.pages} ({pagination.total}{" "}
-                transactions)
+                Page {pagination.page} of {pagination.pages} ({pagination.total} transactions)
               </p>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setPagination((p) => ({ ...p, page: p.page - 1 }))
-                  }
+                  onClick={() => setPagination((p) => ({ ...p, page: p.page - 1 }))}
                   disabled={pagination.page <= 1 || isLoading}
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -293,9 +279,7 @@ export default function TransactionHistory() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setPagination((p) => ({ ...p, page: p.page + 1 }))
-                  }
+                  onClick={() => setPagination((p) => ({ ...p, page: p.page + 1 }))}
                   disabled={pagination.page >= pagination.pages || isLoading}
                 >
                   Next
@@ -308,11 +292,7 @@ export default function TransactionHistory() {
       )}
 
       {/* Transaction Drawer Modal (#338) */}
-      <TransactionDrawer
-        transaction={selectedTx}
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-      />
+      <TransactionDrawer transaction={selectedTx} open={drawerOpen} onOpenChange={setDrawerOpen} />
     </div>
   );
 }

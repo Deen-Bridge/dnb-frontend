@@ -118,9 +118,7 @@ describe("fetchUserActivityTimeline", () => {
 
   it("omits untimestamped entries instead of guessing a date", async () => {
     const { events } = await fetchUserActivityTimeline(BASE_USER);
-    expect(
-      events.some((e) => e.id.includes("course-without-timestamp"))
-    ).toBe(false);
+    expect(events.some((e) => e.id.includes("course-without-timestamp"))).toBe(false);
   });
 
   it("degrades gracefully when the purchases endpoint fails, falling back to record purchases", async () => {
@@ -132,9 +130,7 @@ describe("fetchUserActivityTimeline", () => {
       "Purchase history could not be loaded from the transactions endpoint.",
     ]);
     expect(events.map((e) => e.title)).toContain("Purchased Legacy purchase");
-    expect(events.map((e) => e.title)).not.toContain(
-      "Purchased Tafsir of Surah Al-Fatihah"
-    );
+    expect(events.map((e) => e.title)).not.toContain("Purchased Tafsir of Surah Al-Fatihah");
   });
 
   it("never throws, even when every source fails", async () => {
@@ -237,9 +233,7 @@ describe("<UserActivityTimeline />", () => {
 
     render(<UserActivityTimeline user={BASE_USER} />);
 
-    expect(
-      await screen.findByText(/purchase history could not be loaded/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/purchase history could not be loaded/i)).toBeInTheDocument();
     // The rest of the feed still renders.
     expect(await screen.findByText("Last signed in")).toBeInTheDocument();
   });

@@ -225,7 +225,9 @@ describe("useStellarWallet & StellarProvider", () => {
         await result.current.connectWallet();
       });
 
-      expect(toastMock.error).toHaveBeenCalledWith("Wallet address already bound to another account");
+      expect(toastMock.error).toHaveBeenCalledWith(
+        "Wallet address already bound to another account"
+      );
     });
   });
 
@@ -321,9 +323,7 @@ describe("useStellarWallet & StellarProvider", () => {
         await result.current.refreshBalance();
       });
 
-      expect(axiosMock.get).toHaveBeenCalledWith(
-        `/api/stellar/wallet/balance/${VALID_PUBLIC_KEY}`
-      );
+      expect(axiosMock.get).toHaveBeenCalledWith(`/api/stellar/wallet/balance/${VALID_PUBLIC_KEY}`);
       expect(result.current.walletInfo?.usdcBalance).toBe("250.00");
     });
   });

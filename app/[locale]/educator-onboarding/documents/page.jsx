@@ -40,9 +40,7 @@ export default function EducatorDocumentsPage() {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
           <ShieldCheck className="h-6 w-6 text-accent" aria-hidden="true" />
         </div>
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
-          Step 4 of 4
-        </p>
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">Step 4 of 4</p>
       </div>
 
       <DocumentUpload

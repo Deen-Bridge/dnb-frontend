@@ -244,26 +244,18 @@ async function main() {
     process.stdout.write(
       `\nProgress — ${fixed.length} file(s) improved:\n` +
         fixed
-          .map(
-            (f) =>
-              `  ✓ ${f.file}: ${f.allowed} → ${f.count} (-${f.allowed - f.count})`
-          )
+          .map((f) => `  ✓ ${f.file}: ${f.allowed} → ${f.count} (-${f.allowed - f.count})`)
           .join("\n") +
         "\n"
     );
-    process.stdout.write(
-      `\nTip: run \`npm run lint:any -- --update\` to refresh the baseline.\n`
-    );
+    process.stdout.write(`\nTip: run \`npm run lint:any -- --update\` to refresh the baseline.\n`);
   }
 
   if (regressions.length) {
     process.stdout.write(
       `\nFAIL — ${regressions.length} file(s) gained explicit \`any\`:\n` +
         regressions
-          .map(
-            (r) =>
-              `  ✗ ${r.file}: ${r.count} explicit any (baseline allowed ${r.allowed})`
-          )
+          .map((r) => `  ✗ ${r.file}: ${r.count} explicit any (baseline allowed ${r.allowed})`)
           .join("\n") +
         "\n"
     );
@@ -272,9 +264,7 @@ async function main() {
   if (newFiles.length) {
     process.stdout.write(
       `\nFAIL — ${newFiles.length} file(s) introduced explicit \`any\` that the baseline does not know:\n` +
-        newFiles
-          .map((f) => `  ✗ ${f.file}: ${f.count} explicit any`)
-          .join("\n") +
+        newFiles.map((f) => `  ✗ ${f.file}: ${f.count} explicit any`).join("\n") +
         "\n"
     );
   }
@@ -284,9 +274,7 @@ async function main() {
       `\nFAIL — ${unjustified.length} eslint-disable directive(s) for ${RULE} lack a justification.\n` +
         "Every disable must be scoped and justified:\n" +
         "  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- <reason>\n" +
-        unjustified
-          .map((u) => `  ✗ ${u.file}:${u.line} ${u.text}`)
-          .join("\n") +
+        unjustified.map((u) => `  ✗ ${u.file}:${u.line} ${u.text}`).join("\n") +
         "\n"
     );
   }

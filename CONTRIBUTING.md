@@ -59,6 +59,7 @@ Changes merged to `main` may be deployed to production. Keep pull requests focus
 3. Test your changes:
    ```bash
    npm run lint
+   npm run format:check
    npm run build
    ```
 
@@ -80,6 +81,21 @@ Changes merged to `main` may be deployed to production. Keep pull requests focus
 - Follow the existing file structure
 - Use descriptive variable and function names
 - Keep components focused and small
+
+### Formatting
+
+Formatting is handled by [Prettier](https://prettier.io/) and enforced in CI.
+
+```bash
+npm run format        # rewrite the files in place
+npm run format:check  # fail if anything is unformatted (this is what CI runs)
+```
+
+Run `npm run format` before you commit, or the `format:check` CI step will fail
+the pull request. The settings live in [`.prettierrc`](.prettierrc); the files
+that are intentionally left alone (build output, the generated service worker,
+the lockfile, Markdown and workflow YAML) are listed in
+[`.prettierignore`](.prettierignore).
 
 ### Styling
 

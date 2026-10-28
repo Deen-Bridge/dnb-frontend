@@ -1,11 +1,5 @@
 "use client";
-import {
-  FaBookOpen,
-  FaUsers,
-  FaMosque,
-  FaShieldAlt,
-  FaHandsHelping,
-} from "react-icons/fa";
+import { FaBookOpen, FaUsers, FaMosque, FaShieldAlt, FaHandsHelping } from "react-icons/fa";
 import { BsStars } from "react-icons/bs";
 import { useTranslations } from "next-intl";
 import Button from "@/components/atoms/form/Button";

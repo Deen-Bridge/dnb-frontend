@@ -1,7 +1,8 @@
 import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
-export async function fetchRecomCourses(interests: any): Promise<any[]> { // TODO(types): Interests filter params
+export async function fetchRecomCourses(interests: any): Promise<any[]> {
+  // TODO(types): Interests filter params
   try {
     const response = await axiosInstance.get("/api/courses/recom", { params: interests });
     if (response.data && response.data.courses) {

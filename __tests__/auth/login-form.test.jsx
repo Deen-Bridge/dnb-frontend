@@ -37,8 +37,7 @@ vi.mock("@/hooks/useStellarAuth", () => ({
 }));
 
 vi.mock("@/components/molecules/Modal", () => ({
-  default: ({ isOpen, children }) =>
-    isOpen ? <div role="dialog">{children}</div> : null,
+  default: ({ isOpen, children }) => (isOpen ? <div role="dialog">{children}</div> : null),
 }));
 
 vi.mock("@/components/organisms/auth/forget-password", () => ({

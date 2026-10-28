@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  resolveSafeCallbackRedirect,
-  resolveSafeRedirectTarget,
-} from "@/lib/auth/safeRedirect";
+import { resolveSafeCallbackRedirect, resolveSafeRedirectTarget } from "@/lib/auth/safeRedirect";
 
 describe("resolveSafeRedirectTarget (#568)", () => {
   it("permits safe relative internal paths with query and hash fragments", () => {
@@ -17,7 +14,9 @@ describe("resolveSafeRedirectTarget (#568)", () => {
     expect(resolveSafeRedirectTarget("https://evil.example/login")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget("http://evil.example")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget("javascript:alert(1)")).toBe("/dashboard");
-    expect(resolveSafeRedirectTarget("data:text/html,<script>alert(1)</script>")).toBe("/dashboard");
+    expect(resolveSafeRedirectTarget("data:text/html,<script>alert(1)</script>")).toBe(
+      "/dashboard"
+    );
     expect(resolveSafeRedirectTarget("//evil.example/phish")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget("/a/..//evil.example")).toBe("/dashboard");
     expect(resolveSafeRedirectTarget("/a/b/../..//evil.example/path")).toBe("/dashboard");
@@ -36,7 +35,9 @@ describe("resolveSafeRedirectTarget (#568)", () => {
   });
 
   it("validates returnTo and callbackUrl parameters in resolveSafeCallbackRedirect", () => {
-    expect(resolveSafeCallbackRedirect("?returnTo=%2Fcourses%2F42", "/dashboard")).toBe("/courses/42");
+    expect(resolveSafeCallbackRedirect("?returnTo=%2Fcourses%2F42", "/dashboard")).toBe(
+      "/courses/42"
+    );
     expect(resolveSafeCallbackRedirect("?returnTo=https%3A%2F%2Fevil.example", "/dashboard")).toBe(
       "/dashboard"
     );

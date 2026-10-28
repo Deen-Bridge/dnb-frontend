@@ -7,7 +7,8 @@ export const CREDENTIAL_EXPIRY_STATUS = {
   MISSING: "missing",
 } as const;
 
-export type CredentialExpiryStatus = typeof CREDENTIAL_EXPIRY_STATUS[keyof typeof CREDENTIAL_EXPIRY_STATUS];
+export type CredentialExpiryStatus =
+  (typeof CREDENTIAL_EXPIRY_STATUS)[keyof typeof CREDENTIAL_EXPIRY_STATUS];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -167,10 +168,7 @@ function normaliseMentors(
   if (!Array.isArray(rawMentors)) return [];
 
   return rawMentors
-    .filter(
-      (mentor) =>
-        mentor?.verificationStatus === "verified" || mentor?.isVerified === true
-    )
+    .filter((mentor) => mentor?.verificationStatus === "verified" || mentor?.isVerified === true)
     .flatMap((mentor) => {
       const mentorId = mentor.id ?? mentor._id;
       const credentials = Array.isArray(mentor.credentials)
@@ -185,15 +183,14 @@ function normaliseMentors(
             ]
           : [];
 
-      return credentials.map((credential: any, index: number) => { // TODO(types): Nested credential payload
+      return credentials.map((credential: any, index: number) => {
+        // TODO(types): Nested credential payload
         const expiry = computeCredentialExpiry(credential.expiresAt, now);
         return {
           mentorId: String(mentorId ?? ""),
           mentorName: mentor.name ?? "Unknown mentor",
           mentorEmail: mentor.email ?? "",
-          credentialId: String(
-            credential.id ?? `${mentorId ?? "mentor"}-credential-${index}`
-          ),
+          credentialId: String(credential.id ?? `${mentorId ?? "mentor"}-credential-${index}`),
           credentialType: credential.type ?? "Unspecified credential",
           expiresAt: credential.expiresAt ?? null,
           expiryStatus: expiry.status,
@@ -224,16 +221,15 @@ export async function fetchExpiringMentorCredentials(
 
   try {
     const response = await axiosInstance.get("/api/admin/mentors/credentials", {
-      params: options.expiryWithinDays
-        ? { expiryWithinDays: options.expiryWithinDays }
-        : {},
+      params: options.expiryWithinDays ? { expiryWithinDays: options.expiryWithinDays } : {},
     });
     return {
       credentials: normaliseMentors(response.data?.mentors, now),
       generatedAt: new Date().toISOString(),
       source: "api",
     };
-  } catch (error: any) { // TODO(types): Error from mentor credentials fetch
+  } catch (error: any) {
+    // TODO(types): Error from mentor credentials fetch
     const status = error?.response?.status;
     const isUnavailable =
       status === 404 ||
@@ -243,9 +239,7 @@ export async function fetchExpiringMentorCredentials(
 
     if (!isUnavailable) {
       throw new Error(
-        error?.response?.data?.message ??
-          error?.message ??
-          "Failed to fetch mentor credentials"
+        error?.response?.data?.message ?? error?.message ?? "Failed to fetch mentor credentials"
       );
     }
 

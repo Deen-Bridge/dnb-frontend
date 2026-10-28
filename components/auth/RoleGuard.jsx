@@ -31,13 +31,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Loader from "@/components/molecules/loaders/rootLoader";
 import Unauthorized from "@/components/molecules/errors/Unauthorized";
 import VerificationRequired from "@/components/auth/VerificationRequired";
-import {
-  can,
-  roleAllows,
-  requiresVerification,
-  isVerified,
-  normalizeRole,
-} from "@/lib/auth/roles";
+import { can, roleAllows, requiresVerification, isVerified, normalizeRole } from "@/lib/auth/roles";
 
 const UNAUTHORIZED_PATH = "/dashboard/unauthorized";
 

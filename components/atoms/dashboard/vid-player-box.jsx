@@ -1,26 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import { VideoOff, Keyboard } from 'lucide-react';
-import '@vidstack/react/player/styles/default/theme.css';
-import '@vidstack/react/player/styles/default/layouts/video.css';
+import { useEffect, useMemo, useState } from "react";
+import { VideoOff, Keyboard } from "lucide-react";
+import "@vidstack/react/player/styles/default/theme.css";
+import "@vidstack/react/player/styles/default/layouts/video.css";
 
-import {
-  MediaPlayer,
-  MediaProvider,
-  Poster,
-  Track,
-  useMediaPlayer,
-} from '@vidstack/react';
-import {
-  DefaultVideoLayout,
-  defaultLayoutIcons,
-} from '@vidstack/react/player/layouts/default';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { MediaPlayer, MediaProvider, Poster, Track, useMediaPlayer } from "@vidstack/react";
+import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 function PlayerProgressTracker({ onTimeUpdate, onEnded }) {
   const player = useMediaPlayer();
@@ -28,13 +15,13 @@ function PlayerProgressTracker({ onTimeUpdate, onEnded }) {
   useEffect(() => {
     if (!player) return;
 
-    const timeSub = player.on('time-update', (e) => {
+    const timeSub = player.on("time-update", (e) => {
       if (onTimeUpdate) {
         onTimeUpdate(e.currentTime, e.duration);
       }
     });
 
-    const endedSub = player.on('ended', () => {
+    const endedSub = player.on("ended", () => {
       if (onEnded) {
         onEnded();
       }
@@ -50,15 +37,15 @@ function PlayerProgressTracker({ onTimeUpdate, onEnded }) {
 }
 
 const KEYBOARD_SHORTCUTS = [
-  { keys: 'Space / K', action: 'Play / pause' },
-  { keys: '← / J', action: 'Seek back 10s' },
-  { keys: '→ / L', action: 'Seek forward 10s' },
-  { keys: '↑ / ↓', action: 'Volume up / down' },
-  { keys: 'M', action: 'Mute / unmute' },
-  { keys: 'F', action: 'Fullscreen' },
-  { keys: 'C', action: 'Toggle captions' },
-  { keys: 'I', action: 'Picture-in-picture' },
-  { keys: '< / >', action: 'Slow down / speed up' },
+  { keys: "Space / K", action: "Play / pause" },
+  { keys: "← / J", action: "Seek back 10s" },
+  { keys: "→ / L", action: "Seek forward 10s" },
+  { keys: "↑ / ↓", action: "Volume up / down" },
+  { keys: "M", action: "Mute / unmute" },
+  { keys: "F", action: "Fullscreen" },
+  { keys: "C", action: "Toggle captions" },
+  { keys: "I", action: "Picture-in-picture" },
+  { keys: "< / >", action: "Slow down / speed up" },
 ];
 
 function KeyboardShortcutsHelp() {
@@ -79,9 +66,7 @@ function KeyboardShortcutsHelp() {
           {KEYBOARD_SHORTCUTS.map(({ keys, action }) => (
             <li key={keys} className="flex items-center justify-between gap-4">
               <span className="text-muted-foreground">{action}</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">
-                {keys}
-              </kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">{keys}</kbd>
             </li>
           ))}
         </ul>
@@ -90,9 +75,9 @@ function KeyboardShortcutsHelp() {
   );
 }
 
-const RATE_KEY = 'dnb:player:rate';
-const VOLUME_KEY = 'dnb:player:volume';
-const MUTED_KEY = 'dnb:player:muted';
+const RATE_KEY = "dnb:player:rate";
+const VOLUME_KEY = "dnb:player:volume";
+const MUTED_KEY = "dnb:player:muted";
 
 // Persists playback rate + volume/muted globally so a learner's chosen
 // speed carries across courses. Deliberately leaves getTime/setTime
@@ -101,30 +86,30 @@ const MUTED_KEY = 'dnb:player:muted';
 // onEnded props below), not through this storage adapter.
 const playbackPreferencesStorage = {
   async getVolume() {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const v = window.localStorage.getItem(VOLUME_KEY);
     return v !== null ? Number(v) : null;
   },
   async setVolume(volume) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     window.localStorage.setItem(VOLUME_KEY, String(volume));
   },
   async getMuted() {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const m = window.localStorage.getItem(MUTED_KEY);
-    return m !== null ? m === 'true' : null;
+    return m !== null ? m === "true" : null;
   },
   async setMuted(muted) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     window.localStorage.setItem(MUTED_KEY, String(muted));
   },
   async getPlaybackRate() {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const r = window.localStorage.getItem(RATE_KEY);
     return r !== null ? Number(r) : null;
   },
   async setPlaybackRate(rate) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     window.localStorage.setItem(RATE_KEY, String(rate));
   },
   async getTime() {
@@ -157,8 +142,8 @@ function useChaptersTrack(chapters) {
   return useMemo(() => {
     if (!chapters) return null;
 
-    if (typeof chapters === 'string') {
-      return { kind: 'chapters', src: chapters, default: true };
+    if (typeof chapters === "string") {
+      return { kind: "chapters", src: chapters, default: true };
     }
 
     if (Array.isArray(chapters) && chapters.length > 0) {
@@ -174,7 +159,7 @@ function useChaptersTrack(chapters) {
           text: chapter.text ?? chapter.title ?? `Chapter ${index + 1}`,
         };
       });
-      return { kind: 'chapters', default: true, content: { cues } };
+      return { kind: "chapters", default: true, content: { cues } };
     }
 
     return null;
@@ -213,18 +198,13 @@ const VidPlayerBox = ({ data, startTime, onTimeUpdate, onEnded }) => {
     setHasPlaybackError(false);
   }, [data?.video]);
 
-  const textTracks = data?.subtitles?.length
-    ? data.subtitles
-    : [];
+  const textTracks = data?.subtitles?.length ? data.subtitles : [];
 
   const chaptersTrack = useChaptersTrack(data?.chapters);
 
   if (!data?.video) {
     return (
-      <PlayerErrorState
-        message="This lesson's video is unavailable."
-        thumbnail={data?.thumbnail}
-      />
+      <PlayerErrorState message="This lesson's video is unavailable." thumbnail={data?.thumbnail} />
     );
   }
 
@@ -241,11 +221,15 @@ const VidPlayerBox = ({ data, startTime, onTimeUpdate, onEnded }) => {
     <div className="relative w-full h-full">
       <KeyboardShortcutsHelp />
       <MediaPlayer
-        key={JSON.stringify({ video: data.video, subtitles: data.subtitles, chapters: data.chapters })}
+        key={JSON.stringify({
+          video: data.video,
+          subtitles: data.subtitles,
+          chapters: data.chapters,
+        })}
         src={data.video}
-        viewType='video'
-        streamType='on-demand'
-        logLevel='warn'
+        viewType="video"
+        streamType="on-demand"
+        logLevel="warn"
         playsInline
         title={data?.title}
         poster={data?.thumbnail}
@@ -253,7 +237,7 @@ const VidPlayerBox = ({ data, startTime, onTimeUpdate, onEnded }) => {
         storage={playbackPreferencesStorage}
         onError={() => setHasPlaybackError(true)}
         tabIndex={0}
-        aria-label={data?.title ? `Video player: ${data.title}` : 'Video player'}
+        aria-label={data?.title ? `Video player: ${data.title}` : "Video player"}
       >
         <MediaProvider>
           <Poster className="vds-poster" />
@@ -263,15 +247,9 @@ const VidPlayerBox = ({ data, startTime, onTimeUpdate, onEnded }) => {
           {chaptersTrack && <Track key="chapters" {...chaptersTrack} />}
         </MediaProvider>
 
-        <DefaultVideoLayout
-          thumbnails={data?.thumbnails || undefined}
-          icons={defaultLayoutIcons}
-        />
+        <DefaultVideoLayout thumbnails={data?.thumbnails || undefined} icons={defaultLayoutIcons} />
 
-        <PlayerProgressTracker
-          onTimeUpdate={onTimeUpdate}
-          onEnded={onEnded}
-        />
+        <PlayerProgressTracker onTimeUpdate={onTimeUpdate} onEnded={onEnded} />
       </MediaPlayer>
     </div>
   );

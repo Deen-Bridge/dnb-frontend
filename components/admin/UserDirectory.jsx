@@ -7,10 +7,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  fetchAdminUsers,
-  fetchAllAdminUsers,
-} from "@/lib/actions/admin-user-directory";
+import { fetchAdminUsers, fetchAllAdminUsers } from "@/lib/actions/admin-user-directory";
 import {
   USER_ROLES,
   USER_STATUSES,
@@ -21,8 +18,7 @@ import {
 import { USER_EXPORT_COLUMNS, toCsv } from "@/lib/admin/usersCsv";
 
 const SEARCH_DEBOUNCE_MS = 400;
-const selectClass =
-  "h-10 w-full rounded-md border border-input bg-background px-3 text-sm";
+const selectClass = "h-10 w-full rounded-md border border-input bg-background px-3 text-sm";
 
 function downloadCsvFile(filename, csv) {
   // Leading BOM lets Excel detect UTF-8 for non-ASCII names.
@@ -67,10 +63,7 @@ export default function UserDirectory() {
   // Debounce text search into the URL.
   useEffect(() => {
     if (searchInput.trim() === filtersRef.current.q) return;
-    const timer = setTimeout(
-      () => updateFilters({ q: searchInput }),
-      SEARCH_DEBOUNCE_MS
-    );
+    const timer = setTimeout(() => updateFilters({ q: searchInput }), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [searchInput, updateFilters]);
 
@@ -173,7 +166,9 @@ export default function UserDirectory() {
           >
             <option value="">All roles</option>
             {USER_ROLES.map((r) => (
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>
+                {r}
+              </option>
             ))}
           </select>
           <select
@@ -184,7 +179,9 @@ export default function UserDirectory() {
           >
             <option value="">All statuses</option>
             {USER_STATUSES.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
           <div className="flex gap-2">
@@ -225,9 +222,7 @@ export default function UserDirectory() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() =>
-                updateFilters({ q: "", role: "", status: "", from: "", to: "" })
-              }
+              onClick={() => updateFilters({ q: "", role: "", status: "", from: "", to: "" })}
             >
               Clear all
             </Button>
@@ -240,7 +235,9 @@ export default function UserDirectory() {
           </div>
         )}
         {!loading && error && (
-          <p role="alert" className="text-sm text-destructive">{error}</p>
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
         )}
         {!loading && !error && users.length === 0 && (
           <p className="text-sm text-muted-foreground">No users match these filters.</p>

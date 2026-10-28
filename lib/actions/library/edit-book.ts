@@ -12,7 +12,11 @@ export interface EditBookParams {
   file?: File | Blob;
 }
 
-export async function editBook(bookId: string, { form, thumbnail, file }: EditBookParams): Promise<any> { // TODO(types): Edit book response
+export async function editBook(
+  bookId: string,
+  { form, thumbnail, file }: EditBookParams
+): Promise<any> {
+  // TODO(types): Edit book response
   const formData = new FormData();
   if (form.title) formData.append("title", form.title);
   if (form.description) formData.append("description", form.description);

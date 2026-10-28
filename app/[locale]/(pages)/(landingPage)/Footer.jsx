@@ -54,10 +54,7 @@ export default function Footer() {
   const t = useTranslations("landing.footer");
 
   return (
-    <footer
-      id="contact"
-      className="relative bg-basic text-ink-inverse overflow-hidden"
-    >
+    <footer id="contact" className="relative bg-basic text-ink-inverse overflow-hidden">
       {/* Glowing Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-tr from-secondary via-accent to-secondary opacity-30 blur-2xl z-0" />
 
@@ -156,10 +153,7 @@ export default function Footer() {
             className="inline-flex items-center gap-3 rounded-2xl bg-surface-raised px-4 py-2.5 shadow-lg transition-transform hover:scale-105"
           >
             <span
-              className={cn(
-                poppins_500,
-                "text-[10px] uppercase tracking-wider text-ink-muted"
-              )}
+              className={cn(poppins_500, "text-[10px] uppercase tracking-wider text-ink-muted")}
             >
               {t("builtOn")}
             </span>

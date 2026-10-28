@@ -134,9 +134,7 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
     } catch (uploadError) {
       console.error("Upload error:", uploadError);
       toast.error(
-        uploadError?.response?.data?.message ||
-          uploadError?.message ||
-          "Failed to upload reel."
+        uploadError?.response?.data?.message || uploadError?.message || "Failed to upload reel."
       );
     } finally {
       setSubmitting(false);
@@ -147,9 +145,7 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-hidden px-0 pb-0 pt-6 sm:max-w-2xl">
         <DialogHeader className="px-6">
-          <DialogTitle className="text-xl font-semibold">
-            Share a New Reel
-          </DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Share a New Reel</DialogTitle>
           <DialogDescription>
             Upload an inspirational clip to spark the community.
           </DialogDescription>
@@ -167,11 +163,7 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
           >
             {videoPreview ? (
               <div className="relative h-full w-full overflow-hidden rounded-xl">
-                <video
-                  src={videoPreview}
-                  className="h-full w-full object-cover"
-                  controls
-                />
+                <video src={videoPreview} className="h-full w-full object-cover" controls />
                 <button
                   type="button"
                   className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white hover:bg-black/80"
@@ -246,20 +238,13 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
           </div>
 
           {error && (
-            <p className="rounded-md bg-rose-100 px-3 py-2 text-sm text-rose-600">
-              {error}
-            </p>
+            <p className="rounded-md bg-rose-100 px-3 py-2 text-sm text-rose-600">{error}</p>
           )}
         </div>
 
         <DialogFooter className="border-t border-border bg-muted/60 px-6 py-4">
           <div className="flex w-full items-center justify-end gap-3">
-            <Button
-              outlined
-              round
-              className="text-normal"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button outlined round className="text-normal" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button
@@ -286,4 +271,3 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
 };
 
 export default ReelUploadDialog;
-

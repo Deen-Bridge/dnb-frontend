@@ -37,7 +37,8 @@ export function getHorizonBaseUrl(network: string = config.stellarNetwork): stri
     : "https://horizon-testnet.stellar.org";
 }
 
-export function isIncomingUsdcPayment(record?: any, wallet?: string): boolean { // TODO(types): Horizon raw payment record
+export function isIncomingUsdcPayment(record?: any, wallet?: string): boolean {
+  // TODO(types): Horizon raw payment record
   if (!record || !wallet) return false;
   if (record.type !== "payment") return false;
   if (record.asset_code !== "USDC") return false;
@@ -46,7 +47,8 @@ export function isIncomingUsdcPayment(record?: any, wallet?: string): boolean { 
   return true;
 }
 
-export function normalizeDonation(record?: any): HorizonDonation { // TODO(types): Horizon raw operation record
+export function normalizeDonation(record?: any): HorizonDonation {
+  // TODO(types): Horizon raw operation record
   const transaction = record?.transaction || {};
   const from = record?.from || null;
   const to = record?.to || null;
@@ -80,7 +82,8 @@ export async function fetchDonationStats(): Promise<DonationStatsResponse> {
 
     const body = await res.json();
     return { success: true, ...body };
-  } catch (error: any) { // TODO(types): Network fetch error
+  } catch (error: any) {
+    // TODO(types): Network fetch error
     return {
       success: false,
       unconfigured: false,
@@ -129,7 +132,8 @@ export async function fetchRecentDonations({
   wallet: string;
   network?: string;
   limit?: number;
-}): Promise<any[]> { // TODO(types): Raw Horizon operation payment records
+}): Promise<any[]> {
+  // TODO(types): Raw Horizon operation payment records
   const horizon = getHorizonBaseUrl(network);
   const url = `${horizon}/accounts/${encodeURIComponent(wallet)}/payments?order=desc&limit=${limit}&join=transactions`;
 
@@ -141,9 +145,7 @@ export async function fetchRecentDonations({
     if (!res.ok) throw new Error(`Horizon responded with ${res.status}`);
 
     const body = await res.json();
-    const records = Array.isArray(body?._embedded?.records)
-      ? body._embedded.records
-      : [];
+    const records = Array.isArray(body?._embedded?.records) ? body._embedded.records : [];
 
     return records.filter((record: any) => isIncomingUsdcPayment(record, wallet)); // TODO(types): Horizon payment operation record
   } catch (error) {

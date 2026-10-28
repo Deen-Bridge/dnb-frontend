@@ -53,10 +53,7 @@ export interface StellarUnregisteredResult {
  * marker (caller should send the user to sign-up/link), or `null` when the
  * flow was cancelled or Stellar auth is unavailable.
  */
-export type StellarLoginResult =
-  | StellarLoginUser
-  | StellarUnregisteredResult
-  | null;
+export type StellarLoginResult = StellarLoginUser | StellarUnregisteredResult | null;
 
 // ---------------------------------------------------------------------------
 // Error narrowing helpers — caught values are `unknown`, never `any`
@@ -77,9 +74,7 @@ interface InspectableError {
 
 /** Narrow any thrown value to the bag we read; non-objects read as empty. */
 const inspect = (error: unknown): InspectableError =>
-  typeof error === "object" && error !== null
-    ? (error as InspectableError)
-    : {};
+  typeof error === "object" && error !== null ? (error as InspectableError) : {};
 
 /** HTTP status of a failed axios call; `undefined` for network/SDK errors. */
 const getResponseStatus = (error: unknown): number | undefined => {
@@ -94,9 +89,7 @@ const getResponseStatus = (error: unknown): number | undefined => {
 const getErrorMessage = (error: unknown): string => {
   const envelope = inspect(error);
   const candidate =
-    envelope.response?.data?.message ||
-    envelope.response?.data?.error ||
-    envelope.message;
+    envelope.response?.data?.message || envelope.response?.data?.error || envelope.message;
   if (candidate == null) return "";
   return typeof candidate === "string" ? candidate : String(candidate);
 };
@@ -117,11 +110,7 @@ const isExpiredChallengeError = (error: unknown): boolean =>
 
 /** Wallet is valid but has no linked Deen Bridge account (404/409 or explicit flag). */
 const isUnregisteredWallet = (error: unknown, data?: unknown): boolean => {
-  if (
-    data &&
-    typeof data === "object" &&
-    (data as { registered?: unknown }).registered === false
-  ) {
+  if (data && typeof data === "object" && (data as { registered?: unknown }).registered === false) {
     return true;
   }
   const status = getResponseStatus(error);
@@ -132,9 +121,8 @@ const isUnregisteredWallet = (error: unknown, data?: unknown): boolean => {
 // SEP-10 flow
 // ---------------------------------------------------------------------------
 
-const getNetworkPassphrase = (
-  payload: StellarChallengePayload = {}
-): string | undefined => payload.networkPassphrase || payload.network_passphrase;
+const getNetworkPassphrase = (payload: StellarChallengePayload = {}): string | undefined =>
+  payload.networkPassphrase || payload.network_passphrase;
 
 const fetchChallenge = async (
   account: string
@@ -216,9 +204,7 @@ export function useStellarAuth(): UseStellarAuthResult {
     }
 
     if (stellarAuthAvailable === false) {
-      toast.error(
-        "Sign in with Stellar is not available yet. Please use email login."
-      );
+      toast.error("Sign in with Stellar is not available yet. Please use email login.");
       return null;
     }
 
@@ -280,9 +266,7 @@ export function useStellarAuth(): UseStellarAuthResult {
         return null;
       }
 
-      const message =
-        getErrorMessage(error) ||
-        "Sign in with Stellar failed. Please try again.";
+      const message = getErrorMessage(error) || "Sign in with Stellar failed. Please try again.";
 
       console.error("Stellar auth error:", error);
       toast.error(message);

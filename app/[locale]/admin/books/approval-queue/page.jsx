@@ -3,13 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -116,7 +110,7 @@ export default function BookApprovalQueuePage() {
     setError(null);
     try {
       const { data } = await axiosInstance.get("/api/admin/books/approval-queue");
-      setBooks(Array.isArray(data) ? data : data?.items ?? []);
+      setBooks(Array.isArray(data) ? data : (data?.items ?? []));
     } catch (err) {
       setError(err?.message || "Failed to load submissions");
       setBooks([]);
@@ -191,11 +185,7 @@ export default function BookApprovalQueuePage() {
         actions={
           <div className="flex items-center gap-3">
             <MediaBlurToggle className="hidden lg:flex" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchBooks}
-            >
+            <Button variant="outline" size="sm" onClick={fetchBooks}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
@@ -250,9 +240,7 @@ export default function BookApprovalQueuePage() {
       {/* Books Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            Submissions ({filteredBooks.length})
-          </CardTitle>
+          <CardTitle className="text-lg">Submissions ({filteredBooks.length})</CardTitle>
           <CardDescription>
             New book submissions awaiting review or already processed
           </CardDescription>
@@ -274,20 +262,14 @@ export default function BookApprovalQueuePage() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
                       <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin opacity-50" />
                       <p>Loading submissions…</p>
                     </TableCell>
                   </TableRow>
                 ) : error ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-500" />
                       <p className="text-red-600 dark:text-red-400">{error}</p>
                       <Button variant="outline" size="sm" className="mt-3" onClick={fetchBooks}>
@@ -298,10 +280,7 @@ export default function BookApprovalQueuePage() {
                   </TableRow>
                 ) : paginatedBooks.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-8 text-center text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
                       <Inbox className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No submissions found</p>
                     </TableCell>
@@ -329,9 +308,7 @@ export default function BookApprovalQueuePage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className={cn(poppins_500.className, "text-sm")}>
-                            {book.title}
-                          </span>
+                          <span className={cn(poppins_500.className, "text-sm")}>{book.title}</span>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs">
@@ -344,11 +321,7 @@ export default function BookApprovalQueuePage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className={cn(
-                              "text-xs",
-                              statusConf.color,
-                              statusConf.bgColor
-                            )}
+                            className={cn("text-xs", statusConf.color, statusConf.bgColor)}
                           >
                             {statusConf.label}
                           </Badge>
@@ -424,12 +397,7 @@ export default function BookApprovalQueuePage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
-              <p
-                className={cn(
-                  poppins_400.className,
-                  "text-sm text-muted-foreground"
-                )}
-              >
+              <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
@@ -445,9 +413,7 @@ export default function BookApprovalQueuePage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                 >
                   Next
@@ -487,9 +453,7 @@ export default function BookApprovalQueuePage() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">Email:</span>{" "}
-                      <span className="font-mono text-xs">
-                        {selectedBook.uploader.email}
-                      </span>
+                      <span className="font-mono text-xs">{selectedBook.uploader.email}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Category:</span>{" "}
@@ -531,7 +495,12 @@ export default function BookApprovalQueuePage() {
               {selectedBook.rejectionReason && (
                 <Card className="border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-900/20">
                   <CardContent className="py-4">
-                    <p className={cn(poppins_500.className, "text-sm text-red-800 dark:text-red-300 mb-1")}>
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-red-800 dark:text-red-300 mb-1"
+                      )}
+                    >
                       <XCircle className="h-4 w-4 inline mr-1" />
                       Rejection Reason
                     </p>
@@ -546,7 +515,12 @@ export default function BookApprovalQueuePage() {
               {selectedBook.changeNotes && (
                 <Card className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20">
                   <CardContent className="py-4">
-                    <p className={cn(poppins_500.className, "text-sm text-blue-800 dark:text-blue-300 mb-1")}>
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-blue-800 dark:text-blue-300 mb-1"
+                      )}
+                    >
                       <MessageSquare className="h-4 w-4 inline mr-1" />
                       Requested Changes
                     </p>
@@ -561,7 +535,12 @@ export default function BookApprovalQueuePage() {
               {selectedBook.status === "pending-review" && actionType && (
                 <Card className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-900/20">
                   <CardContent className="py-4 space-y-3">
-                    <p className={cn(poppins_500.className, "text-sm text-amber-800 dark:text-amber-300")}>
+                    <p
+                      className={cn(
+                        poppins_500.className,
+                        "text-sm text-amber-800 dark:text-amber-300"
+                      )}
+                    >
                       {actionType === "approve" && (
                         <>
                           <CheckCircle className="h-4 w-4 inline mr-1" />
@@ -646,7 +625,12 @@ export default function BookApprovalQueuePage() {
                         ) : (
                           <Send className="h-4 w-4 mr-2" />
                         )}
-                        Confirm {actionType === "approve" ? "Approval" : actionType === "reject" ? "Rejection" : "Changes Request"}
+                        Confirm{" "}
+                        {actionType === "approve"
+                          ? "Approval"
+                          : actionType === "reject"
+                            ? "Rejection"
+                            : "Changes Request"}
                       </Button>
                       <Button
                         variant="outline"

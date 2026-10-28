@@ -92,9 +92,9 @@ describe("EmailBroadcastPage", () => {
     expect(screen.getByText("[Deen Bridge] Seerah launch")).toBeInTheDocument();
     // The typed content appears in the preview body (not just the textarea).
     const bodyMatches = screen.getAllByText(/Join the new course\./);
-    expect(
-      bodyMatches.some((node) => node.textContent.includes("The Deen Bridge team"))
-    ).toBe(true);
+    expect(bodyMatches.some((node) => node.textContent.includes("The Deen Bridge team"))).toBe(
+      true
+    );
   });
 
   it("shows the estimated recipient count for a known audience", async () => {

@@ -20,13 +20,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -53,12 +47,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Flag,
   GraduationCap,
@@ -198,9 +187,7 @@ const REPORT_REASON_GROUPS = [
 
 // Flat map for backward compatibility with the mock/report rendering.
 const REASON_CATEGORIES = Object.fromEntries(
-  REPORT_REASON_GROUPS.flatMap((group) =>
-    group.reasons.map((reason) => [reason.id, reason.label])
-  )
+  REPORT_REASON_GROUPS.flatMap((group) => group.reasons.map((reason) => [reason.id, reason.label]))
 );
 
 // Redirects map to preserve historical data when a reason is merged.
@@ -296,9 +283,7 @@ const ReasonManagementDialog = ({ open, onClose }) => {
         g.id === groupId
           ? {
               ...g,
-              reasons: g.reasons.map((r) =>
-                r.id === reasonId ? { ...r, label: newLabel } : r
-              ),
+              reasons: g.reasons.map((r) => (r.id === reasonId ? { ...r, label: newLabel } : r)),
             }
           : g
       )
@@ -309,9 +294,7 @@ const ReasonManagementDialog = ({ open, onClose }) => {
     const newId = `custom_${Date.now()}`;
     setGroups((prev) =>
       prev.map((g) =>
-        g.id === groupId
-          ? { ...g, reasons: [...g.reasons, { id: newId, label: "New Reason" }] }
-          : g
+        g.id === groupId ? { ...g, reasons: [...g.reasons, { id: newId, label: "New Reason" }] } : g
       )
     );
   };
@@ -319,9 +302,7 @@ const ReasonManagementDialog = ({ open, onClose }) => {
   const handleRemoveReason = (groupId, reasonId) => {
     setGroups((prev) =>
       prev.map((g) =>
-        g.id === groupId
-          ? { ...g, reasons: g.reasons.filter((r) => r.id !== reasonId) }
-          : g
+        g.id === groupId ? { ...g, reasons: g.reasons.filter((r) => r.id !== reasonId) } : g
       )
     );
   };
@@ -425,7 +406,11 @@ const ReasonManagementDialog = ({ open, onClose }) => {
               id="merge-source"
             >
               {groups.flatMap((g) =>
-                g.reasons.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)
+                g.reasons.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.label}
+                  </option>
+                ))
               )}
             </select>
             <span>into</span>
@@ -434,7 +419,11 @@ const ReasonManagementDialog = ({ open, onClose }) => {
               id="merge-target"
             >
               {groups.flatMap((g) =>
-                g.reasons.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)
+                g.reasons.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.label}
+                  </option>
+                ))
               )}
             </select>
             <Button
@@ -463,7 +452,9 @@ const ReasonManagementDialog = ({ open, onClose }) => {
           )}
         </div>
         <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
           <Button onClick={handleSave}>Save Changes</Button>
         </div>
       </DialogContent>
@@ -608,9 +599,7 @@ function UnifiedReportsContent() {
 
   // Handle status change
   const handleStatusChange = useCallback((reportId, newStatus) => {
-    setReports((prev) =>
-      prev.map((r) => (r.id === reportId ? { ...r, status: newStatus } : r))
-    );
+    setReports((prev) => prev.map((r) => (r.id === reportId ? { ...r, status: newStatus } : r)));
   }, []);
 
   // Handle refresh
@@ -779,9 +768,7 @@ function UnifiedReportsContent() {
                                 {report.reporter.name.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm font-medium">
-                              {report.reporter.name}
-                            </span>
+                            <span className="text-sm font-medium">{report.reporter.name}</span>
                           </div>
                         </TableCell>
 
@@ -791,23 +778,12 @@ function UnifiedReportsContent() {
                             href={getTargetAdminLink(report.target)}
                             className="flex items-center gap-2 hover:underline"
                           >
-                            <div
-                              className={cn(
-                                "p-1.5 rounded",
-                                contentType?.bgColor
-                              )}
-                            >
-                              <ContentIcon
-                                className={cn("h-4 w-4", contentType?.color)}
-                              />
+                            <div className={cn("p-1.5 rounded", contentType?.bgColor)}>
+                              <ContentIcon className={cn("h-4 w-4", contentType?.color)} />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium truncate">
-                                {report.target.name}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {contentType?.label}
-                              </p>
+                              <p className="text-sm font-medium truncate">{report.target.name}</p>
+                              <p className="text-xs text-muted-foreground">{contentType?.label}</p>
                             </div>
                             <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                           </Link>
@@ -835,13 +811,7 @@ function UnifiedReportsContent() {
 
                         {/* Status */}
                         <TableCell>
-                          <Badge
-                            className={cn(
-                              "text-xs",
-                              status?.bgColor,
-                              status?.color
-                            )}
-                          >
+                          <Badge className={cn("text-xs", status?.bgColor, status?.color)}>
                             {status?.label}
                           </Badge>
                         </TableCell>
@@ -855,14 +825,10 @@ function UnifiedReportsContent() {
                                   {report.assignee.name.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="text-xs">
-                                {report.assignee.name}
-                              </span>
+                              <span className="text-xs">{report.assignee.name}</span>
                             </div>
                           ) : (
-                            <span className="text-xs text-muted-foreground">
-                              Unassigned
-                            </span>
+                            <span className="text-xs text-muted-foreground">Unassigned</span>
                           )}
                         </TableCell>
 
@@ -947,7 +913,8 @@ function UnifiedReportsContent() {
             </p>
             <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
               <span>
-                <kbd className="px-1.5 py-0.5 bg-background rounded border">j</kbd> / <kbd className="px-1.5 py-0.5 bg-background rounded border">k</kbd> Navigate
+                <kbd className="px-1.5 py-0.5 bg-background rounded border">j</kbd> /{" "}
+                <kbd className="px-1.5 py-0.5 bg-background rounded border">k</kbd> Navigate
               </span>
               <span>
                 <kbd className="px-1.5 py-0.5 bg-background rounded border">Enter</kbd> Open target

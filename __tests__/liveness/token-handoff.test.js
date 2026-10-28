@@ -34,27 +34,27 @@ const VALID_PAYLOAD = {
 
 describe("submitLiveness — validation guards", () => {
   it("throws if userId is missing", async () => {
-    await expect(
-      submitLiveness({ ...VALID_PAYLOAD, userId: "" })
-    ).rejects.toThrow("userId is required");
+    await expect(submitLiveness({ ...VALID_PAYLOAD, userId: "" })).rejects.toThrow(
+      "userId is required"
+    );
   });
 
   it("throws if verificationToken is missing", async () => {
-    await expect(
-      submitLiveness({ ...VALID_PAYLOAD, verificationToken: "" })
-    ).rejects.toThrow("verificationToken is required");
+    await expect(submitLiveness({ ...VALID_PAYLOAD, verificationToken: "" })).rejects.toThrow(
+      "verificationToken is required"
+    );
   });
 
   it("throws if consentAt is missing", async () => {
-    await expect(
-      submitLiveness({ ...VALID_PAYLOAD, consentAt: 0 })
-    ).rejects.toThrow("consentAt is required");
+    await expect(submitLiveness({ ...VALID_PAYLOAD, consentAt: 0 })).rejects.toThrow(
+      "consentAt is required"
+    );
   });
 
   it("throws if consentVersion is missing", async () => {
-    await expect(
-      submitLiveness({ ...VALID_PAYLOAD, consentVersion: "" })
-    ).rejects.toThrow("consentVersion is required");
+    await expect(submitLiveness({ ...VALID_PAYLOAD, consentVersion: "" })).rejects.toThrow(
+      "consentVersion is required"
+    );
   });
 
   it("does NOT call axiosInstance when validation fails", async () => {

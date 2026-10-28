@@ -69,10 +69,9 @@ describe("fetchSearchAnalytics", () => {
       expect(typeof week.week).toBe("string");
       expect(typeof week.queries).toBe("number");
       expect(typeof week.zeroResults).toBe("number");
-      expect(
-        week.clickThroughRate === null ||
-          typeof week.clickThroughRate === "number"
-      ).toBe(true);
+      expect(week.clickThroughRate === null || typeof week.clickThroughRate === "number").toBe(
+        true
+      );
     }
   });
 

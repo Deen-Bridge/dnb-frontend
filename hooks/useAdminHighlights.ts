@@ -41,7 +41,8 @@ export default function useAdminHighlights(): UseAdminHighlightsResult {
     try {
       const { highlights: list } = await listAllHighlights();
       setHighlights(Array.isArray(list) ? list : []);
-    } catch (err: any) { // TODO(types): Error shape from listAllHighlights
+    } catch (err: any) {
+      // TODO(types): Error shape from listAllHighlights
       setError(err?.message || "Failed to load feature highlights");
     } finally {
       setIsLoading(false);
@@ -62,7 +63,8 @@ export default function useAdminHighlights(): UseAdminHighlightsResult {
       try {
         const { highlights: list } = await listAllHighlights();
         if (!cancelled) setHighlights(Array.isArray(list) ? list : []);
-      } catch (err: any) { // TODO(types): Error shape from listAllHighlights
+      } catch (err: any) {
+        // TODO(types): Error shape from listAllHighlights
         if (!cancelled) setError(err?.message || "Failed to load feature highlights");
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -95,7 +97,8 @@ export default function useAdminHighlights(): UseAdminHighlightsResult {
         title: enabled ? "Highlight shown" : "Highlight hidden",
         action: { label: "Undo", onClick: () => toggle(id, !enabled) },
       });
-    } catch (err: any) { // TODO(types): Error shape from toggleHighlight
+    } catch (err: any) {
+      // TODO(types): Error shape from toggleHighlight
       setHighlights((prev) =>
         prev.map((h) => (h.id === id ? { ...h, enabled: previous ?? !enabled } : h))
       );
@@ -135,11 +138,10 @@ export default function useAdminHighlights(): UseAdminHighlightsResult {
       const { highlight } = await updateHighlight(id, updates);
       adminToastSuccess({ title: "Highlight updated" });
       return highlight;
-    } catch (err: any) { // TODO(types): Error shape from updateHighlight
+    } catch (err: any) {
+      // TODO(types): Error shape from updateHighlight
       if (previous) {
-        setHighlights((prev) =>
-          prev.map((h) => (h.id === id ? previous! : h))
-        );
+        setHighlights((prev) => prev.map((h) => (h.id === id ? previous! : h)));
       }
       adminToastError({
         title: err?.message || "Couldn't update highlight",
@@ -149,52 +151,60 @@ export default function useAdminHighlights(): UseAdminHighlightsResult {
     }
   }, []);
 
-  const remove = useCallback(async (id: string) => {
-    const previous = highlights.find((h) => h.id === id);
-    setHighlights((prev) => prev.filter((h) => h.id !== id));
+  const remove = useCallback(
+    async (id: string) => {
+      const previous = highlights.find((h) => h.id === id);
+      setHighlights((prev) => prev.filter((h) => h.id !== id));
 
-    try {
-      await deleteHighlight(id);
-      adminToastSuccess({ title: "Highlight deleted" });
-      logAuditEvent({
-        action: AUDIT_ACTIONS.SETTINGS_CHANGE,
-        target: { label: `highlight: ${id}`, href: null },
-        metadata: { action: "delete" },
-      });
-    } catch (err: any) { // TODO(types): Error shape from deleteHighlight
-      if (previous) {
-        setHighlights((prev) => [...prev, previous]);
+      try {
+        await deleteHighlight(id);
+        adminToastSuccess({ title: "Highlight deleted" });
+        logAuditEvent({
+          action: AUDIT_ACTIONS.SETTINGS_CHANGE,
+          target: { label: `highlight: ${id}`, href: null },
+          metadata: { action: "delete" },
+        });
+      } catch (err: any) {
+        // TODO(types): Error shape from deleteHighlight
+        if (previous) {
+          setHighlights((prev) => [...prev, previous]);
+        }
+        adminToastError({
+          title: err?.message || "Couldn't delete highlight",
+          action: { label: "Retry", onClick: () => remove(id) },
+        });
+        throw err;
       }
-      adminToastError({
-        title: err?.message || "Couldn't delete highlight",
-        action: { label: "Retry", onClick: () => remove(id) },
-      });
-      throw err;
-    }
-  }, [highlights]);
+    },
+    [highlights]
+  );
 
-  const reorder = useCallback(async (order: Array<{ id: string; priority: number }>) => {
-    const previous = [...highlights];
+  const reorder = useCallback(
+    async (order: Array<{ id: string; priority: number }>) => {
+      const previous = [...highlights];
 
-    setHighlights((prev) =>
-      prev.map((h) => {
-        const item = order.find((o) => o.id === h.id);
-        return item ? { ...h, priority: item.priority } : h;
-      })
-    );
+      setHighlights((prev) =>
+        prev.map((h) => {
+          const item = order.find((o) => o.id === h.id);
+          return item ? { ...h, priority: item.priority } : h;
+        })
+      );
 
-    try {
-      await reorderHighlights(order);
-      adminToastSuccess({ title: "Highlights reordered" });
-    } catch (err: any) { // TODO(types): Error shape from reorderHighlights
-      setHighlights(previous);
-      adminToastError({
-        title: err?.message || "Couldn't reorder highlights",
-        action: { label: "Retry", onClick: () => reorder(order) },
-      });
-      throw err;
-    }
-  }, [highlights]);
+      try {
+        await reorderHighlights(order);
+        adminToastSuccess({ title: "Highlights reordered" });
+      } catch (err: any) {
+        // TODO(types): Error shape from reorderHighlights
+        setHighlights(previous);
+        adminToastError({
+          title: err?.message || "Couldn't reorder highlights",
+          action: { label: "Retry", onClick: () => reorder(order) },
+        });
+        throw err;
+      }
+    },
+    [highlights]
+  );
 
   return {
     highlights,

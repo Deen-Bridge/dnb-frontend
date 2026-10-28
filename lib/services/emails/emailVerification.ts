@@ -42,13 +42,8 @@ export const sendOtp = async (email: string): Promise<SendOtpResult> => {
     const res = await axiosInstance.post<SendOtpResult>("/api/email", request);
     return res.data;
   } catch (error: unknown) {
-    const axiosError = axios.isAxiosError<EmailServiceErrorResponse>(error)
-      ? error
-      : undefined;
-    console.log(
-      "Error Sending OTP:",
-      axiosError?.response?.data ?? getErrorMessage(error)
-    );
+    const axiosError = axios.isAxiosError<EmailServiceErrorResponse>(error) ? error : undefined;
+    console.log("Error Sending OTP:", axiosError?.response?.data ?? getErrorMessage(error));
     return { success: false, message: "Failed to send OTP" };
   }
 };

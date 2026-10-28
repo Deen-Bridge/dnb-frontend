@@ -36,7 +36,8 @@ export default function useStats(): UserStatsState {
           loading: false,
           error: null,
         });
-      } catch (error: any) { // TODO(types): Error from fetchStats
+      } catch (error: any) {
+        // TODO(types): Error from fetchStats
         setStats((prev) => ({
           ...prev,
           loading: false,

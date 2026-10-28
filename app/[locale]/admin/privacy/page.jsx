@@ -3,13 +3,7 @@
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,12 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Shield,
   Download,
@@ -157,10 +146,9 @@ export default function DataPrivacyPage() {
     setProcessing((prev) => ({ ...prev, [selectedRequest.id]: true }));
     setShowDeleteConfirm(false);
     try {
-      const res = await fetch(
-        `/api/admin/privacy/deletions/${selectedRequest.id}/process`,
-        { method: "POST" }
-      );
+      const res = await fetch(`/api/admin/privacy/deletions/${selectedRequest.id}/process`, {
+        method: "POST",
+      });
       if (!res.ok) throw new Error("Failed to process deletion");
     } finally {
       setProcessing((prev) => ({ ...prev, [selectedRequest.id]: false }));
@@ -202,9 +190,7 @@ export default function DataPrivacyPage() {
             <div className="flex items-center gap-3">
               <Download className="h-5 w-5 text-blue-500" />
               <div>
-                <p className={cn(poppins_600.className, "text-2xl")}>
-                  {exportRequests.length}
-                </p>
+                <p className={cn(poppins_600.className, "text-2xl")}>{exportRequests.length}</p>
                 <p className="text-xs text-muted-foreground">Export Requests</p>
               </div>
             </div>
@@ -215,9 +201,7 @@ export default function DataPrivacyPage() {
             <div className="flex items-center gap-3">
               <Trash2 className="h-5 w-5 text-red-500" />
               <div>
-                <p className={cn(poppins_600.className, "text-2xl")}>
-                  {deletionRequests.length}
-                </p>
+                <p className={cn(poppins_600.className, "text-2xl")}>{deletionRequests.length}</p>
                 <p className="text-xs text-muted-foreground">Deletion Requests</p>
               </div>
             </div>
@@ -279,9 +263,7 @@ export default function DataPrivacyPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Data Export Requests</CardTitle>
-              <CardDescription>
-                Users requesting a copy of their personal data
-              </CardDescription>
+              <CardDescription>Users requesting a copy of their personal data</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border">
@@ -318,14 +300,13 @@ export default function DataPrivacyPage() {
                               {format(new Date(request.requestedAt), "MMM d, HH:mm")}
                             </TableCell>
                             <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={cn("gap-1", status.color)}
-                              >
-                                <StatusIcon className={cn(
-                                  "h-3 w-3",
-                                  request.status === "processing" && "animate-spin"
-                                )} />
+                              <Badge variant="outline" className={cn("gap-1", status.color)}>
+                                <StatusIcon
+                                  className={cn(
+                                    "h-3 w-3",
+                                    request.status === "processing" && "animate-spin"
+                                  )}
+                                />
                                 {status.label}
                               </Badge>
                             </TableCell>
@@ -379,9 +360,7 @@ export default function DataPrivacyPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Account Deletion Requests</CardTitle>
-              <CardDescription>
-                Users requesting permanent account removal
-              </CardDescription>
+              <CardDescription>Users requesting permanent account removal</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border">
@@ -421,14 +400,13 @@ export default function DataPrivacyPage() {
                               {request.reason}
                             </TableCell>
                             <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={cn("gap-1", status.color)}
-                              >
-                                <StatusIcon className={cn(
-                                  "h-3 w-3",
-                                  request.status === "processing" && "animate-spin"
-                                )} />
+                              <Badge variant="outline" className={cn("gap-1", status.color)}>
+                                <StatusIcon
+                                  className={cn(
+                                    "h-3 w-3",
+                                    request.status === "processing" && "animate-spin"
+                                  )}
+                                />
                                 {status.label}
                               </Badge>
                             </TableCell>
@@ -486,18 +464,24 @@ export default function DataPrivacyPage() {
                 The following actions will be taken:
               </p>
               <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
-                <li>Profile information will be <strong>permanently deleted</strong></li>
-                <li>Messages will be <strong>permanently deleted</strong></li>
-                <li>Learning progress will be <strong>anonymized</strong></li>
-                <li>Purchase history will be <strong>anonymized</strong></li>
+                <li>
+                  Profile information will be <strong>permanently deleted</strong>
+                </li>
+                <li>
+                  Messages will be <strong>permanently deleted</strong>
+                </li>
+                <li>
+                  Learning progress will be <strong>anonymized</strong>
+                </li>
+                <li>
+                  Purchase history will be <strong>anonymized</strong>
+                </li>
                 <li>Created content will show as &quot;Deleted User&quot;</li>
               </ul>
             </div>
 
             <div className="rounded-lg border p-4">
-              <p className={cn(poppins_500.className, "text-sm mb-2")}>
-                Data Retention Summary
-              </p>
+              <p className={cn(poppins_500.className, "text-sm mb-2")}>Data Retention Summary</p>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-muted-foreground">Permanently Deleted:</div>
                 <div>Profile, Messages, Settings</div>
@@ -545,9 +529,7 @@ export default function DataPrivacyPage() {
                     <TableCell className={cn(poppins_500.className, "text-sm")}>
                       {row.category}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {row.data}
-                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{row.data}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs text-blue-600">
                         {row.onExport}
@@ -558,9 +540,7 @@ export default function DataPrivacyPage() {
                         variant="outline"
                         className={cn(
                           "text-xs",
-                          row.onDelete.includes("Permanently")
-                            ? "text-red-600"
-                            : "text-amber-600"
+                          row.onDelete.includes("Permanently") ? "text-red-600" : "text-amber-600"
                         )}
                       >
                         {row.onDelete}
@@ -575,9 +555,9 @@ export default function DataPrivacyPage() {
           <div className="flex items-start gap-2 rounded-lg bg-muted p-3">
             <Info className="h-4 w-4 text-muted-foreground mt-0.5" />
             <p className="text-xs text-muted-foreground">
-              Per GDPR requirements, users have the right to export their data and request
-              account deletion. Some data must be retained in anonymized form for legal
-              and financial compliance.
+              Per GDPR requirements, users have the right to export their data and request account
+              deletion. Some data must be retained in anonymized form for legal and financial
+              compliance.
             </p>
           </div>
 

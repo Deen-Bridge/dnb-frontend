@@ -3,32 +3,14 @@
 import Button from "@/components/atoms/form/Button";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VideoIcon, Clock, CirclePlus, Flag } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const SpaceCard = ({ space }) => {
-  const {
-    _id,
-    title,
-    description,
-    thumbnail,
-    category,
-    status,
-    eventDate,
-    duration,
-    host,
-  } = space;
+  const { _id, title, description, thumbnail, category, status, eventDate, duration, host } = space;
   function formatDuration(minutes) {
     if (minutes < 60) return `${minutes} mins`;
     const hours = Math.floor(minutes / 60);
@@ -49,7 +31,7 @@ const SpaceCard = ({ space }) => {
           fill
           className="rounded-t-2xl border-b border-accent/10 object-cover shadow-sm transition-transform duration-500 will-change-transform group-hover:scale-110"
           priority
-          style={{ maxHeight: '15rem' }} // Ensures the image never exceeds the container height
+          style={{ maxHeight: "15rem" }} // Ensures the image never exceeds the container height
         />
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
         {/* Category + Status */}
@@ -87,30 +69,15 @@ const SpaceCard = ({ space }) => {
 
       {/* New Layout: Host, Title, Description, Meta, Button */}
       <div className="flex flex-1 flex-col gap-3 px-6 py-4">
-
         {/* Title & Description */}
         <div className="mb-2">
-          <h3
-            className={cn(
-              poppins_600,
-              "mb-1 line-clamp-1 text-lg text-ink"
-            )}
-          >
-            {title}
-          </h3>
-          <p className={cn(poppins_400, "line-clamp-2 text-sm text-ink-muted")}>
-            {description}
-          </p>
+          <h3 className={cn(poppins_600, "mb-1 line-clamp-1 text-lg text-ink")}>{title}</h3>
+          <p className={cn(poppins_400, "line-clamp-2 text-sm text-ink-muted")}>{description}</p>
         </div>
 
         {/* Meta Info */}
         <div className="mb-4 mt-2 flex items-center justify-between gap-4">
-          <div
-            className={cn(
-              poppins_400,
-              "flex items-center gap-2 text-xs text-ink-muted"
-            )}
-          >
+          <div className={cn(poppins_400, "flex items-center gap-2 text-xs text-ink-muted")}>
             <Clock className="h-4 w-4 text-accent" />
             <span className={cn(poppins_500, "text-ink")}>{formattedTime}</span>
           </div>
@@ -140,7 +107,9 @@ const SpaceCard = ({ space }) => {
             </Avatar>
 
             <div className="flex flex-col">
-              <span className={cn(poppins_600, "text-base leading-tight text-ink")}>{host?.name || "Ustadh Ahmad"}</span>
+              <span className={cn(poppins_600, "text-base leading-tight text-ink")}>
+                {host?.name || "Ustadh Ahmad"}
+              </span>
               <span className={cn(poppins_400, "text-xs text-ink-muted")}>Host</span>
             </div>
           </Link>
@@ -148,7 +117,6 @@ const SpaceCard = ({ space }) => {
           <div>
             <CirclePlus className="h-5 w-5 rounded-full p-1 text-accent transition hover:bg-accent hover:text-white sm:h-8 sm:w-8" />
           </div>
-
         </div>
 
         {/* CTA Button */}
@@ -168,8 +136,5 @@ const SpaceCard = ({ space }) => {
     </div>
   );
 };
-
-
-
 
 export default SpaceCard;

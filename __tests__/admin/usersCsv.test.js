@@ -8,17 +8,14 @@ describe("usersCsv.toCsv", () => {
   ];
 
   it("quotes cells containing commas, quotes and newlines", () => {
-    const csv = toCsv(
-      [{ name: "Doe, Jane", note: 'says "hi"\nnext line' }],
-      columns
-    );
+    const csv = toCsv([{ name: "Doe, Jane", note: 'says "hi"\nnext line' }], columns);
     expect(csv).toBe('Name,Note\r\n"Doe, Jane","says ""hi""\nnext line"');
   });
 
   it("guards cells that start with formula triggers", () => {
     const csv = toCsv(
       [
-        { name: "=HYPERLINK(\"x\")", note: "+1" },
+        { name: '=HYPERLINK("x")', note: "+1" },
         { name: "-cmd", note: "@SUM(A1)" },
         { name: "\tTAB", note: "\rCR" },
       ],
@@ -32,7 +29,10 @@ describe("usersCsv.toCsv", () => {
 
   it("leaves numbers, nulls and plain text unchanged", () => {
     const csv = toCsv(
-      [{ name: -5, note: null }, { name: "plain", note: undefined }],
+      [
+        { name: -5, note: null },
+        { name: "plain", note: undefined },
+      ],
       columns
     );
     expect(csv.split("\r\n")).toEqual(["Name,Note", "-5,", "plain,"]);

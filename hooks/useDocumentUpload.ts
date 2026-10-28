@@ -25,7 +25,7 @@ export const SLOT_STATE = {
   ERROR: "error",
 } as const;
 
-export type SlotStateValue = typeof SLOT_STATE[keyof typeof SLOT_STATE];
+export type SlotStateValue = (typeof SLOT_STATE)[keyof typeof SLOT_STATE];
 
 export interface SlotInfo {
   state: SlotStateValue;
@@ -89,10 +89,7 @@ interface UploadPipelineError extends Error {
 type RemoveDocumentError = Error;
 
 function isUploadPipelineError(error: unknown): error is UploadPipelineError {
-  return (
-    error instanceof Error &&
-    (!("code" in error) || typeof error.code === "string")
-  );
+  return error instanceof Error && (!("code" in error) || typeof error.code === "string");
 }
 
 function isRemoveDocumentError(error: unknown): error is RemoveDocumentError {
@@ -172,8 +169,7 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
             scanMessage: result.scanMessage,
             error:
               result.status === DOCUMENT_STATUS.REJECTED
-                ? result.scanMessage ??
-                  "This document was rejected by the security scan."
+                ? (result.scanMessage ?? "This document was rejected by the security scan.")
                 : null,
             reference: {
               documentId,
@@ -222,8 +218,7 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
       const previewUrl = makePreviewUrl(file);
       setPreviewUrl(documentType, previewUrl);
 
-      const controller =
-        typeof AbortController === "function" ? new AbortController() : null;
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
       abortControllersRef.current[documentType] = controller;
 
       try {

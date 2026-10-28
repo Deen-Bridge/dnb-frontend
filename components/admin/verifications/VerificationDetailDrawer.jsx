@@ -120,16 +120,12 @@ export default function VerificationDetailDrawer({
             <div className="flex items-center gap-3">
               <Avatar className="size-11 rounded-xl border border-accent/15">
                 <AvatarFallback className="bg-secondary/15 text-accent font-semibold text-sm">
-                  {(application.name || application.email || "E")
-                    .slice(0, 2)
-                    .toUpperCase()}
+                  {(application.name || application.email || "E").slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
 
               <div>
-                <DialogTitle
-                  className={cn(poppins_600, "text-lg text-ink leading-tight")}
-                >
+                <DialogTitle className={cn(poppins_600, "text-lg text-ink leading-tight")}>
                   {application.name || "Educator Applicant"}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-ink-muted flex items-center gap-3 mt-0.5">
@@ -153,8 +149,7 @@ export default function VerificationDetailDrawer({
                 "text-xs capitalize font-medium py-0.5",
                 application.status === "approved" &&
                   "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
-                application.status === "rejected" &&
-                  "bg-red-500/10 text-red-600 border-red-500/30",
+                application.status === "rejected" && "bg-red-500/10 text-red-600 border-red-500/30",
                 application.status === "pending" &&
                   "bg-amber-500/10 text-amber-600 border-amber-500/30"
               )}
@@ -242,10 +237,7 @@ export default function VerificationDetailDrawer({
             <div className="divide-y divide-accent/10 rounded-xl border border-accent/10 bg-surface">
               {application.documents && application.documents.length > 0 ? (
                 application.documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-3"
-                  >
+                  <div key={doc.id} className="flex items-center justify-between p-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                         <FileText className="size-4" />
@@ -275,9 +267,7 @@ export default function VerificationDetailDrawer({
                   </div>
                 ))
               ) : (
-                <div className="p-3 text-center text-ink-muted text-xs">
-                  No documents uploaded.
-                </div>
+                <div className="p-3 text-center text-ink-muted text-xs">No documents uploaded.</div>
               )}
             </div>
           </div>
@@ -296,10 +286,7 @@ export default function VerificationDetailDrawer({
                   <span>Rejection Reason Category</span>
                   <span className="text-red-500">*</span>
                 </Label>
-                <Select
-                  value={reasonCategory}
-                  onValueChange={setReasonCategory}
-                >
+                <Select value={reasonCategory} onValueChange={setReasonCategory}>
                   <SelectTrigger
                     id="single-rejection-reason"
                     className="w-full bg-surface border-accent/20 text-xs h-9"
@@ -308,11 +295,7 @@ export default function VerificationDetailDrawer({
                   </SelectTrigger>
                   <SelectContent className="bg-surface-raised border-accent/15 z-50">
                     {REJECTION_REASON_CATEGORIES.map((cat) => (
-                      <SelectItem
-                        key={cat.id}
-                        value={cat.id}
-                        className="text-xs cursor-pointer"
-                      >
+                      <SelectItem key={cat.id} value={cat.id} className="text-xs cursor-pointer">
                         <span className="font-medium">{cat.label}</span>
                       </SelectItem>
                     ))}

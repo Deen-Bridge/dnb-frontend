@@ -47,7 +47,10 @@ const KNOWN_HOSTILE_SIGNATURES: HostileSignature[] = [
   { label: "Shell script", prefixes: [[0x23, 0x21]] },
 ];
 
-export async function readMagicBytes(file: Blob, length: number = SIGNATURE_BYTE_LENGTH): Promise<Uint8Array> {
+export async function readMagicBytes(
+  file: Blob,
+  length: number = SIGNATURE_BYTE_LENGTH
+): Promise<Uint8Array> {
   const slice = file.slice(0, length);
 
   if (typeof slice.arrayBuffer === "function") {

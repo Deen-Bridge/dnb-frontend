@@ -144,10 +144,7 @@ describe("getCategoryCounts", () => {
   });
 
   it("buckets unknown and missing categories under the fallback", () => {
-    const counts = getCategoryCounts([
-      { category: "Underwater Basket Weaving" },
-      {},
-    ]);
+    const counts = getCategoryCounts([{ category: "Underwater Basket Weaving" }, {}]);
 
     expect(counts[FALLBACK_SLUG]).toBe(2);
   });
@@ -237,9 +234,7 @@ describe("taxonomy integrity", () => {
     const grouped = getGroupedCategories();
 
     expect(grouped).toHaveLength(CATEGORY_GROUPS.length);
-    expect(grouped.flatMap((entry) => entry.categories)).toHaveLength(
-      ISLAMIC_CATEGORIES.length
-    );
+    expect(grouped.flatMap((entry) => entry.categories)).toHaveLength(ISLAMIC_CATEGORIES.length);
     expect(CATEGORY_MAP.fiqh?.group).toBe("Core Islamic Sciences");
   });
 });

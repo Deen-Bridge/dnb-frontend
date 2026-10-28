@@ -1,9 +1,5 @@
 export type JourneyStep =
-  | "disconnected"
-  | "wallet_connected"
-  | "intent_initialized"
-  | "xdr_signed"
-  | "submitted_verified";
+  "disconnected" | "wallet_connected" | "intent_initialized" | "xdr_signed" | "submitted_verified";
 
 export interface TestnetPaymentJourneyState {
   step: JourneyStep;

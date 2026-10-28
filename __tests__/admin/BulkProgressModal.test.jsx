@@ -36,12 +36,7 @@ describe("BulkProgressModal", () => {
     const onComplete = vi.fn();
 
     render(
-      <BulkProgressModal
-        open={true}
-        action="approve"
-        items={mockItems}
-        onComplete={onComplete}
-      />
+      <BulkProgressModal open={true} action="approve" items={mockItems} onComplete={onComplete} />
     );
 
     expect(screen.getByTestId("bulk-progress-modal")).toBeInTheDocument();

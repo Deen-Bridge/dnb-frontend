@@ -15,7 +15,10 @@ export interface EnrichedCategoryItem extends CategoryItem {
   count: number;
 }
 
-function mergeCounts(categories: CategoryItem[], counts: Record<string, number>): EnrichedCategoryItem[] {
+function mergeCounts(
+  categories: CategoryItem[],
+  counts: Record<string, number>
+): EnrichedCategoryItem[] {
   return categories.map((category) => ({
     ...category,
     count: counts[category.slug] || 0,
@@ -45,7 +48,8 @@ export async function fetchCourseCategories(): Promise<EnrichedCategoryItem[]> {
       });
       return merged;
     }
-  } catch (error: any) { // TODO(types): Axios error on categories endpoint
+  } catch (error: any) {
+    // TODO(types): Axios error on categories endpoint
     logger.warn(
       "[categories] /api/courses/categories unavailable, deriving counts client-side.",
       error?.message || error
@@ -63,21 +67,22 @@ export async function fetchCourseCategories(): Promise<EnrichedCategoryItem[]> {
   ];
 }
 
-export async function fetchCoursesByCategory(slug: string, sortKey: string = "newest"): Promise<any[]> { // TODO(types): Course domain model array
+export async function fetchCoursesByCategory(
+  slug: string,
+  sortKey: string = "newest"
+): Promise<any[]> {
+  // TODO(types): Course domain model array
   try {
     const response = await axiosInstance.get("/api/courses", {
       params: { category: slug },
     });
     const data = response?.data;
-    const courses = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.courses)
-        ? data.courses
-        : [];
+    const courses = Array.isArray(data) ? data : Array.isArray(data?.courses) ? data.courses : [];
     if (courses.length > 0) {
       return sortCourses(courses, sortKey);
     }
-  } catch (error: any) { // TODO(types): Axios error on category course fetch
+  } catch (error: any) {
+    // TODO(types): Axios error on category course fetch
     if (error?.response) {
       throw error;
     }
@@ -88,7 +93,8 @@ export async function fetchCoursesByCategory(slug: string, sortKey: string = "ne
   }
 
   const all = await fetchCourses();
-  const list = (Array.isArray(all) ? all : []).filter((course: any) => { // TODO(types): Partial course entity
+  const list = (Array.isArray(all) ? all : []).filter((course: any) => {
+    // TODO(types): Partial course entity
     if (slug === FALLBACK_SLUG) {
       const raw = String(course?.category ?? "").trim();
       if (!raw) return true;

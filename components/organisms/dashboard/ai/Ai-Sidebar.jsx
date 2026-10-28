@@ -44,9 +44,7 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
       });
       if (response.ok) {
         toast.success("Chat deleted");
-        setChatHistory((prev) =>
-          prev.filter((chat) => chat.chat_id !== chatIdToDelete)
-        );
+        setChatHistory((prev) => prev.filter((chat) => chat.chat_id !== chatIdToDelete));
         if (currentChatId === chatIdToDelete && onNewChat) {
           onNewChat();
         }
@@ -66,9 +64,7 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
 
   const handleChatSelect = async (chatId) => {
     try {
-      const historyResponse = await fetch(
-        `${AI_API_URL}/chat/${chatId}/history`
-      );
+      const historyResponse = await fetch(`${AI_API_URL}/chat/${chatId}/history`);
       if (historyResponse.ok) {
         const raw = await historyResponse.json();
         // Backend returns {role, text} — map to {role, content}
@@ -120,12 +116,8 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
             <div className="mx-auto mb-3 flex size-11 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
               <MessageSquare className="h-5 w-5 text-accent" />
             </div>
-            <p className={cn(poppins_500, "text-sm text-ink")}>
-              No chat history yet
-            </p>
-            <p className={cn(poppins_400, "mt-1 text-xs text-ink-muted")}>
-              Start a conversation
-            </p>
+            <p className={cn(poppins_500, "text-sm text-ink")}>No chat history yet</p>
+            <p className={cn(poppins_400, "mt-1 text-xs text-ink-muted")}>Start a conversation</p>
           </div>
         ) : (
           chatHistory.map((chat) => (
@@ -133,9 +125,7 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
               key={chat.chat_id}
               className={cn(
                 "group relative flex items-center rounded-lg transition-colors",
-                chat.chat_id === currentChatId
-                  ? "bg-accent/10"
-                  : "hover:bg-secondary/5"
+                chat.chat_id === currentChatId ? "bg-accent/10" : "hover:bg-secondary/5"
               )}
             >
               <button
@@ -145,9 +135,7 @@ export function AiSidebar({ onChatSelect, currentChatId, onNewChat }) {
                 <MessageSquare
                   className={cn(
                     "h-4 w-4 shrink-0",
-                    chat.chat_id === currentChatId
-                      ? "text-accent"
-                      : "text-ink-muted"
+                    chat.chat_id === currentChatId ? "text-accent" : "text-ink-muted"
                   )}
                 />
                 <span className={cn(poppins_500, "truncate text-sm text-ink")}>

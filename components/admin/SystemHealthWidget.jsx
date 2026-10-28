@@ -16,7 +16,11 @@ async function checkService(service) {
   const timeout = setTimeout(() => controller.abort(), 5000);
   try {
     const url = new URL("/health", service.baseUrl()).toString();
-    let response = await fetch(url, { method: "HEAD", cache: "no-store", signal: controller.signal });
+    let response = await fetch(url, {
+      method: "HEAD",
+      cache: "no-store",
+      signal: controller.signal,
+    });
     if (response.status === 405 || response.status === 501) {
       response = await fetch(url, { method: "GET", cache: "no-store", signal: controller.signal });
     }
@@ -67,19 +71,32 @@ export default function SystemHealthWidget() {
           <CardDescription className="mt-1">Service reachability from this browser</CardDescription>
         </div>
         <Button variant="outline" size="sm" onClick={refresh} disabled={checking}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${checking ? "animate-spin" : ""}`} aria-hidden="true" />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${checking ? "animate-spin" : ""}`}
+            aria-hidden="true"
+          />
           Refresh
         </Button>
       </CardHeader>
       <CardContent className="space-y-3">
         {SERVICES.map((service) => {
           const status = checking ? "checking" : statuses[service.id];
-          const label = status === "reachable" ? "Reachable" : status === "checking" ? "Checking" : status === "unchecked" ? "Not checked" : "Unreachable";
+          const label =
+            status === "reachable"
+              ? "Reachable"
+              : status === "checking"
+                ? "Checking"
+                : status === "unchecked"
+                  ? "Not checked"
+                  : "Unreachable";
           return (
             <div key={service.id} className="flex items-center justify-between gap-3 text-sm">
               <span className="font-medium">{service.label}</span>
               <span className="inline-flex items-center gap-2 text-muted-foreground" role="status">
-                <span className={`h-2.5 w-2.5 rounded-full ${DOT_STYLES[status]}`} aria-hidden="true" />
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${DOT_STYLES[status]}`}
+                  aria-hidden="true"
+                />
                 {label}
               </span>
             </div>

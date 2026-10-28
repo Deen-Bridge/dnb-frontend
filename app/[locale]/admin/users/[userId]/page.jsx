@@ -4,13 +4,7 @@ import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -128,13 +122,20 @@ export default function AdminUserDetailPage({ params }) {
               reviewedBy: "Admin review team",
             },
             purchases: [
-              { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
+              {
+                id: "p1",
+                title: "Tafsir of Surah Al-Fatihah",
+                amount: "$24.50",
+                date: "2026-01-10",
+              },
               { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
             ],
           };
         }
         setUser(resolvedUser);
-        setSelectedRole(resolvedUser.role === "educator" ? "mentor" : resolvedUser.role || "student");
+        setSelectedRole(
+          resolvedUser.role === "educator" ? "mentor" : resolvedUser.role || "student"
+        );
 
         if (isMentorRecord(resolvedUser)) {
           try {
@@ -267,7 +268,9 @@ export default function AdminUserDetailPage({ params }) {
     setSecurityAction("password-reset");
     setSecurityStatus(null);
     try {
-      const result = await setRequirePasswordReset(user._id || userId, nextRequired, { email: user.email });
+      const result = await setRequirePasswordReset(user._id || userId, nextRequired, {
+        email: user.email,
+      });
       setUser((current) => ({ ...current, requirePasswordReset: result.requirePasswordReset }));
       setSecurityStatus({
         type: "success",
@@ -276,7 +279,10 @@ export default function AdminUserDetailPage({ params }) {
           : "Password reset requirement removed.",
       });
     } catch (error) {
-      setSecurityStatus({ type: "error", message: error?.message || "The password reset requirement could not be updated." });
+      setSecurityStatus({
+        type: "error",
+        message: error?.message || "The password reset requirement could not be updated.",
+      });
     } finally {
       setSecurityAction(null);
     }
@@ -288,7 +294,10 @@ export default function AdminUserDetailPage({ params }) {
     );
     if (typedEmail === null) return;
     if (typedEmail.trim().toLowerCase() !== user.email?.trim().toLowerCase()) {
-      setSecurityStatus({ type: "error", message: "Sign-out cancelled because the email did not match." });
+      setSecurityStatus({
+        type: "error",
+        message: "Sign-out cancelled because the email did not match.",
+      });
       return;
     }
 
@@ -302,7 +311,10 @@ export default function AdminUserDetailPage({ params }) {
         message: count === 1 ? "Signed out 1 session." : `Signed out ${count} sessions.`,
       });
     } catch (error) {
-      setSecurityStatus({ type: "error", message: error?.message || "The user's sessions could not be signed out." });
+      setSecurityStatus({
+        type: "error",
+        message: error?.message || "The user's sessions could not be signed out.",
+      });
     } finally {
       setSecurityAction(null);
     }
@@ -317,13 +329,19 @@ export default function AdminUserDetailPage({ params }) {
     const currentRole = user.role === "educator" ? "mentor" : user.role || "student";
     if (selectedRole === currentRole) return;
 
-    if (!window.confirm(`Change ${user.name}'s role from ${currentRole} to ${selectedRole}? This may change the tools and access available to this account.`)) {
+    if (
+      !window.confirm(
+        `Change ${user.name}'s role from ${currentRole} to ${selectedRole}? This may change the tools and access available to this account.`
+      )
+    ) {
       setSelectedRole(currentRole);
       return;
     }
 
     if (selectedRole === "admin") {
-      const typedEmail = window.prompt(`Type ${user.email} to confirm granting administrator access.`);
+      const typedEmail = window.prompt(
+        `Type ${user.email} to confirm granting administrator access.`
+      );
       if (typedEmail?.trim().toLowerCase() !== user.email?.trim().toLowerCase()) {
         toast.error("Administrator role was not changed because the email did not match.");
         setSelectedRole(currentRole);
@@ -355,9 +373,7 @@ export default function AdminUserDetailPage({ params }) {
   };
 
   const network = config.stellarNetwork;
-  const explorerUrl = user?.walletAddress
-    ? getExplorerUrl(user.walletAddress, network)
-    : null;
+  const explorerUrl = user?.walletAddress ? getExplorerUrl(user.walletAddress, network) : null;
 
   return (
     <PageShell>
@@ -390,7 +406,10 @@ export default function AdminUserDetailPage({ params }) {
         ) : (
           <>
             {user.status === "banned" && (
-              <div role="alert" className="flex items-start gap-3 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+              <div
+                role="alert"
+                className="flex items-start gap-3 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900"
+              >
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
                 <div>
                   <p className="font-semibold">This user is banned.</p>
@@ -465,7 +484,10 @@ export default function AdminUserDetailPage({ params }) {
                     <span className="text-muted-foreground block font-medium mb-1">
                       Contact Email:
                     </span>
-                    <a href={`mailto:${user.email}`} className="text-primary hover:underline font-semibold print-url">
+                    <a
+                      href={`mailto:${user.email}`}
+                      className="text-primary hover:underline font-semibold print-url"
+                    >
                       {user.email}
                     </a>
                   </div>
@@ -484,12 +506,15 @@ export default function AdminUserDetailPage({ params }) {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold">Change account role</CardTitle>
                 <CardDescription className="text-xs">
-                  Role changes are saved only after the server confirms them. Granting admin access requires typing the account email.
+                  Role changes are saved only after the server confirms them. Granting admin access
+                  requires typing the account email.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <div className="w-full sm:max-w-xs">
-                  <label htmlFor="user-role" className="mb-1.5 block text-sm font-medium">New role</label>
+                  <label htmlFor="user-role" className="mb-1.5 block text-sm font-medium">
+                    New role
+                  </label>
                   <select
                     id="user-role"
                     value={selectedRole}
@@ -502,7 +527,13 @@ export default function AdminUserDetailPage({ params }) {
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
-                <Button onClick={handleRoleChange} disabled={roleSaving || selectedRole === (user.role === "educator" ? "mentor" : user.role || "student")}>
+                <Button
+                  onClick={handleRoleChange}
+                  disabled={
+                    roleSaving ||
+                    selectedRole === (user.role === "educator" ? "mentor" : user.role || "student")
+                  }
+                >
                   {roleSaving ? "Saving…" : "Save role"}
                 </Button>
               </CardContent>
@@ -512,7 +543,8 @@ export default function AdminUserDetailPage({ params }) {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold">Account moderation</CardTitle>
                 <CardDescription className="text-xs">
-                  Status is reloaded from the server after every action. You cannot moderate users with an equal or higher role.
+                  Status is reloaded from the server after every action. You cannot moderate users
+                  with an equal or higher role.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -526,10 +558,20 @@ export default function AdminUserDetailPage({ params }) {
                   </Button>
                 ) : (
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" disabled={modSaving} onClick={() => setModAction("suspend")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={modSaving}
+                      onClick={() => setModAction("suspend")}
+                    >
                       Suspend
                     </Button>
-                    <Button size="sm" variant="destructive" disabled={modSaving} onClick={() => setModAction("ban")}>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={modSaving}
+                      onClick={() => setModAction("ban")}
+                    >
                       Ban
                     </Button>
                   </div>
@@ -538,7 +580,12 @@ export default function AdminUserDetailPage({ params }) {
                 {modAction === "suspend" && (
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
                     <div>
-                      <label htmlFor="suspend-duration" className="mb-1.5 block text-sm font-medium">Duration</label>
+                      <label
+                        htmlFor="suspend-duration"
+                        className="mb-1.5 block text-sm font-medium"
+                      >
+                        Duration
+                      </label>
                       <select
                         id="suspend-duration"
                         value={suspendDuration}
@@ -555,13 +602,22 @@ export default function AdminUserDetailPage({ params }) {
                     <Button size="sm" onClick={handleSuspend} disabled={modSaving}>
                       {modSaving ? "Suspending…" : "Confirm suspend"}
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setModAction(null)}
+                      disabled={modSaving}
+                    >
+                      Cancel
+                    </Button>
                   </div>
                 )}
 
                 {modAction === "ban" && (
                   <div className="space-y-2">
-                    <label htmlFor="ban-reason" className="block text-sm font-medium">Reason (required)</label>
+                    <label htmlFor="ban-reason" className="block text-sm font-medium">
+                      Reason (required)
+                    </label>
                     <textarea
                       id="ban-reason"
                       value={banReason}
@@ -571,10 +627,22 @@ export default function AdminUserDetailPage({ params }) {
                       placeholder="Explain why this user is being banned"
                     />
                     <div className="flex gap-2">
-                      <Button size="sm" variant="destructive" onClick={handleBan} disabled={modSaving || !banReason.trim()}>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleBan}
+                        disabled={modSaving || !banReason.trim()}
+                      >
                         {modSaving ? "Banning…" : "Confirm ban"}
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setModAction(null)}
+                        disabled={modSaving}
+                      >
+                        Cancel
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -585,7 +653,8 @@ export default function AdminUserDetailPage({ params }) {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold">Account security</CardTitle>
                 <CardDescription className="text-xs">
-                  Each action asks for confirmation. The result is shown here once the server responds.
+                  Each action asks for confirmation. The result is shown here once the server
+                  responds.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -609,7 +678,8 @@ export default function AdminUserDetailPage({ params }) {
                   <div>
                     <p className="text-sm font-medium">Sign out all sessions</p>
                     <p className="text-xs text-muted-foreground">
-                      Revokes every refresh token for this account on the server. Requires typing the user&apos;s email.
+                      Revokes every refresh token for this account on the server. Requires typing
+                      the user&apos;s email.
                     </p>
                   </div>
                   <Button
@@ -622,7 +692,9 @@ export default function AdminUserDetailPage({ params }) {
                   </Button>
                 </div>
                 {securityAction === "password-reset" && (
-                  <p role="status" className="text-xs text-muted-foreground">Saving password reset requirement…</p>
+                  <p role="status" className="text-xs text-muted-foreground">
+                    Saving password reset requirement…
+                  </p>
                 )}
                 {securityStatus && (
                   <p
@@ -660,7 +732,8 @@ export default function AdminUserDetailPage({ params }) {
                     <div className="space-y-3">
                       {verificationHistory.source === "composed" && (
                         <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                          Backend history endpoint is not available yet; this timeline is composed from verification record fields.
+                          Backend history endpoint is not available yet; this timeline is composed
+                          from verification record fields.
                         </p>
                       )}
                       <ol className="relative border-l pl-4">
@@ -680,7 +753,10 @@ export default function AdminUserDetailPage({ params }) {
                                     {event.label}
                                   </Badge>
                                   <span className="text-xs text-muted-foreground">
-                                    Actor: <span className="font-medium text-foreground">{event.actor}</span>
+                                    Actor:{" "}
+                                    <span className="font-medium text-foreground">
+                                      {event.actor}
+                                    </span>
                                   </span>
                                 </div>
                                 {event.note && (
@@ -697,7 +773,9 @@ export default function AdminUserDetailPage({ params }) {
                       </ol>
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">No verification events recorded yet.</p>
+                    <p className="text-xs text-muted-foreground">
+                      No verification events recorded yet.
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -761,7 +839,8 @@ export default function AdminUserDetailPage({ params }) {
                   </Badge>
                 </div>
                 <CardDescription className="text-xs">
-                  Bulk control over all reels published by this creator. Cross-linked with the moderation grid.
+                  Bulk control over all reels published by this creator. Cross-linked with the
+                  moderation grid.
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

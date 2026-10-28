@@ -140,10 +140,7 @@ export function useStreamingChat(
         let currentChatId = chatId;
         let history: ChatHistoryEntry[] = [];
 
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "", isStreaming: true },
-        ]);
+        setMessages((prev) => [...prev, { role: "assistant", content: "", isStreaming: true }]);
 
         while (true) {
           const { done, value } = await reader.read();

@@ -40,7 +40,8 @@ export default function useAdminTeam(): UseAdminTeamResult {
     try {
       const { admins: members } = await listAdmins();
       setAdmins(Array.isArray(members) ? members : []);
-    } catch (err: any) { // TODO(types): Error shape from listAdmins
+    } catch (err: any) {
+      // TODO(types): Error shape from listAdmins
       setError(err?.message || "Failed to load admin team");
     } finally {
       setIsLoading(false);
@@ -60,7 +61,8 @@ export default function useAdminTeam(): UseAdminTeamResult {
       try {
         const { admins: members } = await listAdmins();
         if (!cancelled) setAdmins(Array.isArray(members) ? members : []);
-      } catch (err: any) { // TODO(types): Error shape from listAdmins
+      } catch (err: any) {
+        // TODO(types): Error shape from listAdmins
         if (!cancelled) setError(err?.message || "Failed to load admin team");
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -78,9 +80,7 @@ export default function useAdminTeam(): UseAdminTeamResult {
 
   const demoteMember = useCallback(async (adminId: string, context?: DemoteContext) => {
     await demoteAdmin(adminId, context);
-    setAdmins((prev) =>
-      prev.map((m) => (m.id === adminId ? { ...m, tier: "staff" } : m))
-    );
+    setAdmins((prev) => prev.map((m) => (m.id === adminId ? { ...m, tier: "staff" } : m)));
     logAuditEvent({
       action: AUDIT_ACTIONS.ROLE_DEMOTE,
       target: {

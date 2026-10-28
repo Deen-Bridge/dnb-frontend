@@ -20,11 +20,7 @@ import Link from "next/link";
 import Loader from "@/components/molecules/loaders/rootLoader";
 import { markMessagesAsRead } from "@/hooks/markMessageAsRead";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -42,7 +38,8 @@ export default function Page({ params }) {
   const [typingUsers, setTypingUsers] = useState({});
 
   const otherUserId = useMemo(() => {
-    if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants)) return null;
+    if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants))
+      return null;
     return currentConversation.participants.find((id) => id !== user._id) || null;
   }, [currentConversation, user?._id]);
 
@@ -84,15 +81,9 @@ export default function Page({ params }) {
   // Fetch other participant info
   useEffect(() => {
     const fetchOtherParticipant = async () => {
-      if (
-        !currentConversation ||
-        !user?._id ||
-        !Array.isArray(currentConversation.participants)
-      )
+      if (!currentConversation || !user?._id || !Array.isArray(currentConversation.participants))
         return;
-      const otherId = currentConversation.participants.find(
-        (id) => id !== user._id
-      );
+      const otherId = currentConversation.participants.find((id) => id !== user._id);
       if (!otherId) return;
       // Check cache first
       if (userCache[otherId]) {
@@ -178,56 +169,35 @@ export default function Page({ params }) {
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <Avatar className="h-10 w-10 sm:h-13 sm:w-13">
             <AvatarImage src={otherParticipantInfo?.avatar} alt="" />
-            <AvatarFallback>
-              {otherParticipantInfo?.name?.charAt(0)}
-            </AvatarFallback>
+            <AvatarFallback>{otherParticipantInfo?.name?.charAt(0)}</AvatarFallback>
           </Avatar>
         </Link>
         <Link href={`/account/profile/${otherParticipantInfo?._id}`}>
           <div className="flex-1 min-w-0">
-            <h1
-              className={cn(
-                poppins_600,
-                "truncate text-sm text-ink sm:text-base"
-              )}
-            >
+            <h1 className={cn(poppins_600, "truncate text-sm text-ink sm:text-base")}>
               {otherParticipantInfo?.name}
             </h1>
             {otherOnline ? (
-              <p
-                className={cn(
-                  poppins_500,
-                  "text-xs text-secondary sm:text-sm"
-                )}
-              >
-                Active now
-              </p>
+              <p className={cn(poppins_500, "text-xs text-secondary sm:text-sm")}>Active now</p>
             ) : otherLastSeen ? (
-              <p
-                className={cn(
-                  poppins_400,
-                  "text-xs text-ink-muted sm:text-sm"
-                )}
-              >
-                Last seen {formatDistanceToNow(otherLastSeen.toDate?.() || otherLastSeen, { addSuffix: true })}
+              <p className={cn(poppins_400, "text-xs text-ink-muted sm:text-sm")}>
+                Last seen{" "}
+                {formatDistanceToNow(otherLastSeen.toDate?.() || otherLastSeen, {
+                  addSuffix: true,
+                })}
               </p>
             ) : null}
             {/* Show typing indicator */}
             {Object.entries(typingUsers).map(([uid, isTyping]) =>
               uid !== user._id && isTyping ? (
-                <p
-                  key={uid}
-                  className={cn(poppins_400, "text-xs text-ink-muted")}
-                >
+                <p key={uid} className={cn(poppins_400, "text-xs text-ink-muted")}>
                   typing...
                 </p>
               ) : null
             )}
           </div>
         </Link>
-        {otherOnline && (
-          <div className="h-2 w-2 rounded-full bg-secondary" />
-        )}
+        {otherOnline && <div className="h-2 w-2 rounded-full bg-secondary" />}
       </div>
 
       {error && (
@@ -257,10 +227,8 @@ export default function Page({ params }) {
           messages.map((msg, i) => {
             const isOwnMessage = msg.senderId === user?._id;
             const showAvatar =
-              !isOwnMessage &&
-              (i === 0 || messages[i - 1]?.senderId !== msg.senderId);
-            const isConsecutiveMessage =
-              i > 0 && messages[i - 1]?.senderId === msg.senderId;
+              !isOwnMessage && (i === 0 || messages[i - 1]?.senderId !== msg.senderId);
+            const isConsecutiveMessage = i > 0 && messages[i - 1]?.senderId === msg.senderId;
             const rawTime =
               msg.timestamp?.toDate?.() || // Firestore Timestamp object
               msg.timestamp || // ISO string or Date
@@ -270,18 +238,15 @@ export default function Page({ params }) {
 
             let displayTime = "";
             if (rawTime) {
-              const dateObj =
-                rawTime instanceof Date ? rawTime : new Date(rawTime);
+              const dateObj = rawTime instanceof Date ? rawTime : new Date(rawTime);
               if (isValid(dateObj)) {
                 displayTime = format(dateObj, "HH:mm");
               }
             }
             const showTime =
-              i === messages.length - 1 ||
-              messages[i + 1]?.senderId !== msg.senderId;
+              i === messages.length - 1 || messages[i + 1]?.senderId !== msg.senderId;
 
-            const messageTime =
-              msg.createdAt || msg.timestamp || new Date().toISOString();
+            const messageTime = msg.createdAt || msg.timestamp || new Date().toISOString();
 
             const sender = userCache[msg.senderId];
 
@@ -321,10 +286,7 @@ export default function Page({ params }) {
                     {showTime &&
                       (() => {
                         try {
-                          const d =
-                            msg.timestamp?.toDate?.() ||
-                            msg.timestamp ||
-                            msg.createdAt;
+                          const d = msg.timestamp?.toDate?.() || msg.timestamp || msg.createdAt;
                           return d ? format(new Date(d), "HH:mm") : "--:--";
                         } catch {
                           return "--:--";

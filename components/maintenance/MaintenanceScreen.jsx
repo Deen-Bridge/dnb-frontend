@@ -69,10 +69,7 @@ function Countdown({ etaAt }) {
       role="status"
       aria-live="polite"
     >
-      <span
-        className="h-2 w-2 animate-pulse rounded-full bg-accent"
-        aria-hidden="true"
-      />
+      <span className="h-2 w-2 animate-pulse rounded-full bg-accent" aria-hidden="true" />
       {label}
     </div>
   );

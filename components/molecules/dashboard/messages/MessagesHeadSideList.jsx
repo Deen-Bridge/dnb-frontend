@@ -74,7 +74,9 @@ const MessagesHeadSideList = () => {
 
   useEffect(() => {
     if (!user?._id || !conversations.length) return;
-    const otherIds = [...new Set(conversations.flatMap((c) => c.participants?.filter((p) => p !== user._id) || []))];
+    const otherIds = [
+      ...new Set(conversations.flatMap((c) => c.participants?.filter((p) => p !== user._id) || [])),
+    ];
     const unsubs = otherIds.map((id) =>
       listenToPresence(id, (presence) => {
         setPresenceMap((prev) => ({ ...prev, [id]: presence }));
@@ -96,12 +98,10 @@ const MessagesHeadSideList = () => {
     const getTime = (msg) => {
       return (
         msg?.timestamp?.toDate?.() ||
-        (typeof msg?.timestamp === "string" ||
-          typeof msg?.timestamp === "number"
+        (typeof msg?.timestamp === "string" || typeof msg?.timestamp === "number"
           ? new Date(msg.timestamp)
           : undefined) ||
-        (typeof msg?.createdAt === "string" ||
-          typeof msg?.createdAt === "number"
+        (typeof msg?.createdAt === "string" || typeof msg?.createdAt === "number"
           ? new Date(msg.createdAt)
           : undefined) ||
         new Date(0)
@@ -118,17 +118,12 @@ const MessagesHeadSideList = () => {
         {loading ? (
           <ChatHeadListSkeleton />
         ) : sortedConversations.length === 0 ? (
-          <div className="text-center text-muted-foreground py-8">
-            No conversations yet
-          </div>
+          <div className="text-center text-muted-foreground py-8">No conversations yet</div>
         ) : (
           sortedConversations.map((conversation) => {
-            const otherParticipant = getOtherParticipant(
-              conversation.participants
-            );
+            const otherParticipant = getOtherParticipant(conversation.participants);
             const lastMessage = conversation.lastMessage;
-            const isActive =
-              pathname === `/dashboard/messages/${conversation._id}`;
+            const isActive = pathname === `/dashboard/messages/${conversation._id}`;
             const unreadCount = unreadCounts[conversation._id] || 0;
 
             return (
@@ -137,25 +132,21 @@ const MessagesHeadSideList = () => {
                 onClick={() => handleConversationClick(conversation._id)}
                 className={cn(
                   "flex items-center justify-between gap-3 p-3 rounded-lg transition-colors cursor-pointer",
-                  isActive
-                    ? "bg-accent/10 hover:bg-accent/20"
-                    : "hover:bg-muted/80"
+                  isActive ? "bg-accent/10 hover:bg-accent/20" : "hover:bg-muted/80"
                 )}
               >
                 <div className="flex gap-3 flex-1 min-w-0 relative">
                   <div className="relative">
-                  <Avatar className="h-10 w-10 rounded-lg">
-                    {otherParticipant?.avatar ? (
-                      <AvatarImage src={otherParticipant.avatar} alt="" />
-                    ) : (
-                      <AvatarFallback>
-                        {otherParticipant?.name?.charAt(0) || "?"}
-                      </AvatarFallback>
+                    <Avatar className="h-10 w-10 rounded-lg">
+                      {otherParticipant?.avatar ? (
+                        <AvatarImage src={otherParticipant.avatar} alt="" />
+                      ) : (
+                        <AvatarFallback>{otherParticipant?.name?.charAt(0) || "?"}</AvatarFallback>
+                      )}
+                    </Avatar>
+                    {presenceMap[otherParticipant?._id]?.online && (
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
                     )}
-                  </Avatar>
-                  {presenceMap[otherParticipant?._id]?.online && (
-                    <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-                  )}
                   </div>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -168,11 +159,11 @@ const MessagesHeadSideList = () => {
                             let rawTime =
                               lastMessage.timestamp?.toDate?.() ||
                               (typeof lastMessage.timestamp === "string" ||
-                                typeof lastMessage.timestamp === "number"
+                              typeof lastMessage.timestamp === "number"
                                 ? new Date(lastMessage.timestamp)
                                 : undefined) ||
                               (typeof lastMessage.createdAt === "string" ||
-                                typeof lastMessage.createdAt === "number"
+                              typeof lastMessage.createdAt === "number"
                                 ? new Date(lastMessage.createdAt)
                                 : undefined) ||
                               undefined;
@@ -187,9 +178,7 @@ const MessagesHeadSideList = () => {
                     <span
                       className={cn(
                         "flex items-start text-sm truncate",
-                        unreadCount
-                          ? "font-semibold text-foreground"
-                          : "text-muted-foreground"
+                        unreadCount ? "font-semibold text-foreground" : "text-muted-foreground"
                       )}
                     >
                       {lastMessage?.text || "No messages yet"}

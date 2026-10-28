@@ -42,7 +42,8 @@ export default function usePurchases(): UsePurchasesResult {
     if (!user) return new Set<string>();
     const ids = new Set<string>();
     if (Array.isArray(user.purchasedCourses)) {
-      user.purchasedCourses.forEach((c: any) => { // TODO(types): Purchased course item
+      user.purchasedCourses.forEach((c: any) => {
+        // TODO(types): Purchased course item
         if (c.courseId) ids.add(c.courseId.toString());
         if (c._id) ids.add(c._id.toString());
       });
@@ -57,7 +58,8 @@ export default function usePurchases(): UsePurchasesResult {
     if (!user) return new Set<string>();
     const ids = new Set<string>();
     if (Array.isArray(user.purchasedBooks)) {
-      user.purchasedBooks.forEach((b: any) => { // TODO(types): Purchased book item
+      user.purchasedBooks.forEach((b: any) => {
+        // TODO(types): Purchased book item
         if (b.bookId) ids.add(b.bookId.toString());
         if (b._id) ids.add(b._id.toString());
       });
@@ -103,10 +105,12 @@ export default function usePurchases(): UsePurchasesResult {
           const coursesList = Array.isArray(allCourses) ? allCourses : [];
           const booksList = Array.isArray(allBooks) ? allBooks : [];
 
-          const ownedCourses = coursesList.filter((c: any) => // TODO(types): Course record
+          const ownedCourses = coursesList.filter((c: any) =>
+            // TODO(types): Course record
             ownedCourseIds.has(c._id?.toString())
           );
-          const ownedBooks = booksList.filter((b: any) => // TODO(types): Book record
+          const ownedBooks = booksList.filter((b: any) =>
+            // TODO(types): Book record
             ownedBookIds.has(b._id?.toString())
           );
 
@@ -114,7 +118,8 @@ export default function usePurchases(): UsePurchasesResult {
           setBooks(ownedBooks);
           setTransactions(buyerTxs);
         }
-      } catch (err: any) { // TODO(types): Error from purchases load
+      } catch (err: any) {
+        // TODO(types): Error from purchases load
         if (!cancelled) setError(err?.message || "Failed to load purchases");
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -163,16 +168,17 @@ export default function usePurchases(): UsePurchasesResult {
     (itemId: string, itemType: string): boolean => {
       if (itemType === "course") {
         return !user?.purchasedCourses?.some(
-          (c: any) => // TODO(types): Purchased course check
+          (c: any) =>
+            // TODO(types): Purchased course check
             c.courseId?.toString() === itemId?.toString() ||
             c._id?.toString() === itemId?.toString()
         );
       }
       if (itemType === "book") {
         return !user?.purchasedBooks?.some(
-          (b: any) => // TODO(types): Purchased book check
-            b.bookId?.toString() === itemId?.toString() ||
-            b._id?.toString() === itemId?.toString()
+          (b: any) =>
+            // TODO(types): Purchased book check
+            b.bookId?.toString() === itemId?.toString() || b._id?.toString() === itemId?.toString()
         );
       }
       return true;

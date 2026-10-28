@@ -2,9 +2,7 @@ import { z } from "zod";
 
 function warn(field: string, fallback: string): void {
   if (process.env.NODE_ENV !== "production") {
-    console.warn(
-      `\u26a0\ufe0f  ${field} is not set. Using "${fallback}" as fallback.`
-    );
+    console.warn(`\u26a0\ufe0f  ${field} is not set. Using "${fallback}" as fallback.`);
   }
 }
 
@@ -29,22 +27,16 @@ const raw = {
   // Only the *public* half lives client-side; the private key stays on the
   // backend, so exposing this via NEXT_PUBLIC_ is safe.
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:
-    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   NEXT_PUBLIC_JITSI_DOMAIN: process.env.NEXT_PUBLIC_JITSI_DOMAIN,
   NEXT_PUBLIC_JITSI_REQUIRE_JWT: process.env.NEXT_PUBLIC_JITSI_REQUIRE_JWT,
   NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
-    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  NEXT_PUBLIC_FIREBASE_PROJECT_ID:
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
-    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
-    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
-    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   // ─── Liveness / Face-Verification ──────────────────────────────────────────
   // Identifies which provider adapter to load: "mock" | "persona" | "onfido"
   // No secrets here — API keys/tokens live server-side only.
@@ -52,11 +44,9 @@ const raw = {
   // Consent policy version shown in the disclosure screen.
   // Bump this string whenever the consent text changes so existing records
   // can be distinguished from new ones.
-  NEXT_PUBLIC_LIVENESS_CONSENT_VERSION:
-    process.env.NEXT_PUBLIC_LIVENESS_CONSENT_VERSION,
+  NEXT_PUBLIC_LIVENESS_CONSENT_VERSION: process.env.NEXT_PUBLIC_LIVENESS_CONSENT_VERSION,
   // Maximum seconds a single capture attempt may run before timing out.
-  NEXT_PUBLIC_LIVENESS_TIMEOUT_SECONDS:
-    process.env.NEXT_PUBLIC_LIVENESS_TIMEOUT_SECONDS,
+  NEXT_PUBLIC_LIVENESS_TIMEOUT_SECONDS: process.env.NEXT_PUBLIC_LIVENESS_TIMEOUT_SECONDS,
 };
 
 const envSchema = z.object({
@@ -76,9 +66,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().optional(),
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
   // Liveness
-  NEXT_PUBLIC_LIVENESS_PROVIDER: z
-    .enum(["mock", "persona", "onfido"])
-    .optional(),
+  NEXT_PUBLIC_LIVENESS_PROVIDER: z.enum(["mock", "persona", "onfido"]).optional(),
   NEXT_PUBLIC_LIVENESS_CONSENT_VERSION: z.string().optional(),
   NEXT_PUBLIC_LIVENESS_TIMEOUT_SECONDS: z
     .string()
@@ -104,16 +92,14 @@ export const config = Object.freeze({
   get apiUrl() {
     return (
       env.NEXT_PUBLIC_API_URL ??
-      (warn("NEXT_PUBLIC_API_URL", "http://localhost:5001"),
-      "http://localhost:5001")
+      (warn("NEXT_PUBLIC_API_URL", "http://localhost:5001"), "http://localhost:5001")
     );
   },
 
   get aiApiUrl() {
     return (
       env.NEXT_PUBLIC_AI_API_URL ??
-      (warn("NEXT_PUBLIC_AI_API_URL", "http://localhost:8000"),
-      "http://localhost:8000")
+      (warn("NEXT_PUBLIC_AI_API_URL", "http://localhost:8000"), "http://localhost:8000")
     );
   },
 
@@ -148,24 +134,14 @@ export const config = Object.freeze({
 
   get firebase() {
     return {
-      apiKey:
-        env.NEXT_PUBLIC_FIREBASE_API_KEY ??
-        "AIzaSyC8LlmtlWXvbcbyVbdyv4r-tDsGhhukdag",
-      authDomain:
-        env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ??
-        "deen-bridge-22195.firebaseapp.com",
-      projectId:
-        env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "deen-bridge-22195",
+      apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "AIzaSyC8LlmtlWXvbcbyVbdyv4r-tDsGhhukdag",
+      authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "deen-bridge-22195.firebaseapp.com",
+      projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "deen-bridge-22195",
       storageBucket:
-        env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ??
-        "deen-bridge-22195.firebasestorage.app",
-      messagingSenderId:
-        env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "368531944242",
-      appId:
-        env.NEXT_PUBLIC_FIREBASE_APP_ID ??
-        "1:368531944242:web:7994b11820741a69d35d2b",
-      measurementId:
-        env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "G-ZZ81THLVCC",
+        env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? "deen-bridge-22195.firebasestorage.app",
+      messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "368531944242",
+      appId: env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "1:368531944242:web:7994b11820741a69d35d2b",
+      measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "G-ZZ81THLVCC",
     };
   },
 

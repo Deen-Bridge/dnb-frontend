@@ -1,29 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
-} from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import {
   Table,
   TableBody,
@@ -81,14 +64,7 @@ function MetricCard({ icon: Icon, metric }) {
                 {formatMetric(metric)}
               </p>
             ) : (
-              <p
-                className={cn(
-                  poppins_600.className,
-                  "text-3xl text-muted-foreground/40"
-                )}
-              >
-                —
-              </p>
+              <p className={cn(poppins_600.className, "text-3xl text-muted-foreground/40")}>—</p>
             )}
             {!metric.tracked && (
               <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
@@ -148,8 +124,7 @@ function AnnouncementAnalytics() {
   const chartData = useMemo(() => {
     if (!data) return [];
     return data.announcements.map((ann) => ({
-      name:
-        ann.title.length > 22 ? `${ann.title.slice(0, 22)}…` : ann.title,
+      name: ann.title.length > 22 ? `${ann.title.slice(0, 22)}…` : ann.title,
       impressions: ann.impressions.tracked ? ann.impressions.value : 0,
       uniqueViewers: ann.uniqueViewers.tracked ? ann.uniqueViewers.value : 0,
     }));
@@ -192,8 +167,8 @@ function AnnouncementAnalytics() {
           aria-label="Filter announcements by date range"
         />
         <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
-          Events: announcement.impression · announcement.view ·
-          announcement.dismiss · announcement.link_click
+          Events: announcement.impression · announcement.view · announcement.dismiss ·
+          announcement.link_click
         </p>
       </div>
 
@@ -284,31 +259,33 @@ function AnnouncementAnalytics() {
             <TableBody>
               {announcements.map((ann) => (
                 <TableRow key={ann.id}>
-                  <TableCell className="max-w-[260px] truncate font-medium">
-                    {ann.title}
-                  </TableCell>
+                  <TableCell className="max-w-[260px] truncate font-medium">{ann.title}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {format(new Date(ann.sentAt), "LLL dd, y")}
                   </TableCell>
                   <TableCell className="text-right">
-                    {ann.impressions.tracked
-                      ? ann.impressions.value.toLocaleString()
-                      : <UntrackedCell />}
+                    {ann.impressions.tracked ? (
+                      ann.impressions.value.toLocaleString()
+                    ) : (
+                      <UntrackedCell />
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
-                    {ann.uniqueViewers.tracked
-                      ? ann.uniqueViewers.value.toLocaleString()
-                      : <UntrackedCell />}
+                    {ann.uniqueViewers.tracked ? (
+                      ann.uniqueViewers.value.toLocaleString()
+                    ) : (
+                      <UntrackedCell />
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
-                    {ann.dismissRate.tracked
-                      ? `${ann.dismissRate.value.toFixed(1)}%`
-                      : <UntrackedCell />}
+                    {ann.dismissRate.tracked ? (
+                      `${ann.dismissRate.value.toFixed(1)}%`
+                    ) : (
+                      <UntrackedCell />
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
-                    {ann.ctr.tracked
-                      ? `${ann.ctr.value.toFixed(1)}%`
-                      : <UntrackedCell />}
+                    {ann.ctr.tracked ? `${ann.ctr.value.toFixed(1)}%` : <UntrackedCell />}
                   </TableCell>
                 </TableRow>
               ))}
@@ -316,8 +293,8 @@ function AnnouncementAnalytics() {
           </Table>
           <div className="border-t px-6 py-3">
             <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
-              — means the tracking event for that metric is not instrumented yet;
-              it will populate automatically once the backend event is wired up.
+              — means the tracking event for that metric is not instrumented yet; it will populate
+              automatically once the backend event is wired up.
             </p>
           </div>
         </CardContent>

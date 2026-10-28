@@ -1,8 +1,8 @@
-import { GalleryVerticalEnd } from "lucide-react"
-import { SignupForm } from "@/components/organisms/auth/signup-form"
-import Image from "next/image"
-import Link from "next/link"
-import { siteUrl, siteName } from "@/lib/config/site.config"
+import { GalleryVerticalEnd } from "lucide-react";
+import { SignupForm } from "@/components/organisms/auth/signup-form";
+import Image from "next/image";
+import Link from "next/link";
+import { siteUrl, siteName } from "@/lib/config/site.config";
 
 export const metadata = {
   title: { absolute: "Create account | Deen Bridge" },
@@ -26,7 +26,7 @@ export const metadata = {
       "Create your free Deen Bridge account and start learning the Qur'an, Arabic, fiqh, and more from verified Islamic educators.",
     images: ["/og.png"],
   },
-}
+};
 export default function SignupPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
@@ -55,5 +55,5 @@ export default function SignupPage() {
         />
       </div>
     </div>
-  )
+  );
 }

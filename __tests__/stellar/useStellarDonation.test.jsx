@@ -58,10 +58,10 @@ describe("useStellarDonation", () => {
       donation = await result.current.initializeDonation({ amount: 25 });
     });
 
-    expect(axiosMock.post).toHaveBeenCalledWith(
-      "/api/stellar/donation/initialize",
-      { amount: 25, publicKey: "G_TEST_WALLET" }
-    );
+    expect(axiosMock.post).toHaveBeenCalledWith("/api/stellar/donation/initialize", {
+      amount: 25,
+      publicKey: "G_TEST_WALLET",
+    });
     expect(donation).toEqual({ ...response, amount: 25 });
     expect(result.current.currentDonation).toEqual(donation);
     expect(result.current.isProcessing).toBe(false);
@@ -100,19 +100,14 @@ describe("useStellarDonation", () => {
       });
     });
 
-    expect(stellarMock.signTransaction).toHaveBeenCalledWith(
-      "UNSIGNED_XDR",
-      expect.any(String)
-    );
-    expect(axiosMock.post).toHaveBeenLastCalledWith(
-      "/api/stellar/donation/submit",
-      { donationId: "donation-123", signedXdr: "SIGNED_XDR" }
-    );
+    expect(stellarMock.signTransaction).toHaveBeenCalledWith("UNSIGNED_XDR", expect.any(String));
+    expect(axiosMock.post).toHaveBeenLastCalledWith("/api/stellar/donation/submit", {
+      donationId: "donation-123",
+      signedXdr: "SIGNED_XDR",
+    });
     expect(submission).toEqual(response);
     expect(stellarMock.refreshBalance).toHaveBeenCalledOnce();
-    expect(toastMock.success).toHaveBeenCalledWith(
-      "JazakAllahu khairan! Donation successful!"
-    );
+    expect(toastMock.success).toHaveBeenCalledWith("JazakAllahu khairan! Donation successful!");
     expect(result.current.currentDonation).toBeNull();
     expect(result.current.isProcessing).toBe(false);
   });
@@ -130,9 +125,7 @@ describe("useStellarDonation", () => {
     });
 
     expect(submission).toBe(false);
-    expect(toastMock.error).toHaveBeenCalledWith(
-      "Donation failed: network unavailable"
-    );
+    expect(toastMock.error).toHaveBeenCalledWith("Donation failed: network unavailable");
     expect(stellarMock.refreshBalance).not.toHaveBeenCalled();
     expect(result.current.isProcessing).toBe(false);
   });

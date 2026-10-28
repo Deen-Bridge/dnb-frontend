@@ -51,18 +51,11 @@ function StatChip({ icon: Icon, label, value }) {
       <CardContent className="p-4 space-y-1">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Icon className="h-4 w-4 text-accent" aria-hidden="true" />
-          <span
-            className={cn(
-              poppins_400.className,
-              "text-xs uppercase tracking-wider"
-            )}
-          >
+          <span className={cn(poppins_400.className, "text-xs uppercase tracking-wider")}>
             {label}
           </span>
         </div>
-        <p className={cn(poppins_600.className, "text-2xl text-foreground")}>
-          {value}
-        </p>
+        <p className={cn(poppins_600.className, "text-2xl text-foreground")}>{value}</p>
       </CardContent>
     </Card>
   );
@@ -153,17 +146,14 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto p-6 bg-card shadow-xl">
         <DialogHeader>
-          <DialogTitle
-            className={cn("flex items-center gap-2", poppins_500.className)}
-          >
+          <DialogTitle className={cn("flex items-center gap-2", poppins_500.className)}>
             <Wallet className="h-5 w-5 text-primary" aria-hidden="true" />
             Author Payouts
           </DialogTitle>
           <DialogDescription className={poppins_400.className}>
-            Payout summary for{" "}
-            <strong className="text-foreground">{book.title}</strong> by{" "}
-            {book.author?.name || "Unknown author"}. Read-only quick glance —
-            reconciliation lives in the payments section.
+            Payout summary for <strong className="text-foreground">{book.title}</strong> by{" "}
+            {book.author?.name || "Unknown author"}. Read-only quick glance — reconciliation lives
+            in the payments section.
           </DialogDescription>
         </DialogHeader>
 
@@ -191,9 +181,7 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
         ) : error ? (
           <div className="py-8 flex flex-col items-center gap-2 text-center">
             <AlertTriangle className="h-6 w-6 text-destructive" aria-hidden="true" />
-            <p className={cn("text-sm text-muted-foreground", poppins_400.className)}>
-              {error}
-            </p>
+            <p className={cn("text-sm text-muted-foreground", poppins_400.className)}>{error}</p>
             <Button variant="outline" size="sm" onClick={loadPayouts} className="gap-2">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               Retry
@@ -203,8 +191,16 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
           <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <StatChip icon={BookOpen} label="Units Sold" value={String(summary.unitsSold)} />
-              <StatChip icon={CircleDollarSign} label="Gross USDC" value={`$${summary.grossUsdc.toFixed(2)}`} />
-              <StatChip icon={Receipt} label="Settlements" value={String(summary.settlements.length)} />
+              <StatChip
+                icon={CircleDollarSign}
+                label="Gross USDC"
+                value={`$${summary.grossUsdc.toFixed(2)}`}
+              />
+              <StatChip
+                icon={Receipt}
+                label="Settlements"
+                value={String(summary.settlements.length)}
+              />
             </div>
 
             <Card className="border shadow-none">
@@ -237,9 +233,7 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
 
                 {wallet ? (
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-sm break-all select-all">
-                      {wallet}
-                    </span>
+                    <span className="font-mono text-sm break-all select-all">{wallet}</span>
                     <button
                       type="button"
                       onClick={handleCopyWallet}
@@ -299,22 +293,16 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
                         : null;
                       return (
                         <TableRow key={st._id || st.txHash}>
-                          <TableCell className="text-sm">
-                            {st.buyerName || "—"}
-                          </TableCell>
+                          <TableCell className="text-sm">{st.buyerName || "—"}</TableCell>
                           <TableCell className="text-right">
                             <span className="font-mono text-sm">
                               ${Number(st.amount).toFixed(2)}
                             </span>{" "}
-                            <span className="text-xs text-muted-foreground">
-                              USDC
-                            </span>
+                            <span className="text-xs text-muted-foreground">USDC</span>
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={
-                                st.status === "confirmed" ? "secondary" : "outline"
-                              }
+                              variant={st.status === "confirmed" ? "secondary" : "outline"}
                               className="capitalize text-xs"
                             >
                               {st.status}
@@ -335,10 +323,7 @@ export default function BookPayoutPanel({ book, open, onOpenChange }) {
                                 }`}
                               >
                                 View
-                                <ExternalLink
-                                  className="h-3.5 w-3.5"
-                                  aria-hidden="true"
-                                />
+                                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                               </a>
                             ) : (
                               "—"

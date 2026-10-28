@@ -1,7 +1,8 @@
 import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
-export async function getCourseById(courseId: string): Promise<any | null> { // TODO(types): Course API record
+export async function getCourseById(courseId: string): Promise<any | null> {
+  // TODO(types): Course API record
   try {
     const response = await axiosInstance.get(`/api/courses/${courseId}`);
     if (response.data && response.data.course) {

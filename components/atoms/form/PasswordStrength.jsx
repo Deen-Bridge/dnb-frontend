@@ -2,20 +2,11 @@
 
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  passwordRequirements,
-  passwordStrength,
-} from "@/lib/validation/password";
+import { passwordRequirements, passwordStrength } from "@/lib/validation/password";
 
 // Green once acceptable, amber while it is on the way, red at the bottom.
 // Uses theme-aware tokens so it stays readable in dark mode.
-const BAR_TONES = [
-  "bg-destructive",
-  "bg-destructive",
-  "bg-yellow-500",
-  "bg-primary",
-  "bg-primary",
-];
+const BAR_TONES = ["bg-destructive", "bg-destructive", "bg-yellow-500", "bg-primary", "bg-primary"];
 
 const LABEL_TONES = [
   "text-destructive",
@@ -31,12 +22,7 @@ const LABEL_TONES = [
  * `name` and `email` feed the "doesn't contain your name or email" rule, so
  * pass the current values of those fields rather than the saved user.
  */
-export default function PasswordStrength({
-  password = "",
-  name = "",
-  email = "",
-  className,
-}) {
+export default function PasswordStrength({ password = "", name = "", email = "", className }) {
   if (!password) return null;
 
   const context = { name, email };

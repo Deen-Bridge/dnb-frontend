@@ -34,9 +34,7 @@ export default function PushNotificationCard({ className }) {
     if (result.success) {
       toast.success("Push notifications enabled");
     } else if (permission === "denied") {
-      toast.error(
-        "Notifications are blocked. Enable them in your browser settings to continue."
-      );
+      toast.error("Notifications are blocked. Enable them in your browser settings to continue.");
     } else {
       toast.error(result.error || "Could not enable push notifications");
     }
@@ -64,12 +62,10 @@ export default function PushNotificationCard({ className }) {
             <BellOff className="h-5 w-5 text-accent" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-ink">
-              Push notifications
-            </h3>
+            <h3 className="text-lg font-semibold text-ink">Push notifications</h3>
             <p className="mt-0.5 text-sm text-ink-muted">
-              Your browser does not support push notifications. Try installing
-              the app or using a supported browser such as Chrome or Firefox.
+              Your browser does not support push notifications. Try installing the app or using a
+              supported browser such as Chrome or Firefox.
             </p>
           </div>
         </div>
@@ -90,35 +86,24 @@ export default function PushNotificationCard({ className }) {
             <BellRing className="h-5 w-5 text-accent" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-ink">
-              Push notifications
-            </h3>
+            <h3 className="text-lg font-semibold text-ink">Push notifications</h3>
             <p className="mt-0.5 text-sm text-ink-muted">
-              Get notified about new messages and updates even when the app is
-              closed.
+              Get notified about new messages and updates even when the app is closed.
             </p>
           </div>
         </div>
-        <Badge variant={subscribed ? "default" : "secondary"}>
-          {subscribed ? "On" : "Off"}
-        </Badge>
+        <Badge variant={subscribed ? "default" : "secondary"}>{subscribed ? "On" : "Off"}</Badge>
       </div>
 
       {permission === "denied" && (
         <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
-          Notifications are blocked for this site. Update your browser
-          permissions to turn them on.
+          Notifications are blocked for this site. Update your browser permissions to turn them on.
         </p>
       )}
 
       <div className="mb-6">
         {subscribed ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleDisable}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={handleDisable} disabled={loading}>
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -145,9 +130,7 @@ export default function PushNotificationCard({ className }) {
       <Separator className="my-4" />
 
       <fieldset disabled={!subscribed} className="space-y-3">
-        <legend className="mb-2 text-sm font-medium text-ink">
-          Notify me about
-        </legend>
+        <legend className="mb-2 text-sm font-medium text-ink">Notify me about</legend>
         {types.map((type) => (
           <div
             key={type.key}
@@ -157,15 +140,10 @@ export default function PushNotificationCard({ className }) {
             )}
           >
             <div>
-              <Label
-                htmlFor={`push-${type.key}`}
-                className="font-medium text-ink"
-              >
+              <Label htmlFor={`push-${type.key}`} className="font-medium text-ink">
                 {type.label}
               </Label>
-              <p className="mt-0.5 text-sm text-ink-muted">
-                {type.description}
-              </p>
+              <p className="mt-0.5 text-sm text-ink-muted">{type.description}</p>
             </div>
             <Switch
               id={`push-${type.key}`}

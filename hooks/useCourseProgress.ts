@@ -33,10 +33,7 @@ function readLocalProgress(userId: string, courseId: string): StoredProgressData
 function writeLocalProgress(userId: string, courseId: string, data: StoredProgressData): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(
-      getStorageKey(userId, courseId),
-      JSON.stringify(data)
-    );
+    localStorage.setItem(getStorageKey(userId, courseId), JSON.stringify(data));
   } catch (error) {
     console.warn("Unable to save locally cached course progress:", error);
   }
@@ -135,7 +132,8 @@ export function useCourseProgress(courseId: string): UseCourseProgressResult {
           );
           if (entry) {
             const pct = calcPercent(entry.positionSeconds, entry.durationSeconds);
-            const done = entry.completed || isCompleted(entry.positionSeconds, entry.durationSeconds);
+            const done =
+              entry.completed || isCompleted(entry.positionSeconds, entry.durationSeconds);
             const fromApi: CourseProgressState = {
               percent: done ? 100 : pct,
               positionSeconds: entry.positionSeconds,
@@ -152,7 +150,8 @@ export function useCourseProgress(courseId: string): UseCourseProgressResult {
             writeLocalProgress(userId!, courseId, currentDataRef.current);
           }
         }
-      } catch (err: any) { // TODO(types): Axios error from progress fetch
+      } catch (err: any) {
+        // TODO(types): Axios error from progress fetch
         if (err?.response?.status === 404 || err?.response?.status === 405) {
           console.warn("Course progress API is unavailable; continuing with local progress.", err);
           backendAvailable = false;
@@ -179,7 +178,8 @@ export function useCourseProgress(courseId: string): UseCourseProgressResult {
           lessonId: null,
         });
         backendAvailable = true;
-      } catch (err: any) { // TODO(types): Axios error from progress update
+      } catch (err: any) {
+        // TODO(types): Axios error from progress update
         if (err?.response?.status === 404 || err?.response?.status === 405) {
           console.warn("Course progress API is unavailable; progress remains saved locally.", err);
           backendAvailable = false;
@@ -318,7 +318,8 @@ export function useAllCourseProgress(): {
             const cid = entry.courseId?.toString?.();
             if (!cid) continue;
             const pct = calcPercent(entry.positionSeconds, entry.durationSeconds);
-            const done = entry.completed || isCompleted(entry.positionSeconds, entry.durationSeconds);
+            const done =
+              entry.completed || isCompleted(entry.positionSeconds, entry.durationSeconds);
             map[cid] = {
               percent: done ? 100 : pct,
               completed: done,
@@ -335,7 +336,8 @@ export function useAllCourseProgress(): {
         } else {
           loadAllFromLocal();
         }
-      } catch (err: any) { // TODO(types): Axios error from all progress fetch
+      } catch (err: any) {
+        // TODO(types): Axios error from all progress fetch
         if (err?.response?.status === 404 || err?.response?.status === 405) {
           console.warn("Course progress API is unavailable; loading cached progress instead.", err);
           backendAvailable = false;
@@ -363,7 +365,8 @@ export function useAllCourseProgress(): {
                 const data = JSON.parse(localStorage.getItem(key) || "");
                 if (data) {
                   const pct = calcPercent(data.positionSeconds, data.durationSeconds);
-                  const done = data.completed || isCompleted(data.positionSeconds, data.durationSeconds);
+                  const done =
+                    data.completed || isCompleted(data.positionSeconds, data.durationSeconds);
                   map[cid] = {
                     percent: done ? 100 : pct,
                     completed: done,

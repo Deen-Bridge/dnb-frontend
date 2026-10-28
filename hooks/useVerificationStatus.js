@@ -177,7 +177,6 @@ export function useVerificationStatus() {
     return unsub;
   }, [isEducator, onVerificationUpdate, refresh]);
 
-
   // ── Derived values ────────────────────────────────────────────────────────
   const status = data?.status ?? VERIFICATION_STATUS.NOT_STARTED;
 
@@ -231,11 +230,9 @@ export function useVerificationStatus() {
     isVerified: status === VERIFICATION_STATUS.VERIFIED,
     isRejected: status === VERIFICATION_STATUS.REJECTED,
     isPending:
-      status === VERIFICATION_STATUS.PENDING ||
-      status === VERIFICATION_STATUS.UNDER_REVIEW,
+      status === VERIFICATION_STATUS.PENDING || status === VERIFICATION_STATUS.UNDER_REVIEW,
     isIncomplete:
-      status === VERIFICATION_STATUS.INCOMPLETE ||
-      status === VERIFICATION_STATUS.NOT_STARTED,
+      status === VERIFICATION_STATUS.INCOMPLETE || status === VERIFICATION_STATUS.NOT_STARTED,
     snooze,
     dismiss,
     refresh,

@@ -145,9 +145,7 @@ const ReelCard = ({
       .slice(0, 2);
   }, [reel?.createdBy?.name]);
 
-  const formattedDate = reel.createdAt
-    ? dayjs(reel.createdAt).fromNow()
-    : "Just now";
+  const formattedDate = reel.createdAt ? dayjs(reel.createdAt).fromNow() : "Just now";
 
   return (
     <div
@@ -194,11 +192,7 @@ const ReelCard = ({
           onClick={() => setMuted((prev) => !prev)}
           aria-label={muted ? "Unmute" : "Mute"}
         >
-          {muted ? (
-            <VolumeX className="h-5 w-5" />
-          ) : (
-            <Volume2 className="h-5 w-5" />
-          )}
+          {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </button>
 
         {/* Right action rail - overlaid inside, all breakpoints (TikTok-style) */}
@@ -212,14 +206,7 @@ const ReelCard = ({
             </Avatar>
           </div>
           <ReelActionButton
-            icon={
-              <Heart
-                className={cn(
-                  "h-7 w-7",
-                  viewerLiked && "fill-red-500 text-red-500"
-                )}
-              />
-            }
+            icon={<Heart className={cn("h-7 w-7", viewerLiked && "fill-red-500 text-red-500")} />}
             label={likeCount.toLocaleString()}
             accessibleLabel={`Like, ${likeCount.toLocaleString()}`}
             active={viewerLiked}
@@ -228,12 +215,7 @@ const ReelCard = ({
           />
           <ReelActionButton
             icon={
-              <ThumbsUp
-                className={cn(
-                  "h-7 w-7",
-                  viewerLoved && "fill-sky-400 text-sky-400"
-                )}
-              />
+              <ThumbsUp className={cn("h-7 w-7", viewerLoved && "fill-sky-400 text-sky-400")} />
             }
             label={loveCount.toLocaleString()}
             accessibleLabel={`Love, ${loveCount.toLocaleString()}`}
@@ -253,17 +235,13 @@ const ReelCard = ({
             accessibleLabel={`Share, ${reel.stats?.shares?.toLocaleString?.() || 0}`}
             onClick={onShare}
           />
-          {isAdmin && (
-            <ReelPosterButton onClick={() => setPosterDialogOpen(true)} />
-          )}
+          {isAdmin && <ReelPosterButton onClick={() => setPosterDialogOpen(true)} />}
         </div>
 
         {/* Caption overlay (bottom-left) */}
         <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/30 to-transparent px-4 pb-6 pr-16 pt-16 text-white">
           <div className="flex items-center gap-2.5">
-            <span className="text-sm font-semibold">
-              @{reel.createdBy?.name || "Anonymous"}
-            </span>
+            <span className="text-sm font-semibold">@{reel.createdBy?.name || "Anonymous"}</span>
             <span className="text-[11px] text-white/60">{"\u00B7"}</span>
             <span className="text-[11px] text-white/70">{formattedDate}</span>
             <button

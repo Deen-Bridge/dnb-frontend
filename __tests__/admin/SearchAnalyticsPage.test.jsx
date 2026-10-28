@@ -58,9 +58,7 @@ function makeAnalytics(overrides = {}) {
 let SearchAnalyticsPage;
 beforeEach(async () => {
   if (!SearchAnalyticsPage) {
-    const mod = await import(
-      "@/app/[locale]/admin/analytics/search/page"
-    );
+    const mod = await import("@/app/[locale]/admin/analytics/search/page");
     SearchAnalyticsPage = mod.default;
   }
 });
@@ -70,26 +68,18 @@ describe("SearchAnalyticsPage — states", () => {
     serviceState.current = () => new Promise(() => {});
     const { container } = render(<SearchAnalyticsPage />);
     expect(screen.getByText("Search Analytics")).toBeInTheDocument();
-    expect(
-      container.querySelector('[data-slot="skeleton"]')
-    ).not.toBeNull();
+    expect(container.querySelector('[data-slot="skeleton"]')).not.toBeNull();
   });
 
   it("renders summary stat cards when data loads", async () => {
     serviceState.current = () => Promise.resolve(makeAnalytics());
     render(<SearchAnalyticsPage />);
 
-    expect(
-      await screen.findByText("Search Analytics")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Search Analytics")).toBeInTheDocument();
     expect(screen.getByText("Total Queries")).toBeInTheDocument();
     expect(screen.getByText("Unique Queries")).toBeInTheDocument();
-    expect(
-      screen.getAllByText("Zero-Result Queries").length
-    ).toBeGreaterThanOrEqual(1);
-    expect(
-      screen.getByText("Avg. Click-Through Rate")
-    ).toBeInTheDocument();
+    expect(screen.getAllByText("Zero-Result Queries").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Avg. Click-Through Rate")).toBeInTheDocument();
   });
 
   it("shows 'Not tracked yet' placeholders for untracked metrics", async () => {
@@ -109,9 +99,7 @@ describe("SearchAnalyticsPage — states", () => {
 
     await screen.findByText("Search Analytics");
     expect(screen.getAllByText("Top Queries").length).toBeGreaterThanOrEqual(1);
-    expect(
-      screen.getAllByText("Zero-Result Queries").length
-    ).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Zero-Result Queries").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders top queries data when available", async () => {
@@ -190,19 +178,14 @@ describe("SearchAnalyticsPage — states", () => {
 
     await screen.findByText(/advanced nahw exercises/);
     expect(screen.getByText("8")).toBeInTheDocument();
-    expect(
-      screen.getByText("advanced nahw exercises").closest("tr")
-    ).toBeTruthy();
+    expect(screen.getByText("advanced nahw exercises").closest("tr")).toBeTruthy();
   });
 
   it("renders an error state when the analytics service fails", async () => {
-    serviceState.current = () =>
-      Promise.reject(new Error("Service unavailable"));
+    serviceState.current = () => Promise.reject(new Error("Service unavailable"));
     render(<SearchAnalyticsPage />);
 
-    expect(
-      await screen.findByText(/failed to load search analytics/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/failed to load search analytics/i)).toBeInTheDocument();
     expect(screen.getByText("Service unavailable")).toBeInTheDocument();
   });
 
@@ -211,11 +194,7 @@ describe("SearchAnalyticsPage — states", () => {
     render(<SearchAnalyticsPage />);
 
     await screen.findByText("Search Analytics");
-    expect(
-      screen.getByText("Weekly Query Volume")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Click-Through Rate Trend")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Weekly Query Volume")).toBeInTheDocument();
+    expect(screen.getByText("Click-Through Rate Trend")).toBeInTheDocument();
   });
 });

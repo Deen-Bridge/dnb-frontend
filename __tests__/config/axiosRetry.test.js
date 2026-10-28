@@ -73,8 +73,7 @@ beforeEach(() => {
 
 afterEach(() => {
   axiosInstance.defaults.adapter = originalAdapter;
-  document.cookie =
-    "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  document.cookie = "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   vi.restoreAllMocks();
   // Covers any future test that stubs the environment and doesn't clean up.
   vi.unstubAllEnvs();
@@ -123,9 +122,7 @@ describe("issue #75 — mutations are never auto-retried on 5xx", () => {
   it("surfaces the original server error to the caller on the first failure", async () => {
     axiosInstance.defaults.adapter = alwaysFailing(503);
 
-    const error = await axiosInstance
-      .post("/api/stellar/payment/submit", {})
-      .catch((e) => e);
+    const error = await axiosInstance.post("/api/stellar/payment/submit", {}).catch((e) => e);
 
     expect(error.response.status).toBe(503);
     expect(error.response.data.message).toBe("Internal Server Error");
@@ -161,9 +158,7 @@ describe("issue #75 — idempotent requests still retry once", () => {
     expect(sent).toHaveLength(2);
 
     sent = [];
-    await expect(
-      axiosInstance({ method: "options", url: "/api/courses" })
-    ).rejects.toBeTruthy();
+    await expect(axiosInstance({ method: "options", url: "/api/courses" })).rejects.toBeTruthy();
     expect(sent).toHaveLength(2);
   });
 
@@ -195,11 +190,7 @@ describe("issue #75 — explicit per-request opt-in", () => {
     axiosInstance.defaults.adapter = alwaysFailing(500);
 
     await axiosInstance
-      .post(
-        "/api/idempotent-thing",
-        { idempotencyKey: "key_1" },
-        { retryOnServerError: true }
-      )
+      .post("/api/idempotent-thing", { idempotencyKey: "key_1" }, { retryOnServerError: true })
       .catch(() => {});
 
     expect(sent).toHaveLength(2);
@@ -259,10 +250,7 @@ describe("issue #75 — console noise", () => {
 
   it("no source file logs the API base URL", () => {
     // The base-URL banner the issue describes must not come back.
-    const targets = [
-      "lib/config/axios.config.ts",
-      "lib/config/env.ts",
-    ];
+    const targets = ["lib/config/axios.config.ts", "lib/config/env.ts"];
 
     const sources = targets.map((relative) => {
       const full = existsSync(resolve(REPO_ROOT, relative))

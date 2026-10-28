@@ -36,7 +36,8 @@ function seedFlags(): FeatureFlag[] {
     },
     {
       key: "stellar-payouts",
-      description: "Route educator payouts through the Stellar network. Disabling halts all on-chain settlement.",
+      description:
+        "Route educator payouts through the Stellar network. Disabling halts all on-chain settlement.",
       enabled: true,
       rolloutPercentage: 100,
       critical: true,
@@ -91,7 +92,10 @@ export async function createFlag(payload: CreateFlagPayload): Promise<{ flag: Fe
   return withMockDelay({ flag: { ...flag } });
 }
 
-export async function updateFlag(key: string, patch: Partial<Omit<FeatureFlag, "key" | "updatedAt">> = {}): Promise<{ flag: FeatureFlag }> {
+export async function updateFlag(
+  key: string,
+  patch: Partial<Omit<FeatureFlag, "key" | "updatedAt">> = {}
+): Promise<{ flag: FeatureFlag }> {
   const flags = getMockFlags();
   const index = flags.findIndex((flag) => flag.key === key);
   if (index === -1) {

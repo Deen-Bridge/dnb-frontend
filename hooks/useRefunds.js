@@ -87,53 +87,47 @@ export default function useRefunds() {
    * Retry a failed refund. Optimistically moves the row to `processing` and
    * appends an audit entry; rolls back and toasts on failure.
    */
-  const retry = useCallback(async (refundId, context) => {
-    setRetryingId(refundId);
-    const previous = refunds;
-    setRefunds((prev) =>
-      prev.map((r) =>
-        r.id === refundId
-          ? {
-              ...r,
-              status: "processing",
-              audit: [
-                ...(Array.isArray(r.audit) ? r.audit : []),
-                {
-                  at: new Date().toISOString(),
-                  actor: "admin",
-                  note: "Retry requested — re-entering processing.",
-                },
-              ],
-            }
-          : r
-      )
-    );
-    try {
-      await retryRefund(refundId, context);
-      toast.success("Refund retry started");
-    } catch (err) {
-      setRefunds(previous);
-      toast.error(err?.message || "Failed to retry refund");
-    } finally {
-      setRetryingId(null);
-    }
-  }, [refunds]);
-
-  const filters = useMemo(
-    () => ({ status, initiator, from, to }),
-    [status, initiator, from, to]
+  const retry = useCallback(
+    async (refundId, context) => {
+      setRetryingId(refundId);
+      const previous = refunds;
+      setRefunds((prev) =>
+        prev.map((r) =>
+          r.id === refundId
+            ? {
+                ...r,
+                status: "processing",
+                audit: [
+                  ...(Array.isArray(r.audit) ? r.audit : []),
+                  {
+                    at: new Date().toISOString(),
+                    actor: "admin",
+                    note: "Retry requested — re-entering processing.",
+                  },
+                ],
+              }
+            : r
+        )
+      );
+      try {
+        await retryRefund(refundId, context);
+        toast.success("Refund retry started");
+      } catch (err) {
+        setRefunds(previous);
+        toast.error(err?.message || "Failed to retry refund");
+      } finally {
+        setRetryingId(null);
+      }
+    },
+    [refunds]
   );
 
-  const filteredRefunds = useMemo(
-    () => filterRefunds(refunds, filters),
-    [refunds, filters]
-  );
+  const filters = useMemo(() => ({ status, initiator, from, to }), [status, initiator, from, to]);
+
+  const filteredRefunds = useMemo(() => filterRefunds(refunds, filters), [refunds, filters]);
 
   const summary = useMemo(() => {
-    const base = REFUND_STATUSES.reduce(
-      (acc, s) => ({ ...acc, [s]: 0 }),
-      { total: 0 }
-    );
+    const base = REFUND_STATUSES.reduce((acc, s) => ({ ...acc, [s]: 0 }), { total: 0 });
     return refunds.reduce((acc, refund) => {
       acc.total += 1;
       if (acc[refund?.status] != null) acc[refund.status] += 1;

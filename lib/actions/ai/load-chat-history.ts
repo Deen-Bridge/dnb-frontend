@@ -12,7 +12,10 @@ export interface ChatHistoryResult {
   [key: string]: any; // TODO(types): Additional chat history properties
 }
 
-export const loadChatHistory = async (userId: string, forceRefresh: boolean = false): Promise<ChatHistoryResult> => {
+export const loadChatHistory = async (
+  userId: string,
+  forceRefresh: boolean = false
+): Promise<ChatHistoryResult> => {
   try {
     const AI_API_URL = config.aiApiUrl;
 
@@ -30,7 +33,10 @@ export const loadChatHistory = async (userId: string, forceRefresh: boolean = fa
   }
 };
 
-export const loadChatMessages = async (chatId: string, forceRefresh: boolean = false): Promise<ChatMessage[]> => {
+export const loadChatMessages = async (
+  chatId: string,
+  forceRefresh: boolean = false
+): Promise<ChatMessage[]> => {
   try {
     const AI_API_URL = config.aiApiUrl;
 
@@ -41,7 +47,8 @@ export const loadChatMessages = async (chatId: string, forceRefresh: boolean = f
       storage: "session",
     });
 
-    return (history || []).map((msg: any) => ({ // TODO(types): AI message shape from history endpoint
+    return (history || []).map((msg: any) => ({
+      // TODO(types): AI message shape from history endpoint
       role: msg.role === "model" ? "assistant" : msg.role,
       content: msg.text || msg.content || "",
     }));

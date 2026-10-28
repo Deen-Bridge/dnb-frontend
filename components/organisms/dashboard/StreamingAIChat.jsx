@@ -7,39 +7,20 @@
 
 "use client";
 import { captureClientError } from "@/lib/sentry/captureClientError";
-import {
-  Bot,
-  CornerDownLeft,
-  Mic,
-  Paperclip,
-  ImageIcon,
-  StopCircle,
-  Sparkles,
-} from "lucide-react";
+import { Bot, CornerDownLeft, Mic, Paperclip, ImageIcon, StopCircle, Sparkles } from "lucide-react";
 import Button from "@/components/atoms/form/Button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useStreamingChat } from "@/hooks/useStreamingChat";
-import {
-  loadChatHistory,
-  loadChatMessages,
-} from "@/lib/actions/ai/load-chat-history";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { loadChatHistory, loadChatMessages } from "@/lib/actions/ai/load-chat-history";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 export default function StreamingAIChat({ chatData, onChatUpdate }) {
   const { user } = useAuth();
@@ -200,8 +181,8 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                   >
                     I&apos;m your Islamic AI assistant powered by knowledge of the{" "}
                     <span className={cn(poppins_600, "text-ink")}>Quran</span> and{" "}
-                    <span className={cn(poppins_600, "text-highlight")}>Hadith</span>
-                    . Experience real-time streaming responses!
+                    <span className={cn(poppins_600, "text-highlight")}>Hadith</span>. Experience
+                    real-time streaming responses!
                   </p>
 
                   {/* AI Features badges */}
@@ -282,10 +263,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                             {item.emoji}
                           </span>
                           <span
-                            className={cn(
-                              poppins_500,
-                              "text-sm leading-relaxed flex-1 text-ink"
-                            )}
+                            className={cn(poppins_500, "text-sm leading-relaxed flex-1 text-ink")}
                           >
                             {item.question}
                           </span>
@@ -327,12 +305,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                   {message.role === "user" ? (
                     <Avatar className="h-10 w-10 rounded-lg mt-2">
                       <AvatarImage src={user?.avatar} alt={user?.name} />
-                      <AvatarFallback
-                        className={cn(
-                          poppins_500,
-                          "bg-accent text-white text-sm"
-                        )}
-                      >
+                      <AvatarFallback className={cn(poppins_500, "bg-accent text-white text-sm")}>
                         {user?.name?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -352,9 +325,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                 {/* Message Content */}
                 <div
                   className={`p-4 rounded-xl max-w-[80%] ${
-                    message.role === "user"
-                      ? "bg-accent/10"
-                      : "border border-accent/10 bg-surface"
+                    message.role === "user" ? "bg-accent/10" : "border border-accent/10 bg-surface"
                   } ${message.isStreaming ? "animate-pulse" : ""}`}
                 >
                   {message.role === "assistant" ? (
@@ -362,19 +333,13 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <ReactMarkdown
                         components={{
                           p: ({ children }) => (
-                            <p className={cn(poppins_400, "text-sm mb-2 text-ink")}>
-                              {children}
-                            </p>
+                            <p className={cn(poppins_400, "text-sm mb-2 text-ink")}>{children}</p>
                           ),
                           h1: ({ children }) => (
-                            <h1 className={cn(poppins_600, "text-xl mb-2 text-ink")}>
-                              {children}
-                            </h1>
+                            <h1 className={cn(poppins_600, "text-xl mb-2 text-ink")}>{children}</h1>
                           ),
                           h2: ({ children }) => (
-                            <h2 className={cn(poppins_600, "text-lg mb-2 text-ink")}>
-                              {children}
-                            </h2>
+                            <h2 className={cn(poppins_600, "text-lg mb-2 text-ink")}>{children}</h2>
                           ),
                           h3: ({ children }) => (
                             <h3 className={cn(poppins_600, "text-base mb-2 text-ink")}>
@@ -391,9 +356,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                               {children}
                             </ol>
                           ),
-                          li: ({ children }) => (
-                            <li className="mb-1">{children}</li>
-                          ),
+                          li: ({ children }) => <li className="mb-1">{children}</li>,
                           code: ({ children }) => (
                             <code className="bg-accent/10 px-1 py-0.5 rounded text-xs">
                               {children}
@@ -413,12 +376,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       )}
                     </div>
                   ) : (
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "text-sm whitespace-pre-line text-ink"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "text-sm whitespace-pre-line text-ink")}>
                       {message.content}
                     </p>
                   )}
@@ -426,18 +384,17 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
               </div>
             ))}
 
-            {isStreaming &&
-              messages[messages.length - 1]?.role !== "assistant" && (
-                <div
-                  className={cn(
-                    poppins_400,
-                    "flex items-center gap-2 text-sm text-ink-muted bg-accent/10 p-4 rounded-xl w-fit"
-                  )}
-                >
-                  <Bot className="size-4 animate-bounce text-accent" />
-                  AI is thinking...
-                </div>
-              )}
+            {isStreaming && messages[messages.length - 1]?.role !== "assistant" && (
+              <div
+                className={cn(
+                  poppins_400,
+                  "flex items-center gap-2 text-sm text-ink-muted bg-accent/10 p-4 rounded-xl w-fit"
+                )}
+              >
+                <Bot className="size-4 animate-bounce text-accent" />
+                AI is thinking...
+              </div>
+            )}
 
             <div ref={messagesEndRef} />
           </div>
@@ -470,9 +427,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <span className="sr-only">Attach file</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">
-                    File attachments are not available yet
-                  </TooltipContent>
+                  <TooltipContent side="top">File attachments are not available yet</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -493,9 +448,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <span className="sr-only">Use Microphone</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">
-                    Voice input is not available yet
-                  </TooltipContent>
+                  <TooltipContent side="top">Voice input is not available yet</TooltipContent>
                 </Tooltip>
               </div>
               <div className="flex gap-2">

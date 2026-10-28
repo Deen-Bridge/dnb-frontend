@@ -55,7 +55,9 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
   const [error, setError] = useState<string | null>(null);
   const [reconnectAttempts, setReconnectAttempts] = useState<number>(0);
 
-  const verificationCallbacksRef = useRef<Set<(payload: VerificationUpdatePayload) => void>>(new Set());
+  const verificationCallbacksRef = useRef<Set<(payload: VerificationUpdatePayload) => void>>(
+    new Set()
+  );
 
   const onVerificationUpdate = useCallback((cb: (payload: VerificationUpdatePayload) => void) => {
     verificationCallbacksRef.current.add(cb);
@@ -76,11 +78,10 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
       const items: SseNotification[] = data.notifications || [];
       setNotifications(items);
       notificationsRef.current = items;
-      setUnreadCount(
-        data.unreadCount ?? items.filter((n) => !n.isRead).length
-      );
+      setUnreadCount(data.unreadCount ?? items.filter((n) => !n.isRead).length);
       setError(null);
-    } catch (err: any) { // TODO(types): Error from notification fetch
+    } catch (err: any) {
+      // TODO(types): Error from notification fetch
       console.error("Error fetching notifications:", err);
       setError(err?.response?.data?.message || err?.message || "Error fetching notifications");
     } finally {
@@ -93,9 +94,7 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
     if (!token || eventSourceRef.current) return;
 
     try {
-      const sseUrl = `${config.apiUrl}/api/notifications/sse?token=${encodeURIComponent(
-        token
-      )}`;
+      const sseUrl = `${config.apiUrl}/api/notifications/sse?token=${encodeURIComponent(token)}`;
       const eventSource = new EventSource(sseUrl);
       eventSourceRef.current = eventSource;
 
@@ -174,12 +173,11 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
             connectSSERef.current?.();
           }, delay);
         } else {
-          setError(
-            "Failed to connect to notification service after multiple attempts"
-          );
+          setError("Failed to connect to notification service after multiple attempts");
         }
       };
-    } catch (err: any) { // TODO(types): Error from EventSource creation
+    } catch (err: any) {
+      // TODO(types): Error from EventSource creation
       console.error("Error creating SSE connection:", err);
       setError(err?.message || "Failed to connect to notification service");
     }
@@ -205,9 +203,7 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
 
     const previous = notificationsRef.current;
     setNotifications((prev) => {
-      const next = prev.map((n) =>
-        n._id === notificationId ? { ...n, isRead: true } : n
-      );
+      const next = prev.map((n) => (n._id === notificationId ? { ...n, isRead: true } : n));
       notificationsRef.current = next;
       return next;
     });
@@ -256,12 +252,8 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
       return next;
     });
     setUnreadCount((prev) => {
-      const deletedNotification = previous.find(
-        (n) => n._id === notificationId
-      );
-      return deletedNotification && !deletedNotification.isRead
-        ? Math.max(0, prev - 1)
-        : prev;
+      const deletedNotification = previous.find((n) => n._id === notificationId);
+      return deletedNotification && !deletedNotification.isRead ? Math.max(0, prev - 1) : prev;
     });
 
     try {

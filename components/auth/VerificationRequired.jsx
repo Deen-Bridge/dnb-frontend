@@ -22,25 +22,14 @@ const VerificationRequired = ({ className, message }) => {
       )}
     >
       <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
-        <BadgeCheck
-          className="h-12 w-12 text-amber-600 dark:text-amber-400"
-          aria-hidden="true"
-        />
+        <BadgeCheck className="h-12 w-12 text-amber-600 dark:text-amber-400" aria-hidden="true" />
       </div>
       <h1
-        className={cn(
-          "text-3xl lg:text-4xl text-foreground font-bold mb-4",
-          Inter_800.className
-        )}
+        className={cn("text-3xl lg:text-4xl text-foreground font-bold mb-4", Inter_800.className)}
       >
         Verification required
       </h1>
-      <p
-        className={cn(
-          "text-lg lg:text-xl text-muted-foreground mb-8",
-          Inter_400.className
-        )}
-      >
+      <p className={cn("text-lg lg:text-xl text-muted-foreground mb-8", Inter_400.className)}>
         {message ||
           "Only verified educators can create content. Complete your verification to unlock course, book, and space creation."}
       </p>

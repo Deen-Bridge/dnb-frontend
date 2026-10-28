@@ -6,11 +6,7 @@ import { useTranslations } from "next-intl";
 import { useReducedMotion } from "framer-motion";
 import { FaCogs, FaWallet, FaPaperPlane, FaCheckCircle } from "react-icons/fa";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { config } from "@/lib/config/env";
 import { getHorizonBaseUrl } from "@/lib/stellar/horizon";
 import Button from "@/components/atoms/form/Button";
@@ -94,13 +90,8 @@ const LiveLedger = ({ t, network }) => {
 
   if (status !== "live") {
     return (
-      <p
-        className={cn(poppins_400, "text-sm text-ink-inverse-muted")}
-        data-status={status}
-      >
-        {status === "loading"
-          ? t("flow.live.loading", { network })
-          : t("flow.live.unavailable")}
+      <p className={cn(poppins_400, "text-sm text-ink-inverse-muted")} data-status={status}>
+        {status === "loading" ? t("flow.live.loading", { network }) : t("flow.live.unavailable")}
       </p>
     );
   }
@@ -108,7 +99,10 @@ const LiveLedger = ({ t, network }) => {
   const explorerNetwork = network === "mainnet" ? "public" : "testnet";
   return (
     <p className={cn(poppins_400, "text-sm text-ink-inverse-muted")}>
-      <span className="mr-2 inline-block size-2 rounded-full bg-secondary motion-safe:animate-pulse" aria-hidden="true" />
+      <span
+        className="mr-2 inline-block size-2 rounded-full bg-secondary motion-safe:animate-pulse"
+        aria-hidden="true"
+      />
       {t.rich("flow.live.ledger", {
         network,
         // Figures are LTR islands so digits never visually reverse inside the
@@ -138,10 +132,7 @@ const StellarPaymentFlow = () => {
   // is already visible, so nothing is hidden behind the animation.
   useEffect(() => {
     if (reduceMotion || !autoplay) return undefined;
-    const id = setInterval(
-      () => setActive((i) => (i + 1) % steps.length),
-      STEP_INTERVAL_MS
-    );
+    const id = setInterval(() => setActive((i) => (i + 1) % steps.length), STEP_INTERVAL_MS);
     return () => clearInterval(id);
   }, [reduceMotion, autoplay]);
 
@@ -174,12 +165,7 @@ const StellarPaymentFlow = () => {
               {t("heading.emphasis")}
             </span>
           </h2>
-          <p
-            className={cn(
-              poppins_400,
-              "mb-8 text-lg leading-relaxed text-ink-inverse-muted"
-            )}
-          >
+          <p className={cn(poppins_400, "mb-8 text-lg leading-relaxed text-ink-inverse-muted")}>
             {t("flow.intro")}
           </p>
           <div className="flex flex-wrap items-center gap-4">
@@ -204,16 +190,14 @@ const StellarPaymentFlow = () => {
         </div>
 
         <div className="rounded-3xl border border-secondary/20 bg-secondary/5 p-6 sm:p-8 backdrop-blur-sm">
-          <h3
-            className={cn(
-              poppins_600,
-              "mb-6 text-xl text-ink-inverse font-stretch-110%"
-            )}
-          >
+          <h3 className={cn(poppins_600, "mb-6 text-xl text-ink-inverse font-stretch-110%")}>
             {t("flow.title")}
           </h3>
 
-          <div className="mb-8 h-1 w-full overflow-hidden rounded-full bg-secondary/20" aria-hidden="true">
+          <div
+            className="mb-8 h-1 w-full overflow-hidden rounded-full bg-secondary/20"
+            aria-hidden="true"
+          >
             <div
               className="h-full rounded-full bg-secondary motion-safe:transition-[width] motion-safe:duration-700"
               style={{ width: `${progress}%` }}
@@ -267,10 +251,7 @@ const StellarPaymentFlow = () => {
                       {t(`flow.steps.${step.id}.title`)}
                     </h4>
                     <p
-                      className={cn(
-                        poppins_400,
-                        "text-sm leading-relaxed text-ink-inverse-muted"
-                      )}
+                      className={cn(poppins_400, "text-sm leading-relaxed text-ink-inverse-muted")}
                     >
                       {t(`flow.steps.${step.id}.desc`)}
                     </p>

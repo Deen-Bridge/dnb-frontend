@@ -1,4 +1,5 @@
-interface CacheItem<T = any> { // TODO(types): Generic payload stored in cache
+interface CacheItem<T = any> {
+  // TODO(types): Generic payload stored in cache
   value: T;
   timestamp: number;
   ttl: number;
@@ -22,7 +23,8 @@ const isExpired = (timestamp: number, ttl: number): boolean => {
 };
 
 export const localCache = {
-  set: <T = any>(key: string, value: T, ttl: number = CACHE_CONFIG.DEFAULT_TTL): boolean => { // TODO(types): Cache payload value
+  set: <T = any>(key: string, value: T, ttl: number = CACHE_CONFIG.DEFAULT_TTL): boolean => {
+    // TODO(types): Cache payload value
     try {
       const item: CacheItem<T> = {
         value,
@@ -37,7 +39,8 @@ export const localCache = {
     }
   },
 
-  get: <T = any>(key: string): T | null => { // TODO(types): Cache payload return
+  get: <T = any>(key: string): T | null => {
+    // TODO(types): Cache payload return
     try {
       const itemStr = localStorage.getItem(key);
       if (!itemStr) return null;
@@ -110,7 +113,8 @@ export const localCache = {
 };
 
 export const sessionCache = {
-  set: <T = any>(key: string, value: T, ttl: number = CACHE_CONFIG.DEFAULT_TTL): boolean => { // TODO(types): Session cache payload
+  set: <T = any>(key: string, value: T, ttl: number = CACHE_CONFIG.DEFAULT_TTL): boolean => {
+    // TODO(types): Session cache payload
     try {
       const item: CacheItem<T> = {
         value,
@@ -125,7 +129,8 @@ export const sessionCache = {
     }
   },
 
-  get: <T = any>(key: string): T | null => { // TODO(types): Session cache return
+  get: <T = any>(key: string): T | null => {
+    // TODO(types): Session cache return
     try {
       const itemStr = sessionStorage.getItem(key);
       if (!itemStr) return null;
@@ -166,7 +171,8 @@ export const sessionCache = {
 };
 
 export const memCache = {
-  set: <T = any>(key: string, value: T, ttl: number = CACHE_CONFIG.DEFAULT_TTL): boolean => { // TODO(types): Memory cache payload
+  set: <T = any>(key: string, value: T, ttl: number = CACHE_CONFIG.DEFAULT_TTL): boolean => {
+    // TODO(types): Memory cache payload
     memoryCache.set(key, {
       value,
       timestamp: Date.now(),
@@ -175,7 +181,8 @@ export const memCache = {
     return true;
   },
 
-  get: <T = any>(key: string): T | null => { // TODO(types): Memory cache return
+  get: <T = any>(key: string): T | null => {
+    // TODO(types): Memory cache return
     const item = memoryCache.get(key);
     if (!item) return null;
 
@@ -212,7 +219,8 @@ export interface SmartCacheOptions {
 }
 
 export const smartCache = {
-  set: <T = any>(key: string, value: T, options: SmartCacheOptions = {}): boolean => { // TODO(types): SmartCache payload
+  set: <T = any>(key: string, value: T, options: SmartCacheOptions = {}): boolean => {
+    // TODO(types): SmartCache payload
     const { ttl = CACHE_CONFIG.DEFAULT_TTL, storage = "auto" } = options;
 
     try {
@@ -244,7 +252,8 @@ export const smartCache = {
     }
   },
 
-  get: <T = any>(key: string): T | null => { // TODO(types): SmartCache return value
+  get: <T = any>(key: string): T | null => {
+    // TODO(types): SmartCache return value
     let value = memCache.get<T>(key);
     if (value !== null) return value;
 
@@ -276,7 +285,11 @@ export interface CachedFetchOptions extends SmartCacheOptions {
   fetchOptions?: RequestInit;
 }
 
-export const cachedFetch = async <T = any>(url: string, options: CachedFetchOptions = {}): Promise<T> => { // TODO(types): Generic response from cachedFetch
+export const cachedFetch = async <T = any>(
+  url: string,
+  options: CachedFetchOptions = {}
+): Promise<T> => {
+  // TODO(types): Generic response from cachedFetch
   const {
     cacheKey = url,
     ttl = CACHE_CONFIG.DEFAULT_TTL,
@@ -327,10 +340,13 @@ export const initCache = (): void => {
   localCache.clearExpired();
   memCache.clearExpired();
 
-  setInterval(() => {
-    localCache.clearExpired();
-    memCache.clearExpired();
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      localCache.clearExpired();
+      memCache.clearExpired();
+    },
+    5 * 60 * 1000
+  );
 };
 
 export default smartCache;

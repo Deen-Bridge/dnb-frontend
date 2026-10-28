@@ -25,7 +25,11 @@ vi.mock("@/lib/config/env", () => ({
 // The user detail page reads the signed-in admin to decide which moderation
 // actions are allowed, so it needs an auth context.
 vi.mock("@/hooks/useAuth", () => {
-  const useAuth = () => ({ user: { _id: "usr_admin", role: "admin" }, isAuthenticated: true, loading: false });
+  const useAuth = () => ({
+    user: { _id: "usr_admin", role: "admin" },
+    isAuthenticated: true,
+    loading: false,
+  });
   return { useAuth, default: useAuth };
 });
 
@@ -115,9 +119,7 @@ describe("Print-Friendly Views for Records (#338)", () => {
     };
 
     await act(async () => {
-      render(
-        <TransactionDrawer transaction={sampleTx} open={true} onOpenChange={vi.fn()} />
-      );
+      render(<TransactionDrawer transaction={sampleTx} open={true} onOpenChange={vi.fn()} />);
     });
 
     // Verify print-root container (Radix Dialog portals to document.body)
@@ -160,7 +162,11 @@ describe("Print-Friendly Views for Records (#338)", () => {
     const userAHistory = deferred();
     const userBHistory = deferred();
     getUserByIdMock.mockImplementation(async (userId) => ({
-      user: { ...educatorUser, _id: userId, name: userId === "usr_a" ? "Educator A" : "Educator B" },
+      user: {
+        ...educatorUser,
+        _id: userId,
+        name: userId === "usr_a" ? "Educator A" : "Educator B",
+      },
     }));
     fetchVerificationHistoryMock.mockImplementation((userId) =>
       userId === "usr_a" ? userAHistory.promise : userBHistory.promise
@@ -172,12 +178,16 @@ describe("Print-Friendly Views for Records (#338)", () => {
         <AdminUserDetailPage params={Promise.resolve({ userId: "usr_a" })} />
       ));
     });
-    await waitFor(() => expect(fetchVerificationHistoryMock).toHaveBeenCalledWith("usr_a", expect.any(Object)));
+    await waitFor(() =>
+      expect(fetchVerificationHistoryMock).toHaveBeenCalledWith("usr_a", expect.any(Object))
+    );
 
     await act(async () => {
       rerender(<AdminUserDetailPage params={Promise.resolve({ userId: "usr_b" })} />);
     });
-    await waitFor(() => expect(fetchVerificationHistoryMock).toHaveBeenCalledWith("usr_b", expect.any(Object)));
+    await waitFor(() =>
+      expect(fetchVerificationHistoryMock).toHaveBeenCalledWith("usr_b", expect.any(Object))
+    );
 
     await act(async () => {
       userBHistory.resolve({

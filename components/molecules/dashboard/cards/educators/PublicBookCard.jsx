@@ -3,11 +3,7 @@ import Button from "@/components/atoms/form/Button";
 import { Star } from "lucide-react";
 import { getAverageRating } from "@/hooks/getAverageRating";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const PublicBookCard = ({ book }) => {
   const avgRating = getAverageRating(book?.reviews);
@@ -25,17 +21,10 @@ const PublicBookCard = ({ book }) => {
         <div className="absolute inset-x-0 bottom-0 space-y-1.5 p-4 text-white">
           <h4 className={cn(poppins_600, "truncate text-sm")}>{book.title}</h4>
           <div className="flex items-center justify-between text-xs">
-            <span
-              className={cn(
-                poppins_500,
-                "rounded-full bg-white/20 px-2 py-0.5 backdrop-blur"
-              )}
-            >
+            <span className={cn(poppins_500, "rounded-full bg-white/20 px-2 py-0.5 backdrop-blur")}>
               {book.category || "General"}
             </span>
-            <span className={poppins_600}>
-              {book.price > 0 ? `$${book.price}` : "Free"}
-            </span>
+            <span className={poppins_600}>{book.price > 0 ? `$${book.price}` : "Free"}</span>
           </div>
         </div>
       </div>
@@ -68,10 +57,7 @@ const PublicBookCard = ({ book }) => {
           to={`/dashboard/library/${book._id}`}
           wide
           round
-          className={cn(
-            poppins_500,
-            "w-full bg-accent text-sm text-white hover:bg-highlight"
-          )}
+          className={cn(poppins_500, "w-full bg-accent text-sm text-white hover:bg-highlight")}
         >
           View Book
         </Button>

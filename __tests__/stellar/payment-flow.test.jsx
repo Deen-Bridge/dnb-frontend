@@ -56,18 +56,17 @@ describe("Stellar payment flow", () => {
   it("initiates a payment, asks for confirmation, then shows success", async () => {
     const onSuccess = vi.fn();
     render(
-      <PaymentModal
-        isOpen
-        onClose={vi.fn()}
-        item={item}
-        itemType="book"
-        onSuccess={onSuccess}
-      />
+      <PaymentModal isOpen onClose={vi.fn()} item={item} itemType="book" onSuccess={onSuccess} />
     );
 
     fireEvent.click(screen.getByRole("button", { name: /continue/i }));
-    expect(await screen.findByText("Please confirm the transaction in your wallet extension.")).toBeInTheDocument();
-    expect(paymentMock.initializePayment).toHaveBeenCalledWith({ itemType: "book", itemId: item._id });
+    expect(
+      await screen.findByText("Please confirm the transaction in your wallet extension.")
+    ).toBeInTheDocument();
+    expect(paymentMock.initializePayment).toHaveBeenCalledWith({
+      itemType: "book",
+      itemId: item._id,
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /sign & pay/i }));
 

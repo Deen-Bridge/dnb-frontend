@@ -20,7 +20,7 @@ export const VERIFICATION_STATUS = Object.freeze({
   REJECTED: "rejected",
 } as const);
 
-export type VerificationStatus = typeof VERIFICATION_STATUS[keyof typeof VERIFICATION_STATUS];
+export type VerificationStatus = (typeof VERIFICATION_STATUS)[keyof typeof VERIFICATION_STATUS];
 
 export interface RejectionReasonCategory {
   id: string;
@@ -41,7 +41,8 @@ export const REJECTION_REASON_CATEGORIES: readonly RejectionReasonCategory[] = O
   {
     id: "unverifiable_identity",
     label: "Identity or liveness check failed",
-    description: "Liveness facial capture did not match ID document or confidence score is too low.",
+    description:
+      "Liveness facial capture did not match ID document or confidence score is too low.",
   },
   {
     id: "incomplete_credentials",
@@ -61,14 +62,16 @@ export const REJECTION_REASON_CATEGORIES: readonly RejectionReasonCategory[] = O
 ]);
 
 export const REJECTION_REASON_MAP: Readonly<Record<string, string>> = Object.freeze(
-  REJECTION_REASON_CATEGORIES.reduce((acc, curr) => {
-    acc[curr.id] = curr.label;
-    return acc;
-  }, {} as Record<string, string>)
+  REJECTION_REASON_CATEGORIES.reduce(
+    (acc, curr) => {
+      acc[curr.id] = curr.label;
+      return acc;
+    },
+    {} as Record<string, string>
+  )
 );
 
-const MOCK_DELAY_MS =
-  typeof process !== "undefined" && process.env.NODE_ENV === "test" ? 0 : 250;
+const MOCK_DELAY_MS = typeof process !== "undefined" && process.env.NODE_ENV === "test" ? 0 : 250;
 
 function withMockDelay<T>(value: T, ms = MOCK_DELAY_MS): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
@@ -116,8 +119,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Graduate of Al-Azhar University. Specializing in Usul al-Fiqh and Hadith studies for over 12 years.",
     subjects: ["Fiqh", "Hadith", "Arabic"],
     documents: [
-      { id: "doc_01", type: "national_id", name: "passport_scan.pdf", status: "verified", uploadedAt: "2026-08-28T14:15:00Z" },
-      { id: "doc_02", type: "qualification", name: "al_azhar_degree.pdf", status: "verified", uploadedAt: "2026-08-28T14:20:00Z" },
+      {
+        id: "doc_01",
+        type: "national_id",
+        name: "passport_scan.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-28T14:15:00Z",
+      },
+      {
+        id: "doc_02",
+        type: "qualification",
+        name: "al_azhar_degree.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-28T14:20:00Z",
+      },
     ],
     livenessScore: 98,
     livenessPassed: true,
@@ -133,8 +148,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Ijazah holder in Hafs 'an Asim and Warsh 'an Nafi. 8 years teaching Quran memorization and Tajweed.",
     subjects: ["Tajweed", "Quran Memorization", "Qira'at"],
     documents: [
-      { id: "doc_03", type: "national_id", name: "national_id_card.pdf", status: "verified", uploadedAt: "2026-08-28T11:00:00Z" },
-      { id: "doc_04", type: "qualification", name: "ijazah_certificate.pdf", status: "verified", uploadedAt: "2026-08-28T11:10:00Z" },
+      {
+        id: "doc_03",
+        type: "national_id",
+        name: "national_id_card.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-28T11:00:00Z",
+      },
+      {
+        id: "doc_04",
+        type: "qualification",
+        name: "ijazah_certificate.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-28T11:10:00Z",
+      },
     ],
     livenessScore: 96,
     livenessPassed: true,
@@ -150,8 +177,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "PhD in Islamic Economics and Finance. Author of contemporary guides to Halal investments.",
     subjects: ["Islamic Finance", "Contemporary Issues"],
     documents: [
-      { id: "doc_05", type: "national_id", name: "uk_passport.pdf", status: "verified", uploadedAt: "2026-08-27T18:30:00Z" },
-      { id: "doc_06", type: "qualification", name: "phd_diploma.pdf", status: "verified", uploadedAt: "2026-08-27T18:35:00Z" },
+      {
+        id: "doc_05",
+        type: "national_id",
+        name: "uk_passport.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-27T18:30:00Z",
+      },
+      {
+        id: "doc_06",
+        type: "qualification",
+        name: "phd_diploma.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-27T18:35:00Z",
+      },
     ],
     livenessScore: 94,
     livenessPassed: true,
@@ -167,8 +206,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Imam and community educator. Teaching beginner Arabic syntax and prophetic biography (Seerah).",
     subjects: ["Arabic Grammar", "Seerah"],
     documents: [
-      { id: "doc_07", type: "national_id", name: "id_document.pdf", status: "verified", uploadedAt: "2026-08-27T08:50:00Z" },
-      { id: "doc_08", type: "qualification", name: "islamic_studies_ba.pdf", status: "verified", uploadedAt: "2026-08-27T09:00:00Z" },
+      {
+        id: "doc_07",
+        type: "national_id",
+        name: "id_document.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-27T08:50:00Z",
+      },
+      {
+        id: "doc_08",
+        type: "qualification",
+        name: "islamic_studies_ba.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-27T09:00:00Z",
+      },
     ],
     livenessScore: 92,
     livenessPassed: true,
@@ -184,8 +235,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "International Islamic University Malaysia alumnus. Translator and educator of foundational Aqeedah.",
     subjects: ["Aqeedah", "Islamic History"],
     documents: [
-      { id: "doc_09", type: "national_id", name: "passport_scan.pdf", status: "verified", uploadedAt: "2026-08-26T19:55:00Z" },
-      { id: "doc_10", type: "qualification", name: "iium_degree.pdf", status: "verified", uploadedAt: "2026-08-26T20:05:00Z" },
+      {
+        id: "doc_09",
+        type: "national_id",
+        name: "passport_scan.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-26T19:55:00Z",
+      },
+      {
+        id: "doc_10",
+        type: "qualification",
+        name: "iium_degree.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-26T20:05:00Z",
+      },
     ],
     livenessScore: 95,
     livenessPassed: true,
@@ -201,8 +264,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Researcher in classical Arabic literature and Quranic rhetoric (Balaghah).",
     subjects: ["Arabic Rhetoric", "Quranic Studies"],
     documents: [
-      { id: "doc_11", type: "national_id", name: "uae_pass_cert.pdf", status: "verified", uploadedAt: "2026-08-26T14:40:00Z" },
-      { id: "doc_12", type: "qualification", name: "doctorate_cert.pdf", status: "verified", uploadedAt: "2026-08-26T14:45:00Z" },
+      {
+        id: "doc_11",
+        type: "national_id",
+        name: "uae_pass_cert.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-26T14:40:00Z",
+      },
+      {
+        id: "doc_12",
+        type: "qualification",
+        name: "doctorate_cert.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-26T14:45:00Z",
+      },
     ],
     livenessScore: 99,
     livenessPassed: true,
@@ -218,8 +293,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Lecturer in comparative fiqh and contemporary contractual rulings.",
     subjects: ["Comparative Fiqh", "Transactions"],
     documents: [
-      { id: "doc_13", type: "national_id", name: "national_id.pdf", status: "verified", uploadedAt: "2026-08-25T11:40:00Z" },
-      { id: "doc_14", type: "qualification", name: "masters_fiqh.pdf", status: "verified", uploadedAt: "2026-08-25T11:45:00Z" },
+      {
+        id: "doc_13",
+        type: "national_id",
+        name: "national_id.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-25T11:40:00Z",
+      },
+      {
+        id: "doc_14",
+        type: "qualification",
+        name: "masters_fiqh.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-25T11:45:00Z",
+      },
     ],
     livenessScore: 91,
     livenessPassed: true,
@@ -235,8 +322,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Certified Dars-e-Nizami teacher with 10 years experience mentoring female youth in Hadith.",
     subjects: ["Hadith", "Women in Islam"],
     documents: [
-      { id: "doc_15", type: "national_id", name: "cnic_scan.pdf", status: "verified", uploadedAt: "2026-08-25T08:10:00Z" },
-      { id: "doc_16", type: "qualification", name: "shahadat_al_alamiyyah.pdf", status: "verified", uploadedAt: "2026-08-25T08:15:00Z" },
+      {
+        id: "doc_15",
+        type: "national_id",
+        name: "cnic_scan.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-25T08:10:00Z",
+      },
+      {
+        id: "doc_16",
+        type: "qualification",
+        name: "shahadat_al_alamiyyah.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-25T08:15:00Z",
+      },
     ],
     livenessScore: 94,
     livenessPassed: true,
@@ -252,8 +351,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Instructor in Ottoman Turkish and Islamic calligraphic history.",
     subjects: ["Islamic Arts", "Ottoman History"],
     documents: [
-      { id: "doc_17", type: "national_id", name: "kimlik_scan.pdf", status: "verified", uploadedAt: "2026-08-24T16:50:00Z" },
-      { id: "doc_18", type: "qualification", name: "theology_fac_ba.pdf", status: "verified", uploadedAt: "2026-08-24T17:00:00Z" },
+      {
+        id: "doc_17",
+        type: "national_id",
+        name: "kimlik_scan.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-24T16:50:00Z",
+      },
+      {
+        id: "doc_18",
+        type: "qualification",
+        name: "theology_fac_ba.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-24T17:00:00Z",
+      },
     ],
     livenessScore: 97,
     livenessPassed: true,
@@ -269,8 +380,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Community educator focusing on Quranic Arabic for non-native West African speakers.",
     subjects: ["Quranic Arabic", "Tafsir"],
     documents: [
-      { id: "doc_19", type: "national_id", name: "passport.pdf", status: "verified", uploadedAt: "2026-08-24T09:45:00Z" },
-      { id: "doc_20", type: "qualification", name: "diploma_arabic.pdf", status: "verified", uploadedAt: "2026-08-24T09:50:00Z" },
+      {
+        id: "doc_19",
+        type: "national_id",
+        name: "passport.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-24T09:45:00Z",
+      },
+      {
+        id: "doc_20",
+        type: "qualification",
+        name: "diploma_arabic.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-24T09:50:00Z",
+      },
     ],
     livenessScore: 93,
     livenessPassed: true,
@@ -286,8 +409,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Professor of Tafsir and Quranic Sciences. Author of 4 published books on thematic Tafsir.",
     subjects: ["Tafsir", "Quranic Sciences"],
     documents: [
-      { id: "doc_21", type: "national_id", name: "jordan_id.pdf", status: "verified", uploadedAt: "2026-08-23T14:20:00Z" },
-      { id: "doc_22", type: "qualification", name: "phd_cert.pdf", status: "verified", uploadedAt: "2026-08-23T14:25:00Z" },
+      {
+        id: "doc_21",
+        type: "national_id",
+        name: "jordan_id.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-23T14:20:00Z",
+      },
+      {
+        id: "doc_22",
+        type: "qualification",
+        name: "phd_cert.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-23T14:25:00Z",
+      },
     ],
     livenessScore: 99,
     livenessPassed: true,
@@ -303,8 +438,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Pesantren instructor in classical Arabic syntax (Nahw & Sarf).",
     subjects: ["Arabic Syntax", "Tafsir"],
     documents: [
-      { id: "doc_23", type: "national_id", name: "ktp_scan.pdf", status: "verified", uploadedAt: "2026-08-23T06:00:00Z" },
-      { id: "doc_24", type: "qualification", name: "pesantren_ijazah.pdf", status: "verified", uploadedAt: "2026-08-23T06:05:00Z" },
+      {
+        id: "doc_23",
+        type: "national_id",
+        name: "ktp_scan.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-23T06:00:00Z",
+      },
+      {
+        id: "doc_24",
+        type: "qualification",
+        name: "pesantren_ijazah.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-23T06:05:00Z",
+      },
     ],
     livenessScore: 96,
     livenessPassed: true,
@@ -320,8 +467,20 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Certified Tajweed mentor with 15+ years experience in children's Quran education.",
     subjects: ["Tajweed", "Children's Education"],
     documents: [
-      { id: "doc_25", type: "national_id", name: "saudi_id.pdf", status: "verified", uploadedAt: "2026-08-22T19:10:00Z" },
-      { id: "doc_26", type: "qualification", name: "tajweed_license.pdf", status: "verified", uploadedAt: "2026-08-22T19:15:00Z" },
+      {
+        id: "doc_25",
+        type: "national_id",
+        name: "saudi_id.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-22T19:10:00Z",
+      },
+      {
+        id: "doc_26",
+        type: "qualification",
+        name: "tajweed_license.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-22T19:15:00Z",
+      },
     ],
     livenessScore: 98,
     livenessPassed: true,
@@ -337,13 +496,26 @@ const MOCK_APPLICATIONS: VerificationApplication[] = [
     bio: "Senior educator in Islamic inheritance law (Fara'id).",
     subjects: ["Islamic Inheritance Law", "Fiqh"],
     documents: [
-      { id: "doc_27", type: "national_id", name: "nid_card.pdf", status: "verified", uploadedAt: "2026-08-22T10:55:00Z" },
-      { id: "doc_28", type: "qualification", name: "al_hadith_ma.pdf", status: "verified", uploadedAt: "2026-08-22T11:00:00Z" },
+      {
+        id: "doc_27",
+        type: "national_id",
+        name: "nid_card.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-22T10:55:00Z",
+      },
+      {
+        id: "doc_28",
+        type: "qualification",
+        name: "al_hadith_ma.pdf",
+        status: "verified",
+        uploadedAt: "2026-08-22T11:00:00Z",
+      },
     ],
     livenessScore: 88,
     livenessPassed: false,
     rejectionReasonCategory: "unverifiable_identity",
-    rejectionReason: "Liveness score fell below required threshold. Face match could not be confirmed against national ID.",
+    rejectionReason:
+      "Liveness score fell below required threshold. Face match could not be confirmed against national ID.",
   },
 ];
 
@@ -478,14 +650,16 @@ function statusFromDecisionConflict(error: unknown): string | undefined {
     data?.currentStatus ??
     data?.status ??
     data?.details?.status;
-  return status && (Object.values(VERIFICATION_STATUS) as string[]).includes(status) ? status : undefined;
+  return status && (Object.values(VERIFICATION_STATUS) as string[]).includes(status)
+    ? status
+    : undefined;
 }
 
 async function getCurrentVerificationStatus(applicationId: string): Promise<string> {
-  const response = await axiosInstance.get(
-    `/api/admin/educator-verification/${applicationId}`,
-    { timeout: 2000, retryOnServerError: false }
-  );
+  const response = await axiosInstance.get(`/api/admin/educator-verification/${applicationId}`, {
+    timeout: 2000,
+    retryOnServerError: false,
+  });
   const status = response?.data?.application?.status;
   if (!status) throw new Error("The current verification status was not returned.");
   return status;
@@ -510,7 +684,8 @@ export async function approveVerification(
   } catch (caught) {
     const err = caught as DecisionError;
     if (err?.response?.status === 409) {
-      const status = statusFromDecisionConflict(err) || await getCurrentVerificationStatus(applicationId);
+      const status =
+        statusFromDecisionConflict(err) || (await getCurrentVerificationStatus(applicationId));
       return { application: { id: applicationId, status }, conflict: true };
     }
     if (err?.response?.status && err.response.status !== 404) {
@@ -548,7 +723,10 @@ export async function rejectVerification(
   applicationId: string,
   payload: RejectVerificationPayload = {},
   context: VerificationContext = {}
-): Promise<{ application: { id: string; status: string; reasonCategory?: string; notes?: string }; conflict?: boolean }> {
+): Promise<{
+  application: { id: string; status: string; reasonCategory?: string; notes?: string };
+  conflict?: boolean;
+}> {
   const { reasonCategory, notes } = payload;
   if (!reasonCategory) {
     throw new Error("A reason category is required to reject an application.");
@@ -558,7 +736,9 @@ export async function rejectVerification(
     throw new Error("Backend validation failed for " + applicationId);
   }
 
-  let result: { application: { id: string; status: string; reasonCategory?: string; notes?: string } };
+  let result: {
+    application: { id: string; status: string; reasonCategory?: string; notes?: string };
+  };
   try {
     const res = await axiosInstance.post(
       `/api/admin/educator-verification/${applicationId}/reject`,
@@ -571,7 +751,8 @@ export async function rejectVerification(
   } catch (caught) {
     const err = caught as DecisionError;
     if (err?.response?.status === 409) {
-      const status = statusFromDecisionConflict(err) || await getCurrentVerificationStatus(applicationId);
+      const status =
+        statusFromDecisionConflict(err) || (await getCurrentVerificationStatus(applicationId));
       return { application: { id: applicationId, status }, conflict: true };
     }
     if (err?.response?.status && err.response.status !== 404) {
@@ -693,7 +874,8 @@ export async function executeSequentialBulkDecisions({
       const successEntry: BulkDecisionItemResult = { item, success: true };
       succeeded.push(successEntry);
       results.push(successEntry);
-    } catch (err: any) { // TODO(types): Error from single item in bulk processing
+    } catch (err: any) {
+      // TODO(types): Error from single item in bulk processing
       const failEntry: BulkDecisionItemResult = {
         item,
         success: false,

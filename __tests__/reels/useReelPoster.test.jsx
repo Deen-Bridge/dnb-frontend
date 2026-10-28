@@ -54,9 +54,7 @@ describe("useReelPoster()", () => {
       });
     });
 
-    await waitFor(() =>
-      expect(result.current.poster).toBe("https://cdn/server-echoed.jpg")
-    );
+    await waitFor(() => expect(result.current.poster).toBe("https://cdn/server-echoed.jpg"));
     await mutation;
 
     expect(mocks.updateReelPoster).toHaveBeenCalledWith("reel-1", {
@@ -66,17 +64,13 @@ describe("useReelPoster()", () => {
 
   it("rolls back to the baseline and toasts on failure", async () => {
     mocks.updateReelPoster.mockRejectedValue(new Error("network down"));
-    const { result } = renderHook(() =>
-      useReelPoster("reel-1", "https://cdn/old.jpg")
-    );
+    const { result } = renderHook(() => useReelPoster("reel-1", "https://cdn/old.jpg"));
 
     await act(async () => {
       await result.current.setPoster("https://cdn/new.jpg").catch(() => {});
     });
 
     expect(result.current.poster).toBe("https://cdn/old.jpg");
-    expect(toast.error).toHaveBeenCalledWith(
-      "Couldn't update this reel's poster"
-    );
+    expect(toast.error).toHaveBeenCalledWith("Couldn't update this reel's poster");
   });
 });

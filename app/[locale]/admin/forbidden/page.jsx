@@ -44,9 +44,8 @@ export default function ForbiddenPage() {
           Access forbidden
         </p>
         <p className={cn("mb-8 text-lg text-muted-foreground", Inter_400.className)}>
-          You don’t have permission to access this admin area. Your account and its
-          data are unchanged. If you believe you should have access, contact support
-          for help.
+          You don’t have permission to access this admin area. Your account and its data are
+          unchanged. If you believe you should have access, contact support for help.
         </p>
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Link

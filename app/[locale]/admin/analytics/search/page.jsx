@@ -3,13 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -36,15 +30,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Line,
-  LineChart,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Line, LineChart } from "recharts";
 import {
   Search,
   TrendingUp,
@@ -80,7 +66,8 @@ const ctrChartConfig = {
 };
 
 function TrendBadge({ value }) {
-  if (value === null || value === undefined) return <span className="text-muted-foreground">—</span>;
+  if (value === null || value === undefined)
+    return <span className="text-muted-foreground">—</span>;
 
   if (value > 0) {
     return (
@@ -129,9 +116,7 @@ function StatCard({ icon: Icon, label, metric }) {
                   : metric.value.toLocaleString()}
               </p>
             ) : (
-              <p className={cn(poppins_600.className, "text-3xl text-muted-foreground/40")}>
-                —
-              </p>
+              <p className={cn(poppins_600.className, "text-3xl text-muted-foreground/40")}>—</p>
             )}
             {!metric.tracked && (
               <p className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
@@ -157,14 +142,17 @@ function TopQueriesTable({ queries, tracked }) {
         </div>
         <div>
           <div className="flex items-center justify-center gap-2">
-            <h3 className={cn(poppins_600.className, "text-base text-foreground")}>
-              Top Queries
-            </h3>
+            <h3 className={cn(poppins_600.className, "text-base text-foreground")}>Top Queries</h3>
             <Badge variant="outline" className="text-xs text-muted-foreground">
               {tracked ? "No data yet" : "Not tracked yet"}
             </Badge>
           </div>
-          <p className={cn(poppins_400.className, "mx-auto mt-1 max-w-md text-sm text-muted-foreground")}>
+          <p
+            className={cn(
+              poppins_400.className,
+              "mx-auto mt-1 max-w-md text-sm text-muted-foreground"
+            )}
+          >
             {tracked
               ? "No search queries have been recorded in this period."
               : "Search query events are not being recorded yet, so no top queries are available."}
@@ -189,12 +177,8 @@ function TopQueriesTable({ queries, tracked }) {
         {queries.map((q, index) => (
           <TableRow key={q.query}>
             <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-            <TableCell className={cn(poppins_500.className, "font-medium")}>
-              {q.query}
-            </TableCell>
-            <TableCell className="text-right tabular-nums">
-              {q.count.toLocaleString()}
-            </TableCell>
+            <TableCell className={cn(poppins_500.className, "font-medium")}>{q.query}</TableCell>
+            <TableCell className="text-right tabular-nums">{q.count.toLocaleString()}</TableCell>
             <TableCell className="text-right tabular-nums">
               {q.clickThroughRate !== null ? `${q.clickThroughRate.toFixed(1)}%` : "—"}
             </TableCell>
@@ -224,7 +208,12 @@ function ZeroResultQueriesList({ queries, tracked }) {
               {tracked ? "No data yet" : "Not tracked yet"}
             </Badge>
           </div>
-          <p className={cn(poppins_400.className, "mx-auto mt-1 max-w-md text-sm text-muted-foreground")}>
+          <p
+            className={cn(
+              poppins_400.className,
+              "mx-auto mt-1 max-w-md text-sm text-muted-foreground"
+            )}
+          >
             {tracked
               ? "No zero-result queries have been recorded in this period."
               : "Zero-result search events are not being recorded yet. This list will surface content gaps once tracking is enabled."}
@@ -248,12 +237,8 @@ function ZeroResultQueriesList({ queries, tracked }) {
         {queries.map((q, index) => (
           <TableRow key={q.query}>
             <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-            <TableCell className={cn(poppins_500.className, "font-medium")}>
-              {q.query}
-            </TableCell>
-            <TableCell className="text-right tabular-nums">
-              {q.count.toLocaleString()}
-            </TableCell>
+            <TableCell className={cn(poppins_500.className, "font-medium")}>{q.query}</TableCell>
+            <TableCell className="text-right tabular-nums">{q.count.toLocaleString()}</TableCell>
             <TableCell className="text-right text-sm text-muted-foreground">
               {new Date(q.lastSearched).toLocaleDateString()}
             </TableCell>
@@ -390,16 +375,8 @@ export default function SearchAnalyticsPage() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={Search}
-          label={totals.totalQueries.label}
-          metric={totals.totalQueries}
-        />
-        <StatCard
-          icon={Eye}
-          label={totals.uniqueQueries.label}
-          metric={totals.uniqueQueries}
-        />
+        <StatCard icon={Search} label={totals.totalQueries.label} metric={totals.totalQueries} />
+        <StatCard icon={Eye} label={totals.uniqueQueries.label} metric={totals.uniqueQueries} />
         <StatCard
           icon={FileQuestion}
           label={totals.zeroResultQueries.label}
@@ -421,9 +398,7 @@ export default function SearchAnalyticsPage() {
               <TrendingUp className="h-5 w-5" />
               Weekly Query Volume
             </CardTitle>
-            <CardDescription>
-              Total searches and zero-result queries over time
-            </CardDescription>
+            <CardDescription>Total searches and zero-result queries over time</CardDescription>
           </CardHeader>
           <CardContent>
             {weeklyTrends.some((w) => w.queries > 0 || w.zeroResults > 0) ? (
@@ -465,8 +440,14 @@ export default function SearchAnalyticsPage() {
                   <Badge variant="outline" className="text-xs text-muted-foreground">
                     Not tracked yet
                   </Badge>
-                  <p className={cn(poppins_400.className, "mx-auto mt-2 max-w-md text-sm text-muted-foreground")}>
-                    Search event tracking is not enabled yet. Once enabled, weekly query volume and zero-result trends will appear here.
+                  <p
+                    className={cn(
+                      poppins_400.className,
+                      "mx-auto mt-2 max-w-md text-sm text-muted-foreground"
+                    )}
+                  >
+                    Search event tracking is not enabled yet. Once enabled, weekly query volume and
+                    zero-result trends will appear here.
                   </p>
                 </div>
               </div>
@@ -535,8 +516,14 @@ export default function SearchAnalyticsPage() {
                   <Badge variant="outline" className="text-xs text-muted-foreground">
                     Not tracked yet
                   </Badge>
-                  <p className={cn(poppins_400.className, "mx-auto mt-2 max-w-md text-sm text-muted-foreground")}>
-                    Click-through rate data is not available yet. This chart will populate once search-result interactions are instrumented.
+                  <p
+                    className={cn(
+                      poppins_400.className,
+                      "mx-auto mt-2 max-w-md text-sm text-muted-foreground"
+                    )}
+                  >
+                    Click-through rate data is not available yet. This chart will populate once
+                    search-result interactions are instrumented.
                   </p>
                 </div>
               </div>
@@ -569,7 +556,8 @@ export default function SearchAnalyticsPage() {
             Zero-Result Queries
           </CardTitle>
           <CardDescription>
-            Searches that returned no results — these signal content gaps that can inform acquisition decisions
+            Searches that returned no results — these signal content gaps that can inform
+            acquisition decisions
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -158,7 +158,8 @@ export default function UserActivityTimeline({ user }) {
                         )}
                         {event.actor && (
                           <p className="text-xs text-muted-foreground">
-                            Actor: <span className="font-medium text-foreground">{event.actor}</span>
+                            Actor:{" "}
+                            <span className="font-medium text-foreground">{event.actor}</span>
                           </p>
                         )}
                       </div>

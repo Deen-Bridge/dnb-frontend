@@ -22,7 +22,11 @@ export interface FetchReelsResult {
   hasMore: boolean;
 }
 
-export const fetchReels = async ({ page, limit, includeHidden = false }: FetchReelsParams = {}): Promise<FetchReelsResult> => {
+export const fetchReels = async ({
+  page,
+  limit,
+  includeHidden = false,
+}: FetchReelsParams = {}): Promise<FetchReelsResult> => {
   try {
     const params = {
       page: page ?? defaultPagination.page,
@@ -35,9 +39,7 @@ export const fetchReels = async ({ page, limit, includeHidden = false }: FetchRe
     if (!includeHidden && Array.isArray(res.data?.reels)) {
       return {
         ...res.data,
-        reels: res.data.reels.filter(
-          (reel: any) => !reel.isHidden && reel.visibility !== "hidden"
-        ),
+        reels: res.data.reels.filter((reel: any) => !reel.isHidden && reel.visibility !== "hidden"),
       };
     }
     return res.data;
@@ -77,7 +79,8 @@ export const updateReelVisibility = async (
   return res.data;
 };
 
-export const fetchReelById = async (reelId: string): Promise<any | null> => { // TODO(types): Single reel detail
+export const fetchReelById = async (reelId: string): Promise<any | null> => {
+  // TODO(types): Single reel detail
   try {
     const res = await axiosInstance.get(`/api/reels/${reelId}`);
     return res.data;
@@ -87,7 +90,8 @@ export const fetchReelById = async (reelId: string): Promise<any | null> => { //
   }
 };
 
-export const uploadReel = async (formData: FormData): Promise<any> => { // TODO(types): Upload reel response
+export const uploadReel = async (formData: FormData): Promise<any> => {
+  // TODO(types): Upload reel response
   try {
     const res = await axiosInstance.post("/api/reels", formData, {
       headers: {
@@ -101,7 +105,8 @@ export const uploadReel = async (formData: FormData): Promise<any> => { // TODO(
   }
 };
 
-export const reactToReel = async (reelId: string, type: string): Promise<any> => { // TODO(types): Reel reaction response
+export const reactToReel = async (reelId: string, type: string): Promise<any> => {
+  // TODO(types): Reel reaction response
   try {
     const res = await axiosInstance.post(`/api/reels/${reelId}/react`, { type });
     return res.data;
@@ -111,7 +116,8 @@ export const reactToReel = async (reelId: string, type: string): Promise<any> =>
   }
 };
 
-export const commentOnReel = async (reelId: string, text: string): Promise<any> => { // TODO(types): Reel comment creation response
+export const commentOnReel = async (reelId: string, text: string): Promise<any> => {
+  // TODO(types): Reel comment creation response
   try {
     const res = await axiosInstance.post(`/api/reels/${reelId}/comments`, {
       text,
@@ -159,22 +165,19 @@ export const fetchReelComments = async (
   }
 };
 
-export const deleteReelComment = async (reelId: string, commentId: string): Promise<any> => { // TODO(types): Delete reel comment response
+export const deleteReelComment = async (reelId: string, commentId: string): Promise<any> => {
+  // TODO(types): Delete reel comment response
   try {
-    const res = await axiosInstance.delete(
-      `/api/reels/${reelId}/comments/${commentId}`
-    );
+    const res = await axiosInstance.delete(`/api/reels/${reelId}/comments/${commentId}`);
     return res.data;
   } catch (error) {
-    logger.error(
-      `Error deleting comment ${commentId} for reel ${reelId}:`,
-      error
-    );
+    logger.error(`Error deleting comment ${commentId} for reel ${reelId}:`, error);
     throw error;
   }
 };
 
-export const shareReel = async (reelId: string): Promise<any> => { // TODO(types): Share reel response
+export const shareReel = async (reelId: string): Promise<any> => {
+  // TODO(types): Share reel response
   try {
     const res = await axiosInstance.post(`/api/reels/${reelId}/share`);
     return res.data;
@@ -184,7 +187,8 @@ export const shareReel = async (reelId: string): Promise<any> => { // TODO(types
   }
 };
 
-export const recordReelView = async (reelId: string): Promise<any | null> => { // TODO(types): Record reel view response
+export const recordReelView = async (reelId: string): Promise<any | null> => {
+  // TODO(types): Record reel view response
   try {
     const res = await axiosInstance.post(`/api/reels/${reelId}/view`);
     return res.data;

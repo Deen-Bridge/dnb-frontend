@@ -5,11 +5,7 @@
  */
 
 export type RecentEventType =
-  | "user_signup"
-  | "course_published"
-  | "payment"
-  | "report"
-  | "verification";
+  "user_signup" | "course_published" | "payment" | "report" | "verification";
 
 export interface RecentEvent {
   id: string;

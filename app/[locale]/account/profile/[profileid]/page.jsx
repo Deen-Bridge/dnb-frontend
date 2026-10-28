@@ -51,9 +51,7 @@ const ProfilePage = ({ params }) => {
     );
   }
   if (!user) {
-    return (
-      <NotFoundComp errMsg="User profile not found or has been removed." />
-    );
+    return <NotFoundComp errMsg="User profile not found or has been removed." />;
   }
 
   return (

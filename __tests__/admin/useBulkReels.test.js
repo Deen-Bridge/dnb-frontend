@@ -60,7 +60,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     expect(result.current.selectedCount).toBe(0);
@@ -74,7 +74,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     act(() => result.current.toggleSelect("rl_0000"));
@@ -94,7 +94,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     act(() => result.current.toggleSelectAll());
@@ -111,7 +111,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     act(() => {
@@ -131,7 +131,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     // Select 5 items — below threshold
@@ -152,7 +152,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     act(() => {
@@ -170,9 +170,7 @@ describe("useBulkReels", () => {
     const setReels = vi.fn();
     const mutateReel = vi.fn((r, changes) => ({ ...r, ...changes }));
 
-    const { result } = renderHook(() =>
-      useBulkReels({ reels, setReels, mutateReel, apiAction }),
-    );
+    const { result } = renderHook(() => useBulkReels({ reels, setReels, mutateReel, apiAction }));
 
     act(() => {
       result.current.toggleSelect("rl_0000");
@@ -196,9 +194,7 @@ describe("useBulkReels", () => {
     const setReels = vi.fn();
     const mutateReel = vi.fn((r, changes) => ({ ...r, ...changes }));
 
-    const { result } = renderHook(() =>
-      useBulkReels({ reels, setReels, mutateReel, apiAction }),
-    );
+    const { result } = renderHook(() => useBulkReels({ reels, setReels, mutateReel, apiAction }));
 
     act(() => {
       result.current.toggleSelect("rl_0000");
@@ -220,7 +216,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     expect(result.current.highlightedIndex).toBe(0);
@@ -247,7 +243,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     expect(result.current.confirmed).toBe(false);
@@ -263,7 +259,7 @@ describe("useBulkReels", () => {
         setReels: vi.fn(),
         mutateReel: vi.fn(),
         apiAction: makeApiAction(),
-      }),
+      })
     );
 
     act(() => result.current.setConfirmed(true));

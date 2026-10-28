@@ -20,16 +20,14 @@ export const EMAIL_TEMPLATES: readonly EmailTemplate[] = Object.freeze([
     label: "Announcement",
     description: "Platform news and updates for your audience",
     subjectTemplate: "[Deen Bridge] {title}",
-    bodyTemplate:
-      "Hello,\n\n{content}\n\n— The Deen Bridge team",
+    bodyTemplate: "Hello,\n\n{content}\n\n— The Deen Bridge team",
   },
   {
     id: "maintenance",
     label: "Maintenance",
     description: "Scheduled downtime and service notices",
     subjectTemplate: "[Deen Bridge] Scheduled maintenance: {title}",
-    bodyTemplate:
-      "Hello,\n\n{content}\n\nPlease plan accordingly.\n\n— The Deen Bridge team",
+    bodyTemplate: "Hello,\n\n{content}\n\nPlease plan accordingly.\n\n— The Deen Bridge team",
   },
   {
     id: "compliance",
@@ -89,10 +87,7 @@ export async function estimateEmailRecipients({
 
   if (audience === "role") {
     if (!roles.length) return withMockDelay({ estimate: null, known: false });
-    const estimate = roles.reduce(
-      (total, role) => total + (AUDIENCE_COUNTS[role] || 0),
-      0
-    );
+    const estimate = roles.reduce((total, role) => total + (AUDIENCE_COUNTS[role] || 0), 0);
     return withMockDelay({ estimate, known: true });
   }
 

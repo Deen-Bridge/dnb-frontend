@@ -29,7 +29,10 @@ export interface WalletConnectButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
 }
 
-export default function WalletConnectButton({ variant = "outline", size = "default" }: WalletConnectButtonProps) {
+export default function WalletConnectButton({
+  variant = "outline",
+  size = "default",
+}: WalletConnectButtonProps) {
   const {
     connectedWallet,
     walletInfo,
@@ -149,9 +152,7 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className="gap-2">
           <div
-            className={`h-2 w-2 rounded-full ${
-              networkMismatch ? "bg-yellow-500" : "bg-green-500"
-            }`}
+            className={`h-2 w-2 rounded-full ${networkMismatch ? "bg-yellow-500" : "bg-green-500"}`}
           />
           <span dir="ltr">{truncateAddress(connectedWallet)}</span>
         </Button>
@@ -169,9 +170,7 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
             )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Network</span>
-              <Badge variant={network === "mainnet" ? "default" : "secondary"}>
-                {network}
-              </Badge>
+              <Badge variant={network === "mainnet" ? "default" : "secondary"}>{network}</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">USDC Balance</span>

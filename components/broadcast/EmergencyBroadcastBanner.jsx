@@ -83,18 +83,11 @@ export default function EmergencyBroadcastBanner() {
       )}
     >
       <div className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-3">
-        <AlertTriangle
-          className="mt-0.5 h-5 w-5 shrink-0 text-red-100"
-          aria-hidden="true"
-        />
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-100" aria-hidden="true" />
         <div className="min-w-0 flex-1 space-y-1">
-          <p className={cn(poppins_600.className, "text-sm leading-snug")}>
-            {broadcast.title}
-          </p>
+          <p className={cn(poppins_600.className, "text-sm leading-snug")}>{broadcast.title}</p>
           {broadcast.body ? (
-            <p className="text-xs leading-snug text-red-100/90">
-              {broadcast.body}
-            </p>
+            <p className="text-xs leading-snug text-red-100/90">{broadcast.body}</p>
           ) : null}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
             {etaLabel ? (

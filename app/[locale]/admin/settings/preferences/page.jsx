@@ -3,13 +3,7 @@
 import { useCallback, useState } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -153,9 +147,7 @@ export default function AdminPreferencesPage() {
               <Globe className="h-5 w-5" />
               Default Landing Page
             </CardTitle>
-            <CardDescription>
-              Choose where to go after logging in
-            </CardDescription>
+            <CardDescription>Choose where to go after logging in</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -186,17 +178,12 @@ export default function AdminPreferencesPage() {
               <Clock className="h-5 w-5" />
               Timezone Override
             </CardTitle>
-            <CardDescription>
-              Affects charts, date displays, and scheduled actions
-            </CardDescription>
+            <CardDescription>Affects charts, date displays, and scheduled actions</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <Label>Timezone</Label>
-              <Select
-                value={prefs.timezone}
-                onValueChange={(v) => updatePref("timezone", v)}
-              >
+              <Select value={prefs.timezone} onValueChange={(v) => updatePref("timezone", v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -246,27 +233,18 @@ export default function AdminPreferencesPage() {
               <Bell className="h-5 w-5" />
               Email Notifications
             </CardTitle>
-            <CardDescription>
-              Choose which admin event notifications you receive
-            </CardDescription>
+            <CardDescription>Choose which admin event notifications you receive</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {EMAIL_NOTIFICATIONS.map((item) => (
-              <div
-                key={item.key}
-                className="flex items-center justify-between"
-              >
+              <div key={item.key} className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>{item.label}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {item.description}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
                 </div>
                 <Switch
                   checked={prefs.emailNotifications[item.key]}
-                  onCheckedChange={(v) =>
-                    updateEmailNotification(item.key, v)
-                  }
+                  onCheckedChange={(v) => updateEmailNotification(item.key, v)}
                 />
               </div>
             ))}

@@ -54,7 +54,6 @@ export default function Testimonials() {
                     &quot;{t(`items.${item.id}.quote`)}&quot;
                   </blockquote>
                   <div className="flex items-center gap-4">
-
                     <div>
                       <span className="block font-bold text-accent text-base sm:text-lg">
                         {t(`items.${item.id}.name`)}
@@ -81,7 +80,6 @@ export default function Testimonials() {
                     &quot;{t(`items.${item.id}.quote`)}&quot;
                   </blockquote>
                   <div className="flex items-center gap-4">
-
                     <div>
                       <span className="block font-bold text-accent text-base sm:text-lg">
                         {t(`items.${item.id}.name`)}

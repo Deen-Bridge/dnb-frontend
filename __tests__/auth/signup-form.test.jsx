@@ -87,9 +87,7 @@ describe("SignupForm — validation", () => {
 
     await user.type(screen.getByLabelText("Password"), "abc");
 
-    expect(
-      await screen.findByText("Password must be at least 8 characters")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Password must be at least 8 characters")).toBeInTheDocument();
   });
 
   it("rejects a confirmation that does not match the password", async () => {
@@ -124,12 +122,8 @@ describe("SignupForm — submit", () => {
     );
     expect(signupMock.mock.calls[0][3]).not.toBe("student");
 
-    expect(
-      await screen.findByRole("heading", { name: "Check your email" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(VALID_DETAILS.email, { selector: "strong" })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Check your email" })).toBeInTheDocument();
+    expect(screen.getByText(VALID_DETAILS.email, { selector: "strong" })).toBeInTheDocument();
     expect(screen.getByText(/As an educator, you will be guided/)).toBeInTheDocument();
   });
 
@@ -145,9 +139,7 @@ describe("SignupForm — submit", () => {
     await waitFor(() => expect(signupMock).toHaveBeenCalledTimes(1));
     expect(signupMock.mock.calls[0][3]).toBe("student");
 
-    expect(
-      await screen.findByRole("heading", { name: "Check your email" })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Check your email" })).toBeInTheDocument();
     expect(screen.queryByText(/As an educator, you will be guided/)).not.toBeInTheDocument();
   });
 
@@ -162,9 +154,7 @@ describe("SignupForm — submit", () => {
 
     expect(await screen.findByText("Email already registered")).toBeInTheDocument();
     expect(toastErrorMock).toHaveBeenCalledWith("Email already registered");
-    expect(
-      screen.queryByRole("heading", { name: "Check your email" })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Check your email" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign Up" })).toBeEnabled();
   });
 
@@ -177,9 +167,7 @@ describe("SignupForm — submit", () => {
     await chooseRole(user, "Student");
     await submit(user);
 
-    expect(
-      await screen.findByText("Signup failed. Please try again.")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Signup failed. Please try again.")).toBeInTheDocument();
     expect(toastErrorMock).toHaveBeenCalledWith("Signup failed. Please try again.");
   });
 });

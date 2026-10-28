@@ -44,7 +44,8 @@ export const useCloudinaryUpload = (
       setUploadedUrl(result.secure_url);
 
       return result.secure_url;
-    } catch (err: any) { // TODO(types): Cloudinary upload error
+    } catch (err: any) {
+      // TODO(types): Cloudinary upload error
       const errorMessage = err.message || "Upload failed";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -117,20 +118,17 @@ export const useMultipleCloudinaryUpload = (
 
         toast.info(`Uploading ${file.name} (${i + 1}/${fileArray.length})`);
 
-        const result = await uploadWithProgress(
-          file,
-          uploadPreset,
-          (percent) => {
-            setProgress((prev) => ({ ...prev, [i]: percent }));
-          }
-        );
+        const result = await uploadWithProgress(file, uploadPreset, (percent) => {
+          setProgress((prev) => ({ ...prev, [i]: percent }));
+        });
 
         urls.push(result.secure_url);
       }
 
       setUploadedUrls(urls);
       return urls;
-    } catch (err: any) { // TODO(types): Multiple cloudinary upload error
+    } catch (err: any) {
+      // TODO(types): Multiple cloudinary upload error
       const errorMessage = err.message || "Failed to upload some files";
       toast.error(errorMessage);
       throw err;

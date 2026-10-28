@@ -31,9 +31,7 @@ export default function Layout({ children }) {
   }, [user?._id]);
 
   if (isLoading) {
-    return (
-    <Loader/>
-    );
+    return <Loader />;
   }
 
   return (

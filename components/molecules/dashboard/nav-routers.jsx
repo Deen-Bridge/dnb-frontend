@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import Button from '@/components/atoms/form/Button';
+import React from "react";
+import Button from "@/components/atoms/form/Button";
 import {
   AudioWaveform,
   LayoutDashboard,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useSidebar } from '@/components/ui/sidebar';
+import { useSidebar } from "@/components/ui/sidebar";
 // `key` maps to the `dashboard.sidebar.routes` message catalog.
 const links = [
   {
@@ -89,7 +89,6 @@ const links = [
     link: "/dashboard/earnings",
     icon: DollarSign,
   },
-
 ];
 
 const Navrouter = () => {
@@ -109,9 +108,7 @@ const Navrouter = () => {
         <SidebarMenu className="space-y-3 pt-10">
           {links.map((item) => {
             const isActive =
-              item.link === "/dashboard"
-                ? pathname === item.link
-                : pathname.startsWith(item.link);
+              item.link === "/dashboard" ? pathname === item.link : pathname.startsWith(item.link);
 
             return (
               <SidebarMenuItem key={item.key}>
@@ -121,8 +118,9 @@ const Navrouter = () => {
                   round
                   to={item.link}
                   onClick={handleNavClick} // ⬅️ close sidebar on click
-                  className={`flex justify-start items-center ps-16 ${isActive ? "bg-accent text-white" : ""
-                    }`}
+                  className={`flex justify-start items-center ps-16 ${
+                    isActive ? "bg-accent text-white" : ""
+                  }`}
                 >
                   <item.icon size={15} className="me-4" />
                   <span>{t(item.key)}</span>

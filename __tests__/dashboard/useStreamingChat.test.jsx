@@ -40,8 +40,7 @@ function streamResponse(chunks, contentType = "text/event-stream") {
     // Used when the body is a JSON error envelope instead of a stream.
     json: async () => JSON.parse(chunks[0] ?? "{}"),
     headers: {
-      get: (header) =>
-        header.toLowerCase() === "content-type" ? contentType : null,
+      get: (header) => (header.toLowerCase() === "content-type" ? contentType : null),
     },
     body: {
       getReader: () => ({
@@ -138,9 +137,7 @@ describe("useStreamingChat", () => {
                 delivered += 1;
                 return Promise.resolve({
                   done: false,
-                  value: encoder.encode(
-                    'data: {"type":"content","text":"partial answer"}\n'
-                  ),
+                  value: encoder.encode('data: {"type":"content","text":"partial answer"}\n'),
                 });
               }
               return new Promise((_resolve, reject) => {
@@ -164,9 +161,7 @@ describe("useStreamingChat", () => {
     });
 
     // Wait until the first chunk has been applied and the stream is hanging.
-    await waitFor(() =>
-      expect(result.current.messages[1]?.content).toBe("partial answer")
-    );
+    await waitFor(() => expect(result.current.messages[1]?.content).toBe("partial answer"));
     expect(result.current.isStreaming).toBe(true);
 
     act(() => {
@@ -232,9 +227,7 @@ describe("useStreamingChat", () => {
   });
 
   it("skips a malformed SSE line and keeps the rest of the stream", async () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
     fetchMock.mockResolvedValue(
       streamResponse([
@@ -251,19 +244,14 @@ describe("useStreamingChat", () => {
       sendResult = await result.current.sendMessage("hello");
     });
 
-    expect(consoleError).toHaveBeenCalledWith(
-      "Error parsing SSE data:",
-      expect.anything()
-    );
+    expect(consoleError).toHaveBeenCalledWith("Error parsing SSE data:", expect.anything());
     expect(sendResult.response).toBe("recovered");
     expect(result.current.messages[1].content).toBe("recovered");
     expect(result.current.error).toBeNull();
   });
 
   it("logs a mid-stream error event without failing the whole send", async () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
     fetchMock.mockResolvedValue(
       streamResponse([
@@ -280,10 +268,7 @@ describe("useStreamingChat", () => {
       sendResult = await result.current.sendMessage("hello");
     });
 
-    expect(consoleError).toHaveBeenCalledWith(
-      "Error parsing SSE data:",
-      expect.anything()
-    );
+    expect(consoleError).toHaveBeenCalledWith("Error parsing SSE data:", expect.anything());
     expect(sendResult.response).toBe("before ");
     expect(result.current.error).toBeNull();
     expect(toastMock.error).not.toHaveBeenCalled();
@@ -305,9 +290,7 @@ describe("useStreamingChat", () => {
   });
 
   it("newConversation clears messages, chat id and error", async () => {
-    fetchMock.mockResolvedValue(
-      streamResponse(['data: {"type":"done","chat_id":"chat_1"}\n\n'])
-    );
+    fetchMock.mockResolvedValue(streamResponse(['data: {"type":"done","chat_id":"chat_1"}\n\n']));
 
     const { result } = renderHook(() => useStreamingChat("user-1"));
 

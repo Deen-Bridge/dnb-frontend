@@ -3,13 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -149,11 +143,9 @@ export default function AuditLogPage() {
         log.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
         log.details.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesAction =
-        actionFilter === "all" || log.action.startsWith(actionFilter);
+      const matchesAction = actionFilter === "all" || log.action.startsWith(actionFilter);
 
-      const matchesStatus =
-        statusFilter === "all" || log.status === statusFilter;
+      const matchesStatus = statusFilter === "all" || log.status === statusFilter;
 
       const logDate = new Date(log.timestamp);
       const cutoffDate = new Date();
@@ -174,15 +166,7 @@ export default function AuditLogPage() {
   // Export the currently filtered logs to CSV
   // Export to CSV
   const exportToCSV = () => {
-    const headers = [
-      "Timestamp",
-      "Action",
-      "Actor",
-      "Target",
-      "IP Address",
-      "Status",
-      "Details",
-    ];
+    const headers = ["Timestamp", "Action", "Actor", "Target", "IP Address", "Status", "Details"];
     const rows = filteredLogs.map((log) => [
       log.timestamp,
       log.action,
@@ -195,19 +179,14 @@ export default function AuditLogPage() {
 
     const csvContent = [
       headers.join(","),
-      ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-      ),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `audit-log-${new Date().toISOString().split("T")[0]}.csv`
-    );
+    link.setAttribute("download", `audit-log-${new Date().toISOString().split("T")[0]}.csv`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -300,10 +279,7 @@ export default function AuditLogPage() {
             </Select>
 
             {/* Date Range */}
-            <Select
-              value={String(dateRange)}
-              onValueChange={(v) => setDateRange(Number(v))}
-            >
+            <Select value={String(dateRange)} onValueChange={(v) => setDateRange(Number(v))}>
               <SelectTrigger>
                 <Calendar className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Date range" />
@@ -320,7 +296,12 @@ export default function AuditLogPage() {
 
           {/* Quick Date Jump Shortcuts */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className={cn(poppins_500.className, "text-xs sm:text-sm text-muted-foreground mr-1 sm:mr-2")}>
+            <span
+              className={cn(
+                poppins_500.className,
+                "text-xs sm:text-sm text-muted-foreground mr-1 sm:mr-2"
+              )}
+            >
               Quick jump:
             </span>
             {datePresets.map((preset) => (
@@ -342,9 +323,7 @@ export default function AuditLogPage() {
       {/* Audit Log Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            Audit Events ({filteredLogs.length})
-          </CardTitle>
+          <CardTitle className="text-lg">Audit Events ({filteredLogs.length})</CardTitle>
           <CardDescription>
             Showing {paginatedLogs.length} of {filteredLogs.length} events
           </CardDescription>
@@ -389,19 +368,30 @@ export default function AuditLogPage() {
                       const ActionIcon = actionIcons[log.action] || FileText;
                       return (
                         <TableRow key={log.id}>
-                          <TableCell className="font-mono text-xs">{formatDate(log.timestamp)}</TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {formatDate(log.timestamp)}
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <ActionIcon className="h-4 w-4 text-muted-foreground" />
-                              <span className={cn(poppins_500.className, "text-sm")}>{log.action}</span>
+                              <span className={cn(poppins_500.className, "text-sm")}>
+                                {log.action}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell className="text-sm">{log.actor}</TableCell>
                           <TableCell className="text-sm">{log.target}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className={cn("text-xs", getStatusColor(log.status))}>{log.status}</Badge>
+                            <Badge
+                              variant="outline"
+                              className={cn("text-xs", getStatusColor(log.status))}
+                            >
+                              {log.status}
+                            </Badge>
                           </TableCell>
-                          <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">{log.details}</TableCell>
+                          <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">
+                            {log.details}
+                          </TableCell>
                         </TableRow>
                       );
                     })
@@ -413,9 +403,7 @@ export default function AuditLogPage() {
             {/* Mobile Card View */}
             <div className="md:hidden divide-y">
               {isLoading ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  Loading audit events…
-                </div>
+                <div className="py-8 text-center text-muted-foreground">Loading audit events…</div>
               ) : error ? (
                 <div className="py-8 text-center text-red-600">{error}</div>
               ) : paginatedLogs.length === 0 ? (
@@ -430,13 +418,22 @@ export default function AuditLogPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <ActionIcon className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className={cn(poppins_500.className, "text-sm truncate")}>{log.action}</span>
+                          <span className={cn(poppins_500.className, "text-sm truncate")}>
+                            {log.action}
+                          </span>
                         </div>
-                        <Badge variant="outline" className={cn("text-[10px] shrink-0", getStatusColor(log.status))}>{log.status}</Badge>
+                        <Badge
+                          variant="outline"
+                          className={cn("text-[10px] shrink-0", getStatusColor(log.status))}
+                        >
+                          {log.status}
+                        </Badge>
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs text-muted-foreground truncate">{log.actor}</span>
-                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">{formatDate(log.timestamp)}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">
+                          {formatDate(log.timestamp)}
+                        </span>
                       </div>
                       <p className="text-xs text-muted-foreground">{log.target}</p>
                       <p className="text-xs text-muted-foreground/70 truncate">{log.details}</p>
@@ -455,11 +452,21 @@ export default function AuditLogPage() {
                 Page {currentPage} of {totalPages}
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>

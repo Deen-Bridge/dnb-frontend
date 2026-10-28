@@ -9,7 +9,11 @@ export const PLATFORM_LIMITS: Record<string, SettingRange> = {
   minLeadTimeMinutes: { min: 0, max: 10080 },
 };
 
-export function validateSettingRange(name: string, value: unknown, { min, max }: SettingRange): string | null {
+export function validateSettingRange(
+  name: string,
+  value: unknown,
+  { min, max }: SettingRange
+): string | null {
   if (value === "" || value === null || value === undefined) {
     return `${name} is required`;
   }

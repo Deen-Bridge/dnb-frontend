@@ -53,9 +53,7 @@ describe("diffAgainstBaseline", () => {
       { total: 2, files: { "lib/a.ts": 2 } }
     );
 
-    expect(regressions).toEqual([
-      { file: "lib/a.ts", count: 3, allowed: 2 },
-    ]);
+    expect(regressions).toEqual([{ file: "lib/a.ts", count: 3, allowed: 2 }]);
   });
 
   it("reports a new file that introduces explicit any sites", () => {
@@ -80,10 +78,7 @@ describe("diffAgainstBaseline", () => {
   });
 
   it("reports a file that no longer contains any explicit any", () => {
-    const { fixed } = diffAgainstBaseline(
-      {},
-      { total: 2, files: { "lib/a.ts": 2 } }
-    );
+    const { fixed } = diffAgainstBaseline({}, { total: 2, files: { "lib/a.ts": 2 } });
 
     expect(fixed).toEqual([{ file: "lib/a.ts", count: 0, allowed: 2 }]);
   });
@@ -106,9 +101,7 @@ describe("findUnjustifiedDisables", () => {
   it("accepts a scoped disable that carries a reason", () => {
     const file = write(
       "lib/justified.ts",
-      [directive("third-party blob"), "export const value: any = 1;", ""].join(
-        "\n"
-      )
+      [directive("third-party blob"), "export const value: any = 1;", ""].join("\n")
     );
 
     expect(findUnjustifiedDisables([file], tmpRoot)).toEqual([]);
@@ -126,9 +119,7 @@ describe("findUnjustifiedDisables", () => {
   it("ignores disables for other rules", () => {
     const file = write(
       "lib/other-rule.ts",
-      ["// eslint-disable-next-line no-console", "export const value = 1;", ""].join(
-        "\n"
-      )
+      ["// eslint-disable-next-line no-console", "export const value = 1;", ""].join("\n")
     );
 
     expect(findUnjustifiedDisables([file], tmpRoot)).toEqual([]);

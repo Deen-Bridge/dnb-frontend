@@ -2,11 +2,7 @@
 
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 const chartConfig = {
   amount: {
@@ -61,19 +57,12 @@ export default function DonationChart({ items }) {
           interval="preserveStartEnd"
           tick={{ fontSize: 11 }}
         />
-        <YAxis
-          tickLine={false}
-          axisLine={false}
-          width={44}
-          tick={{ fontSize: 11 }}
+        <YAxis tickLine={false} axisLine={false} width={44} tick={{ fontSize: 11 }} />
+        <ChartTooltip
+          content={<ChartTooltipContent />}
+          cursor={{ fill: "var(--color-accent)", opacity: 0.06 }}
         />
-        <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: "var(--color-accent)", opacity: 0.06 }} />
-        <Bar
-          dataKey="amount"
-          fill="var(--color-amount)"
-          radius={[5, 5, 0, 0]}
-          maxBarSize={40}
-        />
+        <Bar dataKey="amount" fill="var(--color-amount)" radius={[5, 5, 0, 0]} maxBarSize={40} />
       </BarChart>
     </ChartContainer>
   );

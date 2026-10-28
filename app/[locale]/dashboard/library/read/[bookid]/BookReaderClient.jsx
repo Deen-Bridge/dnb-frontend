@@ -21,11 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import {
   clampPage,
   nextPageForKey,
@@ -88,10 +84,7 @@ const BookReaderClient = ({ book }) => {
   const canAccess = useMemo(() => {
     if (!book) return false;
     if (book.price === 0) return true;
-    if (
-      user?._id &&
-      book.author?._id?.toString?.() === user._id?.toString?.()
-    ) {
+    if (user?._id && book.author?._id?.toString?.() === user._id?.toString?.()) {
       return true;
     }
     return hasBook;
@@ -170,8 +163,7 @@ const BookReaderClient = ({ book }) => {
         console.error("Error loading PDF document:", error);
         if (!cancelled) {
           setPdfError(
-            error?.message ||
-              "Unable to render this book right now. Try downloading instead."
+            error?.message || "Unable to render this book right now. Try downloading instead."
           );
         }
       } finally {
@@ -206,11 +198,7 @@ const BookReaderClient = ({ book }) => {
 
         let targetScale = baseScale;
         if (fitWidth && containerWidth > 0) {
-          targetScale = clamp(
-            containerWidth / unscaledViewport.width,
-            MIN_SCALE,
-            MAX_SCALE
-          );
+          targetScale = clamp(containerWidth / unscaledViewport.width, MIN_SCALE, MAX_SCALE);
         }
 
         const viewport = page.getViewport({ scale: targetScale });
@@ -260,9 +248,7 @@ const BookReaderClient = ({ book }) => {
 
   const goToPage = (delta) => {
     if (!pageCount) return;
-    startTransition(() =>
-      setPageNumber((prev) => clamp(prev + delta, 1, pageCount))
-    );
+    startTransition(() => setPageNumber((prev) => clamp(prev + delta, 1, pageCount)));
   };
 
   const jumpToPage = (page) => {
@@ -272,9 +258,7 @@ const BookReaderClient = ({ book }) => {
 
   const handleZoom = (direction) => {
     setFitWidth(false);
-    setBaseScale((prev) =>
-      clamp(prev + direction * 0.15, MIN_SCALE, MAX_SCALE)
-    );
+    setBaseScale((prev) => clamp(prev + direction * 0.15, MIN_SCALE, MAX_SCALE));
   };
 
   // Keep the jump-to-page input and the ref mirror in sync with the page.
@@ -340,14 +324,8 @@ const BookReaderClient = ({ book }) => {
           <div className="mx-auto flex size-12 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
             <BookOpen className="h-6 w-6 text-accent" />
           </div>
-          <p className={cn(poppins_600, "mt-4 text-lg text-ink")}>
-            Book not found.
-          </p>
-          <Button
-            to="/dashboard/library"
-            round
-            className="mt-6 bg-accent text-white"
-          >
+          <p className={cn(poppins_600, "mt-4 text-lg text-ink")}>Book not found.</p>
+          <Button to="/dashboard/library" round className="mt-6 bg-accent text-white">
             Back to Library
           </Button>
         </div>
@@ -365,9 +343,7 @@ const BookReaderClient = ({ book }) => {
               <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-accent/5 bg-gradient-to-br from-secondary/20 to-highlight/10">
                 <Lock className="h-7 w-7 text-accent" />
               </div>
-              <h1 className={cn(poppins_600, "mt-5 text-2xl text-ink")}>
-                Unlock the full book
-              </h1>
+              <h1 className={cn(poppins_600, "mt-5 text-2xl text-ink")}>Unlock the full book</h1>
               <p
                 className={cn(
                   poppins_400,
@@ -381,19 +357,10 @@ const BookReaderClient = ({ book }) => {
             </div>
           </div>
           <div className="flex flex-col justify-center gap-3 px-6 py-6 sm:flex-row sm:px-10">
-            <Button
-              round
-              outlined
-              to="/dashboard/library"
-              className="text-normal"
-            >
+            <Button round outlined to="/dashboard/library" className="text-normal">
               Back to Library
             </Button>
-            <Button
-              round
-              className="bg-accent text-white"
-              to={`/dashboard/library/${book._id}`}
-            >
+            <Button round className="bg-accent text-white" to={`/dashboard/library/${book._id}`}>
               Buy to read the full book
             </Button>
           </div>
@@ -417,21 +384,11 @@ const BookReaderClient = ({ book }) => {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="min-w-0">
-              <h1
-                className={cn(
-                  poppins_600,
-                  "truncate text-sm text-ink sm:text-base"
-                )}
-              >
+              <h1 className={cn(poppins_600, "truncate text-sm text-ink sm:text-base")}>
                 {book.title}
               </h1>
               {book.author?.name && (
-                <p
-                  className={cn(
-                    poppins_400,
-                    "truncate text-xs text-ink-muted"
-                  )}
-                >
+                <p className={cn(poppins_400, "truncate text-xs text-ink-muted")}>
                   by {book.author.name}
                 </p>
               )}
@@ -460,12 +417,7 @@ const BookReaderClient = ({ book }) => {
               >
                 <ZoomOut className="h-4 w-4" />
               </IconButton>
-              <span
-                className={cn(
-                  poppins_600,
-                  "w-12 text-center text-xs text-ink-muted"
-                )}
-              >
+              <span className={cn(poppins_600, "w-12 text-center text-xs text-ink-muted")}>
                 {(effectiveScale * 100).toFixed(0)}%
               </span>
               <IconButton
@@ -480,15 +432,9 @@ const BookReaderClient = ({ book }) => {
             <IconButton
               onClick={() => setFitWidth((prev) => !prev)}
               aria-label={fitWidth ? "Switch to free zoom" : "Fit width"}
-              className={cn(
-                fitWidth && "border-secondary/40 text-accent"
-              )}
+              className={cn(fitWidth && "border-secondary/40 text-accent")}
             >
-              {fitWidth ? (
-                <Minimize2 className="h-4 w-4" />
-              ) : (
-                <Maximize2 className="h-4 w-4" />
-              )}
+              {fitWidth ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </IconButton>
 
             {book.fileUrl && (
@@ -519,9 +465,7 @@ const BookReaderClient = ({ book }) => {
               <p className={cn(poppins_600, "mt-4 text-lg text-ink")}>
                 This book file is not available yet.
               </p>
-              <p
-                className={cn(poppins_400, "mt-2 text-sm text-ink-muted")}
-              >
+              <p className={cn(poppins_400, "mt-2 text-sm text-ink-muted")}>
                 Please contact support if you believe this is a mistake.
               </p>
             </div>
@@ -541,12 +485,9 @@ const BookReaderClient = ({ book }) => {
               <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-red-50">
                 <Lock className="h-6 w-6 text-red-600" />
               </div>
-              <p className={cn(poppins_600, "mt-4 text-lg text-red-600")}>
-                {pdfError}
-              </p>
+              <p className={cn(poppins_600, "mt-4 text-lg text-red-600")}>{pdfError}</p>
               <p className={cn(poppins_400, "mt-2 text-sm text-ink-muted")}>
-                Try reloading the page or download the book to continue
-                reading.
+                Try reloading the page or download the book to continue reading.
               </p>
               {book.fileUrl && (
                 <Button
@@ -570,12 +511,7 @@ const BookReaderClient = ({ book }) => {
                 role="status"
                 className="flex items-center justify-center gap-3 border-b border-accent/10 bg-secondary/10 px-4 py-2 md:px-6"
               >
-                <span
-                  className={cn(
-                    poppins_500,
-                    "text-xs text-ink-muted sm:text-sm"
-                  )}
-                >
+                <span className={cn(poppins_500, "text-xs text-ink-muted sm:text-sm")}>
                   Resumed at page {resumeBanner}
                 </span>
                 <button
@@ -601,10 +537,7 @@ const BookReaderClient = ({ book }) => {
             )}
 
             {/* Scrollable stage with centered PDF sheet */}
-            <div
-              ref={containerRef}
-              className="relative flex-1 overflow-auto bg-surface"
-            >
+            <div ref={containerRef} className="relative flex-1 overflow-auto bg-surface">
               <div className="flex min-h-full w-full items-start justify-center px-4 py-8 md:px-10">
                 <canvas
                   ref={canvasRef}
@@ -638,10 +571,7 @@ const BookReaderClient = ({ book }) => {
               <button
                 type="button"
                 onClick={() => goToPage(1)}
-                disabled={
-                  isTransitioning ||
-                  (pageCount ? pageNumber >= pageCount : true)
-                }
+                disabled={isTransitioning || (pageCount ? pageNumber >= pageCount : true)}
                 aria-label="Next page"
                 className="fixed right-3 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-accent/10 bg-surface-raised/90 text-ink-muted shadow-md backdrop-blur transition-colors hover:border-secondary/40 hover:text-accent disabled:cursor-not-allowed disabled:opacity-0 md:right-6"
               >
@@ -661,20 +591,14 @@ const BookReaderClient = ({ book }) => {
                     <ChevronLeft className="h-4 w-4" />
                   </IconButton>
                   <span
-                    className={cn(
-                      poppins_500,
-                      "min-w-[4.5rem] text-center text-xs text-ink-muted"
-                    )}
+                    className={cn(poppins_500, "min-w-[4.5rem] text-center text-xs text-ink-muted")}
                   >
                     {pageNumber}
                     {pageCount ? ` / ${pageCount}` : ""}
                   </span>
                   <IconButton
                     onClick={() => goToPage(1)}
-                    disabled={
-                      isTransitioning ||
-                      (pageCount ? pageNumber >= pageCount : true)
-                    }
+                    disabled={isTransitioning || (pageCount ? pageNumber >= pageCount : true)}
                     aria-label="Next page"
                   >
                     <ChevronRight className="h-4 w-4" />
@@ -689,9 +613,7 @@ const BookReaderClient = ({ book }) => {
                       min={1}
                       max={pageCount}
                       value={pageNumber}
-                      onChange={(event) =>
-                        jumpToPage(Number(event.target.value))
-                      }
+                      onChange={(event) => jumpToPage(Number(event.target.value))}
                       aria-label="Scrub through pages"
                       className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-accent/15 accent-accent"
                     />
@@ -700,10 +622,7 @@ const BookReaderClient = ({ book }) => {
                     <div className="flex shrink-0 items-center gap-1.5">
                       <label
                         htmlFor="reader-go-to-page"
-                        className={cn(
-                          poppins_500,
-                          "text-xs text-ink-muted"
-                        )}
+                        className={cn(poppins_500, "text-xs text-ink-muted")}
                       >
                         Go to
                       </label>
@@ -723,12 +642,7 @@ const BookReaderClient = ({ book }) => {
                           "w-16 rounded-lg border border-accent/15 bg-surface px-2 py-1 text-center text-xs text-ink outline-none focus:border-secondary/50"
                         )}
                       />
-                      <span
-                        className={cn(
-                          poppins_500,
-                          "text-xs text-ink-muted"
-                        )}
-                      >
+                      <span className={cn(poppins_500, "text-xs text-ink-muted")}>
                         / {pageCount}
                       </span>
                     </div>

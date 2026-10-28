@@ -27,10 +27,7 @@ export default function AdminShortcutsProvider() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
 
-  const isAdmin = useMemo(
-    () => Boolean(user) && normalizeRole(user.role) === ROLES.ADMIN,
-    [user]
-  );
+  const isAdmin = useMemo(() => Boolean(user) && normalizeRole(user.role) === ROLES.ADMIN, [user]);
   const onAdminRoute = Boolean(pathname && ADMIN_ROUTE.test(pathname));
 
   // Only arm once auth is resolved — never mid-load.
@@ -43,7 +40,5 @@ export default function AdminShortcutsProvider() {
   // Nothing to render unless armed; the cheatsheet is only reachable then.
   if (!armed) return null;
 
-  return (
-    <ShortcutCheatsheet open={isCheatsheetOpen} onOpenChange={setCheatsheetOpen} />
-  );
+  return <ShortcutCheatsheet open={isCheatsheetOpen} onOpenChange={setCheatsheetOpen} />;
 }

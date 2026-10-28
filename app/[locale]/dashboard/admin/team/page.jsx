@@ -47,11 +47,7 @@ import useAuth from "@/hooks/useAuth";
 import useAdminTeam from "@/hooks/useAdminTeam";
 import { TIERS, getAdminTier } from "@/lib/auth/admin-tiers";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const tierBadge = {
   [TIERS.SUPER_ADMIN]: "bg-secondary/10 text-secondary border-secondary/20",
@@ -125,15 +121,13 @@ function InviteDialog({ open, onClose, onCreateInvite }) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="border border-accent/10 bg-surface-raised sm:max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}
-          >
+          <DialogTitle className={cn(poppins_600.className, "flex items-center gap-2 text-ink")}>
             <Link2 className="h-5 w-5 text-secondary" />
             Invite an admin
           </DialogTitle>
           <DialogDescription className={cn(poppins_400.className, "text-ink-muted")}>
-            Generate a single-use invite link. Whoever accepts it joins the admin
-            team with the tier you pick, recorded as invited by you.
+            Generate a single-use invite link. Whoever accepts it joins the admin team with the tier
+            you pick, recorded as invited by you.
           </DialogDescription>
         </DialogHeader>
 
@@ -353,33 +347,50 @@ function MemberCard({ member, currentUserId }) {
         <div className="flex items-center gap-2.5 min-w-0">
           <Avatar className="h-8 w-8 border border-accent/10 shrink-0">
             <AvatarImage src={member.avatar || "/images/dnb-nobg.png"} alt={member.name} />
-            <AvatarFallback className="bg-surface-raised text-xs">{initials(member.name)}</AvatarFallback>
+            <AvatarFallback className="bg-surface-raised text-xs">
+              {initials(member.name)}
+            </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
             <p className={cn(poppins_500.className, "text-sm text-ink truncate")}>
               {member.name}
               {isSelf && (
-                <span className={cn(poppins_400.className, "ml-1.5 text-xs text-ink-muted")}>(you)</span>
+                <span className={cn(poppins_400.className, "ml-1.5 text-xs text-ink-muted")}>
+                  (you)
+                </span>
               )}
             </p>
-            <p className={cn(poppins_400.className, "text-xs text-ink-muted truncate")}>{member.email}</p>
+            <p className={cn(poppins_400.className, "text-xs text-ink-muted truncate")}>
+              {member.email}
+            </p>
           </div>
         </div>
         {!isSelf && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 shrink-0" aria-label={`Actions for ${member.name}`}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full h-8 w-8 shrink-0"
+                aria-label={`Actions for ${member.name}`}
+              >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="border-accent/10">
               {isSuperAdminMember && (
-                <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("demote")}>
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => setPendingAction("demote")}
+                >
                   <UserMinus className="h-4 w-4" />
                   Demote to staff
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setPendingAction("revoke")}>
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => setPendingAction("revoke")}
+              >
                 <UserX className="h-4 w-4" />
                 Revoke access
               </DropdownMenuItem>
@@ -388,7 +399,10 @@ function MemberCard({ member, currentUserId }) {
         )}
       </div>
       <div className="flex items-center gap-2 text-xs text-ink-muted">
-        <Badge variant="outline" className={cn("rounded-full capitalize text-[10px]", tierBadge[tier])}>
+        <Badge
+          variant="outline"
+          className={cn("rounded-full capitalize text-[10px]", tierBadge[tier])}
+        >
           {tierLabel[tier] || tier}
         </Badge>
         <span>·</span>
@@ -489,7 +503,11 @@ function AdminTeamContent() {
               </TableHeader>
               <TableBody>
                 {membersWithActions.map((member) => (
-                  <MemberRow key={member.id} member={member} currentUserId={user?._id || user?.id} />
+                  <MemberRow
+                    key={member.id}
+                    member={member}
+                    currentUserId={user?._id || user?.id}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -504,11 +522,7 @@ function AdminTeamContent() {
         </div>
       )}
 
-      <InviteDialog
-        open={inviteOpen}
-        onClose={setInviteOpen}
-        onCreateInvite={inviteAdmin}
-      />
+      <InviteDialog open={inviteOpen} onClose={setInviteOpen} onCreateInvite={inviteAdmin} />
     </PageShell>
   );
 }

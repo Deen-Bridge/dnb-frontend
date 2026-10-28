@@ -6,11 +6,7 @@ import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
 import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
@@ -79,7 +75,8 @@ export function LoginForm({ className, ...props }) {
       if (result && !result.unregistered) {
         setTimeout(() => {
           // The hard reload intentionally refreshes the auth cookie/session after login.
-          const roleFallback = normalizeRole(result?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+          const roleFallback =
+            normalizeRole(result?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
           window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
         }, 500);
       }
@@ -115,12 +112,8 @@ export function LoginForm({ className, ...props }) {
           {...props}
         >
           <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="text-2xl sm:text-4xl font-bold font-stretch-125%">
-              Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email and password to login.
-            </p>
+            <h1 className="text-2xl sm:text-4xl font-bold font-stretch-125%">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">Enter your email and password to login.</p>
           </div>
           <div className="grid gap-4">
             <FormField
@@ -130,11 +123,7 @@ export function LoginForm({ className, ...props }) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="you@example.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="you@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,11 +146,7 @@ export function LoginForm({ className, ...props }) {
                     </button>
                   </div>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="********"
-                      {...field}
-                    />
+                    <Input type="password" placeholder="********" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -185,9 +170,7 @@ export function LoginForm({ className, ...props }) {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  or
-                </span>
+                <span className="bg-background px-2 text-muted-foreground">or</span>
               </div>
             </div>
 
@@ -197,8 +180,8 @@ export function LoginForm({ className, ...props }) {
                   <span className="w-full inline-flex">{stellarButton}</span>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs text-center">
-                  Sign in with Stellar is not available yet — the SEP-10
-                  challenge endpoint is not deployed on this API.
+                  Sign in with Stellar is not available yet — the SEP-10 challenge endpoint is not
+                  deployed on this API.
                 </TooltipContent>
               </Tooltip>
             ) : (
@@ -215,11 +198,7 @@ export function LoginForm({ className, ...props }) {
         </form>
       </Form>
 
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Forget password"
-      >
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Forget password">
         <ForgetPassword onSuccess />
       </Modal>
     </>

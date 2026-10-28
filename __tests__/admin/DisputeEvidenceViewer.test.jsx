@@ -97,7 +97,10 @@ describe("DisputeEvidenceViewer Component", () => {
     );
 
     expect(await screen.findByText("agreement.pdf")).toBeInTheDocument();
-    expect(screen.getByTitle("agreement.pdf")).toHaveAttribute("src", SAMPLE_PDF_EVIDENCE.signedUrl);
+    expect(screen.getByTitle("agreement.pdf")).toHaveAttribute(
+      "src",
+      SAMPLE_PDF_EVIDENCE.signedUrl
+    );
   });
 
   it("refreshes expiring signed URL on clicking refresh button", async () => {
@@ -116,7 +119,10 @@ describe("DisputeEvidenceViewer Component", () => {
     fireEvent.click(refreshBtn);
 
     await waitFor(() => {
-      expect(serviceMocks.fetchDisputeEvidenceSignedUrl).toHaveBeenCalledWith("dsp_001", "ev_img_1");
+      expect(serviceMocks.fetchDisputeEvidenceSignedUrl).toHaveBeenCalledWith(
+        "dsp_001",
+        "ev_img_1"
+      );
     });
   });
 });

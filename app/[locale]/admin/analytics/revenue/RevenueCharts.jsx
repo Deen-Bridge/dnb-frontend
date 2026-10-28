@@ -18,16 +18,7 @@
  * can keep its own copies for the non-chart table without pulling recharts back
  * into the static import graph.
  */
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
@@ -126,7 +117,13 @@ export function RevenueByCategoryChart({ data, config, colors }) {
           cursor={{ fill: "rgba(0,153,0,0.06)" }}
           content={<ChartTooltipContent formatter={(value) => `$${value.toLocaleString()}`} />}
         />
-        <Bar dataKey="courses" fill={colors.courses} radius={[0, 4, 4, 0]} name="Courses" stackId="a" />
+        <Bar
+          dataKey="courses"
+          fill={colors.courses}
+          radius={[0, 4, 4, 0]}
+          name="Courses"
+          stackId="a"
+        />
         <Bar dataKey="books" fill={colors.books} radius={[0, 4, 4, 0]} name="Books" stackId="a" />
         <ChartLegend content={<ChartLegendContent />} />
       </BarChart>

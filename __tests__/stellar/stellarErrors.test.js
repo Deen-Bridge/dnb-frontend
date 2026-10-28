@@ -59,33 +59,23 @@ describe("stellarErrors utilities", () => {
     });
 
     it("maps user cancellation/rejection keywords", () => {
-      expect(mapStellarError("User rejected the transaction")).toEqual(
-        WALLET_ERRORS.user_rejected
-      );
+      expect(mapStellarError("User rejected the transaction")).toEqual(WALLET_ERRORS.user_rejected);
       expect(mapStellarError(new Error("Transaction cancelled by user"))).toEqual(
         WALLET_ERRORS.user_rejected
       );
-      expect(mapStellarError("Request was declined")).toEqual(
-        WALLET_ERRORS.user_rejected
-      );
-      expect(mapStellarError("Access denied")).toEqual(
-        WALLET_ERRORS.user_rejected
-      );
+      expect(mapStellarError("Request was declined")).toEqual(WALLET_ERRORS.user_rejected);
+      expect(mapStellarError("Access denied")).toEqual(WALLET_ERRORS.user_rejected);
     });
 
     it("maps insufficient balance keyword errors", () => {
       expect(mapStellarError("insufficient funds for operation")).toEqual(
         WALLET_ERRORS.insufficient_balance
       );
-      expect(mapStellarError("account is underfunded")).toEqual(
-        WALLET_ERRORS.insufficient_balance
-      );
+      expect(mapStellarError("account is underfunded")).toEqual(WALLET_ERRORS.insufficient_balance);
     });
 
     it("maps generic trustline keyword errors", () => {
-      expect(mapStellarError("trustline not found")).toEqual(
-        WALLET_ERRORS.trustline_missing
-      );
+      expect(mapStellarError("trustline not found")).toEqual(WALLET_ERRORS.trustline_missing);
     });
 
     it("maps network mismatch keyword errors", () => {

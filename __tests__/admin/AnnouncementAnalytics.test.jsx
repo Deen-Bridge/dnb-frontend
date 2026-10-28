@@ -94,7 +94,9 @@ describe("AnnouncementAnalytics", () => {
     render(<AnnouncementAnalytics />);
 
     expect(await screen.findByText("Reach Comparison")).toBeInTheDocument();
-    expect(screen.getByText("Impressions vs unique viewers across recent announcements")).toBeInTheDocument();
+    expect(
+      screen.getByText("Impressions vs unique viewers across recent announcements")
+    ).toBeInTheDocument();
   });
 
   it("renders the per-announcement stats table", async () => {

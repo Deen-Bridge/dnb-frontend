@@ -33,18 +33,7 @@ import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 /** One field's controlled number input with an inline hint / error. */
-function ConfigField({
-  id,
-  icon: Icon,
-  label,
-  unit,
-  hint,
-  value,
-  error,
-  onChange,
-  min,
-  max,
-}) {
+function ConfigField({ id, icon: Icon, label, unit, hint, value, error, onChange, min, max }) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id} className={cn(poppins_500.className, "text-ink")}>
@@ -64,9 +53,7 @@ function ConfigField({
           aria-describedby={`${id}-hint`}
           className="max-w-[8rem]"
         />
-        <span className={cn(poppins_400.className, "text-sm text-ink-muted")}>
-          {unit}
-        </span>
+        <span className={cn(poppins_400.className, "text-sm text-ink-muted")}>{unit}</span>
       </div>
       <p
         id={`${id}-hint`}
@@ -115,8 +102,7 @@ function SessionSecurityContent() {
     load();
   }, []);
 
-  const setField = (name) => (value) =>
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const setField = (name) => (value) => setForm((prev) => ({ ...prev, [name]: value }));
 
   // Parse to numbers and validate with the same rules the service enforces.
   const numeric = useMemo(
@@ -128,22 +114,13 @@ function SessionSecurityContent() {
     [form]
   );
 
-  const { valid, errors } = useMemo(
-    () => validateSessionSecurityConfig(numeric),
-    [numeric]
-  );
+  const { valid, errors } = useMemo(() => validateSessionSecurityConfig(numeric), [numeric]);
 
   const handleReset = () => {
     setForm({
-      idleTimeoutMinutes: String(
-        DEFAULT_SESSION_SECURITY_CONFIG.idleTimeoutMinutes
-      ),
-      idleWarningSeconds: String(
-        DEFAULT_SESSION_SECURITY_CONFIG.idleWarningSeconds
-      ),
-      reauthAfterMinutes: String(
-        DEFAULT_SESSION_SECURITY_CONFIG.reauthAfterMinutes
-      ),
+      idleTimeoutMinutes: String(DEFAULT_SESSION_SECURITY_CONFIG.idleTimeoutMinutes),
+      idleWarningSeconds: String(DEFAULT_SESSION_SECURITY_CONFIG.idleWarningSeconds),
+      reauthAfterMinutes: String(DEFAULT_SESSION_SECURITY_CONFIG.reauthAfterMinutes),
     });
   };
 
@@ -187,12 +164,7 @@ function SessionSecurityContent() {
           title="Failed to load"
           description={loadError}
           action={
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-full"
-              onClick={load}
-            >
+            <Button type="button" variant="outline" className="rounded-full" onClick={load}>
               Try again
             </Button>
           }
@@ -270,8 +242,8 @@ function SessionSecurityContent() {
             </Button>
           </div>
           <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-            These rules apply to admin sessions only. The backend remains the
-            source of truth for session validity.
+            These rules apply to admin sessions only. The backend remains the source of truth for
+            session validity.
           </p>
         </form>
       )}

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Area,
@@ -17,14 +17,10 @@ import {
   ReferenceLine,
   XAxis,
   YAxis,
-} from "recharts"
+} from "recharts";
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-import { Separator } from "@/components/ui/separator"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Separator } from "@/components/ui/separator";
 import {
   ShieldCheck,
   Activity,
@@ -34,34 +30,25 @@ import {
   Flame,
   Moon,
   Target,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
-export const description = "A collection of health charts."
+export const description = "A collection of health charts.";
 
 /* ── design-system building blocks ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
-)
+);
 
 const IconChip = ({ icon: Icon }) => (
   <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
     <Icon className="h-5 w-5 text-accent" />
   </div>
-)
+);
 
 const SectionHeading = ({ icon, title, subtitle, right }) => (
   <div className="mb-5 flex items-start justify-between gap-3">
@@ -69,16 +56,12 @@ const SectionHeading = ({ icon, title, subtitle, right }) => (
       {icon && <IconChip icon={icon} />}
       <div>
         <h2 className={cn(poppins_600, "text-base text-ink")}>{title}</h2>
-        {subtitle && (
-          <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>
-            {subtitle}
-          </p>
-        )}
+        {subtitle && <p className={cn(poppins_400, "mt-0.5 text-sm text-ink-muted")}>{subtitle}</p>}
       </div>
     </div>
     {right}
   </div>
-)
+);
 
 const StatValue = ({ value, unit }) => (
   <p
@@ -88,11 +71,9 @@ const StatValue = ({ value, unit }) => (
     )}
   >
     {value}
-    {unit && (
-      <span className={cn(poppins_400, "text-sm text-ink-muted")}>{unit}</span>
-    )}
+    {unit && <span className={cn(poppins_400, "text-sm text-ink-muted")}>{unit}</span>}
   </p>
-)
+);
 
 export default function SecurityPage() {
   return (
@@ -179,7 +160,7 @@ export default function SecurityPage() {
                   tickFormatter={(value) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       weekday: "short",
-                    })
+                    });
                   }}
                 />
                 <ChartTooltip
@@ -192,7 +173,7 @@ export default function SecurityPage() {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
-                        })
+                        });
                       }}
                     />
                   }
@@ -224,13 +205,11 @@ export default function SecurityPage() {
             <div className="mt-5 space-y-1 border-t border-accent/10 pt-4">
               <p className={cn(poppins_400, "text-sm text-ink-muted")}>
                 Over the past 7 days, you have walked{" "}
-                <span className={cn(poppins_500, "text-ink")}>53,305</span>{" "}
-                steps.
+                <span className={cn(poppins_500, "text-ink")}>53,305</span> steps.
               </p>
               <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                You need{" "}
-                <span className={cn(poppins_500, "text-ink")}>12,584</span> more
-                steps to reach your goal.
+                You need <span className={cn(poppins_500, "text-ink")}>12,584</span> more steps to
+                reach your goal.
               </p>
             </div>
           </Panel>
@@ -243,15 +222,11 @@ export default function SecurityPage() {
             />
             <div className="mb-4 grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-accent/10 bg-surface px-3 py-2.5">
-                <p className={cn(poppins_400, "text-xs text-ink-muted")}>
-                  Resting HR
-                </p>
+                <p className={cn(poppins_400, "text-xs text-ink-muted")}>Resting HR</p>
                 <StatValue value="62" unit="bpm" />
               </div>
               <div className="rounded-xl border border-accent/10 bg-surface px-3 py-2.5">
-                <p className={cn(poppins_400, "text-xs text-ink-muted")}>
-                  Variability
-                </p>
+                <p className={cn(poppins_400, "text-xs text-ink-muted")}>Variability</p>
                 <StatValue value="35" unit="ms" />
               </div>
             </div>
@@ -296,7 +271,7 @@ export default function SecurityPage() {
                   tickFormatter={(value) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       weekday: "short",
-                    })
+                    });
                   }}
                 />
                 <Line
@@ -321,7 +296,7 @@ export default function SecurityPage() {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
-                        })
+                        });
                       }}
                     />
                   }
@@ -344,9 +319,7 @@ export default function SecurityPage() {
               <div className="grid auto-rows-min gap-2">
                 <div className="flex items-baseline gap-1 text-2xl font-bold tabular-nums leading-none text-ink">
                   12,453
-                  <span className="text-sm font-normal text-ink-muted">
-                    steps/day
-                  </span>
+                  <span className="text-sm font-normal text-ink-muted">steps/day</span>
                 </div>
                 <ChartContainer
                   config={{
@@ -363,12 +336,7 @@ export default function SecurityPage() {
                     margin={{ left: 0, top: 0, right: 0, bottom: 0 }}
                     data={[{ date: "2024", steps: 12435 }]}
                   >
-                    <Bar
-                      dataKey="steps"
-                      fill="var(--color-accent)"
-                      radius={4}
-                      barSize={32}
-                    >
+                    <Bar dataKey="steps" fill="var(--color-accent)" radius={4} barSize={32}>
                       <LabelList
                         position="insideLeft"
                         dataKey="date"
@@ -385,9 +353,7 @@ export default function SecurityPage() {
               <div className="grid auto-rows-min gap-2">
                 <div className="flex items-baseline gap-1 text-2xl font-bold tabular-nums leading-none text-ink">
                   10,103
-                  <span className="text-sm font-normal text-ink-muted">
-                    steps/day
-                  </span>
+                  <span className="text-sm font-normal text-ink-muted">steps/day</span>
                 </div>
                 <ChartContainer
                   config={{
@@ -465,12 +431,7 @@ export default function SecurityPage() {
                 startAngle={90}
                 endAngle={450}
               >
-                <PolarAngleAxis
-                  type="number"
-                  domain={[0, 100]}
-                  dataKey="value"
-                  tick={false}
-                />
+                <PolarAngleAxis type="number" domain={[0, 100]} dataKey="value" tick={false} />
                 <RadialBar dataKey="value" background cornerRadius={5} />
               </RadialBarChart>
             </ChartContainer>
@@ -538,33 +499,23 @@ export default function SecurityPage() {
             </ChartContainer>
             <div className="mt-auto flex w-full items-center gap-2 border-t border-accent/10 pt-4">
               <div className="grid flex-1 auto-rows-min gap-0.5">
-                <div className={cn(poppins_400, "text-xs text-ink-muted")}>
-                  Move
-                </div>
+                <div className={cn(poppins_400, "text-xs text-ink-muted")}>Move</div>
                 <div className="flex items-baseline gap-1 text-xl font-bold tabular-nums leading-none text-ink">
                   562
-                  <span className="text-xs font-normal text-ink-muted">
-                    kcal
-                  </span>
+                  <span className="text-xs font-normal text-ink-muted">kcal</span>
                 </div>
               </div>
               <Separator orientation="vertical" className="mx-1 h-9 w-px" />
               <div className="grid flex-1 auto-rows-min gap-0.5">
-                <div className={cn(poppins_400, "text-xs text-ink-muted")}>
-                  Exercise
-                </div>
+                <div className={cn(poppins_400, "text-xs text-ink-muted")}>Exercise</div>
                 <div className="flex items-baseline gap-1 text-xl font-bold tabular-nums leading-none text-ink">
                   73
-                  <span className="text-xs font-normal text-ink-muted">
-                    min
-                  </span>
+                  <span className="text-xs font-normal text-ink-muted">min</span>
                 </div>
               </div>
               <Separator orientation="vertical" className="mx-1 h-9 w-px" />
               <div className="grid flex-1 auto-rows-min gap-0.5">
-                <div className={cn(poppins_400, "text-xs text-ink-muted")}>
-                  Stand
-                </div>
+                <div className={cn(poppins_400, "text-xs text-ink-muted")}>Stand</div>
                 <div className="flex items-baseline gap-1 text-xl font-bold tabular-nums leading-none text-ink">
                   14
                   <span className="text-xs font-normal text-ink-muted">hr</span>
@@ -585,9 +536,7 @@ export default function SecurityPage() {
             <div className="flex flex-row items-baseline gap-4">
               <div className="flex items-baseline gap-1 text-3xl font-bold tabular-nums leading-none text-ink">
                 12.5
-                <span className="text-sm font-normal text-ink-muted">
-                  miles/day
-                </span>
+                <span className="text-sm font-normal text-ink-muted">miles/day</span>
               </div>
               <ChartContainer
                 config={{
@@ -619,13 +568,7 @@ export default function SecurityPage() {
                     activeIndex={6}
                     activeBar={<Rectangle fillOpacity={0.8} />}
                   />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={4}
-                    hide
-                  />
+                  <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={4} hide />
                 </BarChart>
               </ChartContainer>
             </div>
@@ -640,9 +583,7 @@ export default function SecurityPage() {
             <div className="flex flex-row items-baseline gap-4">
               <div className="flex items-baseline gap-2 text-3xl font-bold tabular-nums leading-none text-ink">
                 1,254
-                <span className="text-sm font-normal text-ink-muted">
-                  kcal/day
-                </span>
+                <span className="text-sm font-normal text-ink-muted">kcal/day</span>
               </div>
               <ChartContainer
                 config={{
@@ -674,13 +615,7 @@ export default function SecurityPage() {
                     activeIndex={6}
                     activeBar={<Rectangle fillOpacity={0.8} />}
                   />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={4}
-                    hide
-                  />
+                  <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={4} hide />
                 </BarChart>
               </ChartContainer>
             </div>
@@ -694,17 +629,9 @@ export default function SecurityPage() {
               right={
                 <div className="flex items-baseline gap-1 text-2xl tabular-nums text-ink">
                   <span className={cn(poppins_600)}>8</span>
-                  <span
-                    className={cn(poppins_400, "text-sm text-ink-muted")}
-                  >
-                    hr
-                  </span>
+                  <span className={cn(poppins_400, "text-sm text-ink-muted")}>hr</span>
                   <span className={cn(poppins_600)}>35</span>
-                  <span
-                    className={cn(poppins_400, "text-sm text-ink-muted")}
-                  >
-                    min
-                  </span>
+                  <span className={cn(poppins_400, "text-sm text-ink-muted")}>min</span>
                 </div>
               }
             />
@@ -734,16 +661,8 @@ export default function SecurityPage() {
                 <YAxis domain={["dataMin - 5", "dataMax + 2"]} hide />
                 <defs>
                   <linearGradient id="fillTime" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="5%"
-                      stopColor="var(--color-accent)"
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor="var(--color-accent)"
-                      stopOpacity={0.1}
-                    />
+                    <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--color-accent)" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <Area
@@ -772,5 +691,5 @@ export default function SecurityPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

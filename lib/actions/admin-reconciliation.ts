@@ -37,7 +37,9 @@ export interface DateRangeParams {
   to?: string;
 }
 
-export async function fetchInternalTransactions({ from, to }: DateRangeParams = {}): Promise<{ transactions: InternalTransaction[] }> {
+export async function fetchInternalTransactions({ from, to }: DateRangeParams = {}): Promise<{
+  transactions: InternalTransaction[];
+}> {
   void from;
   void to;
   return withMockDelay({
@@ -96,7 +98,9 @@ export async function fetchInternalTransactions({ from, to }: DateRangeParams = 
   });
 }
 
-export async function fetchSettlementClaims({ from, to }: DateRangeParams = {}): Promise<{ claims: SettlementClaim[] }> {
+export async function fetchSettlementClaims({ from, to }: DateRangeParams = {}): Promise<{
+  claims: SettlementClaim[];
+}> {
   void from;
   void to;
   return withMockDelay({

@@ -12,7 +12,8 @@ export interface CreateBookParams {
   file?: File | Blob;
 }
 
-export async function createBook({ form, thumbnail, file }: CreateBookParams): Promise<any> { // TODO(types): Create book response
+export async function createBook({ form, thumbnail, file }: CreateBookParams): Promise<any> {
+  // TODO(types): Create book response
   const formData = new FormData();
   formData.append("title", form.title);
   formData.append("description", form.description);

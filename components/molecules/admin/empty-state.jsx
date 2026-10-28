@@ -23,18 +23,9 @@ export function AdminEmptyState({
             className
           )}
         >
-          {Icon && (
-            <Icon
-              className="mb-1 h-8 w-8 text-muted-foreground/60"
-              aria-hidden="true"
-            />
-          )}
+          {Icon && <Icon className="mb-1 h-8 w-8 text-muted-foreground/60" aria-hidden="true" />}
           <p className="font-medium text-foreground">{title}</p>
-          {description && (
-            <p className="max-w-md text-sm text-muted-foreground">
-              {description}
-            </p>
-          )}
+          {description && <p className="max-w-md text-sm text-muted-foreground">{description}</p>}
           {action && <div className="pt-2">{action}</div>}
         </div>
       </TableCell>

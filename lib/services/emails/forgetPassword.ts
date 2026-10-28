@@ -33,9 +33,7 @@ const getErrorMessage = (error: unknown): string => {
   return "Unknown error";
 };
 
-export const forgetPassword = async (
-  email: string
-): Promise<PasswordResetResponse> => {
+export const forgetPassword = async (email: string): Promise<PasswordResetResponse> => {
   try {
     const payload: RequestPasswordResetPayload = { email };
     const response = await axiosInstance.post<PasswordResetResponse>(

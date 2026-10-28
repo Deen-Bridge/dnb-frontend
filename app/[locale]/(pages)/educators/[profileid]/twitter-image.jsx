@@ -1,8 +1,5 @@
 import { getUserById } from "@/lib/actions/users/getUserById";
-import {
-  renderOgCard,
-  OG_IMAGE_SIZE,
-} from "@/components/seo/renderOgCard";
+import { renderOgCard, OG_IMAGE_SIZE } from "@/components/seo/renderOgCard";
 import { truncateText } from "@/lib/utils/seo";
 
 export const runtime = "nodejs";
@@ -25,9 +22,7 @@ export default async function Image({ params }) {
   const subtitle =
     truncateText(educator?.bio, 140) ||
     "Courses, books and live spaces from a verified educator — on Deen Bridge.";
-  const badge = educator?.isVerified
-    ? "Verified Educator"
-    : "Educator on Deen Bridge";
+  const badge = educator?.isVerified ? "Verified Educator" : "Educator on Deen Bridge";
 
   return renderOgCard({ title, subtitle, badge, typeLabel: "EDUCATOR" });
 }

@@ -14,7 +14,9 @@ describe("date-range helpers", () => {
     const expected = { from: "2025-03-02", to: "2025-03-31" };
     expect(parseDateRange(new URLSearchParams(), now)).toEqual(expected);
     expect(parseDateRange(new URLSearchParams("from=nope&to=2025-02-30"), now)).toEqual(expected);
-    expect(parseDateRange(new URLSearchParams("from=2025-03-10&to=2025-03-01"), now)).toEqual(expected);
+    expect(parseDateRange(new URLSearchParams("from=2025-03-10&to=2025-03-01"), now)).toEqual(
+      expected
+    );
   });
 
   it("round-trips a valid range and preserves other params", () => {

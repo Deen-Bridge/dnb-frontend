@@ -56,7 +56,11 @@ const CreateCourseForm = () => {
     const f = e.target.files[0];
     if (f) {
       const result = validateFile(f, { maxSize: 5 * 1024 * 1024, allowedTypes: ["image/*"] });
-      if (!result.valid) { toast.error(result.error); setThumbnail(null); return; }
+      if (!result.valid) {
+        toast.error(result.error);
+        setThumbnail(null);
+        return;
+      }
     }
     setThumbnail(f || null);
   };
@@ -65,7 +69,11 @@ const CreateCourseForm = () => {
     const f = e.target.files[0];
     if (f) {
       const result = validateFile(f, { maxSize: 100 * 1024 * 1024, allowedTypes: ["video/*"] });
-      if (!result.valid) { toast.error(result.error); setVideo(null); return; }
+      if (!result.valid) {
+        toast.error(result.error);
+        setVideo(null);
+        return;
+      }
     }
     setVideo(f || null);
   };
@@ -109,37 +117,70 @@ const CreateCourseForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-sm sm:w-lg mx-auto rounded-xl p-1 space-y-3">
-        <FormField control={form.control} name="title" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Course title</FormLabel>
-            <FormControl><Input placeholder="Course Title" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="description" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Course description</FormLabel>
-            <FormControl><Textarea placeholder="Course Description" className="w-full h-24 resize-none overflow-y-auto" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <Controller control={form.control} name="category" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Course Category</FormLabel>
-            <FormControl>
-              <CategoryCombobox id="course-category" category={field.value} setCategory={field.onChange} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="price" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Course price (USDC)</FormLabel>
-            <FormControl><Input type="number" min={0} step="0.01" placeholder="0.00" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-sm sm:w-lg mx-auto rounded-xl p-1 space-y-3"
+      >
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Course title</FormLabel>
+              <FormControl>
+                <Input placeholder="Course Title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Course description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Course Description"
+                  className="w-full h-24 resize-none overflow-y-auto"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Course Category</FormLabel>
+              <FormControl>
+                <CategoryCombobox
+                  id="course-category"
+                  category={field.value}
+                  setCategory={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Course price (USDC)</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} step="0.01" placeholder="0.00" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="my-4">
           <FormLabel htmlFor="course-thumbnail">Upload Course Thumbnail Image</FormLabel>
@@ -147,7 +188,9 @@ const CreateCourseForm = () => {
           {thumbnailUpload.uploading && (
             <div className="mt-2 space-y-1">
               <Progress value={thumbnailUpload.progress} className="h-2" />
-              <p className="text-xs text-muted-foreground">Uploading thumbnail: {thumbnailUpload.progress}%</p>
+              <p className="text-xs text-muted-foreground">
+                Uploading thumbnail: {thumbnailUpload.progress}%
+              </p>
             </div>
           )}
         </div>
@@ -158,14 +201,17 @@ const CreateCourseForm = () => {
           {videoUpload.uploading && (
             <div className="mt-2 space-y-1">
               <Progress value={videoUpload.progress} className="h-2" />
-              <p className="text-xs text-muted-foreground">Uploading video: {videoUpload.progress}%</p>
+              <p className="text-xs text-muted-foreground">
+                Uploading video: {videoUpload.progress}%
+              </p>
             </div>
           )}
         </div>
 
         <Button
           loading={form.formState.isSubmitting || isUploading}
-          round wide
+          round
+          wide
           type="submit"
           disabled={form.formState.isSubmitting || isUploading}
           className="w-full bg-accent hover:bg-highlight transition"
@@ -173,10 +219,10 @@ const CreateCourseForm = () => {
           {thumbnailUpload.uploading
             ? "Uploading Thumbnail..."
             : videoUpload.uploading
-            ? `Uploading Video... ${videoUpload.progress}%`
-            : form.formState.isSubmitting
-            ? "Creating Course..."
-            : "Create Course"}
+              ? `Uploading Video... ${videoUpload.progress}%`
+              : form.formState.isSubmitting
+                ? "Creating Course..."
+                : "Create Course"}
         </Button>
       </form>
     </Form>

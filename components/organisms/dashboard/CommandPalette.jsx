@@ -15,11 +15,7 @@ import { searchQuery } from "@/hooks/useSearch";
 import { useCan } from "@/hooks/useCan";
 import { CAPABILITIES, ROLES } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import {
   LaptopMinimal,
   Book,
@@ -244,9 +240,7 @@ export function CommandPalette() {
     if (!term || !term.trim()) return;
     const cleanTerm = term.trim();
     setRecentSearches((prev) => {
-      const filtered = prev.filter(
-        (item) => item.toLowerCase() !== cleanTerm.toLowerCase()
-      );
+      const filtered = prev.filter((item) => item.toLowerCase() !== cleanTerm.toLowerCase());
       const updated = [cleanTerm, ...filtered].slice(0, MAX_RECENT_SEARCHES);
       try {
         localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
@@ -412,27 +406,15 @@ export function CommandPalette() {
                     >
                       {getTypeIcon("course")}
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className={cn(poppins_500, "truncate text-ink")}>
-                          {title}
-                        </span>
+                        <span className={cn(poppins_500, "truncate text-ink")}>{title}</span>
                         {item.description && (
-                          <span
-                            className={cn(
-                              poppins_400,
-                              "truncate text-xs text-ink-muted"
-                            )}
-                          >
+                          <span className={cn(poppins_400, "truncate text-xs text-ink-muted")}>
                             {item.description}
                           </span>
                         )}
                       </div>
                       {item.price !== undefined && (
-                        <span
-                          className={cn(
-                            poppins_500,
-                            "ml-auto text-xs text-ink-muted"
-                          )}
-                        >
+                        <span className={cn(poppins_500, "ml-auto text-xs text-ink-muted")}>
                           {item.price ? `$${item.price}` : "Free"}
                         </span>
                       )}
@@ -457,16 +439,9 @@ export function CommandPalette() {
                     >
                       {getTypeIcon("book")}
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className={cn(poppins_500, "truncate text-ink")}>
-                          {title}
-                        </span>
+                        <span className={cn(poppins_500, "truncate text-ink")}>{title}</span>
                         {item.author && (
-                          <span
-                            className={cn(
-                              poppins_400,
-                              "truncate text-xs text-ink-muted"
-                            )}
-                          >
+                          <span className={cn(poppins_400, "truncate text-xs text-ink-muted")}>
                             By {typeof item.author === "object" ? item.author.name : item.author}
                           </span>
                         )}
@@ -492,16 +467,9 @@ export function CommandPalette() {
                     >
                       {getTypeIcon("user")}
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className={cn(poppins_500, "truncate text-ink")}>
-                          {title}
-                        </span>
+                        <span className={cn(poppins_500, "truncate text-ink")}>{title}</span>
                         {item.role && (
-                          <span
-                            className={cn(
-                              poppins_400,
-                              "truncate text-xs text-ink-muted"
-                            )}
-                          >
+                          <span className={cn(poppins_400, "truncate text-xs text-ink-muted")}>
                             {item.role}
                           </span>
                         )}
@@ -527,16 +495,9 @@ export function CommandPalette() {
                     >
                       {getTypeIcon("space")}
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className={cn(poppins_500, "truncate text-ink")}>
-                          {title}
-                        </span>
+                        <span className={cn(poppins_500, "truncate text-ink")}>{title}</span>
                         {item.description && (
-                          <span
-                            className={cn(
-                              poppins_400,
-                              "truncate text-xs text-ink-muted"
-                            )}
-                          >
+                          <span className={cn(poppins_400, "truncate text-xs text-ink-muted")}>
                             {item.description}
                           </span>
                         )}
@@ -625,9 +586,7 @@ export function CommandPalette() {
                       className="cursor-pointer"
                     >
                       <dest.icon className="h-4 w-4 text-accent" />
-                      <span className={cn(poppins_500, "text-ink")}>
-                        {dest.name}
-                      </span>
+                      <span className={cn(poppins_500, "text-ink")}>{dest.name}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -645,9 +604,7 @@ export function CommandPalette() {
                   className="cursor-pointer"
                 >
                   <action.icon className="h-4 w-4 text-accent" />
-                  <span className={cn(poppins_500, "text-ink")}>
-                    {action.name}
-                  </span>
+                  <span className={cn(poppins_500, "text-ink")}>{action.name}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

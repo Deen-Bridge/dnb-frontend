@@ -96,15 +96,23 @@ async function headChecks(github, owner, repo, sha, expectedChecks) {
   const externalChecks = latestBy(
     checks.filter((check) => check.name !== "Merge when ready"),
     (check) => `${check.name}:${check.app?.id || "unknown"}`,
-    (check) => check.started_at || check.completed_at,
+    (check) => check.started_at || check.completed_at
   );
   const failedChecks = externalChecks.filter(
-    (check) => check.status !== "completed" || !ACCEPTED_CONCLUSIONS.has(check.conclusion),
+    (check) => check.status !== "completed" || !ACCEPTED_CONCLUSIONS.has(check.conclusion)
   );
-  const latestStatuses = latestBy(statuses, (status) => status.context, (status) => status.updated_at);
+  const latestStatuses = latestBy(
+    statuses,
+    (status) => status.context,
+    (status) => status.updated_at
+  );
   const failedStatuses = latestStatuses.filter((status) => status.state !== "success");
   const missingRequired = expectedChecks.filter(
-    (name) => !externalChecks.some((check) => check.name === name && check.status === "completed" && check.conclusion === "success"),
+    (name) =>
+      !externalChecks.some(
+        (check) =>
+          check.name === name && check.status === "completed" && check.conclusion === "success"
+      )
   );
 
   return { failedChecks, failedStatuses, missingRequired };
@@ -112,7 +120,11 @@ async function headChecks(github, owner, repo, sha, expectedChecks) {
 
 async function linkedIssues(github, owner, repo, pullRequest) {
   const numbers = closingIssueNumbers(pullRequest.body);
-  if (!numbers.length) return { issues: [], error: "PR description must include a closing reference such as `Closes #123`." };
+  if (!numbers.length)
+    return {
+      issues: [],
+      error: "PR description must include a closing reference such as `Closes #123`.",
+    };
 
   const issues = [];
   for (const number of numbers) {
@@ -122,7 +134,10 @@ async function linkedIssues(github, owner, repo, pullRequest) {
         return { issues: [], error: `#${number} is a pull request, not an issue.` };
       }
       if (data.state === "closed" && data.state_reason !== "completed") {
-        return { issues: [], error: `Linked issue #${number} is already closed as ${data.state_reason || "unknown"}.` };
+        return {
+          issues: [],
+          error: `Linked issue #${number} is already closed as ${data.state_reason || "unknown"}.`,
+        };
       }
       issues.push({ number, state: data.state, stateReason: data.state_reason });
     } catch (error) {
@@ -154,10 +169,7 @@ async function candidatePullRequests(github, context, owner, repo) {
     });
   }
 
-  const sha =
-    payload.workflow_run?.head_sha ||
-    payload.check_run?.head_sha ||
-    payload.sha;
+  const sha = payload.workflow_run?.head_sha || payload.check_run?.head_sha || payload.sha;
   if (!sha) return [];
 
   const { data } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
@@ -240,7 +252,7 @@ async function run({ github, context, core }) {
     }
     if (checks.failedChecks.length || checks.failedStatuses.length) {
       skip(
-        `waiting for all checks/statuses to pass (${checks.failedChecks.length} check(s), ${checks.failedStatuses.length} status(es) pending or failed).`,
+        `waiting for all checks/statuses to pass (${checks.failedChecks.length} check(s), ${checks.failedStatuses.length} status(es) pending or failed).`
       );
       continue;
     }
@@ -253,7 +265,8 @@ async function run({ github, context, core }) {
       merge_method: "squash",
       sha: pr.head.sha,
     });
-    if (!mergeResult.data.merged) throw new Error(`${prefix} GitHub did not merge the pull request.`);
+    if (!mergeResult.data.merged)
+      throw new Error(`${prefix} GitHub did not merge the pull request.`);
 
     for (const issue of issues.issues) {
       if (issue.state === "closed" && issue.stateReason === "completed") continue;

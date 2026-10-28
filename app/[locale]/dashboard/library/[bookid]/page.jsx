@@ -16,7 +16,9 @@ export async function generateMetadata({ params }) {
   if (!book) return {};
 
   const title = `${book.title} | Deen Bridge`;
-  const description = truncateText(book.description, 160) || `${book.title} — an authentic Islamic book on Deen Bridge.`;
+  const description =
+    truncateText(book.description, 160) ||
+    `${book.title} — an authentic Islamic book on Deen Bridge.`;
 
   return {
     title: { absolute: title },
@@ -51,8 +53,7 @@ function buildBookJsonLd(book) {
   };
 
   if (reviews.length > 0) {
-    const avg =
-      reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
+    const avg = reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
     schema.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: Number(avg.toFixed(1)),

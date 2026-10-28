@@ -18,17 +18,13 @@ test("/en redirects to the unprefixed English route", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
 });
 
-test("/ar serves Arabic right-to-left with real translated copy", async ({
-  page,
-}) => {
+test("/ar serves Arabic right-to-left with real translated copy", async ({ page }) => {
   await page.goto("/ar");
   const html = page.locator("html");
   await expect(html).toHaveAttribute("lang", "ar");
   await expect(html).toHaveAttribute("dir", "rtl");
   // Real Arabic hero copy, not an English literal.
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "تعلّم إسلامي أصيل",
-  );
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("تعلّم إسلامي أصيل");
   // The Arabic webfont variable is applied on <body>.
   await expect(page.locator("body")).toHaveClass(/font-arabic/);
 });
@@ -48,7 +44,7 @@ test("financial figures stay LTR inside the RTL layout", async ({ page }) => {
           records: [{ sequence: 1234567, closed_at: "2026-10-26T12:34:56Z" }],
         },
       }),
-    }),
+    })
   );
 
   await page.goto("/ar");
@@ -59,9 +55,7 @@ test("financial figures stay LTR inside the RTL layout", async ({ page }) => {
   await expect(page.locator('[dir="ltr"]', { hasText: "12:34:56" }).first()).toBeVisible();
 });
 
-test("language switcher swaps locale on the current route and persists", async ({
-  page,
-}) => {
+test("language switcher swaps locale on the current route and persists", async ({ page }) => {
   await page.goto("/ar/stellar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 

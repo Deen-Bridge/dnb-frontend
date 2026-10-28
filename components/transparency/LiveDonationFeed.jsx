@@ -13,33 +13,22 @@ import {
   WifiOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
-import {
-  isIncomingUsdcPayment,
-  normalizeDonation,
-} from "@/lib/stellar/horizon";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
+import { isIncomingUsdcPayment, normalizeDonation } from "@/lib/stellar/horizon";
 import { getExplorerTransactionUrl } from "@/lib/utils/stellarExplorer";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // recharts is code-split so it never ships in the initial JS payload.
-const DonationChart = dynamic(
-  () => import("@/components/transparency/DonationChart"),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-56 w-full rounded-xl" />,
-  }
-);
+const DonationChart = dynamic(() => import("@/components/transparency/DonationChart"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-56 w-full rounded-xl" />,
+});
 
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 1000;
 const MAX_FEED_ITEMS = 100;
 
-const getReconnectDelay = (attempts) =>
-  Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000);
+const getReconnectDelay = (attempts) => Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000);
 
 const round = (value) => Math.round(value * 100) / 100;
 
@@ -252,16 +241,14 @@ export default function LiveDonationFeed({
           />
         </div>
         <p className={cn(poppins_400, "text-center text-xs text-ink-muted")}>
-          All-time totals come from the fund&apos;s on-chain donation stats and update
-          as new payments stream in live.
+          All-time totals come from the fund&apos;s on-chain donation stats and update as new
+          payments stream in live.
         </p>
 
         {/* ── Chart ── */}
         <div className="rounded-2xl border border-accent/10 bg-surface-raised p-6 shadow-sm">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <h2 className={cn(poppins_600, "text-lg text-ink")}>
-              Donations over time
-            </h2>
+            <h2 className={cn(poppins_600, "text-lg text-ink")}>Donations over time</h2>
             <span
               className={cn(
                 poppins_400,
@@ -289,12 +276,9 @@ export default function LiveDonationFeed({
         <div className="rounded-2xl border border-accent/10 bg-surface-raised p-6 shadow-sm">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className={cn(poppins_600, "text-lg text-ink")}>
-                Live donation feed
-              </h2>
+              <h2 className={cn(poppins_600, "text-lg text-ink")}>Live donation feed</h2>
               <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
-                Every incoming USDC payment to the fund, streamed straight from
-                Stellar Horizon.
+                Every incoming USDC payment to the fund, streamed straight from Stellar Horizon.
               </p>
             </div>
             <div
@@ -306,10 +290,7 @@ export default function LiveDonationFeed({
                     ? "border-red-500/30 bg-red-500/10 text-red-600"
                     : "border-accent/20 bg-accent/10 text-ink-muted"
               )}
-              title={
-                connectionError ||
-                `Streaming incoming USDC payments to ${wallet}`
-              }
+              title={connectionError || `Streaming incoming USDC payments to ${wallet}`}
             >
               {connectionState === "connected" ? (
                 <Wifi className="h-3.5 w-3.5" />
@@ -328,9 +309,7 @@ export default function LiveDonationFeed({
 
           {connectionError && (
             <div className="mb-4 rounded-xl border border-accent/15 bg-surface px-4 py-3">
-              <p className={cn(poppins_400, "text-xs text-ink-muted")}>
-                {connectionError}
-              </p>
+              <p className={cn(poppins_400, "text-xs text-ink-muted")}>{connectionError}</p>
             </div>
           )}
 
@@ -339,12 +318,10 @@ export default function LiveDonationFeed({
               <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-highlight/10">
                 <Radio className="h-6 w-6 text-accent" />
               </div>
-              <p className={cn(poppins_500, "text-ink")}>
-                No donations yet
-              </p>
+              <p className={cn(poppins_500, "text-ink")}>No donations yet</p>
               <p className={cn(poppins_400, "mx-auto mt-1 max-w-sm text-sm text-ink-muted")}>
-                Be the first to give Sadaqah Jariyah — your payment will appear
-                here within seconds, straight from the Stellar network.
+                Be the first to give Sadaqah Jariyah — your payment will appear here within seconds,
+                straight from the Stellar network.
               </p>
             </div>
           ) : (
@@ -363,13 +340,12 @@ export default function LiveDonationFeed({
                     </div>
                     <div className="min-w-0">
                       <p className={cn(poppins_600, "truncate text-ink")}>
-                        ${(item.amount || 0).toLocaleString("en-US", {
+                        $
+                        {(item.amount || 0).toLocaleString("en-US", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}{" "}
-                        <span className={cn(poppins_400, "text-xs text-ink-muted")}>
-                          USDC
-                        </span>
+                        <span className={cn(poppins_400, "text-xs text-ink-muted")}>USDC</span>
                       </p>
                       <p className={cn(poppins_400, "truncate text-xs text-ink-muted")}>
                         <span className="font-mono">{truncateAddress(item.from)}</span>
@@ -398,8 +374,8 @@ export default function LiveDonationFeed({
           )}
 
           <p className={cn(poppins_400, "mt-4 text-center text-xs text-ink-muted")}>
-            Each row links to the actual transaction on stellar.expert — you can
-            verify every donation yourself on the {network} network.
+            Each row links to the actual transaction on stellar.expert — you can verify every
+            donation yourself on the {network} network.
           </p>
         </div>
       </div>

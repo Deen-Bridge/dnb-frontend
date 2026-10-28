@@ -14,7 +14,11 @@ interface ApiErrorLike {
 }
 
 // TODO(backend): endpoints below are assumed; confirm paths/payloads with the API.
-async function postModeration(userId: string, action: "suspend" | "ban" | "reinstate", body: Record<string, unknown>) {
+async function postModeration(
+  userId: string,
+  action: "suspend" | "ban" | "reinstate",
+  body: Record<string, unknown>
+) {
   try {
     const res = await axiosInstance.post(`/api/admin/users/${userId}/${action}`, body);
     if (res.data?.success === false) throw new Error(res.data?.message);
@@ -26,11 +30,22 @@ async function postModeration(userId: string, action: "suspend" | "ban" | "reins
 }
 
 /** durationDays: positive number of days, or null for indefinite. */
-export async function suspendUser(userId: string, durationDays: number | null, context: ModerationContext = {}) {
-  const data = await postModeration(userId, "suspend", { durationDays, reason: context.reason || undefined });
+export async function suspendUser(
+  userId: string,
+  durationDays: number | null,
+  context: ModerationContext = {}
+) {
+  const data = await postModeration(userId, "suspend", {
+    durationDays,
+    reason: context.reason || undefined,
+  });
   logAuditEvent({
     action: AUDIT_ACTIONS.SUSPEND,
-    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    target: {
+      label: context.email || userId,
+      id: userId,
+      href: `/dashboard/admin/users/${userId}`,
+    },
     metadata: { durationDays, reason: context.reason || null },
   });
   return data;
@@ -41,7 +56,11 @@ export async function banUser(userId: string, context: ModerationContext = {}) {
   const data = await postModeration(userId, "ban", { reason: context.reason.trim() });
   logAuditEvent({
     action: AUDIT_ACTIONS.BAN,
-    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    target: {
+      label: context.email || userId,
+      id: userId,
+      href: `/dashboard/admin/users/${userId}`,
+    },
     metadata: { reason: context.reason.trim() },
   });
   return data;
@@ -52,7 +71,11 @@ export async function reinstateUser(userId: string, context: ModerationContext =
   const data = await postModeration(userId, "reinstate", { reason: context.reason || undefined });
   logAuditEvent({
     action: AUDIT_ACTIONS.UNBAN,
-    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    target: {
+      label: context.email || userId,
+      id: userId,
+      href: `/dashboard/admin/users/${userId}`,
+    },
     metadata: { reason: context.reason || null },
   });
   return data;
@@ -152,10 +175,15 @@ export async function setRequirePasswordReset(
     "The password reset requirement could not be updated."
   );
   const saved = data.requirePasswordReset;
-  if (saved !== required) throw new Error("The server did not confirm the password reset requirement.");
+  if (saved !== required)
+    throw new Error("The server did not confirm the password reset requirement.");
   logAuditEvent({
     action: AUDIT_ACTIONS.PASSWORD_RESET_REQUIRED,
-    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    target: {
+      label: context.email || userId,
+      id: userId,
+      href: `/dashboard/admin/users/${userId}`,
+    },
     metadata: { required },
   });
   return { success: true, requirePasswordReset: saved };
@@ -177,7 +205,11 @@ export async function revokeAllSessions(
   const revokedCount = Number(data.revokedCount ?? 0);
   logAuditEvent({
     action: AUDIT_ACTIONS.SESSIONS_REVOKED,
-    target: { label: context.email || userId, id: userId, href: `/dashboard/admin/users/${userId}` },
+    target: {
+      label: context.email || userId,
+      id: userId,
+      href: `/dashboard/admin/users/${userId}`,
+    },
     metadata: { revokedCount },
   });
   return { success: true, revokedCount };

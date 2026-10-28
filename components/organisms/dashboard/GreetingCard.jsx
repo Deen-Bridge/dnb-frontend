@@ -24,9 +24,7 @@ const GreetingCard = () => {
     // Add more fields as needed
   ];
   const completedFields = profileFields.filter((f) => user && user[f.key]);
-  const progress = Math.round(
-    (completedFields.length / profileFields.length) * 100
-  );
+  const progress = Math.round((completedFields.length / profileFields.length) * 100);
 
   const completionMessages = useMemo(
     () => [

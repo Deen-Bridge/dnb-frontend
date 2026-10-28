@@ -1,13 +1,7 @@
 "use client";
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import {
-  DollarSign,
-  ShoppingCart,
-  TrendingUp,
-  TrendingDown,
-  Wallet,
-} from "lucide-react";
+import { DollarSign, ShoppingCart, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { PageShell } from "@/components/ui/page-shell";
@@ -17,11 +11,7 @@ import WalletConnectButton from "@/components/stellar/WalletConnectButton";
 import useEarnings from "@/hooks/useEarnings";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const statusStyles = {
   confirmed: "bg-secondary/10 text-secondary border-secondary/20",
@@ -39,12 +29,7 @@ const RevenueChart = dynamic(() => import("./RevenueChart"), {
 /* ── building blocks (design-system consistent) ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -54,9 +39,7 @@ const SectionHeading = ({ title, subtitle, right }) => (
     <div>
       <h2 className={cn(poppins_600.className, "text-lg text-ink")}>{title}</h2>
       {subtitle && (
-        <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>
-          {subtitle}
-        </p>
+        <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>{subtitle}</p>
       )}
     </div>
     {right}
@@ -82,18 +65,13 @@ function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
       <div className="flex items-start justify-between">
         <div className="space-y-1">
           <p
-            className={cn(
-              poppins_500.className,
-              "text-xs uppercase tracking-wider text-ink-muted"
-            )}
+            className={cn(poppins_500.className, "text-xs uppercase tracking-wider text-ink-muted")}
           >
             {label}
           </p>
           <p className={cn(poppins_600.className, "text-3xl text-ink")}>{value}</p>
           {subtext && (
-            <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
-              {subtext}
-            </p>
+            <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>{subtext}</p>
           )}
         </div>
         <div className="flex size-10 items-center justify-center rounded-xl border border-accent/5 bg-gradient-to-br from-secondary/15 to-highlight/10">
@@ -107,12 +85,8 @@ function SummaryTile({ icon: Icon, label, value, subtext, trend, trendLabel }) {
           ) : (
             <TrendingDown className="h-4 w-4 text-red-600" />
           )}
-          <span className={trend >= 0 ? "text-secondary" : "text-red-600"}>
-            {Math.abs(trend)}%
-          </span>
-          <span className={cn(poppins_400.className, "ml-1 text-ink-muted")}>
-            {trendLabel}
-          </span>
+          <span className={trend >= 0 ? "text-secondary" : "text-red-600"}>{Math.abs(trend)}%</span>
+          <span className={cn(poppins_400.className, "ml-1 text-ink-muted")}>{trendLabel}</span>
         </div>
       )}
     </Panel>
@@ -195,7 +169,6 @@ export default function EarningsPage() {
       </PageShell>
     );
   }
-
 
   return (
     <PageShell>
@@ -311,12 +284,7 @@ export default function EarningsPage() {
                 subtitle="Revenue and units sold per course or book"
               />
               {topItems.length === 0 ? (
-                <p
-                  className={cn(
-                    poppins_400.className,
-                    "py-8 text-center text-sm text-ink-muted"
-                  )}
-                >
+                <p className={cn(poppins_400.className, "py-8 text-center text-sm text-ink-muted")}>
                   No items sold yet
                 </p>
               ) : (
@@ -329,12 +297,7 @@ export default function EarningsPage() {
                       <div key={`${item.itemType}:${item.itemTitle}`}>
                         <div className="mb-1.5 flex items-center justify-between">
                           <div className="flex min-w-0 flex-1 items-center gap-2">
-                            <span
-                              className={cn(
-                                poppins_600.className,
-                                "text-sm text-ink-muted"
-                              )}
-                            >
+                            <span className={cn(poppins_600.className, "text-sm text-ink-muted")}>
                               #{index + 1}
                             </span>
                             <div className="min-w-0 flex-1">
@@ -350,10 +313,7 @@ export default function EarningsPage() {
                                 </Link>
                               ) : (
                                 <p
-                                  className={cn(
-                                    poppins_500.className,
-                                    "truncate text-sm text-ink"
-                                  )}
+                                  className={cn(poppins_500.className, "truncate text-sm text-ink")}
                                 >
                                   {item.itemTitle}
                                 </p>
@@ -372,12 +332,7 @@ export default function EarningsPage() {
                             <p className={cn(poppins_600.className, "text-sm text-ink")}>
                               ${item.revenue.toFixed(2)}
                             </p>
-                            <p
-                              className={cn(
-                                poppins_400.className,
-                                "text-xs text-ink-muted"
-                              )}
-                            >
+                            <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
                               {item.units} sold
                             </p>
                           </div>
@@ -416,10 +371,7 @@ export default function EarningsPage() {
                   ))}
                 {Object.values(statusBreakdown).every((c) => c === 0) && (
                   <p
-                    className={cn(
-                      poppins_400.className,
-                      "py-8 text-center text-sm text-ink-muted"
-                    )}
+                    className={cn(poppins_400.className, "py-8 text-center text-sm text-ink-muted")}
                   >
                     No transactions yet
                   </p>
@@ -432,9 +384,9 @@ export default function EarningsPage() {
                     "flex flex-wrap items-center gap-1 text-xs text-ink-muted"
                   )}
                 >
-                  <strong className={cn(poppins_500.className, "text-ink")}>Note:</strong>{" "}
-                  Only <StatusBadge status="confirmed" small /> transactions
-                  count toward your earnings totals.
+                  <strong className={cn(poppins_500.className, "text-ink")}>Note:</strong> Only{" "}
+                  <StatusBadge status="confirmed" small /> transactions count toward your earnings
+                  totals.
                 </p>
               </div>
             </Panel>

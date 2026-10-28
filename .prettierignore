@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+build/
+dist/
+expo/
+
+# Test / tooling artifacts
+coverage/
+playwright-report/
+playwright/.cache/
+test-results/
+blob-report/
+
+# Generated service-worker bundles (rebuilt by @serwist/next on every build)
+public/sw.js
+public/swe-worker-*.js
+
+# Lockfiles are generated - never hand-format them
+package-lock.json
+
+# Markdown is hand-aligned (tables, reference links) and excluded from the
+# format gate so prose changes stay reviewable.
+*.md
+
+# Workflow / config YAML is hand-maintained; Prettier's YAML printer reflows
+# lists in a way that makes the diff noisier than it is useful.
+*.yml
+*.yaml
+
+# The Expo app is a separate project with its own tooling.
+mobile/

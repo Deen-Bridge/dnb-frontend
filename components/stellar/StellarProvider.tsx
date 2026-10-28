@@ -1,16 +1,6 @@
 "use client";
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-} from "react";
-import {
-  StellarWalletsKit,
-  Networks,
-} from "@creit.tech/stellar-wallets-kit";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { StellarWalletsKit, Networks } from "@creit.tech/stellar-wallets-kit";
 import { FreighterModule, FREIGHTER_ID } from "@creit.tech/stellar-wallets-kit/modules/freighter";
 import { xBullModule } from "@creit.tech/stellar-wallets-kit/modules/xbull";
 import { AlbedoModule } from "@creit.tech/stellar-wallets-kit/modules/albedo";
@@ -28,10 +18,7 @@ import { StellarWalletInfo } from "@/types/stellar";
 import { captureClientError } from "@/lib/sentry/captureClientError";
 
 const NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
-const EXPECTED_PASSPHRASE =
-  NETWORK === "mainnet"
-    ? Networks.PUBLIC
-    : Networks.TESTNET;
+const EXPECTED_PASSPHRASE = NETWORK === "mainnet" ? Networks.PUBLIC : Networks.TESTNET;
 
 export interface StellarContextType {
   kitInitialized: boolean;
@@ -81,11 +68,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
   useEffect(() => {
     async function detectWallets() {
       try {
-        const modules = [
-          new FreighterModule(),
-          new xBullModule(),
-          new AlbedoModule(),
-        ];
+        const modules = [new FreighterModule(), new xBullModule(), new AlbedoModule()];
 
         StellarWalletsKit.init({
           modules,
@@ -96,7 +79,8 @@ export default function StellarProvider({ children }: StellarProviderProps) {
         setKitInitialized(true);
 
         try {
-          if (typeof window !== "undefined" && (window as any).freighter) { // TODO(types): Ambient freighter extension window object
+          if (typeof window !== "undefined" && (window as any).freighter) {
+            // TODO(types): Ambient freighter extension window object
             const connected = await (window as any).freighter.isConnected(); // TODO(types): Freighter isConnected API
             setHasWalletExtension(connected);
           } else {
@@ -146,7 +130,8 @@ export default function StellarProvider({ children }: StellarProviderProps) {
         await StellarWalletsKit.authModal().catch(() => ({}));
         setNetworkMismatch(false);
         setWalletNetwork(NETWORK);
-      } catch (error: any) { // TODO(types): Error from authModal
+      } catch (error: any) {
+        // TODO(types): Error from authModal
         if (!isNoWalletError(error)) {
           const msg = error?.message || "";
           if (msg.includes("network") || msg.includes("mismatch")) {
@@ -208,19 +193,17 @@ export default function StellarProvider({ children }: StellarProviderProps) {
       } else {
         throw new Error(res.data.message || "Failed to connect wallet");
       }
-    } catch (error: any) { // TODO(types): Wallet connect error
+    } catch (error: any) {
+      // TODO(types): Wallet connect error
       if (isNoWalletError(error)) {
         const installInfo = WALLET_INSTALL_LINKS;
-        toast.error(
-          "No Stellar wallet detected. Install Freighter to continue.",
-          {
-            duration: 8000,
-            action: {
-              label: "Install Freighter",
-              onClick: () => window.open(installInfo.freighter.url, "_blank"),
-            },
-          }
-        );
+        toast.error("No Stellar wallet detected. Install Freighter to continue.", {
+          duration: 8000,
+          action: {
+            label: "Install Freighter",
+            onClick: () => window.open(installInfo.freighter.url, "_blank"),
+          },
+        });
       } else if (isUserRejection(error)) {
         // Silent — user cancelled
       } else {
@@ -248,7 +231,8 @@ export default function StellarProvider({ children }: StellarProviderProps) {
       if (user?._id) {
         await refreshUser(user._id);
       }
-    } catch (error: any) { // TODO(types): Disconnect error
+    } catch (error: any) {
+      // TODO(types): Disconnect error
       captureClientError(error);
       toast.error("Failed to disconnect wallet");
     }
@@ -259,9 +243,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
     if (!connectedWallet) return;
 
     try {
-      const res = await axiosInstance.get(
-        `/api/stellar/wallet/balance/${connectedWallet}`
-      );
+      const res = await axiosInstance.get(`/api/stellar/wallet/balance/${connectedWallet}`);
       if (res.data.success) {
         setWalletInfo((prev) => (prev ? { ...prev, ...res.data } : res.data));
       }
@@ -283,7 +265,8 @@ export default function StellarProvider({ children }: StellarProviderProps) {
         });
 
         return signedTxXdr;
-      } catch (error: any) { // TODO(types): Sign transaction error
+      } catch (error: any) {
+        // TODO(types): Sign transaction error
         if (isUserRejection(error)) {
           const rejectionError: any = new Error(WALLET_ERRORS.user_rejected.message); // TODO(types): Error with code
           rejectionError.code = "USER_REJECTED";
@@ -301,7 +284,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
   const validateForPayment = useCallback(
     async (price?: number | string): Promise<StellarErrorDetail[]> => {
       const issues: StellarErrorDetail[] = [];
-      const numPrice = typeof price === "string" ? parseFloat(price) : (price || 0);
+      const numPrice = typeof price === "string" ? parseFloat(price) : price || 0;
 
       if (!connectedWallet) {
         issues.push({
@@ -321,11 +304,7 @@ export default function StellarProvider({ children }: StellarProviderProps) {
         issues.push(WALLET_ERRORS.trustline_missing);
       }
 
-      if (
-        connectedWallet &&
-        walletInfo &&
-        parseFloat(walletInfo.usdcBalance || "0") < numPrice
-      ) {
+      if (connectedWallet && walletInfo && parseFloat(walletInfo.usdcBalance || "0") < numPrice) {
         issues.push({
           ...WALLET_ERRORS.insufficient_balance,
           message: `You need $${numPrice} USDC but only have $${parseFloat(walletInfo.usdcBalance || "0").toFixed(2)}.`,
@@ -356,7 +335,5 @@ export default function StellarProvider({ children }: StellarProviderProps) {
     expectedNetworkPassphrase: EXPECTED_PASSPHRASE,
   };
 
-  return (
-    <StellarContext.Provider value={value}>{children}</StellarContext.Provider>
-  );
+  return <StellarContext.Provider value={value}>{children}</StellarContext.Provider>;
 }

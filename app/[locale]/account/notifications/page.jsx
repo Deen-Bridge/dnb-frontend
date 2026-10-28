@@ -21,11 +21,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import {
   fetchNotifications,
   markNotificationAsRead,
@@ -34,12 +30,7 @@ import {
 } from "@/lib/actions/notifications";
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -47,8 +38,7 @@ const Panel = ({ className, children }) => (
 const PAGE_SIZE = 10;
 
 const notifTitle = (n) => n.title || n.message || n.body || "Notification";
-const notifBody = (n) =>
-  n.title ? n.message || n.body || "" : n.title ? "" : n.body || "";
+const notifBody = (n) => (n.title ? n.message || n.body || "" : n.title ? "" : n.body || "");
 const isUnread = (n) => !(n.read ?? n.isRead ?? false);
 const notifTime = (n) => {
   const d = n.createdAt || n.created_at;
@@ -88,9 +78,7 @@ export default function NotificationsPage() {
   }, [load]);
 
   const handleMarkRead = async (id) => {
-    setItems((prev) =>
-      prev.map((n) => ((n._id || n.id) === id ? { ...n, read: true } : n))
-    );
+    setItems((prev) => prev.map((n) => ((n._id || n.id) === id ? { ...n, read: true } : n)));
     setUnread((u) => Math.max(0, u - 1));
     const res = await markNotificationAsRead(id);
     if (!res.success) toast.error("Couldn't mark as read");
@@ -124,9 +112,7 @@ export default function NotificationsPage() {
         <PageHeader
           icon={Bell}
           title="Notifications"
-          subtitle={
-            unread > 0 ? `${unread} unread` : "You're all caught up"
-          }
+          subtitle={unread > 0 ? `${unread} unread` : "You're all caught up"}
           actions={
             unread > 0 && (
               <button
@@ -146,9 +132,7 @@ export default function NotificationsPage() {
         {/* List */}
         <Panel className="overflow-hidden">
           <div className="border-b border-accent/10 p-5 sm:p-6">
-            <h2 className={cn(poppins_600, "text-lg text-ink")}>
-              Recent activity
-            </h2>
+            <h2 className={cn(poppins_600, "text-lg text-ink")}>Recent activity</h2>
             <p className={cn(poppins_400, "mt-1 text-sm text-ink-muted")}>
               Your latest updates from across DeenBridge
             </p>
@@ -191,30 +175,17 @@ export default function NotificationsPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p
-                        className={cn(
-                          unreadRow ? poppins_600 : poppins_500,
-                          "text-sm text-ink"
-                        )}
-                      >
+                      <p className={cn(unreadRow ? poppins_600 : poppins_500, "text-sm text-ink")}>
                         {notifTitle(n)}
                       </p>
                       {notifBody(n) && (
                         <p
-                          className={cn(
-                            poppins_400,
-                            "mt-0.5 line-clamp-2 text-sm text-ink-muted"
-                          )}
+                          className={cn(poppins_400, "mt-0.5 line-clamp-2 text-sm text-ink-muted")}
                         >
                           {notifBody(n)}
                         </p>
                       )}
-                      <p
-                        className={cn(
-                          poppins_400,
-                          "mt-1 text-xs text-ink-muted/80"
-                        )}
-                      >
+                      <p className={cn(poppins_400, "mt-1 text-xs text-ink-muted/80")}>
                         {notifTime(n)}
                       </p>
                     </div>
@@ -236,10 +207,7 @@ export default function NotificationsPage() {
                             Mark as read
                           </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => handleDelete(id)}
-                        >
+                        <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(id)}>
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>

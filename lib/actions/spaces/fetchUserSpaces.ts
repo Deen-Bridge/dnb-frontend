@@ -1,11 +1,10 @@
 import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
-export async function fetchUserSpaces(userId: string): Promise<any[]> { // TODO(types): Spaces list by host
+export async function fetchUserSpaces(userId: string): Promise<any[]> {
+  // TODO(types): Spaces list by host
   try {
-    const response = await axiosInstance.get(
-      `/api/spaces/by-host/${userId}`
-    );
+    const response = await axiosInstance.get(`/api/spaces/by-host/${userId}`);
 
     return Array.isArray(response.data) ? response.data : response.data?.spaces || [];
   } catch (error) {

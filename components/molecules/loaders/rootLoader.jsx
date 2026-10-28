@@ -1,12 +1,10 @@
 "use client";
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const Loader = () => {
   return (
-    <div className='flex justify-center items-center h-screen'>
-
-
+    <div className="flex justify-center items-center h-screen">
       <StyledWrapper>
         <div className="loader">
           <div className="dot" />
@@ -16,7 +14,7 @@ const Loader = () => {
       </StyledWrapper>
     </div>
   );
-}
+};
 const StyledWrapper = styled.div`
   .loader {
     width: 200px;
@@ -37,7 +35,7 @@ const StyledWrapper = styled.div`
     transform-origin: 50% 50%;
     transform: rotateX(24deg) rotateY(20deg) rotateZ(0deg) translateZ(-25px);
     background-color: transparent;
-    animation: dot1 1000ms cubic-bezier(.49,.06,.43,.85) infinite;
+    animation: dot1 1000ms cubic-bezier(0.49, 0.06, 0.43, 0.85) infinite;
   }
 
   .dot:nth-child(2) {
@@ -65,7 +63,8 @@ const StyledWrapper = styled.div`
   }
 
   @keyframes dot1 {
-    0%, 100% {
+    0%,
+    100% {
       border-color: #092601;
     }
     50% {
@@ -75,7 +74,8 @@ const StyledWrapper = styled.div`
   }
 
   @keyframes dot2 {
-    0%, 100% {
+    0%,
+    100% {
       border-color: #009900;
       box-shadow: inset 0 0 15px 0 rgba(255, 255, 255, 0.2);
     }
@@ -87,7 +87,8 @@ const StyledWrapper = styled.div`
   }
 
   @keyframes dot3 {
-    0%, 100% {
+    0%,
+    100% {
       border-color: #265902;
     }
     50% {
@@ -97,6 +98,5 @@ const StyledWrapper = styled.div`
     }
   }
 `;
-
 
 export default Loader;

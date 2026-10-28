@@ -3,21 +3,11 @@
 import { useState, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -157,9 +147,7 @@ export default function PayoutReconciliationPage() {
 
     const csvContent = [
       headers.join(","),
-      ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")
-      ),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -188,8 +176,8 @@ export default function PayoutReconciliationPage() {
               Read-Only Verification Tool
             </p>
             <p className={cn(poppins_400.className, "text-xs text-blue-700")}>
-              This tool compares platform purchase records with Stellar blockchain data.
-              No data modifications are made.
+              This tool compares platform purchase records with Stellar blockchain data. No data
+              modifications are made.
             </p>
           </div>
         </CardContent>
@@ -199,9 +187,7 @@ export default function PayoutReconciliationPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Select Date Range</CardTitle>
-          <CardDescription>
-            Choose the period to reconcile transactions
-          </CardDescription>
+          <CardDescription>Choose the period to reconcile transactions</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4 items-end">
@@ -209,7 +195,10 @@ export default function PayoutReconciliationPage() {
               <span className={cn(poppins_500.className, "text-sm block")}>Date Range</span>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
+                  <Button
+                    variant="outline"
+                    className="w-[280px] justify-start text-left font-normal"
+                  >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {formatDateRange(dateRange)}
                   </Button>
@@ -226,10 +215,7 @@ export default function PayoutReconciliationPage() {
               </Popover>
             </div>
 
-            <Button
-              onClick={handleSearch}
-              disabled={!dateRange.from || !dateRange.to || loading}
-            >
+            <Button onClick={handleSearch} disabled={!dateRange.from || !dateRange.to || loading}>
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -257,9 +243,7 @@ export default function PayoutReconciliationPage() {
               <p className={cn(poppins_600.className, "text-red-800")}>
                 Failed to load reconciliation data
               </p>
-              <p className={cn(poppins_400.className, "text-sm text-red-700")}>
-                {error}
-              </p>
+              <p className={cn(poppins_400.className, "text-sm text-red-700")}>{error}</p>
             </div>
           </CardContent>
         </Card>
@@ -280,9 +264,7 @@ export default function PayoutReconciliationPage() {
             </Card>
             <Card className="border-green-200">
               <CardContent className="p-4">
-                <p className={cn(poppins_400.className, "text-xs text-green-700")}>
-                  Matched
-                </p>
+                <p className={cn(poppins_400.className, "text-xs text-green-700")}>Matched</p>
                 <p className={cn(poppins_600.className, "text-2xl text-green-600")}>
                   {stats.matched}
                 </p>
@@ -389,7 +371,9 @@ export default function PayoutReconciliationPage() {
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <StatusIcon className={cn("h-4 w-4", config.color)} />
-                                <span className={cn(poppins_500.className, "text-sm", config.color)}>
+                                <span
+                                  className={cn(poppins_500.className, "text-sm", config.color)}
+                                >
                                   {config.label}
                                 </span>
                               </div>

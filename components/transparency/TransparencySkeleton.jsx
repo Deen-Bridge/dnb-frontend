@@ -12,10 +12,7 @@ export default function TransparencySkeleton() {
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="rounded-2xl border border-accent/10 bg-surface-raised p-6"
-            >
+            <div key={i} className="rounded-2xl border border-accent/10 bg-surface-raised p-6">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="mt-3 h-9 w-32" />
             </div>
@@ -39,12 +36,7 @@ export default function TransparencySkeleton() {
           </div>
         </div>
 
-        <p
-          className={cn(
-            poppins_400,
-            "text-center text-sm text-ink-muted"
-          )}
-        >
+        <p className={cn(poppins_400, "text-center text-sm text-ink-muted")}>
           Loading live donations from Stellar Horizon…
         </p>
       </div>

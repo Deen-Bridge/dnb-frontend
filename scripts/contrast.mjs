@@ -2,28 +2,63 @@
 // Usage: node scripts/contrast.mjs "color1" "color2" [fontSize] [bold]
 // Accepts #hex, rgb(), or named Tailwind palette colors (hex map below).
 const map = {
-  white: "#ffffff", black: "#000000",
-  "gray-50": "#f9fafb", "gray-100": "#f3f4f6", "gray-200": "#e5e7eb",
-  "gray-300": "#d1d5db", "gray-400": "#9ca3af", "gray-500": "#6b7280",
-  "gray-600": "#4b5563", "gray-700": "#374151", "gray-800": "#1f2937",
-  "green-50": "#f0fdf4", "green-100": "#dcfce7", "green-200": "#bbf7d0",
-  "green-300": "#86efac", "green-400": "#4ade80", "green-500": "#22c55e",
-  "green-600": "#16a34a", "green-700": "#15803d", "green-800": "#166534",
-  "red-50": "#fef2f2", "red-500": "#ef4444", "red-600": "#dc2626",
-  "blue-300": "#93c5fd", "cyan-400": "#22d3ee", "yellow-400": "#facc15",
-  "indigo-300": "#a5b4fc", "secondary": "#009900", "accent": "#265902",
-  "accent-card": "#265902", "highlight": "#008200", "basic": "#092601",
-  "ink": "#14260c", "ink-muted": "#40593a", "ink-inverse": "#eef5ec",
-  "ink-inverse-muted": "#b9d1b0", "surface": "#f3f7f1", "surface-raised": "#fafcf9",
-  "brand-text-light": "#046b30", "brand-text-dark": "#4ade80",
-  "dark-accent": "#5aa83e", "dark-ink": "#eaf3e6", "dark-ink-muted": "#9fbb93",
-  "dark-surface": "#0f1f0a", "dark-surface-raised": "#17290f",
-  "muted-foreground": "#71717b", "muted": "#f4f4f5", "f7f7f7": "#f7f7f7",
+  white: "#ffffff",
+  black: "#000000",
+  "gray-50": "#f9fafb",
+  "gray-100": "#f3f4f6",
+  "gray-200": "#e5e7eb",
+  "gray-300": "#d1d5db",
+  "gray-400": "#9ca3af",
+  "gray-500": "#6b7280",
+  "gray-600": "#4b5563",
+  "gray-700": "#374151",
+  "gray-800": "#1f2937",
+  "green-50": "#f0fdf4",
+  "green-100": "#dcfce7",
+  "green-200": "#bbf7d0",
+  "green-300": "#86efac",
+  "green-400": "#4ade80",
+  "green-500": "#22c55e",
+  "green-600": "#16a34a",
+  "green-700": "#15803d",
+  "green-800": "#166534",
+  "red-50": "#fef2f2",
+  "red-500": "#ef4444",
+  "red-600": "#dc2626",
+  "blue-300": "#93c5fd",
+  "cyan-400": "#22d3ee",
+  "yellow-400": "#facc15",
+  "indigo-300": "#a5b4fc",
+  secondary: "#009900",
+  accent: "#265902",
+  "accent-card": "#265902",
+  highlight: "#008200",
+  basic: "#092601",
+  ink: "#14260c",
+  "ink-muted": "#40593a",
+  "ink-inverse": "#eef5ec",
+  "ink-inverse-muted": "#b9d1b0",
+  surface: "#f3f7f1",
+  "surface-raised": "#fafcf9",
+  "brand-text-light": "#046b30",
+  "brand-text-dark": "#4ade80",
+  "dark-accent": "#5aa83e",
+  "dark-ink": "#eaf3e6",
+  "dark-ink-muted": "#9fbb93",
+  "dark-surface": "#0f1f0a",
+  "dark-surface-raised": "#17290f",
+  "muted-foreground": "#71717b",
+  muted: "#f4f4f5",
+  f7f7f7: "#f7f7f7",
 };
 
 function hexToRgb(hex) {
   hex = hex.replace("#", "");
-  if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+  if (hex.length === 3)
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
   const n = parseInt(hex, 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
@@ -41,7 +76,10 @@ function rgbFromInput(input) {
   if (map[input]) return { fg: hexToRgb(map[input]) };
   if (input.startsWith("#")) return { fg: hexToRgb(input) };
   if (input.startsWith("rgb")) {
-    const m = input.match(/[\d.]+/g).slice(0, 3).map(Number);
+    const m = input
+      .match(/[\d.]+/g)
+      .slice(0, 3)
+      .map(Number);
     return { fg: m };
   }
   return null;

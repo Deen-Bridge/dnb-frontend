@@ -56,9 +56,24 @@ export const SEED_STAFF_ADMIN = Object.freeze({
  * `lib/actions/admin-team.js`. Ids/tiers are stable in that stub.
  */
 export const SEED_ADMIN_ROSTER = Object.freeze([
-  Object.freeze({ id: "admin-001", name: "Amina Yusuf", email: "amina@deenbridge.org", tier: "super_admin" }),
-  Object.freeze({ id: "admin-002", name: "Bilal Karim", email: "bilal@deenbridge.org", tier: "staff" }),
-  Object.freeze({ id: "admin-003", name: "Zaynab Idris", email: "zaynab@deenbridge.org", tier: "staff" }),
+  Object.freeze({
+    id: "admin-001",
+    name: "Amina Yusuf",
+    email: "amina@deenbridge.org",
+    tier: "super_admin",
+  }),
+  Object.freeze({
+    id: "admin-002",
+    name: "Bilal Karim",
+    email: "bilal@deenbridge.org",
+    tier: "staff",
+  }),
+  Object.freeze({
+    id: "admin-003",
+    name: "Zaynab Idris",
+    email: "zaynab@deenbridge.org",
+    tier: "staff",
+  }),
 ]);
 
 /**

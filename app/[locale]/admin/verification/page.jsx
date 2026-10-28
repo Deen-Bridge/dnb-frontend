@@ -18,13 +18,7 @@ import {
 import { toast } from "sonner";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -36,11 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   VERIFICATION_SLA_BUCKET_ORDER,
   VERIFICATION_SLA_BUCKETS,
@@ -98,24 +88,15 @@ function AgeBadge({ submittedAt, now }) {
   const bucket = getVerificationSlaBucket(submittedAt, now);
 
   return (
-    <Badge
-      variant="outline"
-      className={cn("gap-1.5 whitespace-nowrap text-xs", bucket.badgeClass)}
-    >
-      <span
-        className={cn("h-2 w-2 rounded-full", bucket.dotClass)}
-        aria-hidden="true"
-      />
+    <Badge variant="outline" className={cn("gap-1.5 whitespace-nowrap text-xs", bucket.badgeClass)}>
+      <span className={cn("h-2 w-2 rounded-full", bucket.dotClass)} aria-hidden="true" />
       {ageDays === 0 ? "Today" : `${ageDays}d old`}
     </Badge>
   );
 }
 
 function SlaSummaryStrip({ queue, now }) {
-  const counts = useMemo(
-    () => countVerificationSlaBuckets(queue, now),
-    [queue, now]
-  );
+  const counts = useMemo(() => countVerificationSlaBuckets(queue, now), [queue, now]);
 
   return (
     <div className="grid gap-3 md:grid-cols-3" aria-label="SLA backlog summary">
@@ -124,10 +105,7 @@ function SlaSummaryStrip({ queue, now }) {
         const Icon = SLA_ICONS[key];
 
         return (
-          <div
-            key={bucket.key}
-            className="rounded-lg border bg-card p-4 shadow-sm"
-          >
+          <div key={bucket.key} className="rounded-lg border bg-card p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-medium">{bucket.shortLabel}</p>
@@ -203,9 +181,7 @@ export default function AdminVerificationQueuePage() {
         await rejectVerification(item.id, { reasonCategory: reasons[item.id] });
       }
       setQueue((prev) => prev.filter((entry) => entry.id !== item.id));
-      toast.success(
-        decision === "approve" ? "Application approved" : "Application rejected"
-      );
+      toast.success(decision === "approve" ? "Application approved" : "Application rejected");
     } catch (err) {
       toast.error(err?.message || "Could not record the decision.");
     } finally {
@@ -292,10 +268,7 @@ export default function AdminVerificationQueuePage() {
                       className="py-10 text-center text-muted-foreground"
                       role="status"
                     >
-                      <Loader2
-                        className="mx-auto mb-2 h-6 w-6 animate-spin"
-                        aria-hidden="true"
-                      />
+                      <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin" aria-hidden="true" />
                       <p>Loading verification queue...</p>
                     </TableCell>
                   </TableRow>
@@ -307,26 +280,15 @@ export default function AdminVerificationQueuePage() {
                       role="alert"
                     >
                       <p>{error}</p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3"
-                        onClick={refreshQueue}
-                      >
+                      <Button variant="outline" size="sm" className="mt-3" onClick={refreshQueue}>
                         Retry
                       </Button>
                     </TableCell>
                   </TableRow>
                 ) : filteredQueue.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="py-10 text-center text-muted-foreground"
-                    >
-                      <UserCheck
-                        className="mx-auto mb-2 h-8 w-8 opacity-50"
-                        aria-hidden="true"
-                      />
+                    <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                      <UserCheck className="mx-auto mb-2 h-8 w-8 opacity-50" aria-hidden="true" />
                       <p>No verification applications match this view.</p>
                     </TableCell>
                   </TableRow>
@@ -357,9 +319,7 @@ export default function AdminVerificationQueuePage() {
                               >
                                 {item.educator}
                               </Link>
-                              <p className="truncate text-xs text-muted-foreground">
-                                {item.email}
-                              </p>
+                              <p className="truncate text-xs text-muted-foreground">{item.email}</p>
                             </div>
                           </div>
                         </TableCell>
@@ -442,8 +402,7 @@ export default function AdminVerificationQueuePage() {
           </div>
 
           <p className={cn(poppins_400.className, "mt-3 text-xs text-muted-foreground")}>
-            Green means under 3 days, amber means 3-7 days, and red means beyond
-            7 days.
+            Green means under 3 days, amber means 3-7 days, and red means beyond 7 days.
           </p>
         </CardContent>
       </Card>

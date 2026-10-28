@@ -24,7 +24,9 @@ vi.mock("@/lib/config/env", () => ({
 // react-ripples doesn't work in jsdom — render children transparently
 vi.mock("react-ripples", () => ({
   default: ({ children, onClick, className }) => (
-    <span className={className} onClick={onClick}>{children}</span>
+    <span className={className} onClick={onClick}>
+      {children}
+    </span>
   ),
 }));
 
@@ -144,8 +146,6 @@ describe("LivenessConsent — accessibility", () => {
 
   it("section has an accessible heading", () => {
     render(<LivenessConsent onConsent={vi.fn()} onCancel={vi.fn()} />);
-    expect(
-      screen.getByRole("heading", { name: /identity verification/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /identity verification/i })).toBeInTheDocument();
   });
 });

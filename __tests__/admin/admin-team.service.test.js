@@ -8,12 +8,7 @@
  * forwarded verbatim on the sensitive mutations.
  */
 import { describe, it, expect } from "vitest";
-import {
-  listAdmins,
-  createInvite,
-  demoteAdmin,
-  revokeAdmin,
-} from "@/lib/actions/admin-team";
+import { listAdmins, createInvite, demoteAdmin, revokeAdmin } from "@/lib/actions/admin-team";
 
 const TIERS = new Set(["staff", "super_admin"]);
 

@@ -73,7 +73,11 @@ export default function VerificationReviewPage({ params }) {
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to queue
       </Link>
 
-      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
       {!application && !error && <p className="text-sm text-muted-foreground">Loading...</p>}
 
       {application && (
@@ -87,12 +91,16 @@ export default function VerificationReviewPage({ params }) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <p>{application.email} - {application.country}</p>
+                <p>
+                  {application.email} - {application.country}
+                </p>
                 <p>Submitted {new Date(application.submittedAt).toLocaleString()}</p>
                 <p>{application.bio}</p>
                 <div className="flex flex-wrap gap-1">
                   {(application.subjects || []).map((s) => (
-                    <Badge key={s} variant="secondary">{s}</Badge>
+                    <Badge key={s} variant="secondary">
+                      {s}
+                    </Badge>
                   ))}
                 </div>
                 <p>
@@ -103,7 +111,9 @@ export default function VerificationReviewPage({ params }) {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle>Submitted documents</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Submitted documents</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap gap-2">
                   {(application.documents || []).map((d, i) => (
@@ -131,7 +141,9 @@ export default function VerificationReviewPage({ params }) {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle>Public profile preview</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Public profile preview</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 {/* TODO: embed the real public profile once its route is confirmed */}
                 <p className="font-medium">{application.name}</p>
@@ -148,7 +160,9 @@ export default function VerificationReviewPage({ params }) {
 
           <aside className="hidden lg:block">
             <Card className="sticky top-4">
-              <CardHeader><CardTitle>Decision</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Decision</CardTitle>
+              </CardHeader>
               <CardContent>{panel}</CardContent>
             </Card>
           </aside>

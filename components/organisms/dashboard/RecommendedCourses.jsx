@@ -4,10 +4,7 @@ import Cookies from "js-cookie";
 import RecommendedCourseCard from "@/components/organisms/dashboard/R-CourseCard";
 import { cn } from "@/lib/utils";
 import { Inter_500 } from "@/lib/config/font.config";
-import {
-  fetchAllCourses,
-  fetchRecommendedCourses,
-} from "@/lib/actions/recommendations";
+import { fetchAllCourses, fetchRecommendedCourses } from "@/lib/actions/recommendations";
 import { toast } from "sonner";
 import CourseCardSkeleton from "@/components/atoms/skeletons/CourseCardSkeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
@@ -99,9 +96,7 @@ const RecommendedCourses = () => {
     loadCourses();
   }, []);
 
-  const sectionTitle = hasInterests
-    ? "Recommended Courses for You"
-    : "Popular Courses";
+  const sectionTitle = hasInterests ? "Recommended Courses for You" : "Popular Courses";
 
   const emptyMessage = hasInterests
     ? "No courses match your interests yet. Try updating your profile interests!"
@@ -120,9 +115,7 @@ const RecommendedCourses = () => {
   if (loading) {
     return (
       <div>
-        <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>
-          {sectionTitle}
-        </h3>
+        <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>{sectionTitle}</h3>
         <div className="grid sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <CourseCardSkeleton key={i} />
@@ -135,9 +128,7 @@ const RecommendedCourses = () => {
   if (courses.length === 0) {
     return (
       <div>
-        <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>
-          {sectionTitle}
-        </h3>
+        <h3 className={cn("text-xl font-bold mb-4", Inter_500.className)}>{sectionTitle}</h3>
         <p className="text-muted-foreground text-center py-8">{emptyMessage}</p>
       </div>
     );

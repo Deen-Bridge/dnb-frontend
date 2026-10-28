@@ -16,14 +16,9 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 vi.mock("recharts", () => ({
-  ResponsiveContainer: ({ children }) => (
-    <div data-testid="responsive-container">{children}</div>
-  ),
+  ResponsiveContainer: ({ children }) => <div data-testid="responsive-container">{children}</div>,
   BarChart: ({ children, data }) => (
-    <div
-      data-testid="bar-chart"
-      data-points={String(Array.isArray(data) ? data.length : -1)}
-    >
+    <div data-testid="bar-chart" data-points={String(Array.isArray(data) ? data.length : -1)}>
       {children}
     </div>
   ),
@@ -50,9 +45,7 @@ describe("LearningProgress", () => {
 
     expect(screen.getByText("No activity yet")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Your course and reading activity will appear here once you get started."
-      )
+      screen.getByText("Your course and reading activity will appear here once you get started.")
     ).toBeInTheDocument();
     expect(screen.queryByText(/coming soon/i)).not.toBeInTheDocument();
   });
@@ -60,9 +53,7 @@ describe("LearningProgress", () => {
   it("explains what is being tracked in the footer", () => {
     render(<LearningProgress />);
 
-    expect(
-      screen.getByText("Tracking your memorization and study over time")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Tracking your memorization and study over time")).toBeInTheDocument();
   });
 
   it("does not mount a chart on the card until there is data to plot", () => {
@@ -76,9 +67,7 @@ describe("LearningProgressChart", () => {
   it("plots a course and a book series", () => {
     render(<LearningProgressChart />);
 
-    const series = screen
-      .getAllByTestId("bar")
-      .map((bar) => bar.getAttribute("data-key"));
+    const series = screen.getAllByTestId("bar").map((bar) => bar.getAttribute("data-key"));
 
     expect(series).toEqual(["course", "book"]);
   });

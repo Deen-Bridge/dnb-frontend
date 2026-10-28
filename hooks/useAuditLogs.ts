@@ -33,7 +33,9 @@ export interface UseAuditLogsResult {
   refresh: () => void;
 }
 
-export default function useAuditLogs({ pageSize = DEFAULT_PAGE_SIZE }: UseAuditLogsOptions = {}): UseAuditLogsResult {
+export default function useAuditLogs({
+  pageSize = DEFAULT_PAGE_SIZE,
+}: UseAuditLogsOptions = {}): UseAuditLogsResult {
   const { user, loading: authLoading } = useAuth();
 
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
@@ -99,7 +101,8 @@ export default function useAuditLogs({ pageSize = DEFAULT_PAGE_SIZE }: UseAuditL
           setLogs(Array.isArray(result.logs) ? result.logs : []);
           setTotal(Number(result.total) || 0);
         }
-      } catch (err: any) { // TODO(types): Error shape from listAuditLogs
+      } catch (err: any) {
+        // TODO(types): Error shape from listAuditLogs
         if (!cancelled) setError(err?.message || "Failed to load audit logs");
       } finally {
         if (!cancelled) setIsLoading(false);

@@ -26,16 +26,10 @@ const SIGNED_URL =
   "https://private-storage.example.test/kyc/doc_e2e_1?X-Amz-Signature=abc123&X-Amz-Expires=300";
 
 /** Bytes that really are a PDF. */
-const PDF_BYTES = Buffer.concat([
-  Buffer.from("%PDF-1.4\n"),
-  Buffer.alloc(2048, 0x20),
-]);
+const PDF_BYTES = Buffer.concat([Buffer.from("%PDF-1.4\n"), Buffer.alloc(2048, 0x20)]);
 
 /** Bytes that really are a Windows executable, named like a PDF. */
-const EXE_BYTES = Buffer.concat([
-  Buffer.from([0x4d, 0x5a, 0x90, 0x00]),
-  Buffer.alloc(2048, 0x00),
-]);
+const EXE_BYTES = Buffer.concat([Buffer.from([0x4d, 0x5a, 0x90, 0x00]), Buffer.alloc(2048, 0x00)]);
 
 /**
  * Stub the document API + the signed storage target.
@@ -108,9 +102,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("drag and drop uploads a valid PDF and the scan resolves to accepted", async ({
-  page,
-}) => {
+test("drag and drop uploads a valid PDF and the scan resolves to accepted", async ({ page }) => {
   const requested = await stubDocumentApi(page, {
     scanSequence: ["scan_pending", "accepted"],
   });
@@ -131,17 +123,13 @@ test("drag and drop uploads a valid PDF and the scan resolves to accepted", asyn
     return dt;
   }, Array.from(PDF_BYTES));
 
-  await page
-    .getByTestId("dropzone-government_id")
-    .dispatchEvent("drop", { dataTransfer });
+  await page.getByTestId("dropzone-government_id").dispatchEvent("drop", { dataTransfer });
 
   // Scan pending is shown, then resolves to accepted.
   await expect(page.getByTestId("scan-pending-government_id")).toBeVisible();
-  await expect(page.getByTestId("slot-status")).toHaveAttribute(
-    "data-state",
-    "accepted",
-    { timeout: 15_000 }
-  );
+  await expect(page.getByTestId("slot-status")).toHaveAttribute("data-state", "accepted", {
+    timeout: 15_000,
+  });
 
   // The full signed-URL sequence ran.
   expect(requested).toContain("upload-url");
@@ -154,9 +142,7 @@ test("drag and drop uploads a valid PDF and the scan resolves to accepted", asyn
   expect(html).not.toContain(SIGNED_URL);
 });
 
-test("a renamed executable is rejected before any network call", async ({
-  page,
-}) => {
+test("a renamed executable is rejected before any network call", async ({ page }) => {
   const requested = await stubDocumentApi(page);
 
   await page.goto("/educator-onboarding/documents");
@@ -172,13 +158,9 @@ test("a renamed executable is rejected before any network call", async ({
     return dt;
   }, Array.from(EXE_BYTES));
 
-  await page
-    .getByTestId("dropzone-government_id")
-    .dispatchEvent("drop", { dataTransfer });
+  await page.getByTestId("dropzone-government_id").dispatchEvent("drop", { dataTransfer });
 
-  await expect(page.getByTestId("error-government_id")).toContainText(
-    /Windows executable/i
-  );
+  await expect(page.getByTestId("error-government_id")).toContainText(/Windows executable/i);
 
   // Nothing was requested — the file never left the browser.
   expect(requested).toEqual([]);

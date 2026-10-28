@@ -1,4 +1,11 @@
-const RANK: Record<string, number> = { student: 0, user: 0, educator: 1, mentor: 1, admin: 2, superadmin: 3 };
+const RANK: Record<string, number> = {
+  student: 0,
+  user: 0,
+  educator: 1,
+  mentor: 1,
+  admin: 2,
+  superadmin: 3,
+};
 
 export function roleRank(role?: string | null): number {
   return RANK[String(role || "student").toLowerCase()] ?? 0;

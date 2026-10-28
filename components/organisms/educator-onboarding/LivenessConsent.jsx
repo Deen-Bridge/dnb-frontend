@@ -47,25 +47,18 @@ export default function LivenessConsent({ onConsent, onCancel }) {
   };
 
   return (
-    <section
-      aria-labelledby="consent-heading"
-      className="flex flex-col gap-6 max-w-lg mx-auto"
-    >
+    <section aria-labelledby="consent-heading" className="flex flex-col gap-6 max-w-lg mx-auto">
       {/* Header */}
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
           <ShieldCheck className="h-7 w-7 text-accent" aria-hidden="true" />
         </div>
-        <h2
-          id="consent-heading"
-          className="text-xl font-semibold font-stretch-125%"
-        >
+        <h2 id="consent-heading" className="text-xl font-semibold font-stretch-125%">
           Identity verification
         </h2>
         <p className="text-sm text-muted-foreground max-w-sm">
-          To protect learners and maintain trust on the platform, all educators
-          must complete a one-time liveness check before their application is
-          reviewed.
+          To protect learners and maintain trust on the platform, all educators must complete a
+          one-time liveness check before their application is reviewed.
         </p>
       </div>
 
@@ -79,47 +72,39 @@ export default function LivenessConsent({ onConsent, onCancel }) {
 
         <div className="flex flex-col gap-3 text-muted-foreground leading-relaxed">
           <p>
-            <span className="font-medium text-foreground">What is captured:</span>{" "}
-            A short video of your face taken by your device camera. The video is
-            analysed in real time to confirm you are a live person (not a photo
-            or recording).
+            <span className="font-medium text-foreground">What is captured:</span> A short video of
+            your face taken by your device camera. The video is analysed in real time to confirm you
+            are a live person (not a photo or recording).
           </p>
 
           <p>
-            <span className="font-medium text-foreground">Why we collect it:</span>{" "}
-            This step is required to comply with our Know-Your-Educator (KYE)
-            policy and to prevent fraud on the platform. It is not used for any
-            other purpose.
+            <span className="font-medium text-foreground">Why we collect it:</span> This step is
+            required to comply with our Know-Your-Educator (KYE) policy and to prevent fraud on the
+            platform. It is not used for any other purpose.
           </p>
 
           <p>
-            <span className="font-medium text-foreground">
-              What is sent to our servers:
-            </span>{" "}
-            Only a short-lived verification token issued by our identity
-            provider. Raw video frames and biometric vectors are{" "}
-            <strong>never</strong> stored on our servers or shared with third
+            <span className="font-medium text-foreground">What is sent to our servers:</span> Only a
+            short-lived verification token issued by our identity provider. Raw video frames and
+            biometric vectors are <strong>never</strong> stored on our servers or shared with third
             parties beyond the identity verification provider.
           </p>
 
           <p>
-            <span className="font-medium text-foreground">Retention:</span>{" "}
-            The verification token and your consent record are retained for as
-            long as your educator account is active, or as required by applicable
-            law. You may request deletion by contacting support.
+            <span className="font-medium text-foreground">Retention:</span> The verification token
+            and your consent record are retained for as long as your educator account is active, or
+            as required by applicable law. You may request deletion by contacting support.
           </p>
 
           <p>
-            <span className="font-medium text-foreground">Your rights:</span>{" "}
-            You may decline this step, but doing so will prevent your educator
-            application from being submitted. You can restart the process at any
-            time from your account settings.
+            <span className="font-medium text-foreground">Your rights:</span> You may decline this
+            step, but doing so will prevent your educator application from being submitted. You can
+            restart the process at any time from your account settings.
           </p>
         </div>
 
         <p className="text-xs text-muted-foreground border-t border-border pt-3">
-          Consent policy version{" "}
-          <span className="font-mono">{config.livenessConsentVersion}</span>
+          Consent policy version <span className="font-mono">{config.livenessConsentVersion}</span>
         </p>
       </div>
 
@@ -136,9 +121,8 @@ export default function LivenessConsent({ onConsent, onCancel }) {
           htmlFor="liveness-consent-checkbox"
           className="text-sm leading-snug cursor-pointer select-none"
         >
-          I understand what will be captured and why, and I give my explicit
-          consent to the liveness check described above. I confirm I am at least
-          18 years old.
+          I understand what will be captured and why, and I give my explicit consent to the liveness
+          check described above. I confirm I am at least 18 years old.
         </Label>
       </div>
 

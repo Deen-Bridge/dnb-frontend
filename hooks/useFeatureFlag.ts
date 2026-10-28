@@ -15,9 +15,7 @@ export function useFeatureFlag(key: string): UseFeatureFlagResult {
   const context = useContext(FeatureFlagContext) as any; // TODO(types): Context type for feature flags
 
   if (!context) {
-    throw new Error(
-      "useFeatureFlag must be used within a FeatureFlagProvider"
-    );
+    throw new Error("useFeatureFlag must be used within a FeatureFlagProvider");
   }
 
   const { flags = [], loading = false, refresh = () => {} } = context;
@@ -29,9 +27,8 @@ export function useFeatureFlag(key: string): UseFeatureFlagResult {
     if (flag.rolloutPercentage === 100) return true;
     if (flag.rolloutPercentage === 0) return false;
 
-    const sessionId = typeof window !== "undefined"
-      ? sessionStorage.getItem("userId") || "anonymous"
-      : "anonymous";
+    const sessionId =
+      typeof window !== "undefined" ? sessionStorage.getItem("userId") || "anonymous" : "anonymous";
 
     const hash = sessionId.split("").reduce((acc, char) => {
       return ((acc << 5) - acc + char.charCodeAt(0)) | 0;
@@ -54,9 +51,7 @@ export function useFeatureFlags() {
   const context = useContext(FeatureFlagContext);
 
   if (!context) {
-    throw new Error(
-      "useFeatureFlags must be used within a FeatureFlagProvider"
-    );
+    throw new Error("useFeatureFlags must be used within a FeatureFlagProvider");
   }
 
   return context;

@@ -89,9 +89,7 @@ describe("StepUpConfirmDialog", () => {
     fireEvent.change(screen.getByRole("textbox"), { target: { value: PHRASE } });
     fireEvent.click(screen.getByRole("button", { name: /revoke/i }));
 
-    await waitFor(() =>
-      expect(onConfirm).toHaveBeenCalledWith({ confirmation: PHRASE })
-    );
+    await waitFor(() => expect(onConfirm).toHaveBeenCalledWith({ confirmation: PHRASE }));
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
   });
 

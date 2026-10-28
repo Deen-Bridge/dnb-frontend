@@ -108,7 +108,10 @@ export default function DisputeEvidenceUpload({ disputeId, onUploadSuccess }) {
 
           {/* File Upload Selector */}
           <div className="space-y-1">
-            <label htmlFor="evidenceFileInput" className="text-xs font-medium text-muted-foreground">
+            <label
+              htmlFor="evidenceFileInput"
+              className="text-xs font-medium text-muted-foreground"
+            >
               Attachment File (PDF, PNG, JPEG up to 10MB)
             </label>
 

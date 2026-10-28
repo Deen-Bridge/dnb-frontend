@@ -3,11 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
 import Footer from "../(landingPage)/Footer";
 import Button from "@/components/atoms/form/Button";
@@ -142,8 +138,8 @@ export default function FeaturesPage() {
               "mx-auto max-w-2xl text-lg leading-relaxed text-ink-inverse-muted sm:text-xl font-stretch-110%"
             )}
           >
-            The tools we’ve built to help you learn authentically, connect
-            globally, and grow in your Deen.
+            The tools we’ve built to help you learn authentically, connect globally, and grow in
+            your Deen.
           </p>
         </div>
       </section>
@@ -188,12 +184,7 @@ export default function FeaturesPage() {
                     <div className="mb-6 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary to-accent shadow-md transition-transform group-hover:scale-110">
                       <Icon className="size-6 text-ink-inverse" />
                     </div>
-                    <h3
-                      className={cn(
-                        poppins_600,
-                        "mb-3 text-2xl text-accent font-stretch-110%"
-                      )}
-                    >
+                    <h3 className={cn(poppins_600, "mb-3 text-2xl text-accent font-stretch-110%")}>
                       {f.title}
                     </h3>
                     <p
@@ -264,10 +255,7 @@ export default function FeaturesPage() {
                       <Icon className="size-5 text-ink-inverse" />
                     </div>
                     <h3
-                      className={cn(
-                        poppins_600,
-                        "mb-2 text-lg text-ink-inverse font-stretch-110%"
-                      )}
+                      className={cn(poppins_600, "mb-2 text-lg text-ink-inverse font-stretch-110%")}
                     >
                       {f.title}
                     </h3>
@@ -302,22 +290,14 @@ export default function FeaturesPage() {
         {/* CTA */}
         <section className="bg-surface px-4 py-20 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-4xl rounded-3xl border border-accent/10 bg-surface-raised p-10 text-center shadow-xl">
-            <h3
-              className={cn(
-                poppins_600,
-                "mb-4 text-2xl text-ink sm:text-3xl font-stretch-125%"
-              )}
-            >
+            <h3 className={cn(poppins_600, "mb-4 text-2xl text-ink sm:text-3xl font-stretch-125%")}>
               See it for yourself
             </h3>
             <p
-              className={cn(
-                poppins_400,
-                "mx-auto mb-8 max-w-2xl text-ink-muted font-stretch-110%"
-              )}
+              className={cn(poppins_400, "mx-auto mb-8 max-w-2xl text-ink-muted font-stretch-110%")}
             >
-              Creating an account is free. Browse every course, book, and space
-              on the platform, and only pay for the ones you choose to take.
+              Creating an account is free. Browse every course, book, and space on the platform, and
+              only pay for the ones you choose to take.
             </p>
             <Button
               wide

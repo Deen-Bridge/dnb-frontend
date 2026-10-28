@@ -3,14 +3,7 @@
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import {
-  Activity,
-  UserPlus,
-  GraduationCap,
-  CreditCard,
-  Flag,
-  ShieldCheck,
-} from "lucide-react";
+import { Activity, UserPlus, GraduationCap, CreditCard, Flag, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useRecentEvents from "@/hooks/useRecentEvents";
@@ -62,7 +55,10 @@ export default function RecentActivityFeed() {
               const Icon = EVENT_ICONS[event.type] || Activity;
               return (
                 <li key={event.id} className="flex items-start gap-3 text-sm">
-                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <Icon
+                    className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <span className="min-w-0 flex-1">
                     <Link
                       href={`/admin/users/${event.actorId}`}

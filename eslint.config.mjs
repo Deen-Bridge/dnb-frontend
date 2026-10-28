@@ -14,14 +14,7 @@ const eslintConfig = [
   {
     // Build output, vendored assets and the separately maintained mobile
     // workspace are not part of the Next.js source tree.
-    ignores: [
-      ".next/**",
-      "node_modules/**",
-      "out/**",
-      "coverage/**",
-      "public/**",
-      "mobile/**",
-    ],
+    ignores: [".next/**", "node_modules/**", "out/**", "coverage/**", "public/**", "mobile/**"],
   },
   {
     // Flat config only matches *.js/*.mjs/*.cjs by default. Without this,

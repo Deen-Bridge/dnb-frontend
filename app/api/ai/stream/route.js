@@ -1,4 +1,3 @@
-
 import { config } from "@/lib/config/env";
 
 export async function POST(req) {
@@ -39,7 +38,6 @@ export async function POST(req) {
       throw new Error(`AI API responded with status: ${response.status}`);
     }
 
-  
     const reader = response.body.getReader();
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();

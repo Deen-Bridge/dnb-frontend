@@ -15,14 +15,12 @@ const DISMISS_STORAGE_KEY = "dnb:push-prompt-dismissed";
  * never nags and never blocks the UI.
  */
 export default function PushNotificationPrompt() {
-  const { supported, permission, subscribed, loading, subscribe } =
-    usePushNotifications();
+  const { supported, permission, subscribed, loading, subscribe } = usePushNotifications();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const dismissed =
-      window.localStorage.getItem(DISMISS_STORAGE_KEY) === "true";
+    const dismissed = window.localStorage.getItem(DISMISS_STORAGE_KEY) === "true";
     setVisible(supported && permission === "default" && !subscribed && !dismissed);
   }, [supported, permission, subscribed]);
 

@@ -5,11 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import useAuth from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -104,9 +100,7 @@ const RecentChats = () => {
       return date && !Number.isNaN(date.getTime()) ? date.getTime() : 0;
     };
 
-    return [...conversations]
-      .sort((a, b) => sortByTimestamp(b) - sortByTimestamp(a))
-      .slice(0, 3);
+    return [...conversations].sort((a, b) => sortByTimestamp(b) - sortByTimestamp(a)).slice(0, 3);
   }, [conversations]);
 
   const renderContent = () => {
@@ -151,12 +145,10 @@ const RecentChats = () => {
           const otherParticipantId = conversation.participants?.find(
             (participantId) => participantId !== user?._id
           );
-          const otherParticipant =
-            (otherParticipantId && userCache[otherParticipantId]) || null;
+          const otherParticipant = (otherParticipantId && userCache[otherParticipantId]) || null;
           const unreadCount = unreadCounts[conversation._id] || 0;
           const lastMessage = conversation.lastMessage || {};
-          const lastMessageText =
-            lastMessage.text || lastMessage.preview || "Start a conversation";
+          const lastMessageText = lastMessage.text || lastMessage.preview || "Start a conversation";
 
           const rawTimestamp =
             lastMessage.timestamp?.toDate?.() ||
@@ -179,18 +171,13 @@ const RecentChats = () => {
                 href={`/dashboard/messages/${conversation._id}`}
                 className={cn(
                   "flex items-center justify-between gap-2 rounded-xl p-2 transition-colors flex-nowrap",
-                  unreadCount
-                    ? "bg-accent/10 hover:bg-accent/20"
-                    : "hover:bg-surface"
+                  unreadCount ? "bg-accent/10 hover:bg-accent/20" : "hover:bg-surface"
                 )}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <Avatar className="h-10 w-10 rounded-lg">
                     {otherParticipant?.avatar ? (
-                      <AvatarImage
-                        src={otherParticipant.avatar}
-                        alt={otherParticipant.name}
-                      />
+                      <AvatarImage src={otherParticipant.avatar} alt={otherParticipant.name} />
                     ) : (
                       <AvatarFallback
                         className={cn(
@@ -205,20 +192,12 @@ const RecentChats = () => {
 
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span
-                        className={cn(
-                          poppins_600,
-                          "text-base truncate text-ink"
-                        )}
-                      >
+                      <span className={cn(poppins_600, "text-base truncate text-ink")}>
                         {otherParticipant?.name || "Loading..."}
                       </span>
                       {timeLabel && (
                         <span
-                          className={cn(
-                            poppins_400,
-                            "text-xs text-ink-muted whitespace-nowrap"
-                          )}
+                          className={cn(poppins_400, "text-xs text-ink-muted whitespace-nowrap")}
                         >
                           {timeLabel}
                         </span>
@@ -258,15 +237,10 @@ const RecentChats = () => {
   return (
     <div className="rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className={cn(poppins_600, "text-xl text-ink")}>
-          Recent Conversations
-        </h3>
+        <h3 className={cn(poppins_600, "text-xl text-ink")}>Recent Conversations</h3>
         <Link
           href="/dashboard/messages"
-          className={cn(
-            poppins_500,
-            "text-xs text-secondary hover:text-highlight"
-          )}
+          className={cn(poppins_500, "text-xs text-secondary hover:text-highlight")}
         >
           View all
         </Link>

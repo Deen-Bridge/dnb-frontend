@@ -3,13 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -99,10 +93,26 @@ const POLICY_DEFINITIONS = {
 
 // Mock current values
 const initialValues = {
-  verificationSlaDays: { value: 7, lastEditedBy: "admin@deenbridge.com", lastEditedAt: "2024-01-10T14:30:00Z" },
-  refundWindowDays: { value: 30, lastEditedBy: "admin@deenbridge.com", lastEditedAt: "2024-01-08T10:00:00Z" },
-  bulkActionCap: { value: 100, lastEditedBy: "support@deenbridge.com", lastEditedAt: "2024-01-05T16:00:00Z" },
-  reportAgingThresholdDays: { value: 3, lastEditedBy: "moderator@deenbridge.com", lastEditedAt: "2024-01-12T09:00:00Z" },
+  verificationSlaDays: {
+    value: 7,
+    lastEditedBy: "admin@deenbridge.com",
+    lastEditedAt: "2024-01-10T14:30:00Z",
+  },
+  refundWindowDays: {
+    value: 30,
+    lastEditedBy: "admin@deenbridge.com",
+    lastEditedAt: "2024-01-08T10:00:00Z",
+  },
+  bulkActionCap: {
+    value: 100,
+    lastEditedBy: "support@deenbridge.com",
+    lastEditedAt: "2024-01-05T16:00:00Z",
+  },
+  reportAgingThresholdDays: {
+    value: 3,
+    lastEditedBy: "moderator@deenbridge.com",
+    lastEditedAt: "2024-01-12T09:00:00Z",
+  },
 };
 
 export default function PoliciesEditorPage() {
@@ -154,31 +164,34 @@ export default function PoliciesEditorPage() {
   }, []);
 
   // Handle value change
-  const handleValueChange = useCallback((policyId, value) => {
-    const error = validateValue(policyId, value);
+  const handleValueChange = useCallback(
+    (policyId, value) => {
+      const error = validateValue(policyId, value);
 
-    setErrors((prev) => ({
-      ...prev,
-      [policyId]: error,
-    }));
+      setErrors((prev) => ({
+        ...prev,
+        [policyId]: error,
+      }));
 
-    if (!error) {
-      const numValue = parseInt(value, 10);
-      if (numValue === values[policyId].value) {
-        // Remove from edited if same as original
-        setEditedValues((prev) => {
-          const next = { ...prev };
-          delete next[policyId];
-          return next;
-        });
-      } else {
-        setEditedValues((prev) => ({
-          ...prev,
-          [policyId]: numValue,
-        }));
+      if (!error) {
+        const numValue = parseInt(value, 10);
+        if (numValue === values[policyId].value) {
+          // Remove from edited if same as original
+          setEditedValues((prev) => {
+            const next = { ...prev };
+            delete next[policyId];
+            return next;
+          });
+        } else {
+          setEditedValues((prev) => ({
+            ...prev,
+            [policyId]: numValue,
+          }));
+        }
       }
-    }
-  }, [values, validateValue]);
+    },
+    [values, validateValue]
+  );
 
   // Save changes
   const handleSave = useCallback(async () => {
@@ -214,14 +227,20 @@ export default function PoliciesEditorPage() {
   }, []);
 
   // Get current display value
-  const getDisplayValue = useCallback((policyId) => {
-    return editedValues[policyId] ?? values[policyId].value;
-  }, [editedValues, values]);
+  const getDisplayValue = useCallback(
+    (policyId) => {
+      return editedValues[policyId] ?? values[policyId].value;
+    },
+    [editedValues, values]
+  );
 
   // Check if value is modified
-  const isModified = useCallback((policyId) => {
-    return policyId in editedValues;
-  }, [editedValues]);
+  const isModified = useCallback(
+    (policyId) => {
+      return policyId in editedValues;
+    },
+    [editedValues]
+  );
 
   return (
     <PageShell>
@@ -261,8 +280,8 @@ export default function PoliciesEditorPage() {
               Policy Value Editor
             </p>
             <p className={cn(poppins_400.className, "text-xs text-blue-700")}>
-              Changes to these values will be audited and may affect multiple platform modules.
-              A diff preview will be shown before saving.
+              Changes to these values will be audited and may affect multiple platform modules. A
+              diff preview will be shown before saving.
             </p>
           </div>
         </CardContent>
@@ -289,14 +308,18 @@ export default function PoliciesEditorPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-xl",
-                      modified ? "bg-amber-100" : "bg-muted"
-                    )}>
-                      <Icon className={cn(
-                        "h-5 w-5",
-                        modified ? "text-amber-600" : "text-muted-foreground"
-                      )} />
+                    <div
+                      className={cn(
+                        "flex h-10 w-10 items-center justify-center rounded-xl",
+                        modified ? "bg-amber-100" : "bg-muted"
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "h-5 w-5",
+                          modified ? "text-amber-600" : "text-muted-foreground"
+                        )}
+                      />
                     </div>
                     <div>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -324,18 +347,13 @@ export default function PoliciesEditorPage() {
                       max={policy.max}
                       value={displayValue}
                       onChange={(e) => handleValueChange(policy.id, e.target.value)}
-                      className={cn(
-                        "w-32",
-                        error && "border-red-500 focus-visible:ring-red-500"
-                      )}
+                      className={cn("w-32", error && "border-red-500 focus-visible:ring-red-500")}
                     />
                     <span className="text-sm text-muted-foreground">
                       Range: {policy.min} - {policy.max} {policy.unit}
                     </span>
                   </div>
-                  {error && (
-                    <p className="text-xs text-red-600">{error}</p>
-                  )}
+                  {error && <p className="text-xs text-red-600">{error}</p>}
                 </div>
 
                 {/* Metadata */}
@@ -377,9 +395,7 @@ export default function PoliciesEditorPage() {
 
           <div className="py-4">
             {getDiff.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4">
-                No changes to save
-              </p>
+              <p className="text-center text-muted-foreground py-4">No changes to save</p>
             ) : (
               <div className="rounded-lg border">
                 <Table>

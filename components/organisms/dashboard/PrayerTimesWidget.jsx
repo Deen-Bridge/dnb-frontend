@@ -24,11 +24,7 @@ import {
 import Button from "@/components/atoms/form/Button";
 import Modal from "@/components/molecules/Modal";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const PRAYER_ICONS = {
   Fajr: Sunrise,
@@ -53,23 +49,27 @@ export default function PrayerTimesWidget() {
   const loadDataRef = useRef(null);
 
   // Load Prayer Data
-  const loadData = useCallback(async (locObj) => {
-    setLoading(true);
-    setError(false);
-    try {
-      const activeLocation = locObj || location || (user?.country ? { city: user.country } : null);
-      const res = await fetchPrayerTimes(activeLocation);
-      if (!res || (res.isFallback && !activeLocation)) {
+  const loadData = useCallback(
+    async (locObj) => {
+      setLoading(true);
+      setError(false);
+      try {
+        const activeLocation =
+          locObj || location || (user?.country ? { city: user.country } : null);
+        const res = await fetchPrayerTimes(activeLocation);
+        if (!res || (res.isFallback && !activeLocation)) {
+          setError(true);
+        } else {
+          setData(res);
+        }
+      } catch (_err) {
         setError(true);
-      } else {
-        setData(res);
+      } finally {
+        setLoading(false);
       }
-    } catch (_err) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [location, user?.country]);
+    },
+    [location, user?.country]
+  );
 
   // Keep ref current so the initial effect doesn't depend on loadData
   loadDataRef.current = loadData;
@@ -205,9 +205,7 @@ export default function PrayerTimesWidget() {
             title="Change location"
           >
             <MapPin className="h-3.5 w-3.5 text-accent" />
-            <span className="max-w-[180px] truncate">
-              {data?.locationName || "Location"}
-            </span>
+            <span className="max-w-[180px] truncate">{data?.locationName || "Location"}</span>
             <Search className="ml-1 h-3 w-3 opacity-60" />
           </button>
         </div>
@@ -225,15 +223,8 @@ export default function PrayerTimesWidget() {
         ) : error ? (
           /* Error State */
           <div className="space-y-2 py-6 text-center">
-            <p className={cn(poppins_500, "text-sm text-red-600")}>
-              Unable to load prayer times.
-            </p>
-            <Button
-              round
-              outlined
-              className="text-xs"
-              onClick={() => loadData(location)}
-            >
+            <p className={cn(poppins_500, "text-sm text-red-600")}>Unable to load prayer times.</p>
+            <Button round outlined className="text-xs" onClick={() => loadData(location)}>
               <RefreshCw className="mr-1 h-3.5 w-3.5" /> Retry
             </Button>
           </div>
@@ -248,10 +239,7 @@ export default function PrayerTimesWidget() {
                   </div>
                   <div>
                     <p
-                      className={cn(
-                        poppins_600,
-                        "text-xs uppercase tracking-wider text-white/80"
-                      )}
+                      className={cn(poppins_600, "text-xs uppercase tracking-wider text-white/80")}
                     >
                       {nextPrayerInfo.isTomorrow ? "Tomorrow's Next Prayer" : "Upcoming Prayer"}
                     </p>
@@ -292,10 +280,7 @@ export default function PrayerTimesWidget() {
                     )}
                   >
                     <IconComponent
-                      className={cn(
-                        "mb-1 h-5 w-5",
-                        isNext ? "text-accent" : "text-ink-muted"
-                      )}
+                      className={cn("mb-1 h-5 w-5", isNext ? "text-accent" : "text-ink-muted")}
                     />
                     <span className={cn(poppins_600, "text-xs uppercase tracking-wider")}>
                       {name}
@@ -320,7 +305,9 @@ export default function PrayerTimesWidget() {
       >
         <form onSubmit={handleLocationSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <label htmlFor="prayer-city" className={cn(poppins_500, "text-xs text-ink-muted")}>City</label>
+            <label htmlFor="prayer-city" className={cn(poppins_500, "text-xs text-ink-muted")}>
+              City
+            </label>
             <input
               id="prayer-city"
               type="text"
@@ -336,7 +323,9 @@ export default function PrayerTimesWidget() {
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="prayer-country" className={cn(poppins_500, "text-xs text-ink-muted")}>Country (Optional)</label>
+            <label htmlFor="prayer-country" className={cn(poppins_500, "text-xs text-ink-muted")}>
+              Country (Optional)
+            </label>
             <input
               id="prayer-country"
               type="text"

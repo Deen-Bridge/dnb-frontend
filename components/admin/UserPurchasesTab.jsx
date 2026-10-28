@@ -5,13 +5,7 @@ import { Copy, ExternalLink, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -96,7 +90,12 @@ export default function UserPurchasesTab({ walletAddress }) {
       })
       .catch((err) => {
         if (!active) return;
-        setState({ loading: false, transactions: [], total: 0, error: err?.message || "Failed to load purchases." });
+        setState({
+          loading: false,
+          transactions: [],
+          total: 0,
+          error: err?.message || "Failed to load purchases.",
+        });
       });
     return () => {
       active = false;
@@ -170,7 +169,9 @@ export default function UserPurchasesTab({ walletAddress }) {
                   <div className="font-medium">{tx.itemTitle || "Untitled item"}</div>
                   <div className="text-muted-foreground capitalize">{tx.itemType || "N/A"}</div>
                 </TableCell>
-                <TableCell className="text-right text-xs font-semibold">{formatAmount(tx.amount)}</TableCell>
+                <TableCell className="text-right text-xs font-semibold">
+                  {formatAmount(tx.amount)}
+                </TableCell>
                 <TableCell className="text-xs">
                   <div className="flex items-center gap-1">
                     <span className="font-mono" title={hash || undefined}>

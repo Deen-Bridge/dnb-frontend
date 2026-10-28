@@ -28,8 +28,7 @@ export default function WizardStepReview({ watch }) {
     setObjectUrl(null);
   }, [thumbnailFile]);
 
-  const thumbnailUrl =
-    objectUrl || formValues.thumbnailUrl || "/images/dnb.png";
+  const thumbnailUrl = objectUrl || formValues.thumbnailUrl || "/images/dnb.png";
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
@@ -42,15 +41,9 @@ export default function WizardStepReview({ watch }) {
 
       {/* Simulated Course Banner / Thumbnail */}
       <div className="w-full aspect-video rounded-xl overflow-hidden relative bg-slate-900 shadow-md">
-        <img
-          src={thumbnailUrl}
-          alt={title}
-          className="w-full h-full object-cover opacity-80"
-        />
+        <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover opacity-80" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-6 text-white">
-          <Badge className="w-fit bg-accent text-white mb-2 capitalize">
-            {category}
-          </Badge>
+          <Badge className="w-fit bg-accent text-white mb-2 capitalize">{category}</Badge>
           <h2 className="text-2xl sm:text-3xl font-extrabold line-clamp-2">{title}</h2>
         </div>
       </div>
@@ -96,9 +89,7 @@ export default function WizardStepReview({ watch }) {
                       {idx + 1}
                     </div>
                     <div>
-                      <p className="font-medium text-sm">
-                        {lesson.title || `Lesson ${idx + 1}`}
-                      </p>
+                      <p className="font-medium text-sm">{lesson.title || `Lesson ${idx + 1}`}</p>
                       {lesson.description && (
                         <p className="text-xs text-muted-foreground line-clamp-1">
                           {lesson.description}

@@ -124,15 +124,21 @@ describe("saved queries (per admin)", () => {
   });
 
   it("rejects a save without a name", async () => {
-    await expect(saveQuery("admin-1", { ...QUERY, name: "  " })).rejects.toThrow(/name is required/i);
+    await expect(saveQuery("admin-1", { ...QUERY, name: "  " })).rejects.toThrow(
+      /name is required/i
+    );
   });
 
   it("rejects a save for an unknown dataset", async () => {
-    await expect(saveQuery("admin-1", { ...QUERY, datasetId: "nope" })).rejects.toThrow(/unknown report dataset/i);
+    await expect(saveQuery("admin-1", { ...QUERY, datasetId: "nope" })).rejects.toThrow(
+      /unknown report dataset/i
+    );
   });
 
   it("rejects a save without any columns", async () => {
-    await expect(saveQuery("admin-1", { ...QUERY, columns: [] })).rejects.toThrow(/at least one column/i);
+    await expect(saveQuery("admin-1", { ...QUERY, columns: [] })).rejects.toThrow(
+      /at least one column/i
+    );
   });
 
   it("deletes a saved query", async () => {

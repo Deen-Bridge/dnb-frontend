@@ -1,11 +1,5 @@
 export type VerifiedMilestoneState =
-  | "draft"
-  | "funded"
-  | "milestone-pending"
-  | "approved"
-  | "released"
-  | "disputed"
-  | "expired";
+  "draft" | "funded" | "milestone-pending" | "approved" | "released" | "disputed" | "expired";
 
 export interface ScholarshipMilestoneEventRecord {
   milestoneId: string;

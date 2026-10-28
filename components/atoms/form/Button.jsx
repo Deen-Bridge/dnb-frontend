@@ -27,29 +27,16 @@ const Button = React.forwardRef(function Button(
   },
   ref
 ) {
-  const resolvedVariant =
-    variant || (outlined ? "outline" : undefined);
+  const resolvedVariant = variant || (outlined ? "outline" : undefined);
 
-  const resolvedClassName = cn(
-    wide && "w-full sm:w-auto",
-    round && "rounded-full",
-    className
-  );
+  const resolvedClassName = cn(wide && "w-full sm:w-auto", round && "rounded-full", className);
 
   const content = (
     <>
       {loading && (
-        <Loader2
-          className="animate-spin shrink-0 mr-1"
-          size={loaderSize}
-          color={loaderColor}
-        />
+        <Loader2 className="animate-spin shrink-0 mr-1" size={loaderSize} color={loaderColor} />
       )}
-      {childrenClassName ? (
-        <span className={childrenClassName}>{children}</span>
-      ) : (
-        children
-      )}
+      {childrenClassName ? <span className={childrenClassName}>{children}</span> : children}
     </>
   );
 

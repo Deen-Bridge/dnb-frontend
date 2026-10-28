@@ -17,7 +17,9 @@ export async function generateMetadata({ params }) {
   if (!course) return {};
 
   const title = `${course.title} | Deen Bridge`;
-  const description = truncateText(course.description, 160) || `${course.title} — an authentic Islamic course on Deen Bridge.`;
+  const description =
+    truncateText(course.description, 160) ||
+    `${course.title} — an authentic Islamic course on Deen Bridge.`;
 
   return {
     title: { absolute: title },

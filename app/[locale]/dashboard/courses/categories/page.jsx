@@ -5,25 +5,14 @@ import { ArrowRight, LayoutGrid } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import { fetchCourseCategories } from "@/lib/actions/courses/fetch-course-categories";
-import {
-  CATEGORY_GROUPS,
-  FALLBACK_CATEGORY,
-  FALLBACK_SLUG,
-} from "@/lib/categories";
+import { CATEGORY_GROUPS, FALLBACK_CATEGORY, FALLBACK_SLUG } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const CategoryGridSkeleton = () => (
   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
     {[...Array(6)].map((_, idx) => (
-      <Skeleton
-        key={`category-skeleton-${idx}`}
-        className="h-24 w-full rounded-2xl"
-      />
+      <Skeleton key={`category-skeleton-${idx}`} className="h-24 w-full rounded-2xl" />
     ))}
   </div>
 );
@@ -63,12 +52,7 @@ export default function CategoriesHubPage() {
   };
 
   if (error) {
-    return (
-      <NetworkErrorComp
-        errMsg="Failed to load categories, try again later"
-        reset={reload}
-      />
-    );
+    return <NetworkErrorComp errMsg="Failed to load categories, try again later" reset={reload} />;
   }
 
   const countBySlug = Object.fromEntries(
@@ -120,25 +104,14 @@ export default function CategoriesHubPage() {
           {CATEGORY_GROUPS.map((group) => {
             const GroupIcon = group.icon;
             return (
-              <section
-                key={group.id}
-                id={group.id}
-                className="scroll-mt-24 space-y-4"
-              >
+              <section key={group.id} id={group.id} className="scroll-mt-24 space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="flex size-10 items-center justify-center rounded-xl border border-accent/10 bg-surface-raised">
-                    <GroupIcon
-                      className="h-5 w-5 text-accent"
-                      aria-hidden="true"
-                    />
+                    <GroupIcon className="h-5 w-5 text-accent" aria-hidden="true" />
                   </div>
                   <div>
-                    <h2 className={cn(poppins_600, "text-lg text-ink")}>
-                      {group.label}
-                    </h2>
-                    <p className={cn(poppins_400, "text-sm text-ink-muted")}>
-                      {group.description}
-                    </p>
+                    <h2 className={cn(poppins_600, "text-lg text-ink")}>{group.label}</h2>
+                    <p className={cn(poppins_400, "text-sm text-ink-muted")}>{group.description}</p>
                   </div>
                 </div>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,10 +130,7 @@ export default function CategoriesHubPage() {
                         <div className="flex h-full flex-col gap-3 p-4">
                           <div className="flex items-start justify-between gap-2">
                             <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/15 to-highlight/10">
-                              <Icon
-                                className="h-6 w-6 text-accent"
-                                aria-hidden="true"
-                              />
+                              <Icon className="h-6 w-6 text-accent" aria-hidden="true" />
                             </span>
                             <span className="rounded-full border border-accent/10 bg-surface px-2.5 py-0.5 text-xs text-ink-muted">
                               {count} course{count === 1 ? "" : "s"}
@@ -189,21 +159,13 @@ export default function CategoriesHubPage() {
           })}
 
           {otherCount > 0 && (
-            <section
-              id="other-categories"
-              className="scroll-mt-24 space-y-4"
-            >
+            <section id="other-categories" className="scroll-mt-24 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-xl border border-accent/10 bg-surface-raised">
-                  <FALLBACK_CATEGORY.icon
-                    className="h-5 w-5 text-accent"
-                    aria-hidden="true"
-                  />
+                  <FALLBACK_CATEGORY.icon className="h-5 w-5 text-accent" aria-hidden="true" />
                 </div>
                 <div>
-                  <h2 className={cn(poppins_600, "text-lg text-ink")}>
-                    Other Categories
-                  </h2>
+                  <h2 className={cn(poppins_600, "text-lg text-ink")}>Other Categories</h2>
                   <p className={cn(poppins_400, "text-sm text-ink-muted")}>
                     Courses that don&apos;t fit a standard subject
                   </p>
@@ -230,12 +192,7 @@ export default function CategoriesHubPage() {
                       <h3 className={cn(poppins_500, "text-sm text-ink")}>
                         {FALLBACK_CATEGORY.label}
                       </h3>
-                      <p
-                        className={cn(
-                          poppins_400,
-                          "mt-1 line-clamp-2 text-xs text-ink-muted"
-                        )}
-                      >
+                      <p className={cn(poppins_400, "mt-1 line-clamp-2 text-xs text-ink-muted")}>
                         {FALLBACK_CATEGORY.description}
                       </p>
                     </div>

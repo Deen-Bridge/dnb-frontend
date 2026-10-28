@@ -49,9 +49,7 @@ describe("admin-refunds service", () => {
 
       const result = await listRefunds();
 
-      expect(axiosInstance.get).toHaveBeenCalledWith(
-        "/api/stellar/payment/refunds"
-      );
+      expect(axiosInstance.get).toHaveBeenCalledWith("/api/stellar/payment/refunds");
       expect(result.refunds).toHaveLength(1);
       expect(result.refunds[0].id).toBe("rfd-2051");
       expect(result.refunds[0].status).toBe("failed");
@@ -128,9 +126,7 @@ describe("admin-refunds service", () => {
         },
       });
 
-      await expect(retryRefund("rfd-2051")).rejects.toThrow(
-        "Refund is not in a retryable state"
-      );
+      await expect(retryRefund("rfd-2051")).rejects.toThrow("Refund is not in a retryable state");
     });
   });
 
@@ -148,12 +144,10 @@ describe("admin-refunds service", () => {
       ];
 
       expect(filterRefunds(refunds)).toHaveLength(2);
-      expect(
-        filterRefunds(refunds, { status: "failed" }).map((r) => r.id)
-      ).toEqual(["rfd-2051"]);
-      expect(
-        filterRefunds(refunds, { initiator: "system" }).map((r) => r.id)
-      ).toEqual(["rfd-2050"]);
+      expect(filterRefunds(refunds, { status: "failed" }).map((r) => r.id)).toEqual(["rfd-2051"]);
+      expect(filterRefunds(refunds, { initiator: "system" }).map((r) => r.id)).toEqual([
+        "rfd-2050",
+      ]);
     });
 
     it("applies an inclusive requested-date range", () => {

@@ -53,7 +53,7 @@ describe("MediaBlurProvider", () => {
     render(
       <MediaBlurProvider>
         <ConsumerSpy />
-      </MediaBlurProvider>,
+      </MediaBlurProvider>
     );
 
     // After mount, loaded should be true
@@ -66,7 +66,7 @@ describe("MediaBlurProvider", () => {
     render(
       <MediaBlurProvider>
         <ConsumerSpy />
-      </MediaBlurProvider>,
+      </MediaBlurProvider>
     );
 
     await screen.findByTestId("loaded");
@@ -83,7 +83,7 @@ describe("MediaBlurProvider", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => render(<ConsumerSpy />)).toThrow(
-      "useMediaBlurContext must be used within a <MediaBlurProvider>",
+      "useMediaBlurContext must be used within a <MediaBlurProvider>"
     );
 
     spy.mockRestore();
@@ -95,7 +95,7 @@ describe("MediaBlurToggle", () => {
     render(
       <MediaBlurProvider>
         <MediaBlurToggle />
-      </MediaBlurProvider>,
+      </MediaBlurProvider>
     );
 
     await screen.findByRole("switch", { name: "Toggle media blur" });
@@ -108,7 +108,7 @@ describe("MediaBlurToggle", () => {
     render(
       <MediaBlurProvider>
         <MediaBlurToggle />
-      </MediaBlurProvider>,
+      </MediaBlurProvider>
     );
 
     await screen.findByRole("switch", { name: "Toggle media blur" });
@@ -135,7 +135,7 @@ describe("MediaBlurToggle", () => {
     render(
       <MediaBlurProvider>
         <MediaBlurToggle />
-      </MediaBlurProvider>,
+      </MediaBlurProvider>
     );
 
     await screen.findByRole("switch", { name: "Toggle media blur" });
@@ -147,7 +147,7 @@ describe("MediaBlurToggle", () => {
     render(
       <MediaBlurProvider>
         <MediaBlurToggle label="Custom Label" description="Custom description" />
-      </MediaBlurProvider>,
+      </MediaBlurProvider>
     );
 
     expect(screen.getByText("Custom Label")).toBeInTheDocument();

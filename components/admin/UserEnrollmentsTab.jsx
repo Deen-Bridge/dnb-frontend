@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -111,7 +105,10 @@ export default function UserEnrollmentsTab({ enrolledCourses }) {
               {rows.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell className="text-xs font-medium">
-                    <Link href={`/admin/courses/${row.id}`} className="text-primary hover:underline">
+                    <Link
+                      href={`/admin/courses/${row.id}`}
+                      className="text-primary hover:underline"
+                    >
                       {row.title}
                     </Link>
                   </TableCell>

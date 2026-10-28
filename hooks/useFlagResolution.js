@@ -32,16 +32,18 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import useOptimisticList from "@/hooks/useOptimisticList";
-import {
-  listFlaggedContent,
-  resolveFlag,
-} from "@/lib/actions/admin-moderation-flags";
+import { listFlaggedContent, resolveFlag } from "@/lib/actions/admin-moderation-flags";
 
 export default function useFlagResolution() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { items: flags, setItems, removeItem, pendingIds } = useOptimisticList({
+  const {
+    items: flags,
+    setItems,
+    removeItem,
+    pendingIds,
+  } = useOptimisticList({
     initialItems: [],
     errorMessage: "Couldn't resolve this flag",
   });

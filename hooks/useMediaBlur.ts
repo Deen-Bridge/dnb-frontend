@@ -93,11 +93,11 @@ export default function useMediaBlur({
       if (reducedMotion) return;
       setBlurEnabled(!!v);
     },
-    [reducedMotion],
+    [reducedMotion]
   );
 
   return useMemo(
     () => ({ blurEnabled, toggleBlur, setBlur, reducedMotion, loaded }),
-    [blurEnabled, toggleBlur, setBlur, reducedMotion, loaded],
+    [blurEnabled, toggleBlur, setBlur, reducedMotion, loaded]
   );
 }

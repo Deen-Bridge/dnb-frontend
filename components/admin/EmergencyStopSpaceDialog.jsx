@@ -17,12 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { emergencyStopLiveSpace } from "@/lib/actions/admin-spaces";
 
-export default function EmergencyStopSpaceDialog({
-  space,
-  actor,
-  disabled = false,
-  onOutcome,
-}) {
+export default function EmergencyStopSpaceDialog({ space, actor, disabled = false, onOutcome }) {
   const confirmationId = useId();
   const reasonId = useId();
   const [open, setOpen] = useState(false);
@@ -68,7 +63,7 @@ export default function EmergencyStopSpaceDialog({
     } catch (error) {
       const auditNote = error.auditLogged
         ? " The failed attempt was recorded in the audit log."
-        : " The audit entry could not be recorded."
+        : " The audit entry could not be recorded.";
       const nextOutcome = {
         kind: "error",
         message: `${error.message || "The live space could not be ended."}${auditNote}`,
@@ -85,12 +80,7 @@ export default function EmergencyStopSpaceDialog({
     <div className="space-y-3">
       <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogTrigger asChild>
-          <Button
-            type="button"
-            variant="destructive"
-            disabled={disabled}
-            className="gap-2"
-          >
+          <Button type="button" variant="destructive" disabled={disabled} className="gap-2">
             <OctagonX className="h-4 w-4" aria-hidden="true" />
             Emergency stop
           </Button>
@@ -103,8 +93,8 @@ export default function EmergencyStopSpaceDialog({
             </div>
             <AlertDialogTitle>End this live space immediately?</AlertDialogTitle>
             <AlertDialogDescription>
-              This is an emergency moderation action. Participants may be disconnected
-              without warning. The reason and outcome will be written to the admin audit log.
+              This is an emergency moderation action. Participants may be disconnected without
+              warning. The reason and outcome will be written to the admin audit log.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -125,7 +115,8 @@ export default function EmergencyStopSpaceDialog({
 
             <div className="space-y-2">
               <Label htmlFor={confirmationId}>
-                Type <span className="font-semibold text-foreground">{space.roomName}</span> to confirm
+                Type <span className="font-semibold text-foreground">{space.roomName}</span> to
+                confirm
               </Label>
               <Input
                 id={confirmationId}
@@ -141,7 +132,10 @@ export default function EmergencyStopSpaceDialog({
             </div>
 
             {outcome?.kind === "error" ? (
-              <div role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              <div
+                role="alert"
+                className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+              >
                 {outcome.message}
               </div>
             ) : null}

@@ -14,13 +14,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -270,15 +264,8 @@ export default function AdminSpacesPage() {
         title="Spaces Oversight"
         subtitle="Monitor and manage all live and scheduled community spaces"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchSpaces}
-            disabled={loading}
-          >
-            <RefreshCw
-              className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
-            />
+          <Button variant="outline" size="sm" onClick={fetchSpaces} disabled={loading}>
+            <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
             Refresh
           </Button>
         }
@@ -362,9 +349,7 @@ export default function AdminSpacesPage() {
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <div className="flex items-center gap-2">
               <Search className="h-4 w-4 text-muted-foreground" />
-              <span
-                className={cn(poppins_500.className, "text-sm text-muted-foreground")}
-              >
+              <span className={cn(poppins_500.className, "text-sm text-muted-foreground")}>
                 Filters:
               </span>
             </div>
@@ -467,9 +452,7 @@ export default function AdminSpacesPage() {
                     <TableHead className="w-[100px]">Type</TableHead>
                     <TableHead className="w-[180px]">Scheduled Time</TableHead>
                     <TableHead className="w-[120px]">Status</TableHead>
-                    <TableHead className="w-[120px] text-right">
-                      Participants
-                    </TableHead>
+                    <TableHead className="w-[120px] text-right">Participants</TableHead>
                     <TableHead className="w-[80px] text-center">Flags</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -528,9 +511,7 @@ export default function AdminSpacesPage() {
 
                         {/* Status */}
                         <TableCell>
-                          <Badge
-                            className={cn("text-xs", statusConfig.badge)}
-                          >
+                          <Badge className={cn("text-xs", statusConfig.badge)}>
                             {statusConfig.label}
                           </Badge>
                         </TableCell>
@@ -540,9 +521,7 @@ export default function AdminSpacesPage() {
                           {space.participantCount !== null ? (
                             <div className="flex items-center justify-end gap-1.5">
                               <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                              <span className="text-sm tabular-nums">
-                                {space.participantCount}
-                              </span>
+                              <span className="text-sm tabular-nums">{space.participantCount}</span>
                             </div>
                           ) : (
                             <span className="text-sm text-muted-foreground">—</span>
@@ -553,10 +532,7 @@ export default function AdminSpacesPage() {
                         <TableCell className="text-center">
                           {space.flags.includes("flagged") ? (
                             <div className="flex items-center justify-center">
-                              <Flag
-                                className="h-4 w-4 text-amber-500"
-                                aria-label="Flagged"
-                              />
+                              <Flag className="h-4 w-4 text-amber-500" aria-label="Flagged" />
                             </div>
                           ) : (
                             <span className="text-muted-foreground text-xs">—</span>

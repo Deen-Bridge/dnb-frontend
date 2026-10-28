@@ -3,13 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -18,16 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import {
   Filter,
@@ -182,12 +168,7 @@ function FunnelVisual({ stages, data }) {
                 {value.toLocaleString()}
               </span>
               {index > 0 && (
-                <span
-                  className={cn(
-                    poppins_400.className,
-                    "text-xs text-muted-foreground"
-                  )}
-                >
+                <span className={cn(poppins_400.className, "text-xs text-muted-foreground")}>
                   {getConversionRate(data[stages[0].key], value).toFixed(1)}% of visitors
                 </span>
               )}
@@ -199,10 +180,7 @@ function FunnelVisual({ stages, data }) {
                 <div className="flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1">
                   <TrendingDown className="h-3 w-3 text-destructive" />
                   <span
-                    className={cn(
-                      poppins_500.className,
-                      "text-xs tabular-nums text-destructive"
-                    )}
+                    className={cn(poppins_500.className, "text-xs tabular-nums text-destructive")}
                   >
                     {getDropOff(value, data[stages[index + 1].key]).toFixed(1)}% drop-off
                   </span>
@@ -225,19 +203,14 @@ function MetricDefinitions() {
           <HelpCircle className="h-5 w-5" />
           Metric Definitions
         </CardTitle>
-        <CardDescription>
-          How each funnel stage and conversion rate is calculated
-        </CardDescription>
+        <CardDescription>How each funnel stage and conversion rate is calculated</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 sm:grid-cols-2">
           {FUNNEL_STAGES.map((stage) => {
             const Icon = stage.icon;
             return (
-              <div
-                key={stage.key}
-                className="rounded-lg border p-4 space-y-2"
-              >
+              <div key={stage.key} className="rounded-lg border p-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <div
                     className="flex h-7 w-7 items-center justify-center rounded-lg"
@@ -245,9 +218,7 @@ function MetricDefinitions() {
                   >
                     <Icon className="h-4 w-4" style={{ color: stage.color }} />
                   </div>
-                  <span className={cn(poppins_600.className, "text-sm")}>
-                    {stage.label}
-                  </span>
+                  <span className={cn(poppins_600.className, "text-sm")}>{stage.label}</span>
                 </div>
                 <p
                   className={cn(
@@ -266,20 +237,17 @@ function MetricDefinitions() {
           <div className="flex items-start gap-2">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div className="space-y-1">
-              <p className={cn(poppins_500.className, "text-sm")}>
-                Conversion Rate
-              </p>
+              <p className={cn(poppins_500.className, "text-sm")}>Conversion Rate</p>
               <p
                 className={cn(
                   poppins_400.className,
                   "text-xs text-muted-foreground leading-relaxed"
                 )}
               >
-                The percentage of users at a given stage relative to the total
-                number of visitors. For example, &quot;First Purchase conversion rate&quot;
-                = (First Purchase count / Visitor count) × 100. Drop-off
-                percentages show the percentage lost between two adjacent
-                stages: ((Stage A - Stage B) / Stage A) × 100.
+                The percentage of users at a given stage relative to the total number of visitors.
+                For example, &quot;First Purchase conversion rate&quot; = (First Purchase count /
+                Visitor count) × 100. Drop-off percentages show the percentage lost between two
+                adjacent stages: ((Stage A - Stage B) / Stage A) × 100.
               </p>
             </div>
           </div>
@@ -399,9 +367,7 @@ export default function FunnelAnalyticsPage() {
         <Card className="border-destructive/50 bg-destructive/5">
           <CardContent className="flex items-center gap-3 p-5">
             <AlertCircle className="h-5 w-5 text-destructive" />
-            <p className={cn(poppins_500.className, "text-sm text-destructive")}>
-              {error}
-            </p>
+            <p className={cn(poppins_500.className, "text-sm text-destructive")}>{error}</p>
           </CardContent>
         </Card>
       )}
@@ -427,10 +393,9 @@ export default function FunnelAnalyticsPage() {
                 subtext={
                   stage.key === "visitor"
                     ? "Top of funnel"
-                    : `${getConversionRate(
-                        funnelData.visitor,
-                        funnelData[stage.key] || 0
-                      ).toFixed(1)}% of visitors`
+                    : `${getConversionRate(funnelData.visitor, funnelData[stage.key] || 0).toFixed(
+                        1
+                      )}% of visitors`
                 }
               />
             ))}
@@ -439,9 +404,7 @@ export default function FunnelAnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Conversion Funnel</CardTitle>
-              <CardDescription>
-                Stage-by-stage volumes and drop-off rates
-              </CardDescription>
+              <CardDescription>Stage-by-stage volumes and drop-off rates</CardDescription>
             </CardHeader>
             <CardContent>
               <FunnelVisual stages={FUNNEL_STAGES} data={funnelData} />
@@ -451,9 +414,7 @@ export default function FunnelAnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Funnel Volumes</CardTitle>
-              <CardDescription>
-                Comparative volume across each funnel stage
-              </CardDescription>
+              <CardDescription>Comparative volume across each funnel stage</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-[300px] w-full">

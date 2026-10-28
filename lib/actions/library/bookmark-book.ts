@@ -22,9 +22,7 @@ function toRethrowable(error: unknown): unknown {
 
 export const toggleBookBookmark = async (bookId: string): Promise<BookmarkMutationResponse> => {
   try {
-    const response = await axiosInstance.post(
-      `/api/books/${bookId}/bookmark`
-    );
+    const response = await axiosInstance.post(`/api/books/${bookId}/bookmark`);
     return response.data;
   } catch (error: unknown) {
     logger.error("Error toggling book bookmark:", error);
@@ -44,9 +42,7 @@ export const getBookmarkedBooks = async (): Promise<BookmarkedBooksResponse> => 
 
 export const checkIfBookBookmarked = async (bookId: string): Promise<boolean> => {
   try {
-    const response = await axiosInstance.get(
-      `/api/books/${bookId}/bookmark/check`
-    );
+    const response = await axiosInstance.get(`/api/books/${bookId}/bookmark/check`);
     return Boolean(response.data?.isBookmarked);
   } catch (error: unknown) {
     logger.error("Error checking book bookmark status:", error);
@@ -56,9 +52,7 @@ export const checkIfBookBookmarked = async (bookId: string): Promise<boolean> =>
 
 export const removeBookBookmark = async (bookId: string): Promise<BookmarkMutationResponse> => {
   try {
-    const response = await axiosInstance.delete(
-      `/api/books/${bookId}/bookmark`
-    );
+    const response = await axiosInstance.delete(`/api/books/${bookId}/bookmark`);
     return response.data;
   } catch (error: unknown) {
     logger.error("Error removing book bookmark:", error);

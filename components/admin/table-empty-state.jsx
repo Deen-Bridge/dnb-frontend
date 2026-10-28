@@ -2,14 +2,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function TableEmptyState({ icon, title, description, action }) {
-  return (
-    <EmptyState
-      icon={icon}
-      title={title}
-      description={description}
-      action={action}
-    />
-  );
+  return <EmptyState icon={icon} title={title} description={description} action={action} />;
 }
 
 export function TableSkeleton({ rows = 5, columns = 4, className }) {

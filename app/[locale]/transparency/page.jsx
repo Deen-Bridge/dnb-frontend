@@ -2,11 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { HeartHandshake, ShieldCheck, Radio, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { siteName } from "@/lib/config/site.config";
 import { config } from "@/lib/config/env";
 import Navbar from "@/components/molecules/ladingpage/Navbar";
@@ -39,8 +35,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Sadaqah Transparency — Live Donations on Stellar",
-    description:
-      "A public, on-chain live feed of every USDC donation reaching the Sadaqah fund.",
+    description: "A public, on-chain live feed of every USDC donation reaching the Sadaqah fund.",
     images: ["/og.png"],
   },
 };
@@ -124,10 +119,9 @@ export default function TransparencyPage() {
                 "mx-auto mt-4 max-w-2xl text-base leading-relaxed text-ink-inverse-muted sm:text-lg"
               )}
             >
-              Every Sadaqah Jariyah contribution flows straight into a public
-              USDC fund on the Stellar network. This page streams those payments
-              in real time — no login, no filter, no middleman. Verify each one
-              yourself on stellar.expert.
+              Every Sadaqah Jariyah contribution flows straight into a public USDC fund on the
+              Stellar network. This page streams those payments in real time — no login, no filter,
+              no middleman. Verify each one yourself on stellar.expert.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
@@ -184,9 +178,8 @@ function NotConfiguredState() {
           Transparency feed not configured yet
         </h2>
         <p className={cn(poppins_400, "mt-3 text-sm leading-relaxed text-ink-muted")}>
-          The live donation feed isn&apos;t wired up yet — the on-chain fund is
-          still being set up. Check back soon, insha&apos;Allah, and every
-          contribution will appear here in real time.
+          The live donation feed isn&apos;t wired up yet — the on-chain fund is still being set up.
+          Check back soon, insha&apos;Allah, and every contribution will appear here in real time.
         </p>
         <Link
           href="/dashboard/sadaqah"

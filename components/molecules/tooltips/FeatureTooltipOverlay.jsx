@@ -44,11 +44,7 @@ export default function FeatureTooltipOverlay() {
       data-testid="feature-tooltip-overlay"
     >
       {activeTooltips.map((highlight) => (
-        <FeatureTooltip
-          key={highlight.id}
-          highlight={highlight}
-          onDismiss={dismissTooltip}
-        />
+        <FeatureTooltip key={highlight.id} highlight={highlight} onDismiss={dismissTooltip} />
       ))}
     </div>,
     document.body
@@ -84,10 +80,7 @@ export function FeatureTooltipsStandalone({ highlights }) {
       const next = new Set(prev);
       next.add(id);
       try {
-        localStorage.setItem(
-          "dnb_feature_tooltips_dismissed",
-          JSON.stringify([...next])
-        );
+        localStorage.setItem("dnb_feature_tooltips_dismissed", JSON.stringify([...next]));
       } catch {
         // Ignore errors
       }
@@ -97,20 +90,14 @@ export function FeatureTooltipsStandalone({ highlights }) {
 
   if (!mounted) return null;
 
-  const activeTooltips = highlights
-    .filter((h) => !dismissed.has(h.id))
-    .slice(0, 3);
+  const activeTooltips = highlights.filter((h) => !dismissed.has(h.id)).slice(0, 3);
 
   if (activeTooltips.length === 0) return null;
 
   return createPortal(
     <div className="feature-tooltip-overlay" aria-label="Feature announcements">
       {activeTooltips.map((highlight) => (
-        <FeatureTooltip
-          key={highlight.id}
-          highlight={highlight}
-          onDismiss={handleDismiss}
-        />
+        <FeatureTooltip key={highlight.id} highlight={highlight} onDismiss={handleDismiss} />
       ))}
     </div>,
     document.body

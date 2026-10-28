@@ -7,13 +7,7 @@ import AuthNavButtons from "./AuthNavButtons";
 import LocaleSwitcher from "@/components/molecules/i18n/LocaleSwitcher";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
 import { AlignJustify } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -123,9 +117,7 @@ function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-3/4 bg-muted">
-        <SheetHeader className="mb-4 text-start text-xl font-semibold">
-          {t("menu")}
-        </SheetHeader>
+        <SheetHeader className="mb-4 text-start text-xl font-semibold">{t("menu")}</SheetHeader>
         <nav className="flex flex-col space-y-4 px-4 font-stretch-125%">
           {links.map((link) => (
             <SheetClose asChild key={link.to}>

@@ -4,13 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -227,12 +221,7 @@ function KpiCard({ metric, icon: Icon }) {
             >
               {metric.label}
             </p>
-            <p
-              className={cn(
-                poppins_600.className,
-                "text-2xl text-foreground"
-              )}
-            >
+            <p className={cn(poppins_600.className, "text-2xl text-foreground")}>
               {isEmpty ? "—" : metric.value.toLocaleString()}
             </p>
             {isEmpty && (
@@ -262,9 +251,8 @@ function WelcomeBanner() {
           Welcome to your new platform
         </h2>
         <p className={cn(poppins_400.className, "text-sm text-muted-foreground")}>
-          Your database is empty — that&apos;s expected. The cards below show
-          guided next steps instead of confusing zeros, and the checklist tracks
-          your setup progress as you go.
+          Your database is empty — that&apos;s expected. The cards below show guided next steps
+          instead of confusing zeros, and the checklist tracks your setup progress as you go.
         </p>
       </div>
     </div>
@@ -281,9 +269,7 @@ function SetupChecklist({ items, completedCount, progress, onDismiss }) {
               <Rocket className="h-5 w-5" />
               Getting Started
             </CardTitle>
-            <CardDescription>
-              Finish these steps to launch your platform
-            </CardDescription>
+            <CardDescription>Finish these steps to launch your platform</CardDescription>
           </div>
           <Button
             variant="ghost"
@@ -343,8 +329,8 @@ function SetupChecklist({ items, completedCount, progress, onDismiss }) {
           ))}
         </ul>
         <p className="text-xs text-muted-foreground">
-          Progress is derived from your platform data and settings. Dismiss this
-          guide once your team is actively using the platform.
+          Progress is derived from your platform data and settings. Dismiss this guide once your
+          team is actively using the platform.
         </p>
       </CardContent>
     </Card>
@@ -371,7 +357,15 @@ export default function AdminOverviewPage() {
       });
       const stamp = now.toISOString().slice(0, 10);
       const rows = [
-        ["Summary", "Users", overview.counts.students.value + overview.counts.mentors.value, "", "", "", ""],
+        [
+          "Summary",
+          "Users",
+          overview.counts.students.value + overview.counts.mentors.value,
+          "",
+          "",
+          "",
+          "",
+        ],
         ["Summary", "Courses", overview.counts.courses.value, "", "", "", ""],
         ...transactions.map((transaction) => [
           "Revenue",
@@ -386,7 +380,15 @@ export default function AdminOverviewPage() {
 
       downloadCsv({
         filename: `deenbridge-admin-${stamp}.csv`,
-        headers: ["Type", "Metric or reference", "Amount or count", "Currency", "Buyer", "Creator", "Completed at"],
+        headers: [
+          "Type",
+          "Metric or reference",
+          "Amount or count",
+          "Currency",
+          "Buyer",
+          "Creator",
+          "Completed at",
+        ],
         rows,
       });
       toast.success("Admin stats exported");
@@ -443,9 +445,7 @@ export default function AdminOverviewPage() {
   }, [data]);
 
   const completedCount = setupItems.filter((item) => item.complete).length;
-  const progress = setupItems.length
-    ? Math.round((completedCount / setupItems.length) * 100)
-    : 0;
+  const progress = setupItems.length ? Math.round((completedCount / setupItems.length) * 100) : 0;
 
   if (loading) {
     return (
@@ -479,11 +479,7 @@ export default function AdminOverviewPage() {
           title="Overview"
           subtitle="Monitor platform activity and complete your setup"
         />
-        <EmptyState
-          icon={AlertTriangle}
-          title="Failed to load overview"
-          description={error}
-        />
+        <EmptyState icon={AlertTriangle} title="Failed to load overview" description={error} />
       </PageShell>
     );
   }
@@ -497,21 +493,18 @@ export default function AdminOverviewPage() {
         icon={LayoutDashboard}
         title="Overview"
         subtitle="Monitor platform activity and complete your setup"
-        actions={(
+        actions={
           <Button variant="outline" onClick={exportCurrentPeriod} className="gap-2">
             <Download className="h-4 w-4" aria-hidden="true" />
             Export current period
           </Button>
-        )}
+        }
       />
 
       {isEmpty && guided && <WelcomeBanner />}
 
       {/* KPI summary row — numbers from the snapshot only */}
-      <section
-        aria-label="Platform summary"
-        className="grid grid-cols-2 gap-4 lg:grid-cols-4"
-      >
+      <section aria-label="Platform summary" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {KPI_CARDS.map(({ key, icon }) => (
           <KpiCard key={key} metric={data.counts[key]} icon={icon} />
         ))}

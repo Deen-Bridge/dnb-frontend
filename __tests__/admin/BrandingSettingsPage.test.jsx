@@ -54,10 +54,7 @@ describe("BrandingSettingsPage — upload validation feedback", () => {
     const textFile = new File(["hello"], "notes.txt", { type: "text/plain" });
     fireEvent.change(fileInput, { target: { files: [textFile] } });
 
-    expect(toast.error).toHaveBeenCalledWith(
-      "Please upload an image file",
-      expect.any(Object)
-    );
+    expect(toast.error).toHaveBeenCalledWith("Please upload an image file", expect.any(Object));
     expect(alertSpy).not.toHaveBeenCalled();
   });
 
@@ -71,10 +68,7 @@ describe("BrandingSettingsPage — upload validation feedback", () => {
     });
     fireEvent.change(fileInput, { target: { files: [bigImage] } });
 
-    expect(toast.error).toHaveBeenCalledWith(
-      "File size must be less than 2MB",
-      expect.any(Object)
-    );
+    expect(toast.error).toHaveBeenCalledWith("File size must be less than 2MB", expect.any(Object));
     expect(alertSpy).not.toHaveBeenCalled();
   });
 });

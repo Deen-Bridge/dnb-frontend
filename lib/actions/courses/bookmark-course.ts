@@ -1,11 +1,10 @@
 import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 
-export async function toggleCourseBookmark(courseId: string): Promise<any> { // TODO(types): Response from bookmark toggle
+export async function toggleCourseBookmark(courseId: string): Promise<any> {
+  // TODO(types): Response from bookmark toggle
   try {
-    const response = await axiosInstance.post(
-      `/api/courses/${courseId}/bookmark`
-    );
+    const response = await axiosInstance.post(`/api/courses/${courseId}/bookmark`);
     return response.data;
   } catch (error) {
     logger.error("Error toggling bookmark:", error);
@@ -13,7 +12,8 @@ export async function toggleCourseBookmark(courseId: string): Promise<any> { // 
   }
 }
 
-export async function getBookmarkedCourses(): Promise<any> { // TODO(types): Response from get bookmarks
+export async function getBookmarkedCourses(): Promise<any> {
+  // TODO(types): Response from get bookmarks
   try {
     const response = await axiosInstance.get("/api/courses/bookmarks");
     return response.data;
@@ -25,9 +25,7 @@ export async function getBookmarkedCourses(): Promise<any> { // TODO(types): Res
 
 export async function checkIfBookmarked(courseId: string): Promise<boolean> {
   try {
-    const response = await axiosInstance.get(
-      `/api/courses/${courseId}/bookmark/check`
-    );
+    const response = await axiosInstance.get(`/api/courses/${courseId}/bookmark/check`);
     return Boolean(response.data?.isBookmarked);
   } catch (error) {
     logger.error("Error checking bookmark status:", error);
@@ -35,11 +33,10 @@ export async function checkIfBookmarked(courseId: string): Promise<boolean> {
   }
 }
 
-export async function removeBookmark(courseId: string): Promise<any> { // TODO(types): Response from remove bookmark
+export async function removeBookmark(courseId: string): Promise<any> {
+  // TODO(types): Response from remove bookmark
   try {
-    const response = await axiosInstance.delete(
-      `/api/courses/${courseId}/bookmark`
-    );
+    const response = await axiosInstance.delete(`/api/courses/${courseId}/bookmark`);
     return response.data;
   } catch (error) {
     logger.error("Error removing bookmark:", error);

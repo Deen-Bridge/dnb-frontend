@@ -1,10 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost:3000/",
-        "http://localhost:3000/login"
-      ],
+      "url": ["http://localhost:3000/", "http://localhost:3000/login"],
       "numberOfRuns": 1,
       "settings": {
         "preset": "desktop"

@@ -34,9 +34,7 @@ describe("admin verification history service", () => {
 
     const result = await fetchEducatorVerificationHistory("usr_1", {});
 
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      "/api/admin/educators/usr_1/verification-history"
-    );
+    expect(mockAxios.get).toHaveBeenCalledWith("/api/admin/educators/usr_1/verification-history");
     expect(result.source).toBe("backend");
     expect(result.events[0]).toMatchObject({
       type: "approved",

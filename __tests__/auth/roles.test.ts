@@ -35,12 +35,7 @@ describe("ROLES / CAPABILITIES constants", () => {
     expect(Object.isFrozen(ROLES)).toBe(true);
     expect(Object.isFrozen(CAPABILITIES)).toBe(true);
     expect(ROLES).toEqual({ STUDENT: "student", EDUCATOR: "educator", ADMIN: "admin" });
-    expect(ALL_CAPS).toEqual([
-      "course:create",
-      "course:edit",
-      "book:create",
-      "space:create",
-    ]);
+    expect(ALL_CAPS).toEqual(["course:create", "course:edit", "book:create", "space:create"]);
   });
 });
 
@@ -179,7 +174,9 @@ describe("roleAllows", () => {
   });
 
   it("does not check verification (unverified educator is allowed)", () => {
-    expect(roleAllows({ role: "educator", isVerified: false }, CAPABILITIES.COURSE_CREATE)).toBe(true);
+    expect(roleAllows({ role: "educator", isVerified: false }, CAPABILITIES.COURSE_CREATE)).toBe(
+      true
+    );
   });
 });
 
@@ -204,7 +201,9 @@ describe("can", () => {
 
   it("accepts the verification flag variants", () => {
     expect(can(CAPABILITIES.BOOK_CREATE, { role: "educator", educatorVerified: true })).toBe(true);
-    expect(can(CAPABILITIES.SPACE_CREATE, { role: "mentor", verificationStatus: "Verified" })).toBe(true);
+    expect(can(CAPABILITIES.SPACE_CREATE, { role: "mentor", verificationStatus: "Verified" })).toBe(
+      true
+    );
   });
 
   it("lets an admin do everything without verification", () => {

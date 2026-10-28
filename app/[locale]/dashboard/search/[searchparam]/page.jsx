@@ -5,11 +5,7 @@ import { searchQuery } from "@/hooks/useSearch";
 import Image from "next/image";
 import SearchCardSkeleton from "@/components/atoms/skeletons/SearchCardSkeleton";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 
 const typeLabels = {
   course: "Course",
@@ -29,15 +25,12 @@ const typeImage = (item) => {
   if (item.type === "course") return item?.thumbnail || "/images/dnb.png";
   if (item.type === "book") return item?.image || "/images/book1.jpg";
   if (item.type === "user") return item?.avatar || "/images/man.jpg";
-  if (item.type === "space")
-    return item.thumbnail || "/images/space-placeholder.jpg";
+  if (item.type === "space") return item.thumbnail || "/images/space-placeholder.jpg";
   return "/images/dnb.png";
 };
 
 const typeDescription = (item) => {
-  return (
-    item.description || item.bio || item.category || "No description available."
-  );
+  return item.description || item.bio || item.category || "No description available.";
 };
 
 const typeBadge = (item) => {
@@ -116,9 +109,7 @@ const Page = ({ params }) => {
               />
             </svg>
           </div>
-          <span className={cn(poppins_500, "text-lg text-ink-muted")}>
-            No results found.
-          </span>
+          <span className={cn(poppins_500, "text-lg text-ink-muted")}>No results found.</span>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -141,27 +132,15 @@ const Page = ({ params }) => {
                 </div>
               </div>
               <div className="px-6 pb-2 pt-4">
-                <h3
-                  className={cn(
-                    poppins_600,
-                    "mb-1 line-clamp-1 text-lg text-ink"
-                  )}
-                >
-                  {item.title ||
-                    item.name ||
-                    item.description?.slice(0, 30) + "..."}
+                <h3 className={cn(poppins_600, "mb-1 line-clamp-1 text-lg text-ink")}>
+                  {item.title || item.name || item.description?.slice(0, 30) + "..."}
                 </h3>
               </div>
               <div className="px-6 pb-6">
                 {/* Detailed rendering by type */}
                 {item.type === "course" && (
                   <>
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "mb-2 line-clamp-2 text-sm text-ink-muted"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "mb-2 line-clamp-2 text-sm text-ink-muted")}>
                       {item.description}
                     </p>
                     <div className="mb-2 flex items-center justify-between">
@@ -180,12 +159,7 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "book" && (
                   <>
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "mb-2 line-clamp-2 text-sm text-ink-muted"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "mb-2 line-clamp-2 text-sm text-ink-muted")}>
                       {item.description}
                     </p>
                     <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -210,13 +184,8 @@ const Page = ({ params }) => {
                         </span>
                       )}
                       {item.author && (
-                        <span
-                          className={cn(poppins_400, "text-xs text-ink-muted")}
-                        >
-                          By{" "}
-                          {typeof item.author === "object"
-                            ? item.author.name
-                            : item.author}
+                        <span className={cn(poppins_400, "text-xs text-ink-muted")}>
+                          By {typeof item.author === "object" ? item.author.name : item.author}
                         </span>
                       )}
                     </div>
@@ -234,14 +203,10 @@ const Page = ({ params }) => {
                           className="rounded-full object-cover"
                         />
                       )}
-                      <span className={cn(poppins_600, "text-ink")}>
-                        {item.name}
-                      </span>
+                      <span className={cn(poppins_600, "text-ink")}>{item.name}</span>
                     </div>
                     {item.role && (
-                      <span
-                        className={cn(poppins_400, "text-xs text-ink-muted")}
-                      >
+                      <span className={cn(poppins_400, "text-xs text-ink-muted")}>
                         Role: {item.role}
                       </span>
                     )}
@@ -249,12 +214,7 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "space" && (
                   <>
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "mb-2 line-clamp-2 text-sm text-ink-muted"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "mb-2 line-clamp-2 text-sm text-ink-muted")}>
                       {item.description}
                     </p>
                     <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -279,27 +239,18 @@ const Page = ({ params }) => {
                         </span>
                       )}
                       {item.eventDate && (
-                        <span
-                          className={cn(poppins_400, "text-xs text-ink-muted")}
-                        >
+                        <span className={cn(poppins_400, "text-xs text-ink-muted")}>
                           Event: {formatDate(item.eventDate)}
                         </span>
                       )}
                       {item.duration && (
-                        <span
-                          className={cn(poppins_400, "text-xs text-ink-muted")}
-                        >
+                        <span className={cn(poppins_400, "text-xs text-ink-muted")}>
                           Duration: {item.duration} min
                         </span>
                       )}
                       {item.host && (
-                        <span
-                          className={cn(poppins_400, "text-xs text-ink-muted")}
-                        >
-                          Host:{" "}
-                          {typeof item.host === "object"
-                            ? item.host.name
-                            : item.host}
+                        <span className={cn(poppins_400, "text-xs text-ink-muted")}>
+                          Host: {typeof item.host === "object" ? item.host.name : item.host}
                         </span>
                       )}
                     </div>
@@ -307,12 +258,7 @@ const Page = ({ params }) => {
                 )}
                 {item.type === "reel" && (
                   <>
-                    <p
-                      className={cn(
-                        poppins_400,
-                        "mb-2 line-clamp-2 text-sm text-ink-muted"
-                      )}
-                    >
+                    <p className={cn(poppins_400, "mb-2 line-clamp-2 text-sm text-ink-muted")}>
                       {item.description}
                     </p>
                   </>

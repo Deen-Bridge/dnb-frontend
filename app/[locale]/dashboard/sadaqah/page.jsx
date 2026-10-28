@@ -22,11 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import {
-  poppins_400,
-  poppins_500,
-  poppins_600,
-} from "@/lib/config/font.config";
+import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { useFormatter } from "next-intl";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import useStellarDonation from "@/hooks/useStellarDonation";
@@ -37,12 +33,7 @@ const PRESET_AMOUNTS = [5, 10, 25, 100];
 /* ── building blocks ── */
 
 const Panel = ({ className, children }) => (
-  <div
-    className={cn(
-      "rounded-2xl border border-accent/10 bg-surface-raised shadow-sm",
-      className
-    )}
-  >
+  <div className={cn("rounded-2xl border border-accent/10 bg-surface-raised shadow-sm", className)}>
     {children}
   </div>
 );
@@ -63,9 +54,7 @@ const SectionHeading = ({ title, subtitle }) => (
   <div className="mb-5">
     <h2 className={cn(poppins_600.className, "text-lg text-ink")}>{title}</h2>
     {subtitle && (
-      <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>
-        {subtitle}
-      </p>
+      <p className={cn(poppins_400.className, "mt-1 text-sm text-ink-muted")}>{subtitle}</p>
     )}
   </div>
 );
@@ -95,15 +84,9 @@ export default function SadaqahPage() {
       minute: "2-digit",
     });
 
-  const { connectedWallet, walletInfo, connectWallet, network, isConnecting } =
-    useStellar();
-  const {
-    initializeDonation,
-    executeDonation,
-    cancelDonation,
-    getDonationStats,
-    isProcessing,
-  } = useStellarDonation();
+  const { connectedWallet, walletInfo, connectWallet, network, isConnecting } = useStellar();
+  const { initializeDonation, executeDonation, cancelDonation, getDonationStats, isProcessing } =
+    useStellarDonation();
 
   const [stats, setStats] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -142,9 +125,7 @@ export default function SadaqahPage() {
   const amount = customAmount !== "" ? parseFloat(customAmount) : selectedAmount;
   const isValidAmount = !isNaN(amount) && amount > 0;
   const hasInsufficientBalance =
-    connectedWallet &&
-    isValidAmount &&
-    parseFloat(walletInfo?.usdcBalance || 0) < amount;
+    connectedWallet && isValidAmount && parseFloat(walletInfo?.usdcBalance || 0) < amount;
 
   const handlePresetSelect = (value) => {
     setSelectedAmount(value);
@@ -201,8 +182,7 @@ export default function SadaqahPage() {
     setStep("amount");
   };
 
-  const presetActive = (preset) =>
-    customAmount === "" && selectedAmount === preset;
+  const presetActive = (preset) => customAmount === "" && selectedAmount === preset;
 
   /* ── Featured pool panel (right of hero) ── */
   const PoolPanel = () => (
@@ -245,14 +225,9 @@ export default function SadaqahPage() {
           >
             Sadaqah Fund Balance
           </p>
-          <p
-            dir="ltr"
-            className={cn(poppins_600.className, "mt-1 text-4xl leading-none")}
-          >
+          <p dir="ltr" className={cn(poppins_600.className, "mt-1 text-4xl leading-none")}>
             ${formatAmount(stats?.poolBalance)}
-            <span
-              className={cn(poppins_500.className, "ms-1 text-lg text-ink-inverse-muted")}
-            >
+            <span className={cn(poppins_500.className, "ms-1 text-lg text-ink-inverse-muted")}>
               USDC
             </span>
           </p>
@@ -261,10 +236,7 @@ export default function SadaqahPage() {
               <p className={cn(poppins_400.className, "text-[11px] text-ink-inverse-muted")}>
                 Total donated
               </p>
-              <p
-                dir="ltr"
-                className={cn(poppins_600.className, "text-base text-ink-inverse")}
-              >
+              <p dir="ltr" className={cn(poppins_600.className, "text-base text-ink-inverse")}>
                 ${formatAmount(stats?.totalDonated)}
               </p>
             </div>
@@ -303,14 +275,10 @@ export default function SadaqahPage() {
               </h1>
             </div>
             <p
-              className={cn(
-                poppins_400.className,
-                "mt-3 max-w-xl leading-relaxed text-ink-muted"
-              )}
+              className={cn(poppins_400.className, "mt-3 max-w-xl leading-relaxed text-ink-muted")}
             >
-              Give Sadaqah directly to the transparent USDC fund on Stellar.
-              Each payment is signed from your wallet and can be verified on
-              the network.
+              Give Sadaqah directly to the transparent USDC fund on Stellar. Each payment is signed
+              from your wallet and can be verified on the network.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Chip icon={ShieldCheck}>On-chain transparency</Chip>
@@ -371,9 +339,7 @@ export default function SadaqahPage() {
                         className={cn(
                           poppins_400.className,
                           "text-[10px] uppercase tracking-wider",
-                          presetActive(preset)
-                            ? "text-ink-inverse-muted"
-                            : "text-ink-muted"
+                          presetActive(preset) ? "text-ink-inverse-muted" : "text-ink-muted"
                         )}
                       >
                         USDC
@@ -458,9 +424,7 @@ export default function SadaqahPage() {
                           hasInsufficientBalance ? "text-red-600" : "text-ink"
                         )}
                       >
-                        <span dir="ltr">
-                          {formatAmount(walletInfo?.usdcBalance)} USDC
-                        </span>
+                        <span dir="ltr">{formatAmount(walletInfo?.usdcBalance)} USDC</span>
                       </span>
                     </div>
                     <span
@@ -484,16 +448,13 @@ export default function SadaqahPage() {
                   <Button
                     className="w-full rounded-full bg-accent text-white hover:bg-accent/90"
                     onClick={handleInitiate}
-                    disabled={
-                      !isValidAmount || hasInsufficientBalance || isProcessing
-                    }
+                    disabled={!isValidAmount || hasInsufficientBalance || isProcessing}
                   >
                     {hasInsufficientBalance ? (
                       "Insufficient Balance"
                     ) : (
                       <>
-                        Donate {isValidAmount ? `$${formatAmount(amount)}` : ""}{" "}
-                        USDC
+                        Donate {isValidAmount ? `$${formatAmount(amount)}` : ""} USDC
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </>
                     )}
@@ -509,9 +470,7 @@ export default function SadaqahPage() {
                     Please confirm the transaction in your wallet extension.
                   </p>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className={cn(poppins_400.className, "text-ink-muted")}>
-                      Donating:
-                    </span>
+                    <span className={cn(poppins_400.className, "text-ink-muted")}>Donating:</span>
                     <span dir="ltr" className={cn(poppins_600.className, "text-ink")}>
                       ${formatAmount(donationData.amount)} USDC
                     </span>
@@ -520,12 +479,7 @@ export default function SadaqahPage() {
 
                 {donationData.sep7Uri && (
                   <div className="rounded-xl border border-accent/10 bg-surface p-4">
-                    <p
-                      className={cn(
-                        poppins_500.className,
-                        "mb-3 text-center text-sm text-ink"
-                      )}
-                    >
+                    <p className={cn(poppins_500.className, "mb-3 text-center text-sm text-ink")}>
                       Prefer mobile? Pay by QR instead
                     </p>
                     <Sep7QrCode uri={donationData.sep7Uri} />
@@ -533,11 +487,7 @@ export default function SadaqahPage() {
                 )}
 
                 <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1 rounded-full"
-                    onClick={handleBack}
-                  >
+                  <Button variant="outline" className="flex-1 rounded-full" onClick={handleBack}>
                     Back
                   </Button>
                   <Button
@@ -555,9 +505,7 @@ export default function SadaqahPage() {
               <div className="flex flex-col items-center py-10">
                 <Loader2 className="h-12 w-12 animate-spin text-secondary" />
                 <p className={cn(poppins_500.className, "mt-4 text-ink")}>
-                  {isProcessing
-                    ? "Processing donation…"
-                    : "Preparing transaction…"}
+                  {isProcessing ? "Processing donation…" : "Preparing transaction…"}
                 </p>
                 <p className={cn(poppins_400.className, "mt-2 text-xs text-ink-muted")}>
                   Please check your wallet for the signing request
@@ -661,9 +609,7 @@ export default function SadaqahPage() {
                       <div>
                         <p dir="ltr" className={cn(poppins_600.className, "text-ink")}>
                           ${formatAmount(donation.amount)}{" "}
-                          <span
-                            className={cn(poppins_400.className, "text-xs text-ink-muted")}
-                          >
+                          <span className={cn(poppins_400.className, "text-xs text-ink-muted")}>
                             USDC
                           </span>
                         </p>
@@ -715,8 +661,8 @@ export default function SadaqahPage() {
                 "mt-5 border-t border-accent/10 pt-4 text-xs leading-relaxed text-ink-muted"
               )}
             >
-              Non-custodial: you sign every payment yourself. DeenBridge never
-              holds your funds — they go straight to the on-chain pool.
+              Non-custodial: you sign every payment yourself. DeenBridge never holds your funds —
+              they go straight to the on-chain pool.
             </p>
           </Panel>
         </div>

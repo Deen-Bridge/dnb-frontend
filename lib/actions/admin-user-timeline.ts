@@ -27,12 +27,7 @@ import { fetchEducatorVerificationHistory } from "@/lib/actions/admin-verificati
 import { logger } from "@/lib/logger";
 
 export type ActivityEventType =
-  | "signup"
-  | "login"
-  | "purchase"
-  | "enrollment"
-  | "messages"
-  | "verification";
+  "signup" | "login" | "purchase" | "enrollment" | "messages" | "verification";
 
 export interface ActivityEvent {
   id: string;
@@ -118,10 +113,7 @@ function loginEvent(user: TimelineUser): ActivityEvent | null {
 }
 
 /** Purchase events from the admin transactions endpoint, wallet-filtered. */
-async function purchaseEvents(
-  user: TimelineUser,
-  degraded: string[]
-): Promise<ActivityEvent[]> {
+async function purchaseEvents(user: TimelineUser, degraded: string[]): Promise<ActivityEvent[]> {
   if (!user.walletAddress) return [];
 
   try {
@@ -140,9 +132,7 @@ async function purchaseEvents(
           return {
             id: `purchase-${tx._id || index}`,
             type: "purchase",
-            title: failed
-              ? `Payment failed — ${tx.itemTitle}`
-              : `Purchased ${tx.itemTitle}`,
+            title: failed ? `Payment failed — ${tx.itemTitle}` : `Purchased ${tx.itemTitle}`,
             detail: `${Number(tx.amount).toFixed(2)} ${tx.currency || "USDC"} · ${tx.status}`,
             timestamp,
           };

@@ -21,9 +21,7 @@ export function buildContributionFlowPresentation(
 ): ContributionFlowPresentation {
   if (spec.kind === "scholarship_contribution") {
     if (!spec.scholarshipId || !spec.scholarshipTitle) {
-      throw new Error(
-        "Scholarship contributions must specify scholarshipId and scholarshipTitle"
-      );
+      throw new Error("Scholarship contributions must specify scholarshipId and scholarshipTitle");
     }
     return {
       kind: "scholarship_contribution",

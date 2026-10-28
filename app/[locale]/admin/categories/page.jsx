@@ -13,13 +13,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -180,9 +174,7 @@ export default function CategoryTaxonomyManagementPage() {
       return "Category name must be at least 2 characters.";
     }
     const duplicate = categories.find(
-      (c) =>
-        c.id !== excludeId &&
-        c.name.toLowerCase() === trimmed.toLowerCase()
+      (c) => c.id !== excludeId && c.name.toLowerCase() === trimmed.toLowerCase()
     );
     if (duplicate) {
       return `A category named '${duplicate.name}' already exists.`;
@@ -357,9 +349,7 @@ export default function CategoryTaxonomyManagementPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">
-                Status:
-              </span>
+              <span className="text-xs font-semibold uppercase text-muted-foreground">Status:</span>
               <div className="flex rounded-md border p-1">
                 {["all", "active", "archived"].map((st) => (
                   <button
@@ -388,7 +378,8 @@ export default function CategoryTaxonomyManagementPage() {
             Catalog Categories ({filteredCategories.length})
           </CardTitle>
           <CardDescription>
-            Categories determine how courses are grouped on the student discovery catalog. Order determines menu sorting.
+            Categories determine how courses are grouped on the student discovery catalog. Order
+            determines menu sorting.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -440,9 +431,7 @@ export default function CategoryTaxonomyManagementPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium text-foreground">
-                          {category.name}
-                        </span>
+                        <span className="font-medium text-foreground">{category.name}</span>
                         <span className="font-mono text-xs text-muted-foreground">
                           /{category.slug}
                         </span>
@@ -459,11 +448,17 @@ export default function CategoryTaxonomyManagementPage() {
                     </TableCell>
                     <TableCell>
                       {category.status === "active" ? (
-                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        <Badge
+                          variant="outline"
+                          className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        >
                           Active
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        <Badge
+                          variant="outline"
+                          className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                        >
                           Archived
                         </Badge>
                       )}
@@ -556,9 +551,7 @@ export default function CategoryTaxonomyManagementPage() {
                 id="category-desc"
                 placeholder="Brief summary for students and educators"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="mt-1"
               />
             </div>
@@ -571,11 +564,7 @@ export default function CategoryTaxonomyManagementPage() {
             )}
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCreateDialogOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit">Create Category</Button>
@@ -589,9 +578,7 @@ export default function CategoryTaxonomyManagementPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Category: {selectedCategory?.name}</DialogTitle>
-            <DialogDescription>
-              Modify the category display title or description.
-            </DialogDescription>
+            <DialogDescription>Modify the category display title or description.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleEditCategory} className="space-y-4">
             <div>
@@ -611,9 +598,7 @@ export default function CategoryTaxonomyManagementPage() {
               <Input
                 id="edit-desc"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="mt-1"
               />
             </div>
@@ -626,11 +611,7 @@ export default function CategoryTaxonomyManagementPage() {
             )}
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit">Save Changes</Button>
@@ -656,20 +637,14 @@ export default function CategoryTaxonomyManagementPage() {
           </DialogHeader>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setArchiveDialogOpen(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => setArchiveDialogOpen(false)}>
               Cancel
             </Button>
             <Button
               onClick={handleToggleArchive}
               variant={selectedCategory?.status === "active" ? "destructive" : "default"}
             >
-              {selectedCategory?.status === "active"
-                ? "Confirm Archive"
-                : "Confirm Restore"}
+              {selectedCategory?.status === "active" ? "Confirm Archive" : "Confirm Restore"}
             </Button>
           </DialogFooter>
         </DialogContent>

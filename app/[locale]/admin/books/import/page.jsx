@@ -3,13 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -77,8 +71,7 @@ function validateRow(row) {
     errors.pdf_cloudinary_public_id = "PDF Cloudinary ID is required";
   if (!row.cover_cloudinary_public_id?.trim())
     errors.cover_cloudinary_public_id = "Cover Cloudinary ID is required";
-  if (row.price === "" || row.price === undefined)
-    errors.price = "Price is required";
+  if (row.price === "" || row.price === undefined) errors.price = "Price is required";
   else if (isNaN(Number(row.price)) || Number(row.price) < 0)
     errors.price = "Price must be a non-negative number";
 
@@ -140,9 +133,7 @@ export default function BulkImportPage() {
       if (Object.keys(errors).length === 0) {
         toast.success(`All ${rows.length} rows validated successfully`);
       } else {
-        toast.warning(
-          `${rows.length} rows found, ${Object.keys(errors).length} with errors`
-        );
+        toast.warning(`${rows.length} rows found, ${Object.keys(errors).length} with errors`);
       }
     };
     reader.readAsText(file);
@@ -220,12 +211,11 @@ export default function BulkImportPage() {
                 <strong>categories:</strong> Comma-separated categories
               </p>
               <p>
-                <strong>pdf_cloudinary_public_id:</strong> Cloudinary public ID
-                for the PDF file
+                <strong>pdf_cloudinary_public_id:</strong> Cloudinary public ID for the PDF file
               </p>
               <p>
-                <strong>cover_cloudinary_public_id:</strong> Cloudinary public ID
-                for the cover image
+                <strong>cover_cloudinary_public_id:</strong> Cloudinary public ID for the cover
+                image
               </p>
               <p>
                 <strong>price:</strong> Book price in USDC (0 for free)
@@ -240,9 +230,7 @@ export default function BulkImportPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base">
-                    Preview ({parsedRows.length} rows)
-                  </CardTitle>
+                  <CardTitle className="text-base">Preview ({parsedRows.length} rows)</CardTitle>
                   <CardDescription>
                     {errorCount === 0 ? (
                       <span className="flex items-center gap-1 text-green-600">
@@ -250,8 +238,8 @@ export default function BulkImportPage() {
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 text-destructive">
-                        <AlertTriangle className="h-3 w-3" /> {errorCount} row(s)
-                        have errors, {validCount} valid
+                        <AlertTriangle className="h-3 w-3" /> {errorCount} row(s) have errors,{" "}
+                        {validCount} valid
                       </span>
                     )}
                   </CardDescription>
@@ -320,13 +308,9 @@ export default function BulkImportPage() {
                           <TableCell>
                             <div>
                               {row.pdf_cloudinary_public_id || "-"}
-                              {rowErrors[row._rowIndex]
-                                ?.pdf_cloudinary_public_id && (
+                              {rowErrors[row._rowIndex]?.pdf_cloudinary_public_id && (
                                 <p className="text-xs text-destructive mt-0.5">
-                                  {
-                                    rowErrors[row._rowIndex]
-                                      .pdf_cloudinary_public_id
-                                  }
+                                  {rowErrors[row._rowIndex].pdf_cloudinary_public_id}
                                 </p>
                               )}
                             </div>
@@ -334,13 +318,9 @@ export default function BulkImportPage() {
                           <TableCell>
                             <div>
                               {row.cover_cloudinary_public_id || "-"}
-                              {rowErrors[row._rowIndex]
-                                ?.cover_cloudinary_public_id && (
+                              {rowErrors[row._rowIndex]?.cover_cloudinary_public_id && (
                                 <p className="text-xs text-destructive mt-0.5">
-                                  {
-                                    rowErrors[row._rowIndex]
-                                      .cover_cloudinary_public_id
-                                  }
+                                  {rowErrors[row._rowIndex].cover_cloudinary_public_id}
                                 </p>
                               )}
                             </div>
@@ -357,10 +337,7 @@ export default function BulkImportPage() {
                           </TableCell>
                           <TableCell>
                             {hasError ? (
-                              <Badge
-                                variant="destructive"
-                                className="text-xs"
-                              >
+                              <Badge variant="destructive" className="text-xs">
                                 <XCircle className="h-3 w-3 mr-1" />
                                 Error
                               </Badge>
@@ -393,9 +370,7 @@ export default function BulkImportPage() {
               ) : (
                 <Upload className="h-4 w-4 mr-2" />
               )}
-              {submitting
-                ? "Importing..."
-                : `Import ${parsedRows.length} Books`}
+              {submitting ? "Importing..." : `Import ${parsedRows.length} Books`}
             </Button>
           </div>
         )}
@@ -407,9 +382,7 @@ export default function BulkImportPage() {
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
                 <div>
-                  <p className="font-medium text-green-800 dark:text-green-200">
-                    Import Complete
-                  </p>
+                  <p className="font-medium text-green-800 dark:text-green-200">Import Complete</p>
                   <p className="text-sm text-green-600 dark:text-green-300">
                     Successfully imported {parsedRows.length} books
                   </p>

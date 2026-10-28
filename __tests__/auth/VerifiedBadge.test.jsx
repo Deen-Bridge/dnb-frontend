@@ -17,9 +17,7 @@ describe("VerifiedBadge", () => {
   });
 
   it("renders nothing for an unverified user", () => {
-    const { container } = render(
-      <VerifiedBadge user={{ role: "educator" }} />
-    );
+    const { container } = render(<VerifiedBadge user={{ role: "educator" }} />);
     expect(container).toBeEmptyDOMElement();
   });
 

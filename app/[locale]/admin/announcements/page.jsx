@@ -3,13 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -147,8 +141,8 @@ function PreviewPane({ title, content, audience, selectedRoles }) {
     audience === "everyone"
       ? "Everyone"
       : audience === "role"
-      ? `Roles: ${selectedRoles.join(", ") || "None selected"}`
-      : "Specific Users";
+        ? `Roles: ${selectedRoles.join(", ") || "None selected"}`
+        : "Specific Users";
 
   return (
     <div className="border rounded-lg overflow-hidden h-full">
@@ -156,12 +150,17 @@ function PreviewPane({ title, content, audience, selectedRoles }) {
         <p className={cn(poppins_500.className, "text-sm text-muted-foreground")}>Preview</p>
       </div>
       <div className="p-4">
-        <Badge variant="secondary" className="mb-3">{audienceLabel}</Badge>
+        <Badge variant="secondary" className="mb-3">
+          {audienceLabel}
+        </Badge>
         <h3 className={cn(poppins_600.className, "text-lg mb-2")}>
           {title || "Untitled Announcement"}
         </h3>
         <div
-          className={cn(poppins_400.className, "prose prose-sm dark:prose-invert max-w-none text-muted-foreground")}
+          className={cn(
+            poppins_400.className,
+            "prose prose-sm dark:prose-invert max-w-none text-muted-foreground"
+          )}
           dangerouslySetInnerHTML={{ __html: content || "<p>No content yet...</p>" }}
         />
       </div>
@@ -290,9 +289,13 @@ export default function AnnouncementsPage() {
             )}
             <Badge variant={sent ? "default" : "secondary"} className="text-xs">
               {sent ? (
-                <span className="flex items-center gap-1"><Check className="h-3 w-3" /> Sent!</span>
+                <span className="flex items-center gap-1">
+                  <Check className="h-3 w-3" /> Sent!
+                </span>
               ) : savedAt ? (
-                <span className="flex items-center gap-1"><Save className="h-3 w-3" /> Draft saved</span>
+                <span className="flex items-center gap-1">
+                  <Save className="h-3 w-3" /> Draft saved
+                </span>
               ) : (
                 "No draft"
               )}
@@ -427,7 +430,9 @@ export default function AnnouncementsPage() {
                     <div className="space-y-1">
                       <Label className={cn(poppins_500.className)}>Send Immediately</Label>
                       <p className="text-xs text-muted-foreground">
-                        {form.sendNow ? "Announcement will be sent right away" : "Schedule for later"}
+                        {form.sendNow
+                          ? "Announcement will be sent right away"
+                          : "Schedule for later"}
                       </p>
                     </div>
                     <Switch
@@ -507,7 +512,10 @@ export default function AnnouncementsPage() {
             Send Now
           </Button>
         ) : (
-          <Button onClick={handleSchedule} disabled={sending || !form.title || !form.scheduledDate || !form.scheduledTime}>
+          <Button
+            onClick={handleSchedule}
+            disabled={sending || !form.title || !form.scheduledDate || !form.scheduledTime}
+          >
             {sending ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (

@@ -22,9 +22,7 @@ test("capture /ar featured card section (mirrored cards)", async ({ page }) => {
   await explore.screenshot({ path: path.join(OUT, "ar-featured-cards.png") });
 });
 
-test("capture /ar Stellar section (LTR-wrapped financial figures)", async ({
-  page,
-}) => {
+test("capture /ar Stellar section (LTR-wrapped financial figures)", async ({ page }) => {
   await page.goto("/ar");
   const ltr = page.locator('[dir="ltr"]').first();
   await ltr.scrollIntoViewIfNeeded();
@@ -32,9 +30,7 @@ test("capture /ar Stellar section (LTR-wrapped financial figures)", async ({
   await page.screenshot({ path: path.join(OUT, "ar-ltr-financial.png") });
 });
 
-test("capture /ar dashboard shell (sidebar on the right)", async ({
-  browser,
-}) => {
+test("capture /ar dashboard shell (sidebar on the right)", async ({ browser }) => {
   // The SSR-rendered dashboard shell (sidebar + header) is what we want to show.
   // Disabling JS renders the server HTML without hydration — so the client-side
   // auth guard doesn't redirect and the data widgets (which hit a stub API in

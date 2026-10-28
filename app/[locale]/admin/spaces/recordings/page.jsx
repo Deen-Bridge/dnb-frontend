@@ -3,13 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -47,12 +41,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Video,
   Trash2,
@@ -157,9 +146,7 @@ export default function RecordingRetentionPage() {
   const filteredSpaces = useMemo(() => {
     if (!searchQuery.trim()) return spaces;
     const query = searchQuery.toLowerCase();
-    return spaces.filter((space) =>
-      space.name.toLowerCase().includes(query)
-    );
+    return spaces.filter((space) => space.name.toLowerCase().includes(query));
   }, [spaces, searchQuery]);
 
   const totalRecordings = useMemo(
@@ -170,8 +157,7 @@ export default function RecordingRetentionPage() {
   const totalSize = useMemo(
     () =>
       spaces.reduce(
-        (acc, space) =>
-          acc + space.recordings.reduce((rAcc, rec) => rAcc + rec.size, 0),
+        (acc, space) => acc + space.recordings.reduce((rAcc, rec) => rAcc + rec.size, 0),
         0
       ),
     [spaces]
@@ -190,9 +176,7 @@ export default function RecordingRetentionPage() {
         space.id === selectedSpace.id
           ? {
               ...space,
-              recordings: space.recordings.filter(
-                (rec) => rec.id !== recordingToDelete.id
-              ),
+              recordings: space.recordings.filter((rec) => rec.id !== recordingToDelete.id),
             }
           : space
       )
@@ -222,12 +206,8 @@ export default function RecordingRetentionPage() {
             <div className="flex items-center gap-3">
               <Video className="h-5 w-5 text-blue-500" />
               <div>
-                <p className={cn(poppins_600.className, "text-2xl")}>
-                  {totalRecordings}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Total Recordings
-                </p>
+                <p className={cn(poppins_600.className, "text-2xl")}>{totalRecordings}</p>
+                <p className="text-xs text-muted-foreground">Total Recordings</p>
               </div>
             </div>
           </CardContent>
@@ -237,9 +217,7 @@ export default function RecordingRetentionPage() {
             <div className="flex items-center gap-3">
               <HardDrive className="h-5 w-5 text-amber-500" />
               <div>
-                <p className={cn(poppins_600.className, "text-2xl")}>
-                  {formatFileSize(totalSize)}
-                </p>
+                <p className={cn(poppins_600.className, "text-2xl")}>{formatFileSize(totalSize)}</p>
                 <p className="text-xs text-muted-foreground">Storage Used</p>
               </div>
             </div>
@@ -250,12 +228,8 @@ export default function RecordingRetentionPage() {
             <div className="flex items-center gap-3">
               <Archive className="h-5 w-5 text-green-500" />
               <div>
-                <p className={cn(poppins_600.className, "text-2xl")}>
-                  {spaces.length}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Active Spaces
-                </p>
+                <p className={cn(poppins_600.className, "text-2xl")}>{spaces.length}</p>
+                <p className="text-xs text-muted-foreground">Active Spaces</p>
               </div>
             </div>
           </CardContent>
@@ -270,9 +244,7 @@ export default function RecordingRetentionPage() {
                     ? `${retentionSettings.retentionPeriod}d`
                     : "Off"}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Auto-Delete
-                </p>
+                <p className="text-xs text-muted-foreground">Auto-Delete</p>
               </div>
             </div>
           </CardContent>
@@ -309,9 +281,7 @@ export default function RecordingRetentionPage() {
                 <Video className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-lg font-medium">No spaces found</p>
                 <p className="text-sm text-muted-foreground">
-                  {searchQuery
-                    ? "No spaces match your search"
-                    : "No spaces have been created yet"}
+                  {searchQuery ? "No spaces match your search" : "No spaces have been created yet"}
                 </p>
               </CardContent>
             </Card>
@@ -333,14 +303,10 @@ export default function RecordingRetentionPage() {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          setSelectedSpace(
-                            selectedSpace?.id === space.id ? null : space
-                          )
+                          setSelectedSpace(selectedSpace?.id === space.id ? null : space)
                         }
                       >
-                        {selectedSpace?.id === space.id
-                          ? "Close"
-                          : "View Recordings"}
+                        {selectedSpace?.id === space.id ? "Close" : "View Recordings"}
                       </Button>
                     </div>
                   </CardHeader>
@@ -364,9 +330,7 @@ export default function RecordingRetentionPage() {
                                 <TableHead>Duration</TableHead>
                                 <TableHead>Created</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead className="text-right">
-                                  Actions
-                                </TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -387,26 +351,16 @@ export default function RecordingRetentionPage() {
                                     {formatDuration(recording.duration)}
                                   </TableCell>
                                   <TableCell className="text-sm text-muted-foreground">
-                                    {format(
-                                      new Date(recording.createdAt),
-                                      "MMM d, yyyy"
-                                    )}
+                                    {format(new Date(recording.createdAt), "MMM d, yyyy")}
                                   </TableCell>
                                   <TableCell>
-                                    <Badge
-                                      variant="outline"
-                                      className="text-xs text-green-600"
-                                    >
+                                    <Badge variant="outline" className="text-xs text-green-600">
                                       {recording.status}
                                     </Badge>
                                   </TableCell>
                                   <TableCell className="text-right">
                                     <div className="flex items-center justify-end gap-2">
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8"
-                                      >
+                                      <Button variant="ghost" size="icon" className="h-8 w-8">
                                         <Download className="h-4 w-4" />
                                       </Button>
                                       <Button
@@ -452,9 +406,7 @@ export default function RecordingRetentionPage() {
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <p className={cn(poppins_500.className, "text-sm")}>
-                    Auto-Delete Recordings
-                  </p>
+                  <p className={cn(poppins_500.className, "text-sm")}>Auto-Delete Recordings</p>
                   <p className="text-xs text-muted-foreground">
                     Automatically delete recordings after the retention period
                   </p>
@@ -473,9 +425,7 @@ export default function RecordingRetentionPage() {
               {retentionSettings.autoDeleteEnabled && (
                 <>
                   <div className="space-y-2">
-                    <p className={cn(poppins_500.className, "text-sm")}>
-                      Retention Period
-                    </p>
+                    <p className={cn(poppins_500.className, "text-sm")}>Retention Period</p>
                     <Select
                       value={retentionSettings.retentionPeriod}
                       onValueChange={(value) =>
@@ -523,14 +473,11 @@ export default function RecordingRetentionPage() {
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
                   <div className="text-sm text-blue-800">
-                    <p className={cn(poppins_500.className, "mb-1")}>
-                      About Retention Policies
-                    </p>
+                    <p className={cn(poppins_500.className, "mb-1")}>About Retention Policies</p>
                     <p className="text-blue-700">
-                      Recordings are stored securely and can be downloaded by
-                      admins at any time. Auto-delete helps manage storage
-                      costs while ensuring important recordings are preserved
-                      when needed.
+                      Recordings are stored securely and can be downloaded by admins at any time.
+                      Auto-delete helps manage storage costs while ensuring important recordings are
+                      preserved when needed.
                     </p>
                   </div>
                 </div>
@@ -548,17 +495,15 @@ export default function RecordingRetentionPage() {
               Delete Recording
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to permanently delete this recording? This
-              action cannot be undone.
+              Are you sure you want to permanently delete this recording? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {recordingToDelete && (
             <div className="rounded-lg border p-4 space-y-2">
               <div className="flex items-center gap-2">
                 <Film className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">
-                  {recordingToDelete.fileName}
-                </span>
+                <span className="text-sm font-medium">{recordingToDelete.fileName}</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
                 <div>Size:</div>
@@ -566,9 +511,7 @@ export default function RecordingRetentionPage() {
                 <div>Duration:</div>
                 <div>{formatDuration(recordingToDelete.duration)}</div>
                 <div>Created:</div>
-                <div>
-                  {format(new Date(recordingToDelete.createdAt), "MMM d, yyyy")}
-                </div>
+                <div>{format(new Date(recordingToDelete.createdAt), "MMM d, yyyy")}</div>
               </div>
             </div>
           )}
@@ -604,19 +547,17 @@ export default function RecordingRetentionPage() {
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    <TableCell className="font-medium">
-                      Auto-Delete Enabled
-                    </TableCell>
+                    <TableCell className="font-medium">Auto-Delete Enabled</TableCell>
                     <TableCell>
-                      <Badge variant={retentionSettings.autoDeleteEnabled ? "default" : "secondary"}>
+                      <Badge
+                        variant={retentionSettings.autoDeleteEnabled ? "default" : "secondary"}
+                      >
                         {retentionSettings.autoDeleteEnabled ? "Yes" : "No"}
                       </Badge>
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">
-                      Retention Period
-                    </TableCell>
+                    <TableCell className="font-medium">Retention Period</TableCell>
                     <TableCell>
                       {retentionSettings.autoDeleteEnabled
                         ? RETENTION_OPTIONS.find(
@@ -626,9 +567,7 @@ export default function RecordingRetentionPage() {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">
-                      Warning Period
-                    </TableCell>
+                    <TableCell className="font-medium">Warning Period</TableCell>
                     <TableCell>
                       {retentionSettings.autoDeleteEnabled
                         ? `${retentionSettings.warningDays} days before deletion`
@@ -636,15 +575,11 @@ export default function RecordingRetentionPage() {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">
-                      Total Storage
-                    </TableCell>
+                    <TableCell className="font-medium">Total Storage</TableCell>
                     <TableCell>{formatFileSize(totalSize)}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">
-                      Total Recordings
-                    </TableCell>
+                    <TableCell className="font-medium">Total Recordings</TableCell>
                     <TableCell>{totalRecordings}</TableCell>
                   </TableRow>
                 </TableBody>
@@ -653,8 +588,8 @@ export default function RecordingRetentionPage() {
             <div className="flex items-start gap-2 rounded-lg bg-muted p-3">
               <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
               <p className="text-xs text-muted-foreground">
-                Retention policies apply globally to all spaces. Admins can
-                override per-space settings when this feature is available.
+                Retention policies apply globally to all spaces. Admins can override per-space
+                settings when this feature is available.
               </p>
             </div>
           </div>
