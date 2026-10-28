@@ -48,17 +48,8 @@ tree is clean. Representative fixes include:
 
 ## Accepted exceptions (owned by adjacent issues)
 
-These files are ignored by the gate and documented here:
+The previously excluded Modal (#82), reader keyboard navigation (#86), and reels dialogs are now validated by the a11y gate (`npm run a11y`).
 
-- **Custom Modal (#82)** — `components/molecules/Modal.js`,
-  `components/stellar/PaymentModal.jsx`, and the reels dialogs/sheets
-  (`ReelUploadDialog.jsx`, `ReelShareDialog.jsx`, `ReelCommentsSheet.jsx`).
-  The Modal.js source does not parse under the a11y gate's parser; focus
-  trapping, Escape handling, and aria attributes are tracked by the Modal
-  rewrite in #82.
-- **Reader keyboard navigation (#86)** — `app/dashboard/library/read/**` and
-  `BookReaderClient.jsx`. Screen-reader/keyboard operation of the PDF reader is
-  tracked in #86.
 - **RTL / logical properties (#104)** — bidirectional and logical-property
   work, which interacts with focus and semantics, is tracked in #104.
 
