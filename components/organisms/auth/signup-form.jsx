@@ -5,6 +5,10 @@ import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import ErrorMessage from "@/components/atoms/form/Error";
+import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { normalizeRole, ROLES } from "@/lib/auth/roles";
+import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
 import {
   Select,
   SelectContent,
@@ -51,6 +55,11 @@ export function SignupForm({ className, ...props }) {
   const [registered, setRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [registeredRole, setRegisteredRole] = useState("");
+  const {
+    loginWithGoogle,
+    isPending: isGooglePending,
+    googleAuthAvailable,
+  } = useGoogleAuth();
 
   const form = useForm({
     resolver: zodResolver(signupSchemaWithPolicy),
@@ -62,6 +71,7 @@ export function SignupForm({ className, ...props }) {
   // values of those fields, not the submitted ones.
   const watchedName = form.watch("name");
   const watchedEmail = form.watch("email");
+  const watchedRole = form.watch("role");
 
   const handleSignup = async (data) => {
     setError("");
@@ -74,6 +84,24 @@ export function SignupForm({ className, ...props }) {
     } catch (err) {
       setError(err?.message || "Signup failed. Please try again.");
       toast.error(err?.message || "Signup failed. Please try again.");
+    }
+  };
+
+  // Google already verifies the email, so unlike email/password signup there's
+  // no "check your inbox" step — a successful sign-in logs the user straight in.
+  const handleGoogleSignup = async (credentialResponse) => {
+    // Re-check at call time (not just render time): an in-flight email signup,
+    // or a role change between render and the popup resolving, shouldn't let a
+    // stale Google credential through for a role it can't fulfill.
+    if (form.formState.isSubmitting || form.getValues("role") === "mentor") {
+      return;
+    }
+    const user = await loginWithGoogle(credentialResponse?.credential);
+    if (user) {
+      setTimeout(() => {
+        const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+      }, 500);
     }
   };
 
@@ -159,7 +187,11 @@ export function SignupForm({ className, ...props }) {
               <FormItem>
                 <FormLabel>Role</FormLabel>
                 <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={isGooglePending}
+                  >
                     <SelectTrigger className="w-[180px]" aria-label="Role">
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
@@ -180,10 +212,58 @@ export function SignupForm({ className, ...props }) {
               loaderColor="white"
               loaderSize={24}
               type="submit"
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting || isGooglePending}
             >
               Sign Up
             </Button>
+
+            {googleAuthAvailable && (
+              <>
+                <div className="relative my-1">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      or
+                    </span>
+                  </div>
+                </div>
+                {watchedRole === "student" ? (
+                  <div
+                    // `inert` (not just pointer-events-none) so a keyboard user
+                    // can't tab into or activate this while email signup is
+                    // submitting — CSS alone leaves it focusable.
+                    inert={form.formState.isSubmitting}
+                    aria-disabled={form.formState.isSubmitting}
+                    className={cn(
+                      "w-full flex justify-center",
+                      form.formState.isSubmitting && "opacity-50"
+                    )}
+                  >
+                    <GoogleLogin
+                      onSuccess={handleGoogleSignup}
+                      onError={() =>
+                        toast.error("Google sign-in failed. Please try again.")
+                      }
+                      text="signup_with"
+                      width="320"
+                    />
+                  </div>
+                ) : (
+                  // Google signup always creates a "student" account (the backend
+                  // has no way to receive this form's role selection), which would
+                  // silently skip the educator identity-verification flow. Rather
+                  // than mis-route educators — or guess for an undecided role —
+                  // only offer it once "Student" is explicitly selected.
+                  <p className="text-xs text-muted-foreground text-center">
+                    {watchedRole === "mentor"
+                      ? "Continue with Google is available for students. As an educator, please sign up with the form above so we can verify your application."
+                      : "Select \"Student\" above to continue with Google."}
+                  </p>
+                )}
+              </>
+            )}
           </div>
           <div className="text-center text-sm">
             Already have an account?{" "}
