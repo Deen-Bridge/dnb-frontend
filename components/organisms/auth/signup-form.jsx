@@ -90,6 +90,12 @@ export function SignupForm({ className, ...props }) {
   // Google already verifies the email, so unlike email/password signup there's
   // no "check your inbox" step — a successful sign-in logs the user straight in.
   const handleGoogleSignup = async (credentialResponse) => {
+    // Re-check at call time (not just render time): an in-flight email signup,
+    // or a role change between render and the popup resolving, shouldn't let a
+    // stale Google credential through for a role it can't fulfill.
+    if (form.formState.isSubmitting || form.getValues("role") === "mentor") {
+      return;
+    }
     const user = await loginWithGoogle(credentialResponse?.credential);
     if (user) {
       setTimeout(() => {
@@ -219,18 +225,14 @@ export function SignupForm({ className, ...props }) {
                     </span>
                   </div>
                 </div>
-                {watchedRole === "mentor" ? (
-                  // Google signup always creates a "student" account (the backend
-                  // has no way to receive this form's role selection), which would
-                  // silently skip the educator identity-verification flow. Rather
-                  // than mis-route educators, point them back at the form above.
-                  <p className="text-xs text-muted-foreground text-center">
-                    Continue with Google is available for students. As an
-                    educator, please sign up with the form above so we can
-                    verify your application.
-                  </p>
-                ) : (
-                  <div className="w-full flex justify-center">
+                {watchedRole === "student" ? (
+                  <div
+                    className={cn(
+                      "w-full flex justify-center",
+                      form.formState.isSubmitting &&
+                        "pointer-events-none opacity-50"
+                    )}
+                  >
                     <GoogleLogin
                       onSuccess={handleGoogleSignup}
                       onError={() =>
@@ -240,6 +242,17 @@ export function SignupForm({ className, ...props }) {
                       width="320"
                     />
                   </div>
+                ) : (
+                  // Google signup always creates a "student" account (the backend
+                  // has no way to receive this form's role selection), which would
+                  // silently skip the educator identity-verification flow. Rather
+                  // than mis-route educators — or guess for an undecided role —
+                  // only offer it once "Student" is explicitly selected.
+                  <p className="text-xs text-muted-foreground text-center">
+                    {watchedRole === "mentor"
+                      ? "Continue with Google is available for students. As an educator, please sign up with the form above so we can verify your application."
+                      : "Select \"Student\" above to continue with Google."}
+                  </p>
                 )}
               </>
             )}
