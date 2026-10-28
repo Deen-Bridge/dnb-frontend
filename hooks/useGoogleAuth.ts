@@ -1,15 +1,17 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import axios from "axios";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
 import { config } from "@/lib/config/env";
 import { persistSession } from "@/hooks/useAuth";
+import type { User } from "@/types/api";
 
 const GOOGLE_PATH = "/api/auth/google";
 
 export interface UseGoogleAuthResult {
-  loginWithGoogle: (idToken: string) => Promise<any | null>; // TODO(types): User object
+  loginWithGoogle: (idToken: string) => Promise<User | null>;
   isPending: boolean;
   googleAuthAvailable: boolean;
 }
@@ -23,7 +25,7 @@ export function useGoogleAuth(): UseGoogleAuthResult {
   const [isPending, setIsPending] = useState<boolean>(false);
   const googleAuthAvailable = Boolean(config.googleClientId);
 
-  const loginWithGoogle = useCallback(async (idToken: string) => {
+  const loginWithGoogle = useCallback(async (idToken: string): Promise<User | null> => {
     if (!idToken) {
       toast.error("Google sign-in did not return a credential. Please try again.");
       return null;
@@ -39,16 +41,16 @@ export function useGoogleAuth(): UseGoogleAuthResult {
 
       persistSession(token, user);
       toast.success("Signed in with Google");
-      return user;
-    } catch (error: any) { // TODO(types): Axios error from Google sign-in
-      if (error?.response?.status === 503) {
+      return user as User;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.status === 503) {
         toast.error(
           "Continue with Google is not available yet. Please use email login."
         );
       } else {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
+          (axios.isAxiosError(error) && error.response?.data?.message) ||
+          (error instanceof Error ? error.message : undefined) ||
           "Google sign-in failed. Please try again.";
         toast.error(message);
       }
