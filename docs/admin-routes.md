@@ -42,12 +42,11 @@ This inventory records the route files currently present under `app/[locale]/adm
 | `/admin/users` | User management and credential expiry | Mixed: API + unverified list source | `GET /api/admin/mentors/credentials` via `lib/actions/admin-credential-expiry.ts`; other list wiring needs confirmation |
 | `/admin/users/[userId]` | User detail and role/verification history | Wired | `GET /api/users/:userId`; verification history helper requests `/api/admin/educators/:educatorId/verification-history` |
 | `/admin/verification` | Educator verification SLA board (duplicate) | Mock | Uses `mockVerificationQueue`; tracked by #484; duplicate route tracked by #495 |
-| `/admin/verifications` | Educator verification queue (duplicate) | Mixed: API + mock fallback | Re-exports `/admin/educators`; endpoint correction/wiring #484; duplicate tracked by #495 |
 
 ## Known duplicate routes
 
 - `/admin/audit-log` and `/admin/audit-logs` overlap; #494 tracks consolidation and #482 tracks the canonical API-backed route.
-- `/admin/verification` and `/admin/verifications` overlap; #495 tracks consolidation and #484 tracks the real verification queue/SLA API.
+- `/admin/verifications` was removed (#601 / #495); `/admin/verification` is the sole verification route. #484 tracks the real verification queue/SLA API.
 
 ## Related wiring work
 
