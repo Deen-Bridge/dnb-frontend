@@ -59,7 +59,7 @@ import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { formatDistanceToNow } from "date-fns";
 import MediaBlurToggle from "@/components/admin/MediaBlurToggle";
-import { apiClient } from "@/lib/api/client";
+import axiosInstance from "@/lib/config/axios.config";
 
 const STATUS_CONFIG = {
   "pending-review": {
@@ -115,7 +115,7 @@ export default function BookApprovalQueuePage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient.get("/admin/books/approval-queue");
+      const { data } = await axiosInstance.get("/admin/books/approval-queue");
       setBooks(Array.isArray(data) ? data : data?.items ?? []);
     } catch (err) {
       setError(err?.message || "Failed to load submissions");
@@ -166,7 +166,7 @@ export default function BookApprovalQueuePage() {
     if (!selectedBook || !actionType) return;
     setProcessing(true);
     try {
-      await apiClient.post(
+      await axiosInstance.post(
         `/admin/books/approval-queue/${selectedBook.id}/${actionType}`,
         actionType === "approve" ? {} : { notes: actionNotes }
       );
