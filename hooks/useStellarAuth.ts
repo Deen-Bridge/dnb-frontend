@@ -5,41 +5,146 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
 import { useStellar } from "@/components/stellar/StellarProvider";
 import { persistSession } from "@/hooks/useAuth";
+import type { User } from "@/types/api";
 
 const CHALLENGE_PATH = "/api/auth/stellar/challenge";
 const VERIFY_PATH = "/api/auth/stellar/verify";
 
-const isModalClosedError = (error: any): boolean => // TODO(types): Error shape from wallet selection
-  error?.code === -1 ||
-  (typeof error?.message === "string" &&
-    /closed|cancel(l)?ed|reject(ed)?/i.test(error.message));
+// ---------------------------------------------------------------------------
+// Wire shapes (#514)
+// ---------------------------------------------------------------------------
 
-const isExpiredChallengeError = (error: any): boolean => { // TODO(types): Axios error from challenge
-  const message =
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    "";
-  return /expir|time.?bound|challenge.*(invalid|expired)/i.test(
-    String(message)
+/** SEP-10 challenge payload returned by `GET /api/auth/stellar/challenge`. */
+export interface StellarChallengePayload {
+  /** Base64 transaction the wallet must sign. */
+  transaction?: string;
+  /** Network passphrase the challenge was built for (snake_case tolerated). */
+  networkPassphrase?: string;
+  network_passphrase?: string;
+}
+
+/**
+ * Response of `POST /api/auth/stellar/verify`. Two outcomes share this
+ * envelope: a linked wallet yields `token` + `user`, while an unlinked wallet
+ * is flagged with `registered: false` (plus the proven account, when present).
+ */
+export interface StellarVerifyResponse {
+  /** `false` when the wallet has no Deen Bridge account yet. */
+  registered?: boolean;
+  /** Session token — present only on the linked-wallet outcome. */
+  token?: string;
+  /** Session user — present only on the linked-wallet outcome. */
+  user?: User;
+  /** Wallet address proven via the challenge on the unregistered outcome. */
+  accountProven?: string;
+}
+
+/** `loginWithStellar` success: the persisted session user. */
+export type StellarLoginUser = User;
+
+/** `loginWithStellar` outcome for a valid wallet that isn't linked yet. */
+export interface StellarUnregisteredResult {
+  unregistered: true;
+  account?: string;
+}
+
+/**
+ * What `loginWithStellar` resolves with: a session user, an `unregistered`
+ * marker (caller should send the user to sign-up/link), or `null` when the
+ * flow was cancelled or Stellar auth is unavailable.
+ */
+export type StellarLoginResult =
+  | StellarLoginUser
+  | StellarUnregisteredResult
+  | null;
+
+// ---------------------------------------------------------------------------
+// Error narrowing helpers — caught values are `unknown`, never `any`
+// ---------------------------------------------------------------------------
+
+/** Property bag this module actually inspects on thrown values. */
+interface InspectableError {
+  response?: {
+    status?: number;
+    data?: {
+      message?: unknown;
+      error?: unknown;
+    };
+  };
+  message?: unknown;
+  code?: unknown;
+}
+
+/** Narrow any thrown value to the bag we read; non-objects read as empty. */
+const inspect = (error: unknown): InspectableError =>
+  typeof error === "object" && error !== null
+    ? (error as InspectableError)
+    : {};
+
+/** HTTP status of a failed axios call; `undefined` for network/SDK errors. */
+const getResponseStatus = (error: unknown): number | undefined => {
+  const status = inspect(error).response?.status;
+  return typeof status === "number" ? status : undefined;
+};
+
+/**
+ * Best-effort message: the server envelope (`message` / `error`) first, then
+ * the client-side error message, else the empty string.
+ */
+const getErrorMessage = (error: unknown): string => {
+  const envelope = inspect(error);
+  const candidate =
+    envelope.response?.data?.message ||
+    envelope.response?.data?.error ||
+    envelope.message;
+  if (candidate == null) return "";
+  return typeof candidate === "string" ? candidate : String(candidate);
+};
+
+/** Wallet-modal dismissal: SDK code `-1` or a closed/cancelled/rejected message. */
+const isModalClosedError = (error: unknown): boolean => {
+  const envelope = inspect(error);
+  return (
+    envelope.code === -1 ||
+    (typeof envelope.message === "string" &&
+      /closed|cancel(l)?ed|reject(ed)?/i.test(envelope.message))
   );
 };
 
-const isUnregisteredWallet = (error: any, data?: any): boolean => { // TODO(types): Response data/error shape
-  if (data && data.registered === false) return true;
-  const status = error?.response?.status;
+/** The challenge expired (or was rejected as time-bound) before it was signed. */
+const isExpiredChallengeError = (error: unknown): boolean =>
+  /expir|time.?bound|challenge.*(invalid|expired)/i.test(getErrorMessage(error));
+
+/** Wallet is valid but has no linked Deen Bridge account (404/409 or explicit flag). */
+const isUnregisteredWallet = (error: unknown, data?: unknown): boolean => {
+  if (
+    data &&
+    typeof data === "object" &&
+    (data as { registered?: unknown }).registered === false
+  ) {
+    return true;
+  }
+  const status = getResponseStatus(error);
   return status === 404 || status === 409;
 };
 
-const getNetworkPassphrase = (payload: any = {}): string => // TODO(types): Challenge payload
-  payload.networkPassphrase || payload.network_passphrase;
+// ---------------------------------------------------------------------------
+// SEP-10 flow
+// ---------------------------------------------------------------------------
 
-const fetchChallenge = async (account: string): Promise<{ transaction: string; networkPassphrase: string }> => {
+const getNetworkPassphrase = (
+  payload: StellarChallengePayload = {}
+): string | undefined => payload.networkPassphrase || payload.network_passphrase;
+
+const fetchChallenge = async (
+  account: string
+): Promise<{ transaction: string; networkPassphrase: string }> => {
   const res = await axiosInstance.get(CHALLENGE_PATH, {
     params: { account },
   });
-  const transaction = res.data?.transaction;
-  const networkPassphrase = getNetworkPassphrase(res.data);
+  const payload = (res.data ?? {}) as StellarChallengePayload;
+  const transaction = payload.transaction;
+  const networkPassphrase = getNetworkPassphrase(payload);
 
   if (!transaction || !networkPassphrase) {
     throw new Error("Invalid challenge response from server");
@@ -48,15 +153,15 @@ const fetchChallenge = async (account: string): Promise<{ transaction: string; n
   return { transaction, networkPassphrase };
 };
 
-const verifyChallenge = async (signedXdr: string): Promise<any> => { // TODO(types): SEP-10 verify response
+const verifyChallenge = async (signedXdr: string): Promise<StellarVerifyResponse> => {
   const res = await axiosInstance.post(VERIFY_PATH, {
     transaction: signedXdr,
   });
-  return res.data;
+  return res.data as StellarVerifyResponse;
 };
 
 export interface UseStellarAuthResult {
-  loginWithStellar: () => Promise<any | null>; // TODO(types): User or unregistered indicator
+  loginWithStellar: () => Promise<StellarLoginResult>;
   isPending: boolean;
   stellarAuthAvailable: boolean | null;
   availabilityChecked: boolean;
@@ -85,13 +190,11 @@ export function useStellarAuth(): UseStellarAuthResult {
         } else {
           setStellarAuthAvailable(true);
         }
-      } catch (error: any) { // TODO(types): Network error from probe
+      } catch (error: unknown) {
         if (cancelled) return;
-        const status = error?.response?.status;
+        const status = getResponseStatus(error);
         if (status === 404 || status === 503) {
           setStellarAuthAvailable(false);
-        } else if (status) {
-          setStellarAuthAvailable(true);
         } else {
           setStellarAuthAvailable(true);
         }
@@ -106,7 +209,7 @@ export function useStellarAuth(): UseStellarAuthResult {
     };
   }, []);
 
-  const loginWithStellar = useCallback(async () => {
+  const loginWithStellar = useCallback(async (): Promise<StellarLoginResult> => {
     if (!kitInitialized) {
       toast.error("Wallet kit not initialized. Please refresh the page.");
       return null;
@@ -124,13 +227,13 @@ export function useStellarAuth(): UseStellarAuthResult {
     try {
       const address = await selectWallet();
 
-      const attemptVerify = async (allowRetry: boolean): Promise<any> => { // TODO(types): Verify challenge response payload
+      const attemptVerify = async (allowRetry: boolean): Promise<StellarVerifyResponse> => {
         const { transaction, networkPassphrase } = await fetchChallenge(address);
         const signedXdr = await signTransaction(transaction, networkPassphrase);
 
         try {
           return await verifyChallenge(signedXdr);
-        } catch (verifyError) {
+        } catch (verifyError: unknown) {
           if (allowRetry && isExpiredChallengeError(verifyError)) {
             return attemptVerify(false);
           }
@@ -147,7 +250,8 @@ export function useStellarAuth(): UseStellarAuthResult {
         return { unregistered: true, account: data.accountProven || address };
       }
 
-      const { token, user } = data || {};
+      const token = data?.token;
+      const user = data?.user;
       if (!token || !user) {
         throw new Error("Invalid verify response from server");
       }
@@ -155,7 +259,7 @@ export function useStellarAuth(): UseStellarAuthResult {
       persistSession(token, user);
       toast.success("Signed in with Stellar");
       return user;
-    } catch (error: any) { // TODO(types): Error from SEP-10 login
+    } catch (error: unknown) {
       if (isModalClosedError(error)) {
         toast.message("Wallet connection cancelled");
         return null;
@@ -168,7 +272,7 @@ export function useStellarAuth(): UseStellarAuthResult {
         return { unregistered: true };
       }
 
-      if (error?.response?.status === 503 || error?.response?.status === 404) {
+      if (getResponseStatus(error) === 503 || getResponseStatus(error) === 404) {
         setStellarAuthAvailable(false);
         toast.error(
           "Sign in with Stellar is not available on the server yet. Please use email login."
@@ -177,9 +281,7 @@ export function useStellarAuth(): UseStellarAuthResult {
       }
 
       const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
+        getErrorMessage(error) ||
         "Sign in with Stellar failed. Please try again.";
 
       console.error("Stellar auth error:", error);
