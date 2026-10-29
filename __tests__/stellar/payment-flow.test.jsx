@@ -49,7 +49,12 @@ describe("Stellar payment flow", () => {
     paymentMock.initializePayment.mockResolvedValue(paymentData);
     paymentMock.executePayment.mockResolvedValue({
       success: true,
-      transaction: { hash: "tx-hash", explorerUrl: "https://stellar.expert/tx/tx-hash" },
+      transaction: {
+        hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ledger: 1024,
+        explorerUrl:
+          "https://stellar.expert/explorer/testnet/tx/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
     });
   });
 
@@ -76,7 +81,7 @@ describe("Stellar payment flow", () => {
     expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     expect(screen.getByRole("link", { name: /view on stellar explorer/i })).toHaveAttribute(
       "href",
-      "https://stellar.expert/tx/tx-hash"
+      "https://stellar.expert/explorer/testnet/tx/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     );
   });
 
