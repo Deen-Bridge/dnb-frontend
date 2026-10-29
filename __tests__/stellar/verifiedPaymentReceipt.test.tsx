@@ -1,7 +1,10 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { buildVerifiedPaymentReceipt } from "@/lib/stellar/verifiedPaymentReceipt";
+import {
+  buildVerifiedPaymentReceipt,
+  resolveBackendReceiptNetwork,
+} from "@/lib/stellar/verifiedPaymentReceipt";
 import { VerifiedReceipt } from "@/components/payment/VerifiedReceipt";
 
 const VALID_HASH = "a".repeat(64);
