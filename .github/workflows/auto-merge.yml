@@ -58,6 +58,12 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # A check posted by another workflow cannot stand in for these tests.
+      # Both tests and the later inline scan use the trusted checkout above.
+      - name: Test trusted malware guard before considering merges
+        if: steps.automation.outputs.available == 'true'
+        run: node --test .github/scripts/pr-malware-guard.test.cjs
+
       - name: Evaluate gates and merge
         if: steps.automation.outputs.available == 'true'
         uses: actions/github-script@v9
