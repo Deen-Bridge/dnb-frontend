@@ -3,16 +3,16 @@
 const POLICIES = {
   "dnb-frontend": {
     base: "main",
-    checks: ["Lint and Build", "Lighthouse CI"],
+    checks: ["Lint and Build", "Lighthouse CI", "PR Malware Guard"],
   },
   "dnb-backend": {
     base: "main",
-    checks: ["Run Tests", "Syntax and Boot Check", "Stryker Mutation Testing"],
+    checks: ["Run Tests", "Syntax and Boot Check", "Stryker Mutation Testing", "PR Malware Guard"],
     contractCheck: "Rust contract checks",
   },
   "dnb-ai": {
     base: "dev",
-    checks: ["Lint and Test"],
+    checks: ["Lint and Test", "PR Malware Guard"],
   },
 };
 
@@ -104,7 +104,8 @@ async function headChecks(github, owner, repo, sha, expectedChecks) {
   const latestStatuses = latestBy(statuses, (status) => status.context, (status) => status.updated_at);
   const failedStatuses = latestStatuses.filter((status) => status.state !== "success");
   const missingRequired = expectedChecks.filter(
-    (name) => !externalChecks.some((check) => check.name === name && check.status === "completed" && check.conclusion === "success"),
+    (name) => !externalChecks.some((check) => check.name === name && check.status === "completed" && check.conclusion === "success" &&
+        (name !== "PR Malware Guard" || check.app?.slug === "github-actions")),
   );
 
   return { failedChecks, failedStatuses, missingRequired };
