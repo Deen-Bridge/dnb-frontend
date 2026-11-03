@@ -1,4 +1,7 @@
 "use strict";
+/* global require */
+
+const { scanPullRequest } = require("./pr-malware-guard.cjs");
 
 const POLICIES = {
   "dnb-frontend": {
@@ -220,14 +223,22 @@ async function run({ github, context, core }) {
       continue;
     }
 
+    const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+      owner, repo, pull_number: number, per_page: 100,
+    });
+    if (changedFiles.length !== pr.changed_files) {
+      skip("changed-file list is incomplete; manual review required.");
+      continue;
+    }
+    if (changedFiles.some((file) => /^\.github\/(?:workflows|scripts|security)\//.test(file.filename) ||
+        /^\.github\/(?:workflows|scripts|security)\//.test(file.previous_filename || ""))) {
+      skip("changes CI or security automation; manual merge required after review.");
+      continue;
+    }
+
     const expectedChecks = [...policy.checks];
     if (policy.contractCheck) {
-      const files = await github.paginate(github.rest.pulls.listFiles, {
-        owner,
-        repo,
-        pull_number: number,
-        per_page: 100,
-      });
+      const files = changedFiles;
       if (files.some((file) => file.filename.startsWith("contracts/"))) {
         expectedChecks.push(policy.contractCheck);
       }
@@ -242,6 +253,26 @@ async function run({ github, context, core }) {
       skip(
         `waiting for all checks/statuses to pass (${checks.failedChecks.length} check(s), ${checks.failedStatuses.length} status(es) pending or failed).`,
       );
+      continue;
+    }
+
+    // Checks are useful UI signals, but any same-repo workflow with checks:write
+    // can forge their name and app identity. Re-evaluate using trusted default-
+    // branch scanner code and current indicators immediately before merging.
+    try {
+      const scan = await scanPullRequest({ github, owner, repo, pr });
+      if (scan.findings.length) {
+        skip("fresh trusted malware scan found indicators; merge refused.");
+        continue;
+      }
+    } catch {
+      skip("fresh trusted malware scan did not complete; merge refused.");
+      continue;
+    }
+
+    const { data: scannedPR } = await github.rest.pulls.get({ owner, repo, pull_number: number });
+    if (scannedPR.state !== "open" || scannedPR.head.sha !== pr.head.sha || scannedPR.base.sha !== pr.base.sha) {
+      skip("PR head or base moved after the trusted scan; re-evaluation required.");
       continue;
     }
 
