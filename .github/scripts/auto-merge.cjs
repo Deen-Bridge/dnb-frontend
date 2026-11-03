@@ -6,16 +6,16 @@ const { scanPullRequest } = require("./pr-malware-guard.cjs");
 const POLICIES = {
   "dnb-frontend": {
     base: "main",
-    checks: ["Lint and Build", "Lighthouse CI", "PR Malware Guard"],
+    checks: ["Lint and Build", "Lighthouse CI"],
   },
   "dnb-backend": {
     base: "main",
-    checks: ["Run Tests", "Syntax and Boot Check", "Stryker Mutation Testing", "PR Malware Guard"],
+    checks: ["Run Tests", "Syntax and Boot Check", "Stryker Mutation Testing"],
     contractCheck: "Rust contract checks",
   },
   "dnb-ai": {
     base: "dev",
-    checks: ["Lint and Test", "PR Malware Guard"],
+    checks: ["Lint and Test"],
   },
 };
 
@@ -107,8 +107,7 @@ async function headChecks(github, owner, repo, sha, expectedChecks) {
   const latestStatuses = latestBy(statuses, (status) => status.context, (status) => status.updated_at);
   const failedStatuses = latestStatuses.filter((status) => status.state !== "success");
   const missingRequired = expectedChecks.filter(
-    (name) => !externalChecks.some((check) => check.name === name && check.status === "completed" && check.conclusion === "success" &&
-        (name !== "PR Malware Guard" || check.app?.slug === "github-actions")),
+    (name) => !externalChecks.some((check) => check.name === name && check.status === "completed" && check.conclusion === "success"),
   );
 
   return { failedChecks, failedStatuses, missingRequired };
@@ -268,6 +267,12 @@ async function run({ github, context, core }) {
       }
     } catch {
       skip("fresh trusted malware scan did not complete; merge refused.");
+      continue;
+    }
+
+    const { data: scannedPR } = await github.rest.pulls.get({ owner, repo, pull_number: number });
+    if (scannedPR.state !== "open" || scannedPR.head.sha !== pr.head.sha || scannedPR.base.sha !== pr.base.sha) {
+      skip("PR head or base moved after the trusted scan; re-evaluation required.");
       continue;
     }
 
