@@ -22,8 +22,11 @@ dependencies, import its modules, or run any code supplied by its author.
 - **Pass:** no newly introduced configured indicators found. This is not proof
   that code is harmless. Documentation mentions, passive indicator data, ordinary
   fonts, legitimate Tailwind packages, and removal of existing indicators have
-  regression coverage. Existing unchanged findings are compared against the base
-  file so a cleanup PR is not blamed for inherited malware.
+  regression coverage. Indicator occurrence counts are compared against the base
+  file so a cleanup PR is not blamed for inherited malware, while a second use
+  of an already-present indicator is still reported. JSON manifests are parsed
+  as dependency structures, and VS Code JSONC is parsed task-by-task to avoid
+  closing PRs for prose or an unrelated manual task.
 
 All authors are scanned, including bots, maintainers, and fork contributors.
 Compromised trusted accounts are part of the campaign's threat model.
@@ -39,8 +42,13 @@ are passed through structured API arguments, never shell interpolation.
 The scanner creates a separate `PR Malware Guard` check on the **actual PR head
 SHA**; the default `pull_request_target` job status alone belongs to the base
 revision and is not a sufficient merge gate. The existing merge bot now requires
-this head check from GitHub Actions before merging. A manual workflow dispatch
-with `pr_number` rescans an open PR with the current trusted rules.
+this head check from GitHub Actions before merging. Check names and app identity
+alone do not establish trust: the merge bot additionally calls the read-only
+scanner from its trusted default-branch checkout immediately before merging,
+using the current rules and PR head. A forged success cannot bypass that scan.
+Any PR changing `.github/workflows/`, `.github/scripts/`, or `.github/security/`
+(including renames out of these paths) requires manual merge after review.
+A manual workflow dispatch with `pr_number` rescans an open PR with current rules.
 
 ## Installation and operation
 
@@ -52,8 +60,11 @@ with `pr_number` rescans an open PR with the current trusted rules.
    for `main` and `dev`, where used. This additionally protects manual merges;
    the merge-bot gate is included in code but branch-protection settings are not
    changed by this patch. Select the new check after its first run.
-3. Dispatch the workflow for existing open PRs; future open, reopened, updated,
-   and ready-for-review PRs are scanned automatically, including drafts.
+3. Changes to trusted scanner files or indicators on the default branch run its
+   tests and rescan all open PRs, including unchanged heads. Future open,
+   reopened, updated, and ready-for-review PRs are scanned, including drafts.
+   If trusted checkout or tests fail, a separate failure step records a failed
+   head check rather than leaving a previous success as the latest result.
 4. On a false positive, inspect the files without executing them, review/update
    the rule on the default branch, then reopen for a new scan. Findings remain
    visible in checks and the closing comment; no source branches are deleted.
@@ -74,8 +85,10 @@ finishes. Closing a PR does not undo an already-run install or revoke a deployed
 preview. Keep untrusted CI tokens read-only and do not expose repository secrets
 to PR builds. This patch does not execute or cancel those other workflows.
 
-The PR head and base are rechecked before reporting and immediately before
-closing. GitHub provides no atomic close-if-head-matches endpoint, so a very small
+The PR head is rechecked before reporting and immediately before closing. Base
+content is read from its captured immutable SHA; a base-only push does not
+invalidate a completed scan of an unchanged PR head. GitHub provides no atomic
+close-if-head-matches endpoint, so a very small
 race between the last read and closure remains. Reopening triggers a new scan.
 If a runner is terminated, its pending head check must not be treated as success.
 
