@@ -20,7 +20,6 @@
 | Landing Page | Login / Sign Up |
 |:---:|:---:|
 | ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Admin Area](docs/screenshots/admin.png) |
 
 
 ---
