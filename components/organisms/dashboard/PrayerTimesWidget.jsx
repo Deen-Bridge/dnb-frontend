@@ -351,7 +351,7 @@ export default function PrayerTimesWidget() {
           </div>
 
           <div className="flex flex-col gap-2 pt-2">
-            <Button type="submit" round className="w-full bg-accent text-white">
+            <Button type="submit" round className="w-full bg-accent-card text-white">
               Save Location
             </Button>
             <Button

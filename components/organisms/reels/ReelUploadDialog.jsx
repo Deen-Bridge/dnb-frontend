@@ -267,7 +267,7 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
             </Button>
             <Button
               round
-              className="bg-accent text-white"
+              className="bg-accent-card text-white"
               onClick={handleSubmit}
               loading={submitting}
               disabled={submitting || !videoFile || !description.trim()}

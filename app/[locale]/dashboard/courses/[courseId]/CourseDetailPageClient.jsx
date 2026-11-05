@@ -331,7 +331,7 @@ export default function CourseDetailClient({ course }) {
                       <div className="flex gap-2">
                         <Button
                           round
-                          className="bg-accent px-4 text-sm font-semibold text-white hover:bg-accent/90"
+                          className="bg-accent-card px-4 text-sm font-semibold text-white hover:bg-accent/90"
                           onClick={handleResume}
                         >
                           <Play className="mr-1 h-4 w-4" />
@@ -508,7 +508,7 @@ export default function CourseDetailClient({ course }) {
                         <Button
                           wide
                           round
-                          className="mt-1 bg-accent font-semibold text-white transition hover:bg-highlight"
+                          className="mt-1 bg-accent-card font-semibold text-white transition hover:bg-highlight"
                           type="submit"
                           disabled={
                             submitting || rating === 0 || review.trim() === ""
@@ -560,7 +560,7 @@ export default function CourseDetailClient({ course }) {
                     round
                     onClick={handlePurchaseCourse}
                     loading={loading}
-                    className="w-full bg-accent py-6 text-lg font-semibold text-white hover:bg-accent/90"
+                    className="w-full bg-accent-card py-6 text-lg font-semibold text-white hover:bg-accent/90"
                   >
                     <Wallet className="mr-2 h-5 w-5" />
                     {course.price === 0

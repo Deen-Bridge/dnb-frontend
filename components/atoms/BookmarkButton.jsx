@@ -37,9 +37,9 @@ const BookmarkButton = ({
         aria-label={buttonAriaLabel}
         className={cn(
           "flex items-center justify-center rounded-full p-1.5 transition-all",
-          "hover:bg-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "hover:bg-accent-card hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
-          isBookmarked ? "bg-accent text-white" : "text-accent",
+          isBookmarked ? "bg-accent-card text-white" : "text-accent",
           className
         )}
       >

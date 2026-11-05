@@ -167,7 +167,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
           <ShadcnButton
             type="button"
             onClick={handleAddLesson}
-            className="bg-accent text-white"
+            className="bg-accent-card text-white"
           >
             <Plus className="w-4 h-4 mr-1" /> Add First Lesson
           </ShadcnButton>

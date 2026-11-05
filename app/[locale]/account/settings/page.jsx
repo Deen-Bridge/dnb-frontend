@@ -422,7 +422,7 @@ const SettingsPage = () => {
                       @{profile.username || user?.username}
                     </p>
                     <div className="mt-2 flex items-center justify-center gap-2 sm:justify-start">
-                      <Badge className="bg-accent text-white">
+                      <Badge className="bg-accent-card text-white">
                         {user?.role || "Member"}
                       </Badge>
                       <VerifiedBadge user={user} />

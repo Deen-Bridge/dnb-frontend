@@ -270,7 +270,7 @@ const LibraryPageContent = () => {
             )}
             <Button
               variant={showBookmarks ? "default" : "outline"}
-              className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
+              className={cn("rounded-full", showBookmarks && "bg-accent-card text-white hover:bg-accent/90")}
               onClick={() => setShowBookmarks((prev) => !prev)}
             >
               <Bookmark className="h-4 w-4 mr-1" />

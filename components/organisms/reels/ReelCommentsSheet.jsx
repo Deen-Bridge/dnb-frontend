@@ -272,7 +272,7 @@ const ReelCommentsSheet = ({
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>{500 - newComment.length} characters remaining</span>
                 <ShadButton
-                  className="bg-accent text-white hover:bg-highlight"
+                  className="bg-accent-card text-white hover:bg-highlight"
                   onClick={handlePost}
                   disabled={posting || !newComment.trim()}
                 >
