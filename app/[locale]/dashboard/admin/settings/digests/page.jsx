@@ -223,7 +223,7 @@ function DigestsContent() {
         actions={
           <Button
             type="button"
-            className="rounded-full bg-accent text-white hover:bg-accent/90"
+            className="rounded-full bg-accent-card text-white hover:bg-accent/90"
             onClick={() => save()}
             disabled={!isValid || isSaving}
           >
@@ -504,7 +504,7 @@ function DigestsContent() {
         )}
         <Button
           type="button"
-          className="rounded-full bg-accent text-white hover:bg-accent/90"
+          className="rounded-full bg-accent-card text-white hover:bg-accent/90"
           onClick={() => save()}
           disabled={!isValid || isSaving}
         >

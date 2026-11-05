@@ -48,7 +48,7 @@ const VerificationRequired = ({ className, message }) => {
         type="button"
         round
         to="/account/verification"
-        className="py-3 px-8 text-base lg:text-lg bg-accent text-white font-bold hover:bg-accent/90 transition"
+        className="py-3 px-8 text-base lg:text-lg bg-accent-card text-white font-bold hover:bg-accent/90 transition"
       >
         Complete verification
       </Button>

@@ -31,7 +31,7 @@ const OngoingSessions = () => (
                 </li>
             ))}
         </ul>
-        <Button wide round className="mt-4 bg-accent text-white w-full py-2 rounded-full text-sm font-stretch-125%">Join Now</Button>
+        <Button wide round className="mt-4 bg-accent-card text-white w-full py-2 rounded-full text-sm font-stretch-125%">Join Now</Button>
     </div>
 );
 

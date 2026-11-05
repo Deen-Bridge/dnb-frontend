@@ -254,7 +254,7 @@ function SessionSecurityContent() {
           <div className="flex items-center gap-2 pt-2">
             <Button
               type="submit"
-              className="rounded-full bg-accent text-white hover:bg-accent/90"
+              className="rounded-full bg-accent-card text-white hover:bg-accent/90"
               disabled={!valid || isSaving}
             >
               {isSaving ? "Saving…" : "Save changes"}

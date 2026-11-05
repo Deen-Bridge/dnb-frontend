@@ -121,7 +121,7 @@ const Navrouter = () => {
                   round
                   to={item.link}
                   onClick={handleNavClick} // ⬅️ close sidebar on click
-                  className={`flex justify-start items-center ps-16 ${isActive ? "bg-accent text-white" : ""
+                  className={`flex justify-start items-center ps-16 ${isActive ? "bg-accent-card text-white" : ""
                     }`}
                 >
                   <item.icon size={15} className="me-4" />

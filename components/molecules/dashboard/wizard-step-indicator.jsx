@@ -33,7 +33,7 @@ export default function WizardStepIndicator({
                 <div
                   className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm transition-all shadow-xs ${
                     isCompleted
-                      ? "bg-accent text-white"
+                      ? "bg-accent-card text-white"
                       : isActive
                       ? "bg-accent/20 border-2 border-accent text-brand-text font-bold"
                       : "bg-muted border border-gray-300 text-muted-foreground"

@@ -276,7 +276,7 @@ function PurchaseCard({ item, itemType, getReceipt }) {
 
           <div className="flex gap-2">
             <Button
-              className="flex-1 rounded-full bg-accent text-white hover:bg-accent/90"
+              className="flex-1 rounded-full bg-accent-card text-white hover:bg-accent/90"
               asChild
             >
               <Link href={actionHref}>
@@ -389,7 +389,7 @@ export default function PurchasesPage() {
           action={
             <>
               <Button
-                className="rounded-full bg-accent text-white hover:bg-accent/90"
+                className="rounded-full bg-accent-card text-white hover:bg-accent/90"
                 asChild
               >
                 <Link href="/dashboard/courses">Browse Courses</Link>
@@ -408,7 +408,7 @@ export default function PurchasesPage() {
               variant={tab === "courses" ? "default" : "outline"}
               className={cn(
                 "rounded-full",
-                tab === "courses" && "bg-accent text-white hover:bg-accent/90"
+                tab === "courses" && "bg-accent-card text-white hover:bg-accent/90"
               )}
               onClick={() => setTab("courses")}
             >
@@ -418,7 +418,7 @@ export default function PurchasesPage() {
               variant={tab === "books" ? "default" : "outline"}
               className={cn(
                 "rounded-full",
-                tab === "books" && "bg-accent text-white hover:bg-accent/90"
+                tab === "books" && "bg-accent-card text-white hover:bg-accent/90"
               )}
               onClick={() => setTab("books")}
             >

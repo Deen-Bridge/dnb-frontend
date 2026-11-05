@@ -330,7 +330,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <AvatarFallback
                         className={cn(
                           poppins_500,
-                          "bg-accent text-white text-sm"
+                          "bg-accent-card text-white text-sm"
                         )}
                       >
                         {user?.name?.charAt(0) || "U"}

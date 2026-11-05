@@ -224,7 +224,7 @@ function MaintenanceContent() {
               type="button"
               onClick={handleSave}
               disabled={isSaving || isLoading}
-              className="rounded-full bg-accent text-white hover:bg-accent/90"
+              className="rounded-full bg-accent-card text-white hover:bg-accent/90"
             >
               <Save className="mr-1.5 h-4 w-4" aria-hidden="true" />
               {isSaving ? "Saving…" : "Save changes"}
