@@ -38,7 +38,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
         <ShadcnButton
           type="button"
           onClick={handleAddLesson}
-          className="bg-accent hover:bg-accent/90 text-white font-medium flex items-center gap-1 text-sm rounded-lg"
+          className="bg-accent-card hover:bg-accent/90 text-white font-medium flex items-center gap-1 text-sm rounded-lg"
         >
           <Plus className="w-4 h-4" /> Add Lesson
         </ShadcnButton>
@@ -167,7 +167,7 @@ export default function WizardStepCurriculum({ control, errors, register }) {
           <ShadcnButton
             type="button"
             onClick={handleAddLesson}
-            className="bg-accent text-white"
+            className="bg-accent-card text-white"
           >
             <Plus className="w-4 h-4 mr-1" /> Add First Lesson
           </ShadcnButton>

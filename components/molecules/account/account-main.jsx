@@ -11,7 +11,7 @@ const AccountMain = () => {
                     The Palestinian people face displacement and lack essential services. Your donations can provide vital aid and support.                    </CardDescription>
                 </CardHeader>
                 <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-                    <Button round wide className="w-full text-sm bg-accent text-white">
+                    <Button round wide className="w-full text-sm bg-accent-card text-white">
                         Donate
                     </Button>
                 </CardContent>

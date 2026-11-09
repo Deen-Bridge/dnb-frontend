@@ -78,7 +78,7 @@ export default function WhyDeenBridge() {
             wide
             round
             to="/signup"
-            className="bg-accent hover:bg-highlight text-white px-10 py-3 text-lg font-bold animate-in-out transition-all"
+            className="bg-accent-card hover:bg-highlight text-white px-10 py-3 text-lg font-bold animate-in-out transition-all"
           >
             {t("cta")}
           </Button>

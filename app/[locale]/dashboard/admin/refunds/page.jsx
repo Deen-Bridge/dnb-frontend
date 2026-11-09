@@ -199,7 +199,7 @@ function RetryRefundDialog({ refund, onConfirm, isRetrying }) {
         <AlertDialogFooter>
           <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="rounded-full bg-accent text-white hover:bg-accent/90"
+            className="rounded-full bg-accent-card text-white hover:bg-accent/90"
             onClick={() => onConfirm(refund.id)}
           >
             Retry refund

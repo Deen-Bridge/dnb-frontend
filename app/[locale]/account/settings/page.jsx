@@ -399,7 +399,7 @@ const SettingsPage = () => {
                         src={profile.avatar || user?.avatar}
                         alt=""
                       />
-                      <AvatarFallback className="bg-accent text-2xl text-white">
+                      <AvatarFallback className="bg-accent-card text-2xl text-white">
                         {profile.name?.charAt(0) ||
                           user?.name?.charAt(0) ||
                           "U"}
@@ -422,7 +422,7 @@ const SettingsPage = () => {
                       @{profile.username || user?.username}
                     </p>
                     <div className="mt-2 flex items-center justify-center gap-2 sm:justify-start">
-                      <Badge className="bg-accent text-white">
+                      <Badge className="bg-accent-card text-white">
                         {user?.role || "Member"}
                       </Badge>
                       <VerifiedBadge user={user} />

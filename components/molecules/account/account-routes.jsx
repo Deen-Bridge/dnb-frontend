@@ -96,7 +96,7 @@ const AccountRouter = () => {
                                         poppins_500,
                                         "flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm transition-colors",
                                         isActive
-                                            ? "bg-accent text-white shadow-sm"
+                                            ? "bg-accent-card text-white shadow-sm"
                                             : "text-ink hover:bg-secondary/10 hover:text-accent"
                                     )}
                                 >

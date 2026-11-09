@@ -66,7 +66,7 @@ const RecommendedBookCard = ({ book }) => {
                     to={`/dashboard/library/${book._id}`}
                     wide
                     round
-                    className="w-full bg-accent text-white"
+                    className="w-full bg-accent-card text-white"
                 >
                     View Book
                 </Button>

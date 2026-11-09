@@ -106,7 +106,7 @@ const Page = () => {
             variant={selectedTab === tab.value ? "default" : "outline"}
             className={cn(
               "rounded-full",
-              selectedTab === tab.value && "bg-accent text-white hover:bg-accent/90"
+              selectedTab === tab.value && "bg-accent-card text-white hover:bg-accent/90"
             )}
             onClick={() => setSelectedTab(tab.value)}
           >

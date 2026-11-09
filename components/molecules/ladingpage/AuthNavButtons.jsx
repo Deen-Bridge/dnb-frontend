@@ -6,7 +6,7 @@ export default function AuthNavButtons() {
     const t = useTranslations("navbar.auth");
     const { isAuthenticated } = useAuth();
     return isAuthenticated ? (
-        <Button to="/dashboard/" wide round className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all">
+        <Button to="/dashboard/" wide round className="bg-accent-card hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all">
             {t("dashboard")}
         </Button>
     ) : (
@@ -16,12 +16,12 @@ export default function AuthNavButtons() {
                     wide
                     round
                     to="/login"
-                    className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all "
+                    className="bg-accent-card hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all "
                 >
                     {t("login")}
                 </Button>
                 <Button to="/signup" wide round
-                    className="bg-accent hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"    >
+                    className="bg-accent-card hover:bg-highlight text-white px-10 py-3 animate-in-out transition-all"    >
                     {t("signup")}
                 </Button>
             </div>

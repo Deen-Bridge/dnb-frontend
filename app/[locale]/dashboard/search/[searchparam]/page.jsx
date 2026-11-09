@@ -321,7 +321,7 @@ const Page = ({ params }) => {
                   href={typeLinks[item.type](item.id)}
                   className={cn(
                     poppins_500,
-                    "mt-2 block w-full rounded-full bg-accent px-4 py-2 text-center text-sm text-white shadow-sm transition-colors hover:bg-highlight"
+                    "mt-2 block w-full rounded-full bg-accent-card px-4 py-2 text-center text-sm text-white shadow-sm transition-colors hover:bg-highlight"
                   )}
                 >
                   View {typeLabels[item.type]}

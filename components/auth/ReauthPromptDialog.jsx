@@ -125,7 +125,7 @@ export default function ReauthPromptDialog({
             </Button>
             <Button
               type="submit"
-              className="rounded-full bg-accent text-white hover:bg-accent/90"
+              className="rounded-full bg-accent-card text-white hover:bg-accent/90"
               disabled={!canSubmit}
             >
               {isSubmitting ? "Verifying…" : "Confirm"}
