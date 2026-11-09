@@ -300,7 +300,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
                   <Avatar className="mt-0.5 h-8 w-8 shrink-0 rounded-full">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
                     <AvatarFallback
-                      className={cn(poppins_500, "bg-accent text-xs text-white")}
+                      className={cn(poppins_500, "bg-accent-card text-xs text-white")}
                     >
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>
@@ -396,7 +396,7 @@ function Dashboard({ chatData, onChatUpdate, onOpenSidebar }) {
               disabled={isLoading || !inputMessage.trim()}
               className={cn(
                 poppins_500,
-                "flex size-9 items-center justify-center rounded-xl bg-accent text-white transition-colors hover:bg-highlight disabled:cursor-not-allowed disabled:opacity-40"
+                "flex size-9 items-center justify-center rounded-xl bg-accent-card text-white transition-colors hover:bg-highlight disabled:cursor-not-allowed disabled:opacity-40"
               )}
               aria-label="Send message"
             >

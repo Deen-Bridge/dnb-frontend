@@ -154,7 +154,7 @@ const ProfileUserInfo = ({ user }) => {
               loading={followLoading}
               className={cn(
                 "px-6 py-2 text-sm",
-                following && "bg-accent text-white hover:bg-highlight"
+                following && "bg-accent-card text-white hover:bg-highlight"
               )}
               onClick={handleFollowToggle}
             >

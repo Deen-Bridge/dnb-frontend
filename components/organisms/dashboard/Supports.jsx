@@ -13,7 +13,7 @@ const SupportPalestine = () => {
 
                 </CardContent>
                 <CardFooter>
-                    <Button round wide className="w-full text-sm bg-accent text-white">
+                    <Button round wide className="w-full text-sm bg-accent-card text-white">
                         Donate
                     </Button>
                 </CardFooter>

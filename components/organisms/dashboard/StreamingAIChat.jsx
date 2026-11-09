@@ -330,7 +330,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                       <AvatarFallback
                         className={cn(
                           poppins_500,
-                          "bg-accent text-white text-sm"
+                          "bg-accent-card text-white text-sm"
                         )}
                       >
                         {user?.name?.charAt(0) || "U"}
@@ -514,7 +514,7 @@ export default function StreamingAIChat({ chatData, onChatUpdate }) {
                   round
                   type="submit"
                   aria-label="Send message"
-                  className="text-sm gap-1.5 text-white flex bg-accent hover:bg-highlight"
+                  className="text-sm gap-1.5 text-white flex bg-accent-card hover:bg-highlight"
                   disabled={isStreaming || !inputMessage.trim()}
                 >
                   <CornerDownLeft className="size-3.5" />

@@ -78,7 +78,7 @@ const PublicCourseCard = ({ course }) => {
           round
           className={cn(
             poppins_500,
-            "mt-4 w-full bg-accent text-sm text-white hover:bg-highlight"
+            "mt-4 w-full bg-accent-card text-sm text-white hover:bg-highlight"
           )}
           to={`/dashboard/courses/${course._id}`}
         >

@@ -257,7 +257,7 @@ export default function ContactPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={s.label}
-                      className="flex size-10 items-center justify-center rounded-full bg-secondary/10 text-accent transition-all hover:bg-accent hover:text-ink-inverse"
+                      className="flex size-10 items-center justify-center rounded-full bg-secondary/10 text-accent transition-all hover:bg-accent-card hover:text-ink-inverse"
                     >
                       {s.icon}
                     </Link>

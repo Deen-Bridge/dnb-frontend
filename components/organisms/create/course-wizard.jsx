@@ -319,7 +319,7 @@ export default function CourseWizard({ courseId }) {
               <Button
                 type="button"
                 round
-                className="bg-accent text-white text-xs py-1 px-3"
+                className="bg-accent-card text-white text-xs py-1 px-3"
                 onClick={handleResumeDraft}
               >
                 Resume Draft
@@ -437,7 +437,7 @@ export default function CourseWizard({ courseId }) {
               type="button"
               round
               onClick={handleNextStep}
-              className="bg-accent text-white flex items-center gap-1"
+              className="bg-accent-card text-white flex items-center gap-1"
             >
               Next <ArrowRight className="w-4 h-4" />
             </Button>
@@ -452,7 +452,7 @@ export default function CourseWizard({ courseId }) {
                 submitting || thumbnailUpload.uploading || videoUpload.uploading
               }
               onClick={handleSubmit(handlePublish)}
-              className="bg-accent hover:bg-accent/90 text-white font-bold flex items-center gap-1"
+              className="bg-accent-card hover:bg-accent/90 text-white font-bold flex items-center gap-1"
             >
               <CheckCircle2 className="w-4 h-4" />
               {isEditMode ? "Save Changes" : "Publish Course"}

@@ -157,7 +157,7 @@ const CoursesPageContent = () => {
             )}
             <Button
               variant={showBookmarks ? "default" : "outline"}
-              className={cn("rounded-full", showBookmarks && "bg-accent text-white hover:bg-accent/90")}
+              className={cn("rounded-full", showBookmarks && "bg-accent-card text-white hover:bg-accent/90")}
               onClick={() => setShowBookmarks(!showBookmarks)}
             >
               <Bookmark className="h-4 w-4 mr-1" />
@@ -174,7 +174,7 @@ const CoursesPageContent = () => {
           className={cn(
             "shrink-0 rounded-full border px-4 py-2 text-sm transition-colors",
             !category
-              ? "bg-accent text-white border-accent"
+              ? "bg-accent-card text-white border-accent"
               : "border-accent/20 bg-surface-raised text-ink hover:border-secondary/40"
           )}
         >
@@ -188,7 +188,7 @@ const CoursesPageContent = () => {
             className={cn(
               "shrink-0 rounded-full border px-4 py-2 text-sm transition-colors",
               category === cat.slug
-                ? "bg-accent text-white border-accent"
+                ? "bg-accent-card text-white border-accent"
                 : "border-accent/20 bg-surface-raised text-ink hover:border-secondary/40"
             )}
           >

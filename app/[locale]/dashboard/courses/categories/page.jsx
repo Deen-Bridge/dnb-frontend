@@ -104,7 +104,7 @@ export default function CategoriesHubPage() {
             href="/dashboard/courses"
             className={cn(
               poppins_500,
-              "inline-flex items-center gap-1.5 rounded-full border border-accent/10 bg-surface-raised px-4 py-2 text-sm text-accent shadow-sm transition-colors hover:border-accent/30 hover:bg-accent hover:text-white"
+              "inline-flex items-center gap-1.5 rounded-full border border-accent/10 bg-surface-raised px-4 py-2 text-sm text-accent shadow-sm transition-colors hover:border-accent/30 hover:bg-accent-card hover:text-white"
             )}
           >
             Browse all courses

@@ -23,7 +23,7 @@ const ProfileTabs = ({ selectedTab, onChange }) => {
               value={tab.value}
               className={cn(
                 poppins_500,
-                "rounded-full px-4 py-2 text-sm text-ink-muted transition-colors hover:text-ink data-[state=active]:bg-accent data-[state=active]:text-white"
+                "rounded-full px-4 py-2 text-sm text-ink-muted transition-colors hover:text-ink data-[state=active]:bg-accent-card data-[state=active]:text-white"
               )}
             >
               {tab.label}

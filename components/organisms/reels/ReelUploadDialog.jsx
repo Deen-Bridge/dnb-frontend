@@ -196,7 +196,7 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
                 </div>
                 <Label
                   htmlFor="reel-video-input"
-                  className="cursor-pointer rounded-full bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-highlight"
+                  className="cursor-pointer rounded-full bg-accent-card px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-highlight"
                 >
                   Browse files
                 </Label>
@@ -267,7 +267,7 @@ const ReelUploadDialog = ({ open, onOpenChange, onUploaded }) => {
             </Button>
             <Button
               round
-              className="bg-accent text-white"
+              className="bg-accent-card text-white"
               onClick={handleSubmit}
               loading={submitting}
               disabled={submitting || !videoFile || !description.trim()}

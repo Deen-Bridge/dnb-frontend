@@ -65,7 +65,7 @@ const EducatorProfileHeader = ({
           <Avatar className="h-28 w-28 border-4 border-basic shadow-2xl sm:h-32 sm:w-32">
             <AvatarImage src={educator?.avatar} alt={educator?.name} />
             <AvatarFallback
-              className={cn(poppins_600, "bg-accent text-3xl text-white")}
+              className={cn(poppins_600, "bg-accent-card text-3xl text-white")}
             >
               {educator?.name?.charAt(0) || "E"}
             </AvatarFallback>

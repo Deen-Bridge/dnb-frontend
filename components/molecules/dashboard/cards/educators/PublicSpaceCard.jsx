@@ -109,7 +109,7 @@ const PublicSpaceCard = ({ space }) => {
           round
           className={cn(
             poppins_500,
-            "mt-4 w-full gap-2 bg-accent text-sm text-white hover:bg-highlight"
+            "mt-4 w-full gap-2 bg-accent-card text-sm text-white hover:bg-highlight"
           )}
           to={`/dashboard/spaces/${_id}`}
         >

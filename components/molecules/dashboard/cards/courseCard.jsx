@@ -180,7 +180,7 @@ const CourseCard = ({ course, onBookmarkChange, initialIsBookmarked, progress })
           round
           className={cn(
             poppins_600,
-            "w-full bg-accent text-sm text-white hover:bg-accent/90"
+            "w-full bg-accent-card text-sm text-white hover:bg-accent/90"
           )}
           to={`/dashboard/courses/${course._id}`}
         >

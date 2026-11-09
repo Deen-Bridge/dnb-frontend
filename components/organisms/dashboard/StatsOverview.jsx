@@ -69,7 +69,7 @@ export default function StatsOverview() {
         return (
             <div ref={ref} className="rounded-xl p-6 text-center shadow-sm bg-gradient-to-br from-red-50 via-white to-red-100/80 backdrop-blur-xl">
                 <p className="text-sm text-red-600 mb-3">Failed to load stats. Please try again.</p>
-                <Button round className="bg-accent text-white text-sm" onClick={() => setRetryKey(k => k + 1)}>
+                <Button round className="bg-accent-card text-white text-sm" onClick={() => setRetryKey(k => k + 1)}>
                     Retry
                 </Button>
             </div>
