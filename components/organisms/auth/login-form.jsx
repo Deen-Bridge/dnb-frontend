@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import Modal from "@/components/molecules/Modal";
 import ForgetPassword from "./forget-password";
@@ -39,6 +40,7 @@ const loginSchema = z.object({
 
 export function LoginForm({ className, ...props }) {
   const [modalOpen, setModalOpen] = React.useState(false);
+  const router = useRouter();
   const {
     loginWithStellar,
     isPending: isStellarPending,
@@ -101,11 +103,13 @@ export function LoginForm({ className, ...props }) {
     try {
       const user = await loginWithGoogle(credentialResponse?.credential);
       if (user) {
-        setTimeout(() => {
-          // The hard reload intentionally refreshes the auth cookie/session after login.
-          const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
-          window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
-        }, 500);
+        // persistSession already updates AuthProvider synchronously. Use a
+        // client-side navigation here so the protected dashboard sees the
+        // authenticated state immediately instead of racing a full reload
+        // against cookie persistence.
+        const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
+        const target = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+        router.replace(target);
       }
     } catch {
       // loginWithGoogle already toasts failures
