@@ -15,14 +15,31 @@ import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from "vites
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const { loginMock, loginWithStellarMock, stellarState } = vi.hoisted(() => ({
+const {
+  loginMock,
+  loginWithStellarMock,
+  loginWithGoogleMock,
+  routerReplaceMock,
+  stellarState,
+  googleState,
+} = vi.hoisted(() => ({
   loginMock: vi.fn(),
   loginWithStellarMock: vi.fn(),
+  loginWithGoogleMock: vi.fn(),
+  routerReplaceMock: vi.fn(),
   stellarState: {
     isPending: false,
     stellarAuthAvailable: null,
     kitInitialized: true,
   },
+  googleState: {
+    isPending: false,
+    googleAuthAvailable: true,
+  },
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: routerReplaceMock }),
 }));
 
 vi.mock("@/hooks/useAuth", () => ({ login: loginMock }));
@@ -34,6 +51,22 @@ vi.mock("@/hooks/useStellarAuth", () => ({
     stellarAuthAvailable: stellarState.stellarAuthAvailable,
     kitInitialized: stellarState.kitInitialized,
   }),
+}));
+
+vi.mock("@/hooks/useGoogleAuth", () => ({
+  useGoogleAuth: () => ({
+    loginWithGoogle: loginWithGoogleMock,
+    isPending: googleState.isPending,
+    googleAuthAvailable: googleState.googleAuthAvailable,
+  }),
+}));
+
+vi.mock("@react-oauth/google", () => ({
+  GoogleLogin: ({ onSuccess }) => (
+    <button type="button" onClick={() => onSuccess({ credential: "google-id-token" })}>
+      Continue with Google
+    </button>
+  ),
 }));
 
 vi.mock("@/components/molecules/Modal", () => ({
@@ -71,9 +104,13 @@ beforeEach(() => {
   window.location.href = "";
   loginMock.mockReset();
   loginWithStellarMock.mockReset();
+  loginWithGoogleMock.mockReset();
+  routerReplaceMock.mockReset();
   stellarState.isPending = false;
   stellarState.stellarAuthAvailable = null;
   stellarState.kitInitialized = true;
+  googleState.isPending = false;
+  googleState.googleAuthAvailable = true;
 });
 
 /** The redirect is scheduled 500ms after a successful login. */
@@ -207,6 +244,19 @@ describe("LoginForm", () => {
     await clickStellarButton();
 
     await waitFor(() => expect(loginWithStellarMock).toHaveBeenCalled());
+    expect(window.location.href).toBe("");
+  });
+
+  it("navigates with the authenticated app state after Google sign-in", async () => {
+    loginWithGoogleMock.mockResolvedValue({ role: "student" });
+    render(<LoginForm />);
+
+    const user = userEvent.setup();
+    await act(async () => {
+      await user.click(screen.getByRole("button", { name: /continue with google/i }));
+    });
+
+    await waitFor(() => expect(routerReplaceMock).toHaveBeenCalledWith("/dashboard"));
     expect(window.location.href).toBe("");
   });
 
