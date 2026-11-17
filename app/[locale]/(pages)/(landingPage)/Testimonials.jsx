@@ -1,28 +1,15 @@
 "use client";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { poppins_600 } from "@/lib/config/font.config";
 
-const testimonials = [
-  { id: "zahra", avatar: "/images/img-9.jpeg" },
-  { id: "ahmad", avatar: "/images/img-10.jpg" },
-  { id: "zayd", avatar: "/images/img-11.jpg" },
-  { id: "maryam", avatar: "/images/img-12.jpg" },
-  { id: "suleiman", avatar: "/images/img-13.jpg" },
-  { id: "aisha", avatar: "/images/img-14.jpg" },
-];
-
-// Split testimonials into two rows
-const row1 = testimonials.slice(0, 3);
-const row2 = testimonials.slice(3);
-
-// Duplicate for seamless loop
-const row1Duplicated = [...row1, ...row1];
-const row2Duplicated = [...row2, ...row2];
+// Testimonials stay hidden until we have real, attributable quotes with consent.
+const testimonials = [];
 
 export default function Testimonials() {
   const t = useTranslations("landing.testimonials");
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="relative py-20 px-2 sm:px-6 bg-basic overflow-hidden">
       {/* Decorative Islamic motif background */}
