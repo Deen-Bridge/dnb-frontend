@@ -9,7 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "config:check": "node scripts/validate-mobile-config.mjs",
+    "config:test": "node --test scripts/validate-mobile-config.test.mjs"
   },
   "dependencies": {
     "expo": "~52.0.0",

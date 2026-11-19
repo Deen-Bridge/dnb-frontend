@@ -5,10 +5,12 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": { "EXPO_PUBLIC_BUILD_PROFILE": "development" }
     },
     "preview": {
       "distribution": "internal",
+      "env": { "EXPO_PUBLIC_BUILD_PROFILE": "preview" },
       "ios": {
         "simulator": false
       },
@@ -17,6 +19,7 @@
       }
     },
     "production": {
+      "env": { "EXPO_PUBLIC_BUILD_PROFILE": "production" },
       "ios": {
         "autoIncrement": true
       },
