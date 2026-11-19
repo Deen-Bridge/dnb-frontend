@@ -104,6 +104,24 @@ if (!parsed.success) {
 
 const env = parsed.data;
 
+export type LivenessProvider = "mock" | "persona" | "onfido";
+
+export function resolveLivenessProvider(
+  value: string | undefined,
+  nodeEnv: string | undefined = process.env.NODE_ENV
+): LivenessProvider {
+  const provider = value?.trim() || (nodeEnv === "production" ? "" : "mock");
+  if (nodeEnv === "production" && (!provider || provider === "mock")) {
+    throw new Error(
+      "Liveness provider is unavailable: production requires an approved Persona or Onfido provider."
+    );
+  }
+  if (provider !== "mock" && provider !== "persona" && provider !== "onfido") {
+    throw new Error(`Unsupported liveness provider "${provider}".`);
+  }
+  return provider;
+}
+
 export const config = Object.freeze({
   get apiUrl() {
     return (
@@ -190,7 +208,7 @@ export const config = Object.freeze({
    * Defaults to "mock" so the dev environment works out of the box.
    */
   get livenessProvider() {
-    return env.NEXT_PUBLIC_LIVENESS_PROVIDER ?? "mock";
+    return resolveLivenessProvider(env.NEXT_PUBLIC_LIVENESS_PROVIDER);
   },
 
   /**
