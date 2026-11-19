@@ -24,6 +24,8 @@ jobs:
       
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
       
       - name: Run ESLint
         run: npm run lint
@@ -74,6 +76,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       # #489 -- Browser binaries are cached per installed Playwright version
       # (read from the resolved node_modules/@playwright/test entry, i.e. the
@@ -149,6 +153,8 @@ jobs:
       
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
       
       - name: Build application
         run: npm run build
@@ -173,3 +179,12 @@ jobs:
         uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: ./lighthouserc.json
+          uploadArtifacts: true
+
+      - name: Run Lighthouse CI (mobile)
+        uses: treosh/lighthouse-ci-action@v12
+        env:
+          LHCI_COLLECT_SETTINGS__PRESET: mobile
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
