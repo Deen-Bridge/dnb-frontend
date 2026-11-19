@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -54,6 +54,7 @@ import { TableEmptyState } from "@/components/admin/table-empty-state";
 import { TableErrorState } from "@/components/admin/table-error-state";
 import { RefetchBanner } from "@/components/admin/refetch-banner";
 import { cn } from "@/lib/utils";
+import { listPrivacyRequests, processPrivacyRequest } from "@/lib/actions/admin-privacy";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { format } from "date-fns";
 
@@ -82,6 +83,12 @@ const STATUS_CONFIG = {
     icon: XCircle,
     color: "text-red-600",
     bgColor: "bg-red-100",
+  },
+  expired: {
+    label: "Expired",
+    icon: AlertTriangle,
+    color: "text-slate-600",
+    bgColor: "bg-slate-100",
   },
 };
 
@@ -133,22 +140,50 @@ export default function DataPrivacyPage() {
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [processing, setProcessing] = useState({});
   const [isRefetching, setIsRefetching] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState({ exports: 1, deletions: 1 });
+  const [hasNextPage, setHasNextPage] = useState({ exports: false, deletions: false });
 
-  // TODO(#privacy-wiring): fetch export/deletion requests from the real
-  // admin privacy endpoint and wire handleTriggerExport / handleProcessDeletion.
+  const loadRequests = useCallback(async ({ refetch = false, nextPage = page } = {}) => {
+    if (refetch) setIsRefetching(true);
+    else setLoading(true);
+    setError(null);
+    try {
+      const [exports, deletions] = await Promise.all([
+        listPrivacyRequests("export", { page: nextPage.exports }),
+        listPrivacyRequests("deletion", { page: nextPage.deletions }),
+      ]);
+      setExportRequests(exports.requests);
+      setDeletionRequests(deletions.requests);
+      setHasNextPage({
+        exports: exports.pagination.hasNextPage,
+        deletions: deletions.pagination.hasNextPage,
+      });
+    } catch (requestError) {
+      setError(requestError.message || "Unable to load privacy requests");
+    } finally {
+      setLoading(false);
+      setIsRefetching(false);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    loadRequests();
+  }, [loadRequests]);
 
   // Trigger export job
   const handleTriggerExport = useCallback(async (requestId) => {
     setProcessing((prev) => ({ ...prev, [requestId]: true }));
     try {
-      const res = await fetch(`/api/admin/privacy/exports/${requestId}/process`, {
-        method: "POST",
-      });
-      if (!res.ok) throw new Error("Failed to trigger export");
+      await processPrivacyRequest("export", requestId);
+      await loadRequests({ refetch: true });
+    } catch (error) {
+      setError(error.message || "Failed to trigger export");
     } finally {
       setProcessing((prev) => ({ ...prev, [requestId]: false }));
     }
-  }, []);
+  }, [loadRequests]);
 
   // Process deletion request
   const handleProcessDeletion = useCallback(async () => {
@@ -157,16 +192,15 @@ export default function DataPrivacyPage() {
     setProcessing((prev) => ({ ...prev, [selectedRequest.id]: true }));
     setShowDeleteConfirm(false);
     try {
-      const res = await fetch(
-        `/api/admin/privacy/deletions/${selectedRequest.id}/process`,
-        { method: "POST" }
-      );
-      if (!res.ok) throw new Error("Failed to process deletion");
+      await processPrivacyRequest("deletion", selectedRequest.id);
+      await loadRequests({ refetch: true });
+    } catch (error) {
+      setError(error.message || "Failed to process deletion");
     } finally {
       setProcessing((prev) => ({ ...prev, [selectedRequest.id]: false }));
       setSelectedRequest(null);
     }
-  }, [selectedRequest]);
+  }, [loadRequests, selectedRequest]);
 
   // Stats
   const exportStats = {
@@ -194,6 +228,14 @@ export default function DataPrivacyPage() {
           </Button>
         }
       />
+
+      {error && (
+        <TableErrorState
+          message={error}
+          onRetry={() => loadRequests({ refetch: true })}
+        />
+      )}
+      <RefetchBanner isRefetching={isRefetching} />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -284,7 +326,7 @@ export default function DataPrivacyPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border">
+              {loading ? <TableSkeleton /> : <div className="rounded-lg border">
                 <Table aria-label="Data export requests">
                   <TableHeader>
                     <TableRow>
@@ -369,7 +411,13 @@ export default function DataPrivacyPage() {
                     )}
                   </TableBody>
                 </Table>
-              </div>
+              </div>}
+              {!loading && hasNextPage.exports && (
+                <Button className="mt-4" variant="outline" onClick={() => {
+                  const nextPage = { ...page, exports: page.exports + 1 };
+                  setPage(nextPage);
+                }}>Next export page</Button>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -384,7 +432,7 @@ export default function DataPrivacyPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border">
+              {loading ? <TableSkeleton /> : <div className="rounded-lg border">
                 <Table aria-label="Account deletion requests">
                   <TableHeader>
                     <TableRow>
@@ -460,7 +508,13 @@ export default function DataPrivacyPage() {
                     )}
                   </TableBody>
                 </Table>
-              </div>
+              </div>}
+              {!loading && hasNextPage.deletions && (
+                <Button className="mt-4" variant="outline" onClick={() => {
+                  const nextPage = { ...page, deletions: page.deletions + 1 };
+                  setPage(nextPage);
+                }}>Next deletion page</Button>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
