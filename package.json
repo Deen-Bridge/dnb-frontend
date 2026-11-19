@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint app components lib hooks contexts types __tests__ e2e",
     "lint:any": "node scripts/check-explicit-any.mjs",
+    "release:check": "node scripts/validate-release-config.mjs",
     "a11y": "eslint --config eslint.config.a11y.mjs components app",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run",
