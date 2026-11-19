@@ -427,7 +427,7 @@ export default function SadaqahPage() {
                       Connect your Stellar wallet to donate
                     </p>
                     <Button
-                      className="w-full rounded-full bg-accent text-white hover:bg-accent/90"
+                      className="w-full rounded-full bg-accent-card text-white hover:bg-accent/90"
                       onClick={connectWallet}
                       disabled={isConnecting}
                     >
@@ -482,7 +482,7 @@ export default function SadaqahPage() {
 
                 {connectedWallet && (
                   <Button
-                    className="w-full rounded-full bg-accent text-white hover:bg-accent/90"
+                    className="w-full rounded-full bg-accent-card text-white hover:bg-accent/90"
                     onClick={handleInitiate}
                     disabled={
                       !isValidAmount || hasInsufficientBalance || isProcessing
@@ -541,7 +541,7 @@ export default function SadaqahPage() {
                     Back
                   </Button>
                   <Button
-                    className="flex-1 rounded-full bg-accent text-white hover:bg-accent/90"
+                    className="flex-1 rounded-full bg-accent-card text-white hover:bg-accent/90"
                     onClick={handleConfirm}
                   >
                     <Wallet className="mr-2 h-4 w-4" />
@@ -590,7 +590,7 @@ export default function SadaqahPage() {
                   </a>
                 )}
                 <Button
-                  className="mt-6 w-full rounded-full bg-accent text-white hover:bg-accent/90"
+                  className="mt-6 w-full rounded-full bg-accent-card text-white hover:bg-accent/90"
                   onClick={handleReset}
                 >
                   Donate Again
@@ -608,7 +608,7 @@ export default function SadaqahPage() {
                 </h3>
                 <p className={cn(poppins_400.className, "mt-2 text-ink-muted")}>{error}</p>
                 <Button
-                  className="mt-6 w-full rounded-full bg-accent text-white hover:bg-accent/90"
+                  className="mt-6 w-full rounded-full bg-accent-card text-white hover:bg-accent/90"
                   onClick={handleReset}
                 >
                   Try Again

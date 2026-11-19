@@ -58,7 +58,7 @@ export default function OfflinePage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Link
           href="/dashboard"
-          className="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-accent/90"
+          className="inline-flex items-center justify-center rounded-xl bg-accent-card px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-accent/90"
         >
           Try Dashboard
         </Link>

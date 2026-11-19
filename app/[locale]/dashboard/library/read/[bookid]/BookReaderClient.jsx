@@ -346,7 +346,7 @@ const BookReaderClient = ({ book }) => {
           <Button
             to="/dashboard/library"
             round
-            className="mt-6 bg-accent text-white"
+            className="mt-6 bg-accent-card text-white"
           >
             Back to Library
           </Button>
@@ -391,7 +391,7 @@ const BookReaderClient = ({ book }) => {
             </Button>
             <Button
               round
-              className="bg-accent text-white"
+              className="bg-accent-card text-white"
               to={`/dashboard/library/${book._id}`}
             >
               Buy to read the full book

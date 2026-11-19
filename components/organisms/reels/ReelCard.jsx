@@ -206,7 +206,7 @@ const ReelCard = ({
           <div className="mb-1 flex flex-col items-center">
             <Avatar className="h-11 w-11 border-2 border-white">
               <AvatarImage src={reel.createdBy?.avatar} alt="" />
-              <AvatarFallback className="bg-accent text-sm text-white">
+              <AvatarFallback className="bg-accent-card text-sm text-white">
                 {viewerAvatarFallback}
               </AvatarFallback>
             </Avatar>

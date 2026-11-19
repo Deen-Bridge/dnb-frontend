@@ -58,7 +58,7 @@ const Unauthorized = ({ className, message }) => {
         type="button"
         round
         onClick={handleGoBack}
-        className="py-3 px-8 text-base lg:text-lg bg-accent text-white font-bold hover:bg-accent/90 transition"
+        className="py-3 px-8 text-base lg:text-lg bg-accent-card text-white font-bold hover:bg-accent/90 transition"
       >
         Back to dashboard
       </Button>

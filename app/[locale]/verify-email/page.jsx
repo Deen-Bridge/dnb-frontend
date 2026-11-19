@@ -82,7 +82,7 @@ export default function VerifyEmailPage() {
             )}
             <button
               onClick={handleContinue}
-              className="inline-block px-6 py-3 bg-accent text-white rounded-lg hover:bg-highlight transition-colors"
+              className="inline-block px-6 py-3 bg-accent-card text-white rounded-lg hover:bg-highlight transition-colors"
             >
               {normalizeRole(verifiedUser?.role) === ROLES.EDUCATOR
                 ? "Continue to verification"
@@ -103,7 +103,7 @@ export default function VerifyEmailPage() {
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => router.push("/")}
-                className="inline-block px-6 py-3 bg-accent text-white rounded-lg hover:bg-highlight transition-colors"
+                className="inline-block px-6 py-3 bg-accent-card text-white rounded-lg hover:bg-highlight transition-colors"
               >
                 Go Home
               </button>

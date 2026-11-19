@@ -222,7 +222,7 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
             </div>
             <Button
               round
-              className="w-full bg-accent text-white"
+              className="w-full bg-accent-card text-white"
               onClick={handleCaptureAndUpload}
               disabled={!duration || busy}
               loading={capturing || frameUpload.uploading || persisting}
