@@ -6,7 +6,7 @@
  * rows, and the per-admin saved-query CRUD that backs the sidebar. No
  * cross-dataset joins or SQL are expected anywhere in the resolved shapes.
  */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   REPORT_DATASETS,
   defaultFiltersFor,
@@ -20,6 +20,22 @@ const DATASET_IDS = ["users", "transactions", "reports"];
 
 beforeEach(() => {
   window.localStorage.clear();
+  global.fetch = vi.fn(async () => ({
+    ok: true,
+    json: async () => ({
+      rows: [
+        { status: "active", joinedAt: "2025-05-01" },
+        { status: "active", joinedAt: "2025-05-09" },
+      ],
+      freshness: {
+        interval: { from: "2025-01-01", to: "2025-05-31" },
+        lastUpdatedAt: "2025-06-01T00:00:00.000Z",
+        completeness: "complete",
+        timezone: "UTC",
+        stale: false,
+      },
+    }),
+  }));
 });
 
 describe("REPORT_DATASETS", () => {
@@ -69,29 +85,43 @@ describe("fetchReportRows", () => {
     await expect(fetchReportRows("nope", {})).rejects.toThrow(/unknown report dataset/i);
   });
 
-  it("returns all rows for a dataset by default", async () => {
-    const { rows } = await fetchReportRows("users", {});
-    expect(rows.length).toBeGreaterThan(0);
+  it("requests bounded backend rows with freshness metadata", async () => {
+    const { rows, freshness } = await fetchReportRows("users", {});
+    expect(rows).toHaveLength(2);
+    expect(freshness.completeness).toBe("complete");
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=25",
+      { credentials: "include" }
+    );
   });
 
   it("applies a select filter", async () => {
-    const { rows } = await fetchReportRows("users", { status: "banned" });
-    expect(rows.length).toBeGreaterThan(0);
-    for (const row of rows) expect(row.status).toBe("banned");
+    await fetchReportRows("users", { status: "banned" });
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=25&status=banned",
+      { credentials: "include" }
+    );
   });
 
   it("applies the date-range filters", async () => {
-    const { rows } = await fetchReportRows("users", { from: "2025-04-01", to: "2025-05-31" });
-    expect(rows.length).toBeGreaterThan(0);
-    for (const row of rows) {
-      expect(row.joinedAt >= "2025-04-01").toBe(true);
-      expect(row.joinedAt <= "2025-05-31").toBe(true);
-    }
+    await fetchReportRows("users", { from: "2025-04-01", to: "2025-05-31" });
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=25&from=2025-04-01&to=2025-05-31",
+      { credentials: "include" }
+    );
   });
 
   it("honors the preview limit option", async () => {
-    const { rows } = await fetchReportRows("users", {}, { limit: 2 });
-    expect(rows.length).toBe(2);
+    await fetchReportRows("users", {}, { limit: 200 });
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=100",
+      { credentials: "include" }
+    );
+  });
+
+  it("rejects a response without freshness metadata instead of treating it as empty", async () => {
+    global.fetch = vi.fn(async () => ({ ok: true, json: async () => ({ rows: [] }) }));
+    await expect(fetchReportRows("users")).rejects.toThrow(/data interval is missing/i);
   });
 });
 
