@@ -81,4 +81,22 @@ describe("fetchSearchAnalytics", () => {
 
     await expect(fetchSearchAnalytics()).rejects.toThrow("Analytics unavailable");
   });
+
+  it("rejects reversed and unbounded date ranges before making requests", async () => {
+    await expect(fetchSearchAnalytics({ from: "2026-10-21T00:00:00.000Z", to: "2026-10-01T00:00:00.000Z" })).rejects.toThrow("Invalid search analytics date range");
+    await expect(fetchSearchAnalytics({ from: "2024-01-01T00:00:00.000Z", to: "2026-01-01T00:00:00.000Z" })).rejects.toThrow("cannot exceed 366 days");
+    expect(axiosInstance.get).not.toHaveBeenCalled();
+  });
+
+  it("preserves explicit unavailable and response metadata", async () => {
+    axiosInstance.get
+      .mockResolvedValueOnce({ data: { data: { tracked: false, totalSearches: 0, uniqueQueries: 0, zeroResultSearches: 0 } } })
+      .mockResolvedValueOnce({ data: { data: { items: [{ query: "secret", count: 2, clickThroughRate: 50, trend: -10 }] } } })
+      .mockResolvedValueOnce({ data: { data: { items: [] } } })
+      .mockResolvedValueOnce({ data: { data: { items: [] } } });
+    const result = await fetchSearchAnalytics({ from: "2026-10-01T00:00:00.000Z", to: "2026-10-21T00:00:00.000Z" });
+    expect(result.totals.totalQueries).toMatchObject({ value: 0, tracked: false });
+    expect(result.totals.avgClickThroughRate).toMatchObject({ value: null, tracked: false });
+    expect(result.topQueries[0]).toMatchObject({ query: "secret", clickThroughRate: 50, trend: -10 });
+  });
 });
