@@ -19,11 +19,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
       
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
+      - name: Verify lockfile enforcement
+        run: node --test .github/workflows/ci-install.test.mjs
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
       
       - name: Run ESLint
         run: npm run lint
@@ -69,11 +80,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
 
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       # #489 -- Browser binaries are cached per installed Playwright version
       # (read from the resolved node_modules/@playwright/test entry, i.e. the
@@ -144,11 +160,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
       
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       
       - name: Build application
         run: npm run build
