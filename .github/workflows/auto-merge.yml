@@ -44,7 +44,7 @@ jobs:
     steps:
       # Checkout only the trusted default branch; never execute pull request code here.
       - name: Checkout trusted automation
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
@@ -66,7 +66,7 @@ jobs:
 
       - name: Evaluate gates and merge
         if: steps.automation.outputs.available == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const { run } = require("./.github/scripts/auto-merge.cjs");
