@@ -277,7 +277,7 @@ const ReelFeedInner = () => {
         </div>
         <Button
           round
-          className="flex items-center gap-2 bg-accent text-white hover:bg-highlight"
+          className="flex items-center gap-2 bg-accent-card text-white hover:bg-highlight"
           onClick={() => setUploadOpen(true)}
         >
           <UploadCloud className="h-4 w-4" />
@@ -300,7 +300,7 @@ const ReelFeedInner = () => {
           </div>
           <Button
             round
-            className="bg-accent text-white hover:bg-highlight"
+            className="bg-accent-card text-white hover:bg-highlight"
             onClick={() => setUploadOpen(true)}
           >
             Upload a Reel

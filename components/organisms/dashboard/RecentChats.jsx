@@ -241,7 +241,7 @@ const RecentChats = () => {
                   <span
                     className={cn(
                       poppins_600,
-                      "flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent px-1.5 text-[11px] text-white"
+                      "flex h-5 min-w-[20px] items-center justify-center rounded-full bg-accent-card px-1.5 text-[11px] text-white"
                     )}
                   >
                     {unreadCount}

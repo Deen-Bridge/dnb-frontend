@@ -146,7 +146,7 @@ const SpaceCard = ({ space }) => {
           </Link>
 
           <div>
-            <CirclePlus className="h-5 w-5 rounded-full p-1 text-accent transition hover:bg-accent hover:text-white sm:h-8 sm:w-8" />
+            <CirclePlus className="h-5 w-5 rounded-full p-1 text-accent transition hover:bg-accent-card hover:text-white sm:h-8 sm:w-8" />
           </div>
 
         </div>

@@ -268,7 +268,7 @@ export default function BookDetailPage({ book }) {
                     <Button
                       wide
                       round
-                      className="bg-accent text-white shadow-sm transition hover:bg-highlight"
+                      className="bg-accent-card text-white shadow-sm transition hover:bg-highlight"
                       to={`/dashboard/library/read/${book._id ?? book.id}`}
                     >
                       <BookOpen className="mr-2 h-4 w-4" /> Read now
@@ -288,7 +288,7 @@ export default function BookDetailPage({ book }) {
                     <Button
                       wide
                       round
-                      className="bg-accent text-white shadow-sm transition hover:bg-highlight"
+                      className="bg-accent-card text-white shadow-sm transition hover:bg-highlight"
                       onClick={handlePurchaseBook}
                       loading={loading}
                     >
@@ -403,7 +403,7 @@ export default function BookDetailPage({ book }) {
                     )}
                     <Button
                       round
-                      className="bg-accent text-white transition hover:bg-highlight"
+                      className="bg-accent-card text-white transition hover:bg-highlight"
                       type="submit"
                       disabled={
                         submitting || rating === 0 || review.trim() === ""
