@@ -11,6 +11,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { externalLinkProps } from "@/lib/security/safe-external-url";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -353,9 +354,9 @@ export default function DataPrivacyPage() {
                                     )}
                                   </Button>
                                 )}
-                                {request.status === "completed" && request.downloadUrl && (
+                                {request.status === "completed" && externalLinkProps(request.downloadUrl) && (
                                   <Button size="sm" variant="outline" asChild>
-                                    <a href={request.downloadUrl}>
+                                    <a {...externalLinkProps(request.downloadUrl)}>
                                       <FileDown className="h-4 w-4 mr-1" />
                                       Download
                                     </a>
