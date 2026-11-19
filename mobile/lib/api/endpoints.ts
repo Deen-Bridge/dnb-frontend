@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
     },
     payment: {
       initialize: "/api/stellar/payment/initialize",
+      preflight: "/api/stellar/payment/preflight",
       verify: "/api/stellar/payment/verify",
       transactions: "/api/stellar/payment/transactions",
     },
