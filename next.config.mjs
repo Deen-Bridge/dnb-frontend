@@ -35,6 +35,10 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "react-icons"],
   },
+  // Keep the existing canvas fallback while making the Turbopack choice
+  // explicit for Next 16 builds. The webpack hook remains for tools that
+  // still invoke the webpack bundler (for example the Serwist integration).
+  turbopack: {},
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;
