@@ -3,8 +3,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useAuth from "./useAuth";
 import axiosInstance from "@/lib/config/axios.config";
 import { config } from "@/lib/config/env";
+import {
+  learningStorageKey,
+  LEARNING_RETENTION_MS,
+  readLearningValue,
+  removeLearningValue,
+  writeLearningValue,
+} from "@/lib/privacy/learningStorage";
 
-const STORAGE_PREFIX = "dnb:progress:";
 const THROTTLE_MS = 15000;
 const RETRY_MS = 1000;
 const COMPLETION_THRESHOLD = 0.9;
@@ -15,10 +21,19 @@ export type ProgressSyncStatus = "idle" | "syncing" | "synced" | "offline" | "er
 export interface UseCourseProgressResult { progress: CourseProgressState; loading: boolean; syncStatus: ProgressSyncStatus; reportProgress: (positionSeconds: number, durationSeconds: number) => void; resetProgress: () => void; retrySync: () => Promise<void>; resumeTime: number | null; resumeLabel: string | null }
 
 function scopeKey(userId: string): string { return `${config.apiUrl}:${userId}`; }
-function getStorageKey(userId: string, courseId: string): string { return `${STORAGE_PREFIX}${userId}:${courseId}`; }
-function readLocalProgress(userId: string, courseId: string): StoredProgressData | null { if (typeof window === "undefined") return null; try { const raw = localStorage.getItem(getStorageKey(userId, courseId)); return raw ? JSON.parse(raw) : null; } catch { return null; } }
-function writeLocalProgress(userId: string, courseId: string, data: StoredProgressData): void { if (typeof window === "undefined") return; try { localStorage.setItem(getStorageKey(userId, courseId), JSON.stringify(data)); } catch { /* storage is an optional cache */ } }
-function removeLocalProgress(userId: string, courseId: string): void { if (typeof window !== "undefined") localStorage.removeItem(getStorageKey(userId, courseId)); }
+function getStorageKey(userId: string, courseId: string): string { return learningStorageKey("courseProgress", userId, courseId); }
+function readLocalProgress(userId: string, courseId: string): StoredProgressData | null {
+  if (typeof window === "undefined") return null;
+  try { return readLearningValue<StoredProgressData>(getStorageKey(userId, courseId)); } catch { return null; }
+}
+function writeLocalProgress(userId: string, courseId: string, data: StoredProgressData): void {
+  if (typeof window === "undefined") return;
+  try { writeLearningValue(getStorageKey(userId, courseId), data, LEARNING_RETENTION_MS.courseProgress); } catch { /* storage is an optional cache */ }
+}
+function removeLocalProgress(userId: string, courseId: string): void {
+  if (typeof window === "undefined") return;
+  try { removeLearningValue(getStorageKey(userId, courseId)); } catch { /* ignore */ }
+}
 function calcPercent(position: number, duration: number): number { return !duration || duration <= 0 ? 0 : Math.min(100, Math.round((position / duration) * 100)); }
 function isCompleted(position: number, duration: number): boolean { return duration > 0 && position / duration >= COMPLETION_THRESHOLD; }
 function formatTime(seconds: number): string { const m = Math.floor(seconds / 60); return `${m}:${Math.floor(seconds % 60).toString().padStart(2, "0")}`; }
@@ -81,11 +96,14 @@ export function useAllCourseProgress(): { progressMap: Record<string, CourseProg
     const apiScope = scopeKey(userId); setLoading(true);
     const loadLocal = () => {
       const map: Record<string, CourseProgressState> = {};
-      if (typeof window !== "undefined") for (let i = 0; i < localStorage.length; i += 1) {
-        const key = localStorage.key(i); const prefix = `${STORAGE_PREFIX}${userId}:`;
-        if (!key?.startsWith(prefix)) continue;
-        const courseId = key.slice(prefix.length);
-        try { const data = JSON.parse(localStorage.getItem(key) || "null"); if (data) map[courseId] = toState(toStored(data)); } catch { /* ignore a corrupt cache entry */ }
+      if (typeof window !== "undefined") {
+        const prefix = `dnb:learning:v1:courseProgress:${encodeURIComponent(String(userId))}:`;
+        for (let i = 0; i < localStorage.length; i += 1) {
+          const key = localStorage.key(i);
+          if (!key?.startsWith(prefix)) continue;
+          const courseId = decodeURIComponent(key.slice(prefix.length));
+          try { const data = readLearningValue<StoredProgressData>(key); if (data) map[courseId] = toState(toStored(data)); } catch { /* ignore a corrupt cache entry */ }
+        }
       }
       setProgressMap(map);
     };
