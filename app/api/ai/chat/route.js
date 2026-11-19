@@ -1,11 +1,11 @@
 import axios from "axios";
 import { config } from "@/lib/config/env";
+import { getAuthenticatedAiRequest, policyError } from "@/lib/ai/request-policy";
 
 export async function POST(req) {
   try {
-    const { message, chat_id, user_id } = await req.json();
-    console.log("Sending message to AI:", message);
-    console.log("Chat ID:", chat_id, "User ID:", user_id);
+    const request = await getAuthenticatedAiRequest(await req.json());
+    if (request.error) return policyError(request);
 
     const AI_API_URL = config.aiApiUrl;
     const endpoint = `${AI_API_URL}/chat`;
@@ -14,16 +14,15 @@ export async function POST(req) {
 
     const response = await axios.post(
       endpoint,
-      {
-        prompt: message,
-        chat_id: chat_id,
-        user_id: user_id,
-        context: "Islamic knowledge and guidance",
-      },
+      request.payload,
       {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          Authorization: `Bearer ${request.token}`,
+          ...(process.env.AI_SERVICE_API_KEY
+            ? { "X-API-Key": process.env.AI_SERVICE_API_KEY }
+            : {}),
         },
       }
     );
