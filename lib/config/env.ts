@@ -103,6 +103,21 @@ if (!parsed.success) {
 }
 
 const env = parsed.data;
+const isProduction = process.env.NODE_ENV === "production";
+const productionJitsiDomain = env.NEXT_PUBLIC_JITSI_DOMAIN?.trim();
+
+if (isProduction) {
+  const insecureProvider =
+    !productionJitsiDomain ||
+    /^https?:\/\/localhost(?:[:/]|$)/i.test(productionJitsiDomain) ||
+    productionJitsiDomain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "") ===
+      "meet.jit.si";
+  if (insecureProvider || env.NEXT_PUBLIC_JITSI_REQUIRE_JWT !== "true") {
+    throw new Error(
+      "Production Jitsi requires NEXT_PUBLIC_JITSI_DOMAIN to name the approved provider and NEXT_PUBLIC_JITSI_REQUIRE_JWT=true."
+    );
+  }
+}
 
 export const config = Object.freeze({
   get apiUrl() {
@@ -150,11 +165,11 @@ export const config = Object.freeze({
   },
 
   get jitsiDomain() {
-    return env.NEXT_PUBLIC_JITSI_DOMAIN ?? "meet.jit.si";
+    return env.NEXT_PUBLIC_JITSI_DOMAIN ?? (isProduction ? "" : "meet.jit.si");
   },
 
   get jitsiRequireJwt() {
-    return env.NEXT_PUBLIC_JITSI_REQUIRE_JWT === "true";
+    return isProduction || env.NEXT_PUBLIC_JITSI_REQUIRE_JWT === "true";
   },
 
   get firebase() {
