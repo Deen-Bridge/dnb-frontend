@@ -34,16 +34,19 @@ describe("admin-disputes service", () => {
     expect(result.signedUrl).toContain("https://example.com/signed/");
   });
 
-  it("fetchDisputeEvidenceSignedUrl falls back to temporary signed URL when endpoint 404s", async () => {
+  it("does not fabricate a signed URL when the endpoint is unavailable", async () => {
     axiosInstance.post.mockRejectedValueOnce({
       response: { status: 404 },
     });
 
     const result = await fetchDisputeEvidenceSignedUrl("dsp_001", "ev_001");
 
-    expect(result.success).toBe(true);
-    expect(result.signedUrl).toContain("/api/admin/payments/disputes/dsp_001/evidence/ev_001/file");
-    expect(result.expiresAt).toBeDefined();
+    expect(result).toEqual({
+      success: false,
+      signedUrl: "",
+      expiresAt: "",
+      error: "Failed to fetch signed URL",
+    });
   });
 
   it("uploadAdminDisputeEvidence validates file policy before posting", async () => {
@@ -90,5 +93,20 @@ describe("admin-disputes service", () => {
 
     expect(result.success).toBe(true);
     expect(result.evidence.fileName).toBe("document.pdf");
+  });
+
+  it("does not report a successful upload when the endpoint is unavailable", async () => {
+    axiosInstance.post.mockRejectedValueOnce({
+      response: { status: 404 },
+    });
+
+    const result = await uploadAdminDisputeEvidence("dsp_001", {
+      note: "Admin review note",
+    });
+
+    expect(result).toEqual({
+      success: false,
+      error: "Failed to upload evidence",
+    });
   });
 });
