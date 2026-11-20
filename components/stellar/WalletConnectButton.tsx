@@ -21,6 +21,7 @@ import {
   Download,
 } from "lucide-react";
 import { toast } from "sonner";
+import { copySafeText } from "@/lib/privacy/safeClipboard";
 import { WALLET_INSTALL_LINKS } from "@/lib/stellar/stellarErrors";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
 
@@ -50,8 +51,9 @@ export default function WalletConnectButton({ variant = "outline", size = "defau
 
   const copyAddress = () => {
     if (connectedWallet) {
-      navigator.clipboard.writeText(connectedWallet);
-      toast.success("Address copied to clipboard");
+      copySafeText(connectedWallet, "public")
+        .then((copied) => copied && toast.success("Address copied to clipboard"))
+        .catch(() => toast.error("Could not copy address"));
     }
   };
 

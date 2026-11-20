@@ -213,8 +213,11 @@ export async function fetchReportRows(datasetId, filters = {}, options = {}) {
     throw new Error(`Unknown report dataset: ${datasetId}`);
   }
 
-  let rows = SAMPLE_ROWS[datasetId] || [];
+  const { data } = await axiosInstance.get("/api/admin/report-rows", { params: { dataset: datasetId, ...filters, limit: options.limit } });
+  if (!Array.isArray(data?.rows)) throw new Error("The report rows API returned no data.");
+  return data;
 
+  /*
   for (const filter of dataset.filters) {
     const value = filters[filter.key];
     if (!value || value === "all") continue;
@@ -228,7 +231,7 @@ export async function fetchReportRows(datasetId, filters = {}, options = {}) {
   }
 
   const limit = options.limit || rows.length;
-  return { rows: rows.slice(0, limit) };
+  return { rows: rows.slice(0, limit) }; */
 }
 
 function readSavedQueries(userId) {
@@ -269,7 +272,8 @@ function generateQueryId() {
  * @returns {Promise<{queries: Array<object>}>}
  */
 export async function listSavedQueries(userId) {
-  return { queries: readSavedQueries(userId) };
+  const { data } = await axiosInstance.get("/api/admin/saved-queries", { params: { userId } });
+  return data;
 }
 
 /**
@@ -300,20 +304,8 @@ export async function saveQuery(userId, payload) {
     throw new Error("Select at least one column.");
   }
 
-  const query = {
-    id: generateQueryId(),
-    name,
-    datasetId,
-    filters: { ...payload.filters },
-    columns,
-    createdAt: new Date().toISOString(),
-  };
-
-  const queries = readSavedQueries(userId);
-  queries.unshift(query);
-  writeSavedQueries(userId, queries);
-
-  return { query };
+  const { data } = await axiosInstance.post("/api/admin/saved-queries", { userId, name, datasetId, filters: { ...payload.filters }, columns });
+  return data;
 }
 
 /**
@@ -328,9 +320,8 @@ export async function saveQuery(userId, payload) {
  * @returns {Promise<{deleted: boolean, queryId: string}>}
  */
 export async function deleteSavedQuery(userId, queryId) {
-  const queries = readSavedQueries(userId).filter((query) => query.id !== queryId);
-  writeSavedQueries(userId, queries);
-  return { deleted: true, queryId };
+  const { data } = await axiosInstance.delete(`/api/admin/saved-queries/${encodeURIComponent(queryId)}`, { params: { userId } });
+  return data;
 }
 
 /**
@@ -383,6 +374,7 @@ export async function deleteSavedQuery(userId, queryId) {
  */
 
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
+import axiosInstance from "@/lib/config/axios.config";
 
 const MOCK_DELAY_MS = 300;
 
@@ -526,6 +518,10 @@ function clone(value) {
  * @returns {Promise<{ reports: Array<object> }>}
  */
 export async function listReports({ status = "queue" } = {}) {
+  const { data } = await axiosInstance.get("/api/admin/reports", { params: { status } });
+  if (!Array.isArray(data?.reports)) throw new Error("The reports API returned no data.");
+  return data;
+  /*
   const all = clone(getStore());
   let filtered = all;
   if (status === "open") {
@@ -535,7 +531,7 @@ export async function listReports({ status = "queue" } = {}) {
   }
 
   filtered.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
-  return withMockDelay({ reports: filtered });
+  return withMockDelay({ reports: filtered }); */
 }
 
 /**
@@ -545,8 +541,11 @@ export async function listReports({ status = "queue" } = {}) {
  * @returns {Promise<{ report: object | null }>}
  */
 export async function getReport(id) {
+  const { data } = await axiosInstance.get(`/api/admin/reports/${encodeURIComponent(id)}`);
+  return data;
+  /*
   const found = getStore().find((r) => r.id === id) || null;
-  return withMockDelay({ report: found ? clone(found) : null });
+  return withMockDelay({ report: found ? clone(found) : null }); */
 }
 
 /** Mutate the stored report's status, or no-op if missing. Returns the clone. */
@@ -563,6 +562,9 @@ function setStatus(id, nextStatus) {
  * @returns {Promise<{ report: object | null }>}
  */
 export async function escalateReport(id) {
+  const { data } = await axiosInstance.post(`/api/admin/reports/${encodeURIComponent(id)}/escalate`);
+  return data;
+  /*
   const report = setStatus(id, "escalated");
   const result = await withMockDelay({ report });
   if (report) {
@@ -572,7 +574,7 @@ export async function escalateReport(id) {
       metadata: { reportId: id, targetType: report.target?.type, targetId: report.target?.id },
     });
   }
-  return result;
+  return result; */
 }
 
 /**
@@ -583,6 +585,9 @@ export async function escalateReport(id) {
  * @returns {Promise<{ report: object | null }>}
  */
 export async function dismissReport(id, { reason } = {}) {
+  const { data } = await axiosInstance.post(`/api/admin/reports/${encodeURIComponent(id)}/dismiss`, { reason });
+  return data;
+  /*
   const report = setStatus(id, "dismissed");
   const result = await withMockDelay({ report });
   if (report) {
@@ -592,7 +597,7 @@ export async function dismissReport(id, { reason } = {}) {
       metadata: { reportId: id, reason: reason || null },
     });
   }
-  return result;
+  return result; */
 }
 
 /**
@@ -604,6 +609,9 @@ export async function dismissReport(id, { reason } = {}) {
  * @returns {Promise<{ report: object | null }>}
  */
 export async function applyActionToTarget(id, { action = "takedown", reason } = {}) {
+  const { data } = await axiosInstance.post(`/api/admin/reports/${encodeURIComponent(id)}/action`, { action, reason });
+  return data;
+  /*
   const report = setStatus(id, "actioned");
   const result = await withMockDelay({ report });
   if (report) {
@@ -622,5 +630,5 @@ export async function applyActionToTarget(id, { action = "takedown", reason } = 
       },
     });
   }
-  return result;
+  return result; */
 }

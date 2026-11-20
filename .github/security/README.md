@@ -108,3 +108,14 @@ particular PR's author. Sources:
 - https://github.com/OpenSourceMalware/PolinRider/blob/main/README.md
 - https://opensourcemalware.com/blog/polinrider-is-a-b-testing-its-way-past-your-detections
 - https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target
+
+## Sentry telemetry redaction
+
+Sentry is configured with `sendDefaultPii: false` and the same recursive,
+schema-driven scrubber in the client, server, and edge `beforeSend` hooks.
+The scrubber removes credentials, cookies, payment and wallet identifiers,
+learning content, emails, phone numbers, bearer/JWT values, and sensitive URL
+query parameters from bounded nested payloads. The Sentry project owner is the
+Deen Bridge maintainers; access and retention follow the project's Sentry
+organization policy and must be reviewed by that owner before production
+telemetry is enabled.

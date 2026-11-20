@@ -7,16 +7,45 @@ import {
   NetworkFirst,
 } from "serwist";
 
+const PRECACHE_ENTRIES = self.__SW_MANIFEST || [];
+const RELEASE_ID = PRECACHE_ENTRIES
+  .map((entry) => entry.revision || entry.url)
+  .join("-")
+  .replace(/[^a-z0-9-]/gi, "")
+  .slice(-24) || "development";
+const RUNTIME_CACHE_PREFIX = "dnb-runtime-";
+const cacheName = (name) => `${RUNTIME_CACHE_PREFIX}${name}-${RELEASE_ID}`;
+
+function hasCredentials(request) {
+  return Boolean(
+    request.headers.get("Authorization") || request.headers.get("Cookie")
+  );
+}
+
+function isPrivatePath(pathname) {
+  return /^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:admin|dashboard|account|educator-onboarding)(?:\/|$)/i.test(pathname);
+}
+
+function isPublicDocumentRequest({ request, url, sameOrigin }) {
+  return (
+    sameOrigin &&
+    request.method === "GET" &&
+    request.destination === "document" &&
+    !hasCredentials(request) &&
+    !isPrivatePath(url.pathname)
+  );
+}
+
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
-  clientsClaim: true,
+  precacheEntries: PRECACHE_ENTRIES,
+  skipWaiting: false,
+  clientsClaim: false,
   navigationPreload: true,
   runtimeCaching: [
     {
       matcher: /^https:\/\/fonts\.(?:gstatic|googleapis)\.com\/.*/i,
       handler: new CacheFirst({
-        cacheName: "google-fonts",
+        cacheName: cacheName("google-fonts"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 8,
@@ -29,7 +58,7 @@ const serwist = new Serwist({
     {
       matcher: /\.(?:eot|otf|ttc|ttf|woff|woff2|font\.css)$/i,
       handler: new CacheFirst({
-        cacheName: "static-font-assets",
+        cacheName: cacheName("static-font-assets"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 8,
@@ -42,7 +71,7 @@ const serwist = new Serwist({
     {
       matcher: /\/_next\/static\/.+\.(?:js|css|json)$/i,
       handler: new CacheFirst({
-        cacheName: "next-static-assets",
+        cacheName: cacheName("next-static-assets"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 64,
@@ -55,7 +84,7 @@ const serwist = new Serwist({
     {
       matcher: /\/_next\/static\/media\/.+\.(?:png|jpg|jpeg|gif|svg|ico|webp|avif)$/i,
       handler: new CacheFirst({
-        cacheName: "next-static-images",
+        cacheName: cacheName("next-static-images"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 64,
@@ -68,37 +97,11 @@ const serwist = new Serwist({
     {
       matcher: /\/_next\/image\?url=.+$/i,
       handler: new StaleWhileRevalidate({
-        cacheName: "next-optimized-images",
+        cacheName: cacheName("next-optimized-images"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 64,
             maxAgeSeconds: 30 * 24 * 60 * 60,
-            maxAgeFrom: "last-used",
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: /\/api\/books\/[^/]+\/preview/i,
-      handler: new StaleWhileRevalidate({
-        cacheName: "book-previews",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 10,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
-            maxAgeFrom: "last-used",
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: /^https:\/\/res\.cloudinary\.com\/.*/i,
-      handler: new StaleWhileRevalidate({
-        cacheName: "cloudinary-images",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 48,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
             maxAgeFrom: "last-used",
           }),
         ],
@@ -114,11 +117,9 @@ const serwist = new Serwist({
       handler: new NetworkOnly(),
     },
     {
-      matcher: ({ request, url, sameOrigin }) =>
-        request.headers.get("Content-Type")?.includes("text/html") &&
-        sameOrigin,
+      matcher: isPublicDocumentRequest,
       handler: new NetworkFirst({
-        cacheName: "pages",
+        cacheName: cacheName("pages"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 32,
@@ -129,9 +130,10 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ sameOrigin, url }) => sameOrigin,
+      matcher: ({ sameOrigin, request }) =>
+        sameOrigin && request.method === "GET" && !hasCredentials(request),
       handler: new NetworkFirst({
-        cacheName: "same-origin-others",
+        cacheName: cacheName("same-origin-others"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 32,
@@ -154,6 +156,25 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  const cleanup = caches.keys().then((names) =>
+    Promise.all(
+      names
+        .filter(
+          (name) =>
+            name.startsWith(RUNTIME_CACHE_PREFIX) &&
+            !name.includes(`-${RELEASE_ID}`)
+        )
+        .map((name) => caches.delete(name))
+    )
+  );
+  event.waitUntil(cleanup.catch((error) => console.error("[service-worker] activate", error)));
+});
 
 // ─── Web Push notifications (issue #197) ────────────────────────────────────
 // The backend delivers pushes via the web-push library. Payloads are JSON of

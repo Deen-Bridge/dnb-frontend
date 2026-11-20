@@ -1,14 +1,5 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextVitals from "eslint-config-next/core-web-vitals";
 
 const eslintConfig = [
   {
@@ -29,7 +20,7 @@ const eslintConfig = [
     // `eslint contexts` fails outright because that folder only contains .jsx.
     files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
   },
-  ...compat.extends("next/core-web-vitals"),
+  ...nextVitals,
   {
     // #523 — explicit-`any` guardrail.
     //

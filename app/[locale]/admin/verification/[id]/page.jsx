@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   approveVerification,
+  fetchDocumentSignedUrl,
   fetchVerificationDetail,
   rejectVerification,
 } from "@/lib/actions/admin-verifications";
@@ -23,6 +24,9 @@ export default function VerificationReviewPage({ params }) {
   const [busy, setBusy] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [docIndex, setDocIndex] = useState(0);
+  const [documentPreview, setDocumentPreview] = useState(null);
+  const [documentError, setDocumentError] = useState(null);
+  const [documentLoading, setDocumentLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,6 +37,29 @@ export default function VerificationReviewPage({ params }) {
       cancelled = true;
     };
   }, [id]);
+
+  const doc = application?.documents?.[docIndex];
+
+  useEffect(() => {
+    let cancelled = false;
+    setDocumentPreview(null);
+    setDocumentError(null);
+    if (!doc?.id) return undefined;
+    setDocumentLoading(true);
+    fetchDocumentSignedUrl(doc.id)
+      .then((result) => {
+        if (!cancelled) setDocumentPreview(result);
+      })
+      .catch((e) => {
+        if (!cancelled) setDocumentError(e?.message || "Unable to load a secure document preview.");
+      })
+      .finally(() => {
+        if (!cancelled) setDocumentLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [doc?.id]);
 
   const decide = async (fn, label) => {
     setBusy(true);
@@ -57,8 +84,6 @@ export default function VerificationReviewPage({ params }) {
       onReject={(p) => decide(() => rejectVerification(application.id, p, ctx), "rejected")}
     />
   );
-
-  const doc = application?.documents?.[docIndex];
 
   return (
     <PageShell>
@@ -119,12 +144,20 @@ export default function VerificationReviewPage({ params }) {
                   ))}
                 </div>
                 {doc && (
-                  <div
-                    className="flex h-72 items-center justify-center rounded-md border bg-muted text-sm text-muted-foreground"
-                    data-testid="document-viewer"
-                  >
-                    {/* TODO: render the real file via a signed URL once the backend exposes one */}
-                    Preview unavailable (stub): {doc.name}
+                  <div className="space-y-2" data-testid="document-viewer">
+                    {documentLoading && <p className="text-sm text-muted-foreground">Loading secure preview…</p>}
+                    {documentError && <p role="alert" className="text-sm text-destructive">Preview unavailable: {documentError}</p>}
+                    {documentPreview?.signedUrl && !documentError && (
+                      <iframe
+                        title={`Secure preview of ${doc.name}`}
+                        src={documentPreview.signedUrl}
+                        className="h-96 w-full rounded-md border"
+                        referrerPolicy="no-referrer"
+                      />
+                    )}
+                    {documentPreview?.expiresAt && (
+                      <p className="text-xs text-muted-foreground">This authorized preview expires at {new Date(documentPreview.expiresAt).toLocaleString()}.</p>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -137,7 +170,7 @@ export default function VerificationReviewPage({ params }) {
                 <p className="font-medium">{application.name}</p>
                 <p className="text-muted-foreground">{application.bio}</p>
                 <Link
-                  href={`/profile/${application.userId}`}
+                  href={`/educators/${application.userId}`}
                   className="inline-flex items-center gap-1 underline"
                 >
                   Open public profile <ExternalLink className="h-3 w-3" aria-hidden="true" />

@@ -10,6 +10,6 @@ export const getUserById = async (userId?: string): Promise<any | null> => { // 
     return res.data;
   } catch (e: any) { // TODO(types): Axios error from user endpoint
     logger.error("Error fetching user:", e.message);
-    return null;
+    throw new Error(e?.response?.data?.message || e?.message || "User record is unavailable.");
   }
 };

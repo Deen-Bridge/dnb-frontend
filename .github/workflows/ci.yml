@@ -14,24 +14,41 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
       
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
+      - name: Verify lockfile enforcement
+        run: node --test .github/workflows/ci-install.test.mjs
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
-      
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Check mobile store configuration
+        run: npm run mobile:preflight
+
       - name: Run ESLint
         run: npm run lint
       
       - name: Run accessibility gate
         run: npm run a11y
+
+      - name: Run launch-content gate
+        run: npm run check:launch-content
       
       - name: Run type check
         run: npm run typecheck
@@ -41,6 +58,9 @@ jobs:
       # loses its `-- <reason>` justification.
       - name: Guard explicit-any count
         run: npm run lint:any
+
+      - name: Guard production image host allowlist
+        run: npm run check:image-hosts
       
       - name: Run component tests
         run: npm test
@@ -49,6 +69,9 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
+          # CI exercises the safe development build profile; strict staging
+          # and production profiles are covered by the environment tests.
+          NEXT_PUBLIC_APP_ENV: development
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
@@ -66,16 +89,21 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
 
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
 
@@ -90,7 +118,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
@@ -143,19 +171,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
       
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
-      
+
       - name: Build application
         run: npm run build
         env:
@@ -176,13 +209,13 @@ jobs:
           done
 
       - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
 
       - name: Run Lighthouse CI (mobile)
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         env:
           LHCI_COLLECT_SETTINGS__PRESET: mobile
         with:

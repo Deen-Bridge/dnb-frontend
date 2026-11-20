@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import Button from "@/components/atoms/form/Button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +23,7 @@ import {
   poppins_500,
   poppins_600,
 } from "@/lib/config/font.config";
+import useAuth from "@/hooks/useAuth";
 
 /* ── building blocks (design-system consistent) ── */
 
@@ -90,12 +91,21 @@ const SUPPORT_CHANNELS = [
 ];
 
 const ReportIssue = () => {
-  const [modal, setModal] = useState(false);
-  const modalHandler = () => setModal(!modal);
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [tickets, setTickets] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetch("/api/support/tickets", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => setTickets(Array.isArray(data?.tickets) ? data.tickets : []))
+      .catch(() => setTickets([]));
+  }, [isAuthenticated]);
   const handleImageChange = (e) => {
     if (e.target.files) {
       setImage(e.target.files[0]);
@@ -103,7 +113,36 @@ const ReportIssue = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!isAuthenticated) {
+      setMessage({ type: "error", text: "Please sign in before creating a ticket." });
+      return;
+    }
+    setLoading(true);
+    setMessage(null);
+    const form = new FormData();
+    form.set("subject", subject);
+    form.set("description", description);
+    if (image) form.set("attachment", image, image.name);
+    try {
+      const response = await fetch("/api/support/tickets", {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: form,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Unable to create support ticket.");
+      const ticket = data.ticket || data;
+      setTickets((current) => [ticket, ...current.filter((item) => item.id !== ticket.id)]);
+      setMessage({ type: "success", text: `Ticket ${ticket.id} created with status ${ticket.status}.` });
+      setSubject("");
+      setDescription("");
+      setImage(null);
+      e.currentTarget.reset();
+    } catch (error) {
+      setMessage({ type: "error", text: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <PageShell>
@@ -129,6 +168,11 @@ const ReportIssue = () => {
               onSubmit={handleSubmit}
               className="mt-6 space-y-5"
             >
+              {message && (
+                <p role="status" className={message.type === "error" ? "text-sm text-red-600" : "text-sm text-green-700"}>
+                  {message.text}
+                </p>
+              )}
               <div>
                 <FieldLabel htmlFor="report-subject">Subject</FieldLabel>
                 <Input
@@ -188,6 +232,17 @@ const ReportIssue = () => {
                 </Button>
               </div>
             </form>
+          </Panel>
+
+          <Panel className="p-6 lg:col-span-2">
+            <CardHeader icon={Ticket} title="Your support tickets" description="Status comes from the support service; this page does not infer or overwrite it." />
+            {authLoading ? <p className="mt-4 text-sm text-ink-muted">Loading your tickets…</p> : tickets.length === 0 ? (
+              <p className="mt-4 text-sm text-ink-muted">No tickets yet.</p>
+            ) : (
+              <ul className="mt-4 space-y-3" aria-label="Your support tickets">
+                {tickets.map((ticket) => <li key={ticket.id} className="flex items-center justify-between rounded-xl border border-accent/10 p-3 text-sm"><span>#{ticket.id}</span><span className="capitalize text-ink-muted">{String(ticket.status).replaceAll("_", " ")}</span></li>)}
+              </ul>
+            )}
           </Panel>
 
           {/* Sidebar: how to reach us */}
