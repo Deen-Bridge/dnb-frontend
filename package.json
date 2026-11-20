@@ -20,6 +20,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test e2e/i18n.spec.js",
     "test:e2e:admin": "playwright test e2e/admin-smoke.spec.js",
+    "test:e2e:smoke": "playwright test --project=production-smoke e2e/production-smoke.spec.js",
+    "check:security-headers": "node scripts/check-security-headers.mjs",
     "mobile:preflight": "node mobile/scripts/store-preflight.mjs",
     "mobile:preflight:production": "node mobile/scripts/store-preflight.mjs --production"
   },
