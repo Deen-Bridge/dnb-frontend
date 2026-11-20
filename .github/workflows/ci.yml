@@ -59,6 +59,11 @@ jobs:
       - name: Guard explicit-any count
         run: npm run lint:any
 
+      - name: Validate unit release profile
+        run: npm run release:check
+        env:
+          RELEASE_PROFILE: unit
+
       - name: Guard production image host allowlist
         run: npm run check:image-hosts
       
@@ -68,11 +73,14 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.com
-          # CI exercises the safe development build profile; strict staging
-          # and production profiles are covered by the environment tests.
+          RELEASE_PROFILE: integration
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          # CI builds against a deployed-like backend; strict staging and
+          # production profiles are covered by the release checks below and
+          # by the environment tests.
           NEXT_PUBLIC_APP_ENV: development
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_USDC_ISSUER: GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
           NODE_OPTIONS: --max-old-space-size=6144
@@ -134,11 +142,21 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
+      - name: Validate integration release profile
+        run: npm run release:check
+        env:
+          RELEASE_PROFILE: integration
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_USDC_ISSUER: GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
+
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.com
+          RELEASE_PROFILE: integration
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_USDC_ISSUER: GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
           NODE_OPTIONS: --max-old-space-size=6144
@@ -200,11 +218,21 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
 
+      - name: Validate production preflight profile
+        run: npm run release:check
+        env:
+          RELEASE_PROFILE: production
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          NEXT_PUBLIC_STELLAR_NETWORK: mainnet
+          NEXT_PUBLIC_USDC_ISSUER: GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
+
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          RELEASE_PROFILE: production
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          NEXT_PUBLIC_STELLAR_NETWORK: mainnet
+          NEXT_PUBLIC_USDC_ISSUER: GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
           NODE_OPTIONS: --max-old-space-size=6144
