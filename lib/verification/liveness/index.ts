@@ -13,8 +13,9 @@ export function getLivenessAdapter(): LivenessAdapter {
     case "onfido":
       return new OnfidoLivenessAdapter();
     case "mock":
-    default:
       return new MockLivenessAdapter();
+    default:
+      throw new Error(`Liveness provider "${provider}" is unavailable.`);
   }
 }
 

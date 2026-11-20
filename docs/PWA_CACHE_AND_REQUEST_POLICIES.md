@@ -3,15 +3,19 @@
 ## Navigation cache isolation (FE-010, #703)
 
 Only the public navigation allowlist in `lib/pwa/cache-policy.js` can use the
-`public-pages` runtime cache. Dashboard, account, admin, scholarship, payment,
-messaging, profile, library, and settings routes are network-only. API
-responses are network-only, including book previews, because response privacy
-cannot be proven at the service-worker boundary.
+`dnb-runtime-public-pages-<release>` runtime cache. Dashboard, account, admin,
+scholarship, payment, messaging, profile, library, settings, and
+educator-onboarding routes are network-only, including localized paths such as
+`/en/dashboard`. API responses are network-only, including book previews,
+because response privacy cannot be proven at the service-worker boundary.
 
-The service worker deletes legacy private runtime caches on activation and when
-it receives `CLEAR_PRIVATE_CACHES`. The web logout path sends that message and
-also clears the browser's runtime caches. The offline document is a generic
-public page and is never populated with account data.
+Runtime caches are release-scoped by `app/sw.js`. Private navigations and
+requests carrying account credentials are never persisted. The service worker
+deletes legacy private runtime caches on activation and clears all runtime
+caches when it receives `CLEAR_PRIVATE_CACHES`. The web logout and account
+switch paths send that message, while logout also clears the account-scoped
+client caches. The offline document is a generic public page and is never
+populated with account data.
 
 ## Bounded request policy (FE-012, #705)
 
@@ -29,4 +33,5 @@ public page and is never populated with account data.
 Retries use capped exponential backoff with jitter, honor numeric `Retry-After`
 values up to eight seconds, and are cancelled by the request's `AbortSignal`.
 Mutations remain single-attempt unless a caller explicitly supplies an
-idempotency contract through the existing opt-in flag.
+idempotency contract through the existing opt-in flag. Auth refreshes are
+single-attempt and session expiry redirects retain the upstream reason code.

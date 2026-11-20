@@ -61,7 +61,7 @@ export const OPERATION_POLICIES: Record<RequestOperation, OperationPolicy> = {
 
 const operationMatchers: Array<[RequestOperation, RegExp]> = [
   ["auth", /\/api\/auth\//i],
-  ["search", /(?:search|\/api\/books|\/api\/courses)/i],
+  ["search", /\/api\/search|(?:^|[/?&])search(?=$|[/?&=])/i],
   ["upload", /(?:upload|documents|media)/i],
   ["payment", /(?:payment|purchase|checkout|refund)/i],
   ["call", /(?:jitsi|call|meeting)/i],

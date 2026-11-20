@@ -1,5 +1,12 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import axios, {
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+} from "axios";
+import Cookies from "js-cookie";
 import { config } from "@/lib/config/env";
+import { loginUrlWithReason } from "@/lib/auth/session-status";
+import { sessionEndReason } from "@/lib/auth/lifecycle";
 import {
   getOperationPolicy,
   getRetryDelayMs,
@@ -25,11 +32,12 @@ declare module "axios" {
 }
 
 const baseURL = config.apiUrl;
+const DEFAULT_TIMEOUT_MS = 15_000;
 
 const axiosInstance = axios.create({
   baseURL,
   withCredentials: true,
-  timeout: 15000,
+  timeout: DEFAULT_TIMEOUT_MS,
 });
 
 // Track ongoing refresh to avoid multiple concurrent refresh calls
@@ -50,22 +58,12 @@ const processQueue = (error: any | null, token: string | null = null): void => {
   failedQueue = [];
 };
 
-// Add request interceptor to handle auth token
+// Authentication is carried by the backend-managed HttpOnly cookie.
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const policy = getOperationPolicy(config.url, config.operation);
-    if (config.timeout === 15000 || config.timeout == null) {
+    if (config.timeout == null || config.timeout === DEFAULT_TIMEOUT_MS) {
       config.timeout = policy.timeoutMs;
-    }
-    if (typeof window !== "undefined") {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("authToken="))
-        ?.split("=")[1];
-
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
     }
     return config;
   },
@@ -110,15 +108,19 @@ axiosInstance.interceptors.response.use(
   async (error: any) => { // TODO(types): Generic error interceptor payload
     const originalRequest = error.config as InternalAxiosRequestConfig | undefined;
 
-    const policy = getOperationPolicy(originalRequest?.url, originalRequest?.operation);
+    const policy = getOperationPolicy(
+      originalRequest?.url,
+      originalRequest?.operation
+    );
     const attempt = originalRequest?._retryAttempt ?? 1;
-    const canRetry =
+    const canRetry = Boolean(
       originalRequest &&
-      !originalRequest._authRetry &&
-      attempt < policy.maxAttempts &&
-      isRetryableRequest(originalRequest);
+        !originalRequest._authRetry &&
+        attempt < policy.maxAttempts &&
+        isRetryableRequest(originalRequest)
+    );
 
-    // Handle network errors when the operation has a bounded retry budget.
+    // Handle network errors when the operation has no retry budget left.
     if (error.code === "ERR_NETWORK" && !canRetry) {
       console.error("Network error:", error);
       return Promise.reject({
@@ -128,7 +130,7 @@ axiosInstance.interceptors.response.use(
       });
     }
 
-    // Handle timeouts
+    // Handle timeouts when the operation has no retry budget left.
     if (error.code === "ECONNABORTED" && !canRetry) {
       console.log("Request timeout:", error);
       return Promise.reject({
@@ -145,7 +147,12 @@ axiosInstance.interceptors.response.use(
       originalRequest?.url?.includes("/api/auth/stellar/") ||
       originalRequest?.url?.includes("/api/auth/google");
 
-    if (originalRequest && error.response?.status === 401 && !originalRequest._authRetry && !isAuthRoute) {
+    if (
+      originalRequest &&
+      error.response?.status === 401 &&
+      !originalRequest._authRetry &&
+      !isAuthRoute
+    ) {
       if (isRefreshing) {
         return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -160,11 +167,7 @@ axiosInstance.interceptors.response.use(
           withCredentials: true,
         });
 
-        const { token, user } = refreshRes.data;
-
-        // Update auth cookies with new token
-        const Cookies = (await import("js-cookie")).default;
-        Cookies.set("authToken", token, { expires: 1, path: "/" });
+        const { user } = refreshRes.data;
         if (user) {
           const userInfo: Record<string, any> = { id: user.id, name: user.name, role: user.role, email: user.email }; // TODO(types): Profile property bag
           if (user.avatar) userInfo.avatar = user.avatar;
@@ -177,24 +180,19 @@ axiosInstance.interceptors.response.use(
           Cookies.set("userInfo", JSON.stringify(userInfo), { expires: 1, path: "/" });
         }
 
-        processQueue(null, token);
+        processQueue(null, null);
 
-        // Retry original request with new token
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-        }
+        // Retry the original request with the refreshed HttpOnly session.
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
 
-        // Refresh failed - clear auth and redirect to login
-        const Cookies = (await import("js-cookie")).default;
-        Cookies.remove("authToken", { path: "/" });
+        // Refresh failed - clear auth and redirect to login with a reason.
         Cookies.remove("userInfo", { path: "/" });
 
         if (typeof window !== "undefined") {
           // Axios runs outside React; this hard redirect handles an expired session.
-          window.location.href = "/login";
+          window.location.href = loginUrlWithReason(sessionEndReason(refreshError));
         }
 
         return Promise.reject(refreshError);
@@ -217,7 +215,7 @@ axiosInstance.interceptors.response.use(
         const retryAfter = error.response?.headers?.["retry-after"];
         await waitForRetry(
           getRetryDelayMs(attempt, retryAfter),
-          originalRequest.signal
+          originalRequest.signal as unknown as AbortSignal
         );
         return axiosInstance(originalRequest);
       } catch (retryError) {

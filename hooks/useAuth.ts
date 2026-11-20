@@ -5,21 +5,22 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
 import { User } from "@/types/api";
 
-const COOKIE_OPTIONS = { expires: 1, path: "/" };
+const USER_COOKIE_OPTIONS = { expires: 1, path: "/" };
 
 /**
  * Persist auth session cookies and sync AuthProvider state.
  * Shared by email/password login, signup, and Sign in with Stellar.
  */
-export const persistSession = (token: string, user: any): any => { // TODO(types): Authenticated user session object
-  if (!token || !user) {
-    throw new Error("Missing token or user for session persistence");
+export const persistSession = (_token: string, user: any): any => { // TODO(types): Authenticated user session object
+  if (!user) {
+    throw new Error("Missing user for session persistence");
   }
 
   if (user.id && !user._id) user._id = user.id;
 
-  Cookies.set("authToken", token, COOKIE_OPTIONS);
-  Cookies.set("userInfo", JSON.stringify(user), COOKIE_OPTIONS);
+  // The backend owns the HttpOnly access cookie. Never copy it into a
+  // JavaScript-readable cookie.
+  Cookies.set("userInfo", JSON.stringify(user), USER_COOKIE_OPTIONS);
 
   __triggerAuthUpdate(user);
 

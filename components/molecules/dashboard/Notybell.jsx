@@ -33,6 +33,7 @@ import {
   poppins_500,
   poppins_600,
 } from "@/lib/config/font.config";
+import { notificationPath } from "@/lib/notifications/notificationRoute";
 
 const NotificationBell = () => {
   const router = useRouter();
@@ -59,16 +60,8 @@ const NotificationBell = () => {
       await markAsRead(notification._id);
     }
 
-    // Handle navigation based on notification type
-    if (notification.data?.courseId) {
-      router.push(`/dashboard/courses/${notification.data.courseId}`);
-    } else if (notification.data?.bookId) {
-      router.push(`/dashboard/library/${notification.data.bookId}`);
-    } else if (notification.data?.spaceId) {
-      router.push(`/dashboard/spaces/${notification.data.spaceId}`);
-    } else if (notification.data?.reelId) {
-      router.push(`/dashboard/reels`);
-    }
+    const path = notificationPath(notification.data);
+    if (path) router.push(path);
 
     setIsOpen(false);
   };
