@@ -1,7 +1,6 @@
 import { siteUrl, publicRoutes } from "@/lib/config/site.config";
-import { fetchCourses } from "@/lib/actions/courses/fetch-courses";
-import { fetchBooks } from "@/lib/actions/library/fetch-books";
 import { fetchEducators } from "@/lib/actions/educators/fetch-educators";
+import { assertPublicSitemapEntries } from "@/lib/seo/sitemap-guards";
 
 const API_TIMEOUT_MS = 5000;
 
@@ -25,18 +24,6 @@ function safeDate(value, fallback) {
   return Number.isNaN(date.getTime()) ? fallback : date;
 }
 
-function normalizeCourses(response) {
-  if (Array.isArray(response)) return response;
-  if (response?.courses) return response.courses;
-  return [];
-}
-
-function normalizeBooks(response) {
-  if (Array.isArray(response)) return response;
-  if (response?.books) return response.books;
-  return [];
-}
-
 function normalizeEducators(response) {
   if (Array.isArray(response)) return response;
   if (response?.educators) return response.educators;
@@ -53,39 +40,7 @@ export default async function sitemap() {
     priority,
   }));
 
-  let courseEntries = [];
-  let bookEntries = [];
   let educatorEntries = [];
-
-  try {
-    const courses = await withTimeout(fetchCourses());
-    courseEntries = normalizeCourses(courses).map((course) => ({
-      url: `${siteUrl}/dashboard/courses/${course._id || course.id}`,
-      lastModified: safeDate(course.updatedAt, lastModified),
-      changeFrequency: "weekly",
-      priority: 0.6,
-    }));
-  } catch (error) {
-    console.warn(
-      "sitemap: course detail fetch failed, returning static routes only.",
-      error?.message ?? error
-    );
-  }
-
-  try {
-    const books = await withTimeout(fetchBooks());
-    bookEntries = normalizeBooks(books).map((book) => ({
-      url: `${siteUrl}/dashboard/library/${book._id || book.id}`,
-      lastModified: safeDate(book.updatedAt, lastModified),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    }));
-  } catch (error) {
-    console.warn(
-      "sitemap: book detail fetch failed, returning static routes only.",
-      error?.message ?? error
-    );
-  }
 
   try {
     const educators = await withTimeout(fetchEducators());
@@ -102,5 +57,5 @@ export default async function sitemap() {
     );
   }
 
-  return [...staticEntries, ...courseEntries, ...bookEntries, ...educatorEntries];
+  return assertPublicSitemapEntries([...staticEntries, ...educatorEntries]);
 }
