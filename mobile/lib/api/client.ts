@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { API_BASE_URL } from "@/lib/config/env";
+import { secureClearSensitiveData } from "@/lib/utils/storage";
 import { API_ENDPOINTS } from "./endpoints";
 
 const TOKEN_KEY = "auth_access_token";
@@ -108,8 +109,7 @@ export async function getAccessToken(): Promise<string | null> {
 }
 
 export async function clearTokens(): Promise<void> {
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
-  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+  await secureClearSensitiveData();
 }
 
 export async function isAuthenticated(): Promise<boolean> {
