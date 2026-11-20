@@ -89,10 +89,7 @@ export default function AuthProvider({ children }) {
 
     if (typeof window !== "undefined" && "caches" in window) {
       caches.keys().then((names) => {
-        const runtimeCaches = names.filter(
-          (name) =>
-            name.startsWith("serwist-") || name === "book-previews"
-        );
+        const runtimeCaches = names.filter((name) => name.startsWith("dnb-runtime-"));
         return Promise.all(
           runtimeCaches.map((name) => caches.delete(name))
         );
