@@ -70,7 +70,7 @@ const PublicBookCard = ({ book }) => {
           round
           className={cn(
             poppins_500,
-            "w-full bg-accent text-sm text-white hover:bg-highlight"
+            "w-full bg-accent-card text-sm text-white hover:bg-highlight"
           )}
         >
           View Book

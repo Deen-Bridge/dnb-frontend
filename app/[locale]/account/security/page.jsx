@@ -213,7 +213,7 @@ export default function SecurityPage() {
                 round
                 type="submit"
                 disabled={pwLoading}
-                className={cn(poppins_500, "bg-accent px-6 text-sm text-white hover:bg-highlight")}
+                className={cn(poppins_500, "bg-accent-card px-6 text-sm text-white hover:bg-highlight")}
               >
                 {pwLoading ? (
                   <>

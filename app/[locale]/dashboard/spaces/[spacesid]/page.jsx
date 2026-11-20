@@ -51,7 +51,7 @@ export default async function Page({ params }) {
                             <span
                                 className={cn(
                                     poppins_500,
-                                    "inline-flex items-center rounded-full bg-accent px-3 py-1 text-xs capitalize text-white"
+                                    "inline-flex items-center rounded-full bg-accent-card px-3 py-1 text-xs capitalize text-white"
                                 )}
                             >
                                 {space.category}

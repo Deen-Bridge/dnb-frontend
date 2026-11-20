@@ -53,7 +53,7 @@ export default function FAQ() {
                   <span className="text-lg font-semibold text-ink font-stretch-110%">{t(`items.${faq.id}.question`)}</span>
                   <span className={cn(
                     "ms-6 flex-shrink-0 w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-accent transition-transform duration-300",
-                    isOpen ? "rotate-180 bg-accent text-ink-inverse" : ""
+                    isOpen ? "rotate-180 bg-accent-card text-ink-inverse" : ""
                   )}>
                     <FaChevronDown className="w-4 h-4" />
                   </span>
