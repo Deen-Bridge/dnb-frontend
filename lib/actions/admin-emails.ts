@@ -1,10 +1,5 @@
 import { logAuditEvent, AUDIT_ACTIONS } from "@/lib/admin/audit";
-
-const MOCK_DELAY_MS = 300;
-
-function withMockDelay<T>(value: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), MOCK_DELAY_MS));
-}
+import axiosInstance from "@/lib/config/axios.config";
 
 export interface EmailTemplate {
   id: string;
@@ -41,18 +36,9 @@ export const EMAIL_TEMPLATES: readonly EmailTemplate[] = Object.freeze([
   },
 ]);
 
-export const AUDIENCE_COUNTS: Record<string, number> = Object.freeze({
-  everyone: 12480,
-  student: 8420,
-  educator: 3120,
-  admin: 48,
-  moderator: 12,
-});
-
 export async function listEmailTemplates(): Promise<{ templates: EmailTemplate[] }> {
-  return withMockDelay({
-    templates: EMAIL_TEMPLATES.map((template) => ({ ...template })),
-  });
+  const response = await axiosInstance.get("/api/admin/emails/templates");
+  return response.data;
 }
 
 export interface ComposerContent {
@@ -83,25 +69,8 @@ export async function estimateEmailRecipients({
   roles = [],
   userIds = "",
 }: EstimateEmailRecipientsParams = {}): Promise<{ estimate: number | null; known: boolean }> {
-  if (audience === "everyone") {
-    return withMockDelay({ estimate: AUDIENCE_COUNTS.everyone, known: true });
-  }
-
-  if (audience === "role") {
-    if (!roles.length) return withMockDelay({ estimate: null, known: false });
-    const estimate = roles.reduce(
-      (total, role) => total + (AUDIENCE_COUNTS[role] || 0),
-      0
-    );
-    return withMockDelay({ estimate, known: true });
-  }
-
-  const ids = userIds
-    .split(",")
-    .map((id) => id.trim())
-    .filter(Boolean);
-  if (!ids.length) return withMockDelay({ estimate: null, known: false });
-  return withMockDelay({ estimate: ids.length, known: true });
+  const response = await axiosInstance.post("/api/admin/emails/recipients/estimate", { audience, roles, userIds });
+  return response.data;
 }
 
 export interface SendEmailBroadcastParams {
@@ -135,16 +104,11 @@ export async function sendEmailBroadcast({
   userIds = "",
   estimatedRecipients = null,
 }: SendEmailBroadcastParams = {}): Promise<SendEmailBroadcastResult> {
-  const job = {
-    id: `email_${Math.random().toString(36).slice(2, 10)}`,
-    status: "queued",
-    templateId,
-    subject,
-    audience,
-    estimatedRecipients,
-    createdAt: new Date().toISOString(),
-  };
-  const result = await withMockDelay({ job });
+  const response = await axiosInstance.post("/api/admin/emails/broadcasts", {
+    templateId, subject, body, audience, roles, userIds, estimatedRecipients,
+  });
+  const result = response.data as SendEmailBroadcastResult;
+  if (!result?.job?.id || result.job.status !== "queued") throw new Error("The server did not confirm email delivery.");
 
   logAuditEvent({
     action: AUDIT_ACTIONS.BROADCAST,

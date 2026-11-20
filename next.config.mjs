@@ -22,15 +22,7 @@ const withSerwist = withSerwistInit({
 const nextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "i.ibb.co" },
-      { protocol: "https", hostname: "media.istockphoto.com" },
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "res.cloudinary.com" },
-      { protocol: "https", hostname: "cloudinary-marketing-res.cloudinary.com" },
-      { protocol: "https", hostname: "cdn.pixabay.com" },
-      { protocol: "https", hostname: "logo.clearbit.com" },
-      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
   },
   async headers() {
@@ -44,6 +36,10 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "react-icons"],
   },
+  // Keep the existing canvas fallback while making the Turbopack choice
+  // explicit for Next 16 builds. The webpack hook remains for tools that
+  // still invoke the webpack bundler (for example the Serwist integration).
+  turbopack: {},
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;

@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     profile: "/api/users/profile",
     updateProfile: "/api/users/profile",
     avatar: "/api/users/avatar",
+    learning: "/api/users/me/learning",
   },
   courses: {
     list: "/api/courses",
@@ -51,6 +52,7 @@ export const API_ENDPOINTS = {
     },
     payment: {
       initialize: "/api/stellar/payment/initialize",
+      preflight: "/api/stellar/payment/preflight",
       verify: "/api/stellar/payment/verify",
       transactions: "/api/stellar/payment/transactions",
     },
@@ -65,7 +67,8 @@ export const API_ENDPOINTS = {
   notifications: {
     list: "/api/notifications",
     markRead: (id: string) => `/api/notifications/${id}/read`,
-    markAllRead: "/api/notifications/read-all",
+    markAllRead: "/api/notifications/mark-all-read",
+    remove: (id: string) => `/api/notifications/${id}`,
   },
   earnings: {
     summary: "/api/earnings",

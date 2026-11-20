@@ -1,0 +1,20 @@
+{
+  "production": [
+    {
+      "hostname": "res.cloudinary.com",
+      "owner": "Deen Bridge media service",
+      "use": "Signed or public media assets uploaded through Cloudinary",
+      "review": "Media/platform owners must approve changes"
+    }
+  ],
+  "removed": [
+    { "hostname": "i.ibb.co", "reason": "Unowned image host" },
+    { "hostname": "media.istockphoto.com", "reason": "Licensing/provenance cannot be enforced by the app" },
+    { "hostname": "images.unsplash.com", "reason": "External stock source; use approved media ingestion" },
+    { "hostname": "picsum.photos", "reason": "Placeholder/demo source" },
+    { "hostname": "cdn.pixabay.com", "reason": "External stock source; use approved media ingestion" },
+    { "hostname": "logo.clearbit.com", "reason": "Third-party logo lookup is not production-governed" },
+    { "hostname": "lh3.googleusercontent.com", "reason": "External avatar source; proxy or persist through the media service" },
+    { "hostname": "cloudinary-marketing-res.cloudinary.com", "reason": "Marketing asset host is outside the application media boundary" }
+  ]
+}

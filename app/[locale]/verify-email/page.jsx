@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { config } from "@/lib/config/env";
 import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import { persistSession } from "@/hooks/useAuth";
+import { authRecoveryMessage } from "@/lib/auth/lifecycle";
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -33,12 +34,12 @@ export default function VerifyEmailPage() {
           setStatus("success");
         } else {
           setStatus("error");
-          setMessage(data.message || "Verification failed.");
+          setMessage(authRecoveryMessage({ response: { data } }, data.message || "Verification failed."));
         }
       })
-      .catch(() => {
+      .catch((error) => {
         setStatus("error");
-        setMessage("An error occurred. Please try again.");
+        setMessage(authRecoveryMessage(error, "We could not verify this link. Request a new verification email and try again."));
       });
   }, [searchParams]);
 
