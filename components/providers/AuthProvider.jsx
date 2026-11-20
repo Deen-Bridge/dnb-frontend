@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { clearAllCaches } from "@/lib/actions/cached-api";
 
 const AuthContext = createContext(null);
 
@@ -51,6 +52,7 @@ export default function AuthProvider({ children }) {
     } catch {
       Cookies.remove("authToken", { path: "/" });
       Cookies.remove("userInfo", { path: "/" });
+      clearAllCaches();
     }
 
     const token = Cookies.get("authToken");
@@ -84,6 +86,7 @@ export default function AuthProvider({ children }) {
   const logout = useCallback(() => {
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
+    clearAllCaches();
     setUser(null);
     setIsAuthenticated(false);
 
