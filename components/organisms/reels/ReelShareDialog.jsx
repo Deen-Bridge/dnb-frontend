@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { copySafeText } from "@/lib/privacy/safeClipboard";
 import { useMemo } from "react";
 import {
   Facebook,
@@ -79,19 +80,7 @@ const ReelShareDialog = ({ reel, open, onOpenChange, onShared }) => {
 
   const handleCopy = async () => {
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(shareUrl);
-      } else {
-        const temp = document.createElement("textarea");
-        temp.value = shareUrl;
-        temp.setAttribute("readonly", "");
-        temp.style.position = "absolute";
-        temp.style.left = "-9999px";
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        document.body.removeChild(temp);
-      }
+      if (!(await copySafeText(shareUrl, "public"))) throw new Error("Clipboard unavailable");
       toast.success("Link copied to clipboard!");
       onShared?.(reel?.id);
       onOpenChange(false);
