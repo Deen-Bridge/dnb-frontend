@@ -40,19 +40,9 @@ const processQueue = (error: any | null, token: string | null = null): void => {
   failedQueue = [];
 };
 
-// Add request interceptor to handle auth token
+// Authentication is carried by the backend-managed HttpOnly cookie.
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== "undefined") {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("authToken="))
-        ?.split("=")[1];
-
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
     return config;
   },
   (error: AxiosError) => {
@@ -120,11 +110,7 @@ axiosInstance.interceptors.response.use(
           withCredentials: true,
         });
 
-        const { token, user } = refreshRes.data;
-
-        // Update auth cookies with new token
-        const Cookies = (await import("js-cookie")).default;
-        Cookies.set("authToken", token, { expires: 1, path: "/" });
+        const { user } = refreshRes.data;
         if (user) {
           const userInfo: Record<string, any> = { id: user.id, name: user.name, role: user.role, email: user.email }; // TODO(types): Profile property bag
           if (user.avatar) userInfo.avatar = user.avatar;
@@ -137,19 +123,15 @@ axiosInstance.interceptors.response.use(
           Cookies.set("userInfo", JSON.stringify(userInfo), { expires: 1, path: "/" });
         }
 
-        processQueue(null, token);
+        processQueue(null, null);
 
         // Retry original request with new token
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-        }
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
 
         // Refresh failed - clear auth and redirect to login
         const Cookies = (await import("js-cookie")).default;
-        Cookies.remove("authToken", { path: "/" });
         Cookies.remove("userInfo", { path: "/" });
 
         if (typeof window !== "undefined") {
