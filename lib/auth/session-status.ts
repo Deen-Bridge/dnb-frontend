@@ -1,6 +1,5 @@
 import Cookies from "js-cookie";
 import { loginRedirectPath } from "@/lib/auth/safeRedirect";
-
 export const SESSION_END_REASONS = Object.freeze({
   SESSION_EXPIRED: "expired",
   SESSION_REVOKED: "revoked",
@@ -82,11 +81,8 @@ export function decodeJwt(token: unknown): Record<string, any> | null { // TODO(
 }
 
 function readToken(): string | null {
-  try {
-    return Cookies.get("authToken") || null;
-  } catch {
-    return null;
-  }
+  // Access tokens are HttpOnly and intentionally unavailable to JavaScript.
+  return null;
 }
 
 let lastReauthAt: number | null = null;

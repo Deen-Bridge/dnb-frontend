@@ -2,6 +2,116 @@ import { logger } from "@/lib/logger";
 import axiosInstance from "@/lib/config/axios.config";
 import { validateDocumentFile } from "@/lib/verification/documents/policy";
 
+const DISPUTES_PATH = "/api/admin/payments/disputes";
+
+export interface AdminDisputeListParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+}
+
+export interface AdminDisputeListResult {
+  success: boolean;
+  disputes: Array<Record<string, unknown>>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+    hasNextPage?: boolean;
+    hasPrevPage?: boolean;
+  };
+  error?: string;
+}
+
+function apiErrorMessage(error: any, fallback: string) {
+  return error?.response?.data?.message || error?.response?.data?.error || error?.message || fallback;
+}
+
+function normalizePagination(data: any, params: AdminDisputeListParams) {
+  const pagination = data?.pagination || {};
+  const page = Number(pagination.page || params.page || 1);
+  const limit = Number(pagination.limit || params.limit || 10);
+  const total = Number(pagination.total || 0);
+  const pages = Number(pagination.pages || pagination.totalPages || (total ? Math.ceil(total / limit) : 0));
+  return {
+    page,
+    limit,
+    total,
+    pages,
+    hasNextPage: pagination.hasNextPage ?? page < pages,
+    hasPrevPage: pagination.hasPrevPage ?? page > 1,
+  };
+}
+
+export async function listAdminDisputes(params: AdminDisputeListParams = {}): Promise<AdminDisputeListResult> {
+  try {
+    const res = await axiosInstance.get(DISPUTES_PATH, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+        ...(params.status && params.status !== "all" ? { status: params.status } : {}),
+      },
+    });
+    const data = res.data || {};
+    return {
+      success: data.success !== false,
+      disputes: Array.isArray(data.disputes) ? data.disputes : Array.isArray(data.data) ? data.data : [],
+      pagination: normalizePagination(data, params),
+    };
+  } catch (error: any) {
+    const message = apiErrorMessage(error, "Failed to load disputes");
+    const wrapped = new Error(message);
+    (wrapped as any).status = error?.response?.status;
+    throw wrapped;
+  }
+}
+
+export async function getAdminDispute(disputeId: string) {
+  if (!disputeId) throw new Error("disputeId is required");
+  try {
+    const res = await axiosInstance.get(`${DISPUTES_PATH}/${disputeId}`);
+    return res.data;
+  } catch (error: any) {
+    throw new Error(apiErrorMessage(error, "Failed to load dispute"));
+  }
+}
+
+export async function resolveAdminDispute(
+  disputeId: string,
+  decision: "approved" | "rejected" | "off_chain_resolved",
+  notes = ""
+) {
+  if (!disputeId) throw new Error("disputeId is required");
+  const idempotencyKey = `admin-dispute-resolution:${disputeId}:${decision}`;
+  try {
+    const res = await axiosInstance.patch(
+      `${DISPUTES_PATH}/${disputeId}/resolution`,
+      { decision, notes },
+      { headers: { "Idempotency-Key": idempotencyKey } }
+    );
+    return res.data;
+  } catch (error: any) {
+    const message = apiErrorMessage(
+      error,
+      error?.response?.status === 409 ? "This dispute changed before it could be resolved. Refresh and review it again." : "Failed to resolve dispute"
+    );
+    const wrapped = new Error(message);
+    (wrapped as any).status = error?.response?.status;
+    throw wrapped;
+  }
+}
+
+export async function requestDisputeEvidence(disputeId: string, target: "buyer" | "educator") {
+  if (!disputeId) throw new Error("disputeId is required");
+  try {
+    const res = await axiosInstance.post(`${DISPUTES_PATH}/${disputeId}/evidence-request`, { target });
+    return res.data;
+  } catch (error: any) {
+    throw new Error(apiErrorMessage(error, "Failed to request evidence"));
+  }
+}
+
 export interface DisputeEvidenceSignedUrlResult {
   success: boolean;
   signedUrl: string;
@@ -37,16 +147,6 @@ export async function fetchDisputeEvidenceSignedUrl(
       error: res.data?.message || res.data?.error || "Signed URL not returned by server",
     };
   } catch (error: any) { // TODO(types): Error from signed URL fetch
-    // If backend endpoint is not yet connected or in dev mock mode
-    if (error.response?.status === 404 || error.code === "ERR_NETWORK" || !error.response) {
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-      return {
-        success: true,
-        signedUrl: `/api/admin/payments/disputes/${disputeId}/evidence/${evidenceId}/file?expires=${encodeURIComponent(expiresAt)}`,
-        expiresAt,
-        fileName: `evidence_${evidenceId}`,
-      };
-    }
     logger.error("Failed to fetch dispute evidence signed URL:", error);
     return {
       success: false,
@@ -128,24 +228,6 @@ export async function uploadAdminDisputeEvidence(
       error: res.data?.message || res.data?.error || "Upload rejected by server",
     };
   } catch (error: any) { // TODO(types): Error from dispute evidence upload
-    if (error.response?.status === 404 || error.code === "ERR_NETWORK" || !error.response) {
-      const evidenceId = `ev_admin_${Date.now().toString(36)}`;
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-      return {
-        success: true,
-        evidence: {
-          id: evidenceId,
-          fileName: file ? file.name : "admin_note.txt",
-          fileType: file ? file.type : "text/plain",
-          uploadedAt: new Date().toISOString(),
-          note: note || "",
-          senderRole,
-          signedUrl: file ? `/api/admin/payments/disputes/${disputeId}/evidence/${evidenceId}/file?expires=${encodeURIComponent(expiresAt)}` : "",
-          expiresAt,
-        },
-      };
-    }
-
     logger.error("Failed to upload admin dispute evidence:", error);
     return {
       success: false,

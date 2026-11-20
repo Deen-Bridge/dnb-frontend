@@ -27,11 +27,12 @@ export default function GlobalNotFound() {
         }}
       >
         <h1 style={{ fontSize: "2.25rem", margin: 0 }}>404</h1>
-        <p style={{ margin: 0, opacity: 0.85 }}>
-          This page could not be found.
+        <p style={{ margin: 0, opacity: 0.85, maxWidth: "32rem" }}>
+          This page could not be found. Check the address or return to a safe starting point.
         </p>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
         <Link
-          href="/"
+          href="/en"
           style={{
             marginTop: "0.5rem",
             color: "#4ade80",
@@ -40,6 +41,10 @@ export default function GlobalNotFound() {
         >
           Go back home
         </Link>
+        <Link href="mailto:support@deenbridge.org" style={{ color: "#f8fafc", textDecoration: "underline" }}>
+          Contact support
+        </Link>
+        </div>
       </body>
     </html>
   );

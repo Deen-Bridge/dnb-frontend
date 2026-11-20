@@ -27,7 +27,7 @@ const JaasMeetingComponent = dynamic(
   }
 );
 
-const normalizeDomain = (domain = "meet.jit.si") =>
+const normalizeDomain = (domain) =>
   domain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "");
 
 const ensureHttpsUrl = (url) => {
@@ -243,8 +243,16 @@ export default function JaasMeetingClientButtons({ space }) {
       return;
     }
 
+    // Open synchronously from the user gesture. Waiting for the token request
+    // before calling window.open causes Safari and popup blockers to discard
+    // the participant window even when token issuance succeeds.
+    const popup =
+      typeof window !== "undefined"
+        ? window.open("about:blank", "_blank", "noopener,noreferrer")
+        : null;
     const tokenResponse = await requestMeetingToken({ silent: true });
     if (!tokenResponse) {
+      popup?.close?.();
       toast.error("Unable to join the meeting. Please try again.");
       return;
     }
@@ -261,8 +269,13 @@ export default function JaasMeetingClientButtons({ space }) {
         "config.prejoinPageEnabled=false",
       ];
       url.hash = hashParams.join("&");
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      if (popup && !popup.closed) {
+        popup.location.replace(url.toString());
+      } else {
+        window.open(url.toString(), "_blank", "noopener,noreferrer");
+      }
     } catch (error) {
+      popup?.close?.();
       console.error("Failed to open meeting window:", error);
       toast.error("Unable to open the meeting link.");
     }
@@ -272,8 +285,10 @@ export default function JaasMeetingClientButtons({ space }) {
     if (isUpdatingStatus) return;
 
     setIsUpdatingStatus(true);
+    const previousStatus = spaceStatus;
+    const statusChanged = previousStatus !== "live";
     try {
-      if (spaceStatus !== "live") {
+      if (statusChanged) {
         await updateSpace(space._id, { status: "live" });
         setSpaceStatus("live");
       }
@@ -281,6 +296,16 @@ export default function JaasMeetingClientButtons({ space }) {
       const tokenResponse = await requestMeetingToken({ silent: true });
       if (!tokenResponse) {
         setMeetingActive(false);
+        if (statusChanged) {
+          try {
+            await updateSpace(space._id, { status: previousStatus });
+            setSpaceStatus(previousStatus);
+          } catch {
+            toast.error(
+              "The session could not be prepared, and its status may need refreshing."
+            );
+          }
+        }
         toast.error(
           "Unable to start the live session. Please check the call configuration."
         );
@@ -322,8 +347,11 @@ export default function JaasMeetingClientButtons({ space }) {
 
   const handleMeetingClosed = useCallback(() => {
     if (!isHost) return;
-    endMeeting();
-  }, [endMeeting, isHost]);
+    // Closing/reloading the iframe is not the same as ending the session.
+    // Keep the server status live so a host can reopen the room and
+    // participants are not kicked out by an incidental iframe teardown.
+    setMeetingActive(false);
+  }, [isHost]);
 
   useEffect(() => {
     if (isHost && meetingActive && effectiveRequiresJwt && !meetingToken && !tokenLoading) {
