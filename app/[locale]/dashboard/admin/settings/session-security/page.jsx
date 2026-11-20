@@ -8,8 +8,8 @@
  *
  * Mirrors the feature-flags settings page: a `PageShell` + `PageHeader`, a
  * `Skeleton` loading state, an `EmptyState` on load failure, and a validated
- * form that saves through the stubbed `admin-session-config` service with
- * `sonner` toasts. Validation is client-side (mirroring
+ * form that saves through the authorized backend `admin-session-config` service
+ * with `sonner` toasts. Validation is client-side (mirroring
  * `validateSessionSecurityConfig`) with the submit button disabled until valid.
  */
 import { useEffect, useMemo, useState } from "react";
@@ -86,6 +86,7 @@ function SessionSecurityContent() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [effectivePolicy, setEffectivePolicy] = useState(null);
 
   // Form fields are kept as strings so the inputs stay controlled while typing.
   const [form, setForm] = useState({
@@ -104,6 +105,7 @@ function SessionSecurityContent() {
         idleWarningSeconds: String(cfg.idleWarningSeconds),
         reauthAfterMinutes: String(cfg.reauthAfterMinutes),
       });
+      setEffectivePolicy(cfg);
     } catch (err) {
       setLoadError(err?.message || "Failed to load session-security settings");
     } finally {
@@ -157,6 +159,7 @@ function SessionSecurityContent() {
         idleWarningSeconds: String(saved.idleWarningSeconds),
         reauthAfterMinutes: String(saved.reauthAfterMinutes),
       });
+      setEffectivePolicy(saved);
       adminToastSuccess({ title: "Session-security settings saved" });
     } catch (err) {
       adminToastError({
@@ -273,6 +276,12 @@ function SessionSecurityContent() {
             These rules apply to admin sessions only. The backend remains the
             source of truth for session validity.
           </p>
+          {effectivePolicy?.updatedAt && (
+            <p className={cn(poppins_400.className, "text-xs text-ink-muted")}>
+              Effective since {new Date(effectivePolicy.updatedAt).toLocaleString()}
+              {typeof effectivePolicy.version === "number" && ` · Policy version ${effectivePolicy.version}`}
+            </p>
+          )}
         </form>
       )}
     </PageShell>
