@@ -65,5 +65,12 @@
     "notifications": "Notifications",
     "language": "Language",
     "darkMode": "Dark Mode"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAll": "Mark all read",
+    "empty": "You have no notifications.",
+    "loadError": "Notifications could not be loaded.",
+    "unauthorized": "Sign in to view notifications."
   }
 }

@@ -65,5 +65,12 @@
     "notifications": "الإشعارات",
     "language": "اللغة",
     "darkMode": "الوضع الداكن"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAll": "تحديد الكل كمقروء",
+    "empty": "لا توجد إشعارات.",
+    "loadError": "تعذر تحميل الإشعارات.",
+    "unauthorized": "سجّل الدخول لعرض الإشعارات."
   }
 }

@@ -65,7 +65,8 @@ export const API_ENDPOINTS = {
   notifications: {
     list: "/api/notifications",
     markRead: (id: string) => `/api/notifications/${id}/read`,
-    markAllRead: "/api/notifications/read-all",
+    markAllRead: "/api/notifications/mark-all-read",
+    remove: (id: string) => `/api/notifications/${id}`,
   },
   earnings: {
     summary: "/api/earnings",
