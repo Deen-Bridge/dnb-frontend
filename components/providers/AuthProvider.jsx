@@ -73,7 +73,9 @@ export default function AuthProvider({ children }) {
       .then((mod) => {
         const Sentry = mod.default ?? mod;
         if (!active || !Sentry || typeof Sentry.setUser !== "function") return;
-        Sentry.setUser(user?._id ? { id: user._id } : null);
+        // Bind only the current account, and clear it immediately when the
+        // session disappears so a later user cannot inherit this identity.
+        Sentry.setUser(user?._id ? { id: String(user._id) } : null);
       })
       .catch(() => {});
     return () => {
@@ -86,6 +88,13 @@ export default function AuthProvider({ children }) {
     Cookies.remove("userInfo", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
+
+    import("@sentry/nextjs")
+      .then((mod) => {
+        const Sentry = mod.default ?? mod;
+        if (typeof Sentry?.setUser === "function") Sentry.setUser(null);
+      })
+      .catch(() => {});
 
     if (typeof window !== "undefined" && "caches" in window) {
       caches.keys().then((names) => {
