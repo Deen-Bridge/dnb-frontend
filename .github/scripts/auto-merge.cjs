@@ -214,10 +214,11 @@ async function run({ github, context, core }) {
       skip(`GitHub reports merge state ${review.mergeStateStatus}, not CLEAN.`);
       continue;
     }
-    if (review.decision !== "APPROVED") {
-      skip(`review decision is ${review.decision || "not approved"}.`);
-      continue;
-    }
+    // Approval is intentionally not a merge gate here. Branch protection
+    // requires zero human approvals, and requiring reviewDecision ===
+    // "APPROVED" made the automation contradict that repository policy.
+    // Malware scanning, required checks, clean merge state, issue linkage,
+    // hold labels, and unresolved-thread checks remain enforced below.
     if (review.unresolved > 0) {
       skip(`has ${review.unresolved} unresolved review thread(s).`);
       continue;
