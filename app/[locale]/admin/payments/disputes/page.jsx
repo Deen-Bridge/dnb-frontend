@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { PageShell } from "@/components/ui/page-shell";
 import { PageHeader } from "@/components/ui/page-header";
 import {
@@ -60,6 +60,12 @@ import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config"
 import { formatDistanceToNow } from "date-fns";
 import DisputeEvidenceViewer from "@/components/admin/DisputeEvidenceViewer";
 import DisputeEvidenceUpload from "@/components/admin/DisputeEvidenceUpload";
+import {
+  getAdminDispute,
+  listAdminDisputes,
+  requestDisputeEvidence,
+  resolveAdminDispute,
+} from "@/lib/actions/admin-disputes";
 
 const DISPUTE_STATES = {
   open: {
@@ -84,72 +90,36 @@ const DISPUTE_STATES = {
   },
 };
 
-// TODO: Replace these UI fixtures with disputes from the admin API. Evidence
-// links must come from the authenticated, short-lived signed-URL endpoint; do
-// not put third-party or permanent file URLs in this page.
-const mockDisputes = [
-  {
-    id: "dsp_001",
-    openedAt: "2026-08-22T10:15:00Z",
-    buyer: { id: "usr_b1", name: "Ahmad Patel", email: "ahmad@example.com" },
-    educator: { id: "usr_e1", name: "Sheikh Ibrahim", email: "ibrahim@example.com" },
-    item: { type: "course", name: "Advanced Tajweed Course", id: "crs_101" },
-    amount: 49.99,
-    transactionId: "PLT-10042",
-    state: "open",
-    buyerStatement: "I purchased this course but the video lectures won't load. Requesting a full refund.",
-    educatorStatement: "The course content is fully functional. The buyer may have connectivity issues.",
-    evidenceList: [
-      {
-        id: "ev_001_1",
-        fileName: "playback_error_screenshot.png",
-        fileType: "image/png",
-        uploadedAt: "2026-08-22T10:20:00Z",
-        senderRole: "buyer",
-        note: "Screenshot of black video player error.",
-        availability: "pending",
-      },
-    ],
-  },
-  {
-    id: "dsp_002",
-    openedAt: "2026-08-20T08:30:00Z",
-    buyer: { id: "usr_b2", name: "Fatima Al-Rashid", email: "fatima@example.com" },
-    educator: { id: "usr_e2", name: "Dr. Amina Yusuf", email: "amina@example.com" },
-    item: { type: "book", name: "Seerah Illustrated", id: "bk_205" },
-    amount: 12.50,
-    transactionId: "PLT-10038",
-    state: "awaiting-evidence",
-    buyerStatement: "The book description said 300 pages but the downloaded PDF is only 50 pages.",
-    educatorStatement: "The 300-page count includes appendices and index. The main content is complete.",
-    evidenceRequest: { target: "buyer", requestedAt: "2026-08-21T14:00:00Z", message: "Please provide a screenshot of the misleading listing." },
-    evidenceList: [
-      {
-        id: "ev_002_1",
-        fileName: "book_toc_sample.pdf",
-        fileType: "application/pdf",
-        uploadedAt: "2026-08-21T15:00:00Z",
-        senderRole: "educator",
-        note: "Original table of contents document.",
-        availability: "pending",
-      },
-    ],
-  },
-  {
-    id: "dsp_003",
-    openedAt: "2026-08-18T16:45:00Z",
-    buyer: { id: "usr_b3", name: "Yusuf Khan", email: "yusuf@example.com" },
-    educator: { id: "usr_e3", name: "Ustadh Omar Ali", email: "omar@example.com" },
-    item: { type: "course", name: "Quran Memorization Plan", id: "crs_112" },
-    amount: 75.00,
-    transactionId: "PLT-10035",
-    state: "resolved-refund",
-    buyerStatement: "The educator never responded to my questions and the course hasn't been updated.",
-    educatorStatement: "I have been on medical leave. I apologize for the lack of communication.",
-    resolution: "Full refund issued. Course delisted pending educator return.",
-    evidenceList: [],
-  },
-];
+function normalizeDispute(raw = {}) {
+  const resolution = raw.resolution || {};
+  const status = raw.state || raw.status;
+  const state = status === "resolved"
+    ? resolution.decision === "approved" ? "resolved-refund" : "resolved-rejected"
+    : status === "disputed" ? "open" : status || "open";
+  const buyer = raw.buyer || {};
+  const educator = raw.educator || raw.creator || {};
+  const transaction = raw.transaction || raw.originalTransaction || {};
+  return {
+    ...raw,
+    id: raw.id || raw._id,
+    openedAt: raw.openedAt || raw.createdAt,
+    buyer: { id: buyer.id || buyer._id, name: buyer.name || "Unknown buyer", email: buyer.email || "" },
+    educator: { id: educator.id || educator._id, name: educator.name || "Unknown educator", email: educator.email || "" },
+    item: {
+      type: raw.item?.type || raw.itemType || "item",
+      name: raw.item?.name || raw.itemName || raw.itemId || "Unknown item",
+      id: raw.item?.id || raw.itemId,
+    },
+    amount: Number(raw.amount || 0),
+    currency: raw.currency || "USDC",
+    transactionId: raw.transactionId || transaction.reference || transaction._id || transaction.id || "—",
+    state,
+    buyerStatement: raw.buyerStatement || raw.reason || "No buyer statement provided.",
+    educatorStatement: raw.educatorStatement || "No educator statement provided.",
+    evidenceList: raw.evidenceList || raw.evidence || [],
+    resolution: resolution.notes || raw.resolution,
+  };
+}
 
 function formatAge(timestamp) {
   return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
@@ -172,6 +142,7 @@ export default function DisputesPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [pagination, setPagination] = useState({ page: 1, limit: itemsPerPage, total: 0, pages: 0 });
 
   // Viewer state for secure evidence viewing
   const [viewingEvidence, setViewingEvidence] = useState(null);
@@ -179,17 +150,11 @@ export default function DisputesPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isResolving, setIsResolving] = useState(false);
 
-  const filteredDisputes = useMemo(() => {
-    if (statusFilter === "all") return disputes;
-    return disputes.filter((d) => d.state === statusFilter);
-  }, [disputes, statusFilter]);
-
-  const totalPages = Math.ceil(filteredDisputes.length / itemsPerPage);
-  const paginatedDisputes = filteredDisputes.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const filteredDisputes = disputes;
+  const totalPages = pagination.pages;
+  const paginatedDisputes = disputes;
 
   const statusCounts = useMemo(() => {
     const counts = {};
@@ -199,9 +164,40 @@ export default function DisputesPage() {
     return counts;
   }, [disputes]);
 
-  const openDetail = useCallback((dispute) => {
+  const loadDisputes = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await listAdminDisputes({ page: currentPage, limit: itemsPerPage, status: statusFilter });
+      setDisputes(result.disputes.map(normalizeDispute));
+      setPagination(result.pagination);
+    } catch (loadError) {
+      setDisputes([]);
+      setPagination((previous) => ({ ...previous, pages: 0, total: 0 }));
+      setError(loadError.message || "Failed to load disputes");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, statusFilter]);
+
+  useEffect(() => {
+    loadDisputes();
+  }, [loadDisputes]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
+
+  const openDetail = useCallback(async (dispute) => {
     setSelectedDispute(dispute);
     setDetailOpen(true);
+    try {
+      const result = await getAdminDispute(dispute.id);
+      const detail = result.dispute || result.data || result;
+      setSelectedDispute(normalizeDispute(detail));
+    } catch (detailError) {
+      setError(detailError.message || "Failed to load dispute details");
+    }
   }, []);
 
   const openEvidenceViewer = (evidence) => {
@@ -231,46 +227,34 @@ export default function DisputesPage() {
     );
   };
 
-  const updateDisputeState = useCallback((disputeId, newState, resolution) => {
-    setDisputes((prev) =>
-      prev.map((d) =>
-        d.id === disputeId
-          ? { ...d, state: newState, ...(resolution ? { resolution } : {}) }
-          : d
-      )
-    );
-    setSelectedDispute((prev) =>
-      prev?.id === disputeId
-        ? { ...prev, state: newState, ...(resolution ? { resolution } : {}) }
-        : prev
-    );
-  }, []);
+  const updateDisputeState = useCallback(async (disputeId, decision, notes) => {
+    setIsResolving(true);
+    setError(null);
+    try {
+      await resolveAdminDispute(disputeId, decision, notes);
+      setDetailOpen(false);
+      await loadDisputes();
+    } catch (resolutionError) {
+      setError(resolutionError.message || "Failed to resolve dispute");
+    } finally {
+      setIsResolving(false);
+    }
+  }, [loadDisputes]);
 
-  const requestEvidence = useCallback((disputeId, target) => {
-    setDisputes((prev) =>
-      prev.map((d) =>
-        d.id === disputeId
-          ? {
-              ...d,
-              state: "awaiting-evidence",
-              evidenceRequest: {
-                target,
-                requestedAt: new Date().toISOString(),
-                message: `Please provide supporting evidence for this dispute.`,
-              },
-            }
-          : d
-      )
-    );
-    setDetailOpen(false);
-  }, []);
+  const requestEvidence = useCallback(async (disputeId, target) => {
+    setError(null);
+    try {
+      await requestDisputeEvidence(disputeId, target);
+      setDetailOpen(false);
+      await loadDisputes();
+    } catch (requestError) {
+      setError(requestError.message || "Failed to request evidence");
+    }
+  }, [loadDisputes]);
 
   const handleRefresh = useCallback(() => {
-    setIsLoading(true);
-    setError(null);
-    setDisputes([]);
-    setIsLoading(false);
-  }, []);
+    loadDisputes();
+  }, [loadDisputes]);
 
   return (
     <PageShell>
@@ -502,7 +486,7 @@ export default function DisputesPage() {
                                   e.stopPropagation();
                                   updateDisputeState(
                                     dispute.id,
-                                    "resolved-refund",
+                                    "approved",
                                     "Full refund issued after review."
                                   );
                                 }}
@@ -515,7 +499,7 @@ export default function DisputesPage() {
                                   e.stopPropagation();
                                   updateDisputeState(
                                     dispute.id,
-                                    "resolved-rejected",
+                                    "rejected",
                                     "Dispute rejected after review."
                                   );
                                 }}
@@ -808,7 +792,7 @@ export default function DisputesPage() {
                     onClick={() =>
                       updateDisputeState(
                         selectedDispute.id,
-                        "resolved-refund",
+                        "approved",
                         "Full refund issued after review."
                       )
                     }
@@ -822,7 +806,7 @@ export default function DisputesPage() {
                     onClick={() =>
                       updateDisputeState(
                         selectedDispute.id,
-                        "resolved-rejected",
+                        "rejected",
                         "Dispute rejected after review."
                       )
                     }
