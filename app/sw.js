@@ -6,6 +6,7 @@ import {
   StaleWhileRevalidate,
   NetworkFirst,
 } from "serwist";
+import { normalizeNotificationTarget } from "../lib/push/notificationNavigation";
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
@@ -174,7 +175,10 @@ self.addEventListener("push", (event) => {
     tag: payload.tag || payload.type || "deenbridge",
     renotify: Boolean(payload.renotify),
     requireInteraction: Boolean(payload.requireInteraction),
-    data: { url: payload.url || "/dashboard", ...(payload.data || {}) },
+    data: {
+      ...(payload.data || {}),
+      url: normalizeNotificationTarget(payload.url, self.location.origin),
+    },
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
@@ -183,7 +187,10 @@ self.addEventListener("push", (event) => {
 // Focus an existing tab on the target route, or open a new one.
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || "/dashboard";
+  const targetUrl = normalizeNotificationTarget(
+    event.notification.data?.url,
+    self.location.origin
+  );
 
   event.waitUntil(
     self.clients
@@ -191,7 +198,7 @@ self.addEventListener("notificationclick", (event) => {
       .then((clientList) => {
         for (const client of clientList) {
           const clientUrl = new URL(client.url);
-          if (clientUrl.pathname === targetUrl && "focus" in client) {
+          if (`${clientUrl.pathname}${clientUrl.search}` === targetUrl && "focus" in client) {
             return client.focus();
           }
         }
