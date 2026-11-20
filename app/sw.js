@@ -6,6 +6,11 @@ import {
   StaleWhileRevalidate,
   NetworkFirst,
 } from "serwist";
+import {
+  isPrivateNavigationPath,
+  isPublicNavigationPath,
+  PRIVATE_RUNTIME_CACHE_NAMES,
+} from "../lib/pwa/cache-policy";
 
 const PRECACHE_ENTRIES = self.__SW_MANIFEST || [];
 const RELEASE_ID = PRECACHE_ENTRIES
@@ -22,17 +27,21 @@ function hasCredentials(request) {
   );
 }
 
+function isNavigationRequest(request) {
+  return request.mode === "navigate" || request.destination === "document";
+}
+
 function isPrivatePath(pathname) {
-  return /^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:admin|dashboard|account|educator-onboarding)(?:\/|$)/i.test(pathname);
+  return isPrivateNavigationPath(pathname);
 }
 
 function isPublicDocumentRequest({ request, url, sameOrigin }) {
   return (
     sameOrigin &&
     request.method === "GET" &&
-    request.destination === "document" &&
+    isNavigationRequest(request) &&
     !hasCredentials(request) &&
-    !isPrivatePath(url.pathname)
+    isPublicNavigationPath(url.pathname)
   );
 }
 
@@ -117,12 +126,21 @@ const serwist = new Serwist({
       handler: new NetworkOnly(),
     },
     {
+      // Private navigations are never persisted or served from a shared cache.
+      matcher: ({ request, url, sameOrigin }) =>
+        sameOrigin &&
+        isNavigationRequest(request) &&
+        isPrivatePath(url.pathname),
+      handler: new NetworkOnly(),
+    },
+    {
+      // Only routes on the explicit public allowlist may use an offline page cache.
       matcher: isPublicDocumentRequest,
       handler: new NetworkFirst({
-        cacheName: cacheName("pages"),
+        cacheName: cacheName("public-pages"),
         plugins: [
           new ExpirationPlugin({
-            maxEntries: 32,
+            maxEntries: 24,
             maxAgeSeconds: 24 * 60 * 60,
             maxAgeFrom: "last-used",
           }),
@@ -130,8 +148,14 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ sameOrigin, request }) =>
-        sameOrigin && request.method === "GET" && !hasCredentials(request),
+      // Generic same-origin reads stay cached only when they carry no account
+      // context and are not document navigations.
+      matcher: ({ request, url, sameOrigin }) =>
+        sameOrigin &&
+        request.method === "GET" &&
+        !isNavigationRequest(request) &&
+        !hasCredentials(request) &&
+        !isPrivatePath(url.pathname),
       handler: new NetworkFirst({
         cacheName: cacheName("same-origin-others"),
         plugins: [
@@ -143,6 +167,8 @@ const serwist = new Serwist({
         ],
       }),
     },
+    // API and unclassified same-origin requests are network-only by default.
+    { matcher: ({ sameOrigin }) => sameOrigin, handler: new NetworkOnly() },
     {
       matcher: /.*/i,
       handler: new NetworkOnly(),
@@ -157,23 +183,55 @@ const serwist = new Serwist({
 
 serwist.addEventListeners();
 
+const deleteCaches = (filter) =>
+  caches
+    .keys()
+    .then((names) =>
+      Promise.all(names.filter(filter).map((name) => caches.delete(name)))
+    );
+
+const clearLegacyPrivateCaches = () =>
+  deleteCaches((name) => PRIVATE_RUNTIME_CACHE_NAMES.includes(name));
+
+const clearPrivateCaches = () =>
+  deleteCaches(
+    (name) =>
+      PRIVATE_RUNTIME_CACHE_NAMES.includes(name) ||
+      name.startsWith(RUNTIME_CACHE_PREFIX)
+  );
+
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+  if (event.data?.type === "CLEAR_PRIVATE_CACHES") {
+    event.waitUntil(
+      clearPrivateCaches().catch((error) =>
+        console.error("[service-worker] clear private caches", error)
+      )
+    );
+  }
 });
 
 self.addEventListener("activate", (event) => {
-  const cleanup = caches.keys().then((names) =>
-    Promise.all(
-      names
-        .filter(
-          (name) =>
-            name.startsWith(RUNTIME_CACHE_PREFIX) &&
-            !name.includes(`-${RELEASE_ID}`)
+  const cleanup = Promise.all([
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(
+          names
+            .filter(
+              (name) =>
+                name.startsWith(RUNTIME_CACHE_PREFIX) &&
+                !name.includes(`-${RELEASE_ID}`)
+            )
+            .map((name) => caches.delete(name))
         )
-        .map((name) => caches.delete(name))
-    )
-  );
-  event.waitUntil(cleanup.catch((error) => console.error("[service-worker] activate", error)));
+      )
+      .catch((error) => console.error("[service-worker] activate", error)),
+    clearLegacyPrivateCaches().catch((error) =>
+      console.error("[service-worker] activate", error)
+    ),
+  ]);
+  event.waitUntil(cleanup);
 });
 
 // ─── Web Push notifications (issue #197) ────────────────────────────────────

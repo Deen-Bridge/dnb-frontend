@@ -361,7 +361,12 @@ export default function DisputesPage() {
                       className="py-8 text-center text-destructive"
                     >
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>{error}</p>
+                      <p className="font-medium">Disputes are unavailable</p>
+                      <p className="text-sm text-muted-foreground">
+                        {error} — no dispute records, evidence, or resolution
+                        actions are shown until they can be loaded and persisted
+                        by the server.
+                      </p>
                     </TableCell>
                   </TableRow>
                 ) : paginatedDisputes.length === 0 ? (

@@ -31,5 +31,17 @@ export default defineConfig({
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    {
+      name: "production-smoke",
+      testMatch: /production-smoke\.spec\.js/,
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.SMOKE_BASE_URL || `http://localhost:${PORT}`,
+        storageState: process.env.SMOKE_STORAGE_STATE || undefined,
+        extraHTTPHeaders: {
+          "x-smoke-run": process.env.SMOKE_RUN_ID || "local-production-smoke",
+        },
+      },
+    },
   ],
 });

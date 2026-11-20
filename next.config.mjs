@@ -2,6 +2,7 @@ import withSerwistInit from "@serwist/next";
 import createNextIntlPlugin from "next-intl/plugin";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 import { withSentryConfig } from "@sentry/nextjs";
+import { buildSecurityHeaders } from "./lib/config/securityHeaders.mjs";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 
@@ -13,7 +14,8 @@ const withSerwist = withSerwistInit({
   swSrc: "app/sw.js",
   swDest: "public/sw.js",
   disable: process.env.NODE_ENV === "development",
-  cacheOnNavigation: true,
+  // Navigation caching is opt-in in app/sw.js; private pages are network-only.
+  cacheOnNavigation: false,
   reloadOnOnline: true,
 });
 
@@ -23,6 +25,14 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: buildSecurityHeaders({ environment: process.env.NODE_ENV }),
+      },
+    ];
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "react-icons"],
