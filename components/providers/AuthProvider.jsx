@@ -103,7 +103,8 @@ export default function AuthProvider({ children }) {
       .then((mod) => {
         const Sentry = mod.default ?? mod;
         if (!active || !Sentry || typeof Sentry.setUser !== "function") return;
-        Sentry.setUser(user?._id ? { id: user._id } : null);
+        // Bind only the current account identity for the active session.
+        Sentry.setUser(user?._id ? { id: String(user._id) } : null);
       })
       .catch(() => {});
     return () => {
@@ -120,6 +121,13 @@ export default function AuthProvider({ children }) {
     setIsAuthenticated(false);
     setCacheScope(null);
     requestPrivateCacheClear("logout");
+
+    import("@sentry/nextjs")
+      .then((mod) => {
+        const Sentry = mod.default ?? mod;
+        if (typeof Sentry?.setUser === "function") Sentry.setUser(null);
+      })
+      .catch(() => {});
 
     if (typeof window !== "undefined" && "caches" in window) {
       caches
