@@ -100,8 +100,6 @@ function InviteDialog({ open, onClose, onCreateInvite }) {
   const handleGenerate = async () => {
     setIsCreating(true);
     try {
-      // TODO(backend): the returned invite comes from the stubbed service —
-      // once the backend lands this link will be minted server-side.
       const result = await onCreateInvite({ email: email.trim() || undefined, tier });
       setInvite(result);
     } catch (err) {
