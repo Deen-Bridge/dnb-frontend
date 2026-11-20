@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from "react";
 import useAuth from "@/hooks/useAuth";
-
-const DRAFT_KEY_PREFIX = "dnb_course_draft_";
+import { accountStorageKey, getAccountValue, setAccountValue } from "@/lib/storage/accountStorage";
 
 export interface UseDraftAutosaveResult<T> {
   hasDraft: () => boolean;
@@ -14,9 +13,7 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
   courseId: string | null = null
 ): UseDraftAutosaveResult<T> {
   const { user } = useAuth();
-  const storageKey = `${DRAFT_KEY_PREFIX}${user?._id || "anon"}${
-    courseId ? `_${courseId}` : ""
-  }`;
+  const storageKey = accountStorageKey("course-draft", user?._id || null, courseId || "default");
 
   useEffect(() => {
     if (!watch) return;
@@ -37,7 +34,7 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
               return value;
             })
           );
-          localStorage.setItem(storageKey, JSON.stringify(serializable));
+          setAccountValue(localStorage, storageKey, serializable, 24 * 60 * 60 * 1000);
         } catch {
           // Ignore quota exceeded or storage disabled
         }
@@ -53,7 +50,7 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
   const hasDraft = useCallback((): boolean => {
     if (typeof window === "undefined") return false;
     try {
-      return !localStorage.getItem(storageKey);
+      return getAccountValue(localStorage, storageKey) !== null;
     } catch {
       return false;
     }
@@ -62,8 +59,7 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
   const loadDraft = useCallback((): T | null => {
     if (typeof window === "undefined") return null;
     try {
-      const raw = localStorage.getItem(storageKey);
-      return raw ? JSON.parse(raw) : null;
+      return getAccountValue<T>(localStorage, storageKey);
     } catch {
       return null;
     }
