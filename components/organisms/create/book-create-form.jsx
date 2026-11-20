@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { validateFile } from '@/lib/utils/cloudinaryUpload';
+import useSingleFlight from '@/hooks/useSingleFlight';
 
 const bookSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
@@ -61,7 +62,7 @@ const BookCreateForm = ({ onBookCreated }) => {
       setFile(f || null);
     };
 
-    const onSubmit = async (data) => {
+    const submitBook = React.useCallback(async (data) => {
       try {
         const payload = await createBook({ form: data, thumbnail, file });
         if (payload.success) {
@@ -76,7 +77,8 @@ const BookCreateForm = ({ onBookCreated }) => {
       } catch (error) {
         toast.error(error?.message || 'Something went wrong!');
       }
-    };
+    }, [file, onBookCreated, router, thumbnail]);
+    const onSubmit = useSingleFlight(submitBook);
 
     return (
       <Form {...form}>
