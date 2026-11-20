@@ -7,5 +7,7 @@ describe("profile content state contract", () => {
     expect(source).not.toContain("Stay tuned");
     expect(source).toContain("profileId");
     expect(source).toContain("aria-live=\"polite\"");
+    expect(source).toContain('This profile is unavailable.');
+    expect(source).toContain('<Placeholder title="books" profileId={profileId} />');
   });
 });

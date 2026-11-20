@@ -2,7 +2,7 @@
 /**
  * useMaintenanceMode — admin data hook for platform-wide maintenance (#303).
  * ---------------------------------------------------------------------------
- * Loads the maintenance state via the stubbed service in
+ * Loads the maintenance state via the backend service in
  * `lib/actions/admin-maintenance` and exposes the toggle/save mutations the
  * admin settings page and the `MaintenanceGate` admin bar share, so both drive
  * one code path and stay consistent.
@@ -27,15 +27,6 @@ import {
 /** Whether the user holds the admin role (any tier). Fails closed. */
 function isAdminUser(user) {
   return Boolean(user) && normalizeRole(user.role) === ROLES.ADMIN;
-}
-
-/** Build the `updatedBy` actor descriptor the stub stamps onto writes. */
-function toActor(user) {
-  if (!user) return null;
-  return {
-    id: String(user._id ?? user.id ?? ""),
-    name: String(user.name ?? user.fullName ?? "Admin"),
-  };
 }
 
 export default function useMaintenanceMode() {
@@ -98,10 +89,7 @@ export default function useMaintenanceMode() {
     async (payload) => {
       setIsSaving(true);
       try {
-        const { maintenance: next } = await setMaintenanceState({
-          ...payload,
-          actor: toActor(user),
-        });
+        const { maintenance: next } = await setMaintenanceState(payload);
         setMaintenance(next);
         return next;
       } catch (err) {

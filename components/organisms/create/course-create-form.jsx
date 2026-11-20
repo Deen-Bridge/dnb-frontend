@@ -42,12 +42,12 @@ const CreateCourseForm = () => {
   const [thumbnail, setThumbnail] = React.useState(null);
   const [video, setVideo] = React.useState(null);
 
-  const thumbnailUpload = useCloudinaryUpload("dnb_courses_thumbnails", {
+  const thumbnailUpload = useCloudinaryUpload("course-thumbnail", {
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ["image/*"],
   });
 
-  const videoUpload = useCloudinaryUpload("dnb_courses_videoss", {
+  const videoUpload = useCloudinaryUpload("course-video", {
     maxSize: 100 * 1024 * 1024,
     allowedTypes: ["video/*"],
   });

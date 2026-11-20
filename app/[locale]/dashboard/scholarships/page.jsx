@@ -9,6 +9,7 @@ import { useStellar } from "@/components/stellar/StellarProvider";
 import useStellarScholarship from "@/hooks/useStellarScholarship";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { externalLinkProps } from "@/lib/security/safe-external-url";
 
 const copy = {
   en: {
@@ -392,7 +393,7 @@ export default function ScholarshipsPage() {
                           {milestoneReports[milestone.index] ? (
                             <>
                               <p className="whitespace-pre-wrap text-xs leading-5 text-ink-muted">{milestoneReports[milestone.index].summary}</p>
-                              {milestoneReports[milestone.index].evidenceUrl && <a href={milestoneReports[milestone.index].evidenceUrl} target="_blank" rel="noreferrer" className="text-xs text-accent underline">{t.evidenceLink}</a>}
+                              {externalLinkProps(milestoneReports[milestone.index].evidenceUrl) && <a {...externalLinkProps(milestoneReports[milestone.index].evidenceUrl)} className="text-xs text-accent underline">{t.evidenceLink}</a>}
                               <p className="text-xs text-ink-muted">{t[{
                                 submitted: "reportSubmitted",
                                 approved: "reportApproved",

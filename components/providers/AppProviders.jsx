@@ -12,10 +12,12 @@ import EmergencyBroadcastBanner from "@/components/broadcast/EmergencyBroadcastB
 import AdminShortcutsProvider from "@/components/admin/AdminShortcutsProvider";
 import AdminRouteGuard from "@/components/auth/AdminRouteGuard";
 import { MediaBlurProvider } from "@/contexts/MediaBlurContext";
+import ServiceWorkerProvider from "@/components/providers/ServiceWorkerProvider";
 
 export default function AppProviders({ children }) {
   return (
-    <ThemeProvider>
+    <ServiceWorkerProvider>
+      <ThemeProvider>
       <AppearanceProvider>
         <MediaBlurProvider>
           <CacheProvider>
@@ -51,6 +53,7 @@ export default function AppProviders({ children }) {
           </CacheProvider>
         </MediaBlurProvider>
       </AppearanceProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ServiceWorkerProvider>
   );
 }

@@ -31,10 +31,22 @@ vi.mock("@/hooks/useAuth", () => {
 
 const getUserByIdMock = vi.hoisted(() => vi.fn());
 const fetchVerificationHistoryMock = vi.hoisted(() => vi.fn());
+const listAdminDisputesMock = vi.hoisted(() => vi.fn());
+const getAdminDisputeMock = vi.hoisted(() => vi.fn());
+const resolveAdminDisputeMock = vi.hoisted(() => vi.fn());
+const requestDisputeEvidenceMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/actions/users/getUserById", () => ({ getUserById: getUserByIdMock }));
 vi.mock("@/lib/actions/admin-verification-history", () => ({
   fetchEducatorVerificationHistory: fetchVerificationHistoryMock,
+}));
+vi.mock("@/lib/actions/admin-disputes", () => ({
+  fetchDisputeEvidenceSignedUrl: vi.fn(),
+  uploadAdminDisputeEvidence: vi.fn(),
+  listAdminDisputes: listAdminDisputesMock,
+  getAdminDispute: getAdminDisputeMock,
+  resolveAdminDispute: resolveAdminDisputeMock,
+  requestDisputeEvidence: requestDisputeEvidenceMock,
 }));
 
 const educatorUser = {
@@ -91,6 +103,11 @@ describe("Print-Friendly Views for Records (#338)", () => {
     vi.clearAllMocks();
     getUserByIdMock.mockResolvedValue({ user: educatorUser });
     fetchVerificationHistoryMock.mockResolvedValue(defaultHistory);
+    listAdminDisputesMock.mockResolvedValue({
+      success: true,
+      disputes: [],
+      pagination: { page: 1, limit: 10, total: 0, pages: 0 },
+    });
     originalPrint = window.print;
     window.print = vi.fn();
   });
