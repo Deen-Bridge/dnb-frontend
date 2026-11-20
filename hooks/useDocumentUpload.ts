@@ -105,6 +105,7 @@ export interface UseDocumentUploadReturn {
   uploadDocument: (documentType: string, file: File) => Promise<UploadDocumentResult>;
   replaceDocument: (documentType: string, file: File) => Promise<UploadDocumentResult>;
   removeDocument: (documentType: string) => Promise<{ ok: boolean }>;
+  cancelUpload: (documentType: string) => void;
   reset: () => void;
 }
 
@@ -326,6 +327,18 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
     [patchSlot, setPreviewUrl, slots]
   );
 
+  const cancelUpload = useCallback((documentType: string) => {
+    abortControllersRef.current[documentType]?.abort();
+    setPreviewUrl(documentType, null);
+    patchSlot(documentType, {
+      state: SLOT_STATE.ERROR,
+      progress: 0,
+      error: "Upload cancelled. You can choose the file again.",
+      errorReason: "cancelled",
+      previewUrl: null,
+    });
+  }, [patchSlot, setPreviewUrl]);
+
   const replaceDocument = useCallback(
     async (documentType: string, file: File): Promise<UploadDocumentResult> => {
       const existingId = slots[documentType]?.reference?.documentId;
@@ -361,6 +374,7 @@ export function useDocumentUpload(options: UseDocumentUploadOptions = {}): UseDo
     uploadDocument,
     replaceDocument,
     removeDocument: removeSlot,
+    cancelUpload,
     reset,
   };
 }

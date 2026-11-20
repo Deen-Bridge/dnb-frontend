@@ -35,6 +35,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
+import { readSafePage, readSafeParam } from "@/lib/navigation/urlState";
 
 const PAGE_SIZE = 9;
 
@@ -77,16 +78,14 @@ const LibraryPageContent = () => {
   const [error, setError] = useState(false);
 
   const [searchInput, setSearchInput] = useState(
-    () => searchParams.get("search") || ""
+    () => readSafeParam(searchParams, "search", { maxLength: 120 })
   );
   const [category, setCategory] = useState(
-    () => searchParams.get("category") || ALL
+    () => readSafeParam(searchParams, "category", { maxLength: 48, fallback: ALL })
   );
-  const [price, setPrice] = useState(() => searchParams.get("price") || ALL);
-  const [sort, setSort] = useState(() => searchParams.get("sort") || "newest");
-  const [page, setPage] = useState(
-    () => Math.max(1, Number(searchParams.get("page")) || 1)
-  );
+  const [price, setPrice] = useState(() => readSafeParam(searchParams, "price", { maxLength: 24, fallback: ALL }));
+  const [sort, setSort] = useState(() => readSafeParam(searchParams, "sort", { maxLength: 24, fallback: "newest" }));
+  const [page, setPage] = useState(() => readSafePage(searchParams));
 
   const search = useDebouncedValue(searchInput, 300);
 

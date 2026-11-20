@@ -198,13 +198,15 @@ export interface UpdateReelPosterPayload {
   posterUrl?: string;
 }
 
-/**
- * Set a reel's poster (cover image) URL.
- * Mirrors the moderation stub pattern so the poster-management UI can be
- * exercised before the backend endpoint exists.
- */
-const POSTER_MOCK_DELAY_MS = 400;
-const mockReelPosters = new Map<string, string>();
+/** Set a reel poster through the server-authoritative moderation endpoint. */
+function isApprovedPosterUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname === "res.cloudinary.com";
+  } catch {
+    return false;
+  }
+}
 
 export const updateReelPoster = async (
   reelId: string,
@@ -213,17 +215,9 @@ export const updateReelPoster = async (
   if (!posterUrl || typeof posterUrl !== "string") {
     throw new Error("A poster URL is required.");
   }
-
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      mockReelPosters.set(reelId, posterUrl);
-      resolve({
-        reel: {
-          id: reelId,
-          poster: posterUrl,
-          updatedAt: new Date().toISOString(),
-        },
-      });
-    }, POSTER_MOCK_DELAY_MS);
-  });
+  if (!isApprovedPosterUrl(posterUrl)) {
+    throw new Error("The poster must be an HTTPS Cloudinary asset.");
+  }
+  const res = await axiosInstance.patch(`/api/reels/${reelId}/poster`, { posterUrl });
+  return res.data;
 };

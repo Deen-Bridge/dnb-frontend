@@ -1,8 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { updateUser } from "@/lib/actions/users/updateUser";
+import {
+  changeAccountPassword,
+  deleteAccount,
+  getAccountPreferences,
+  updateAccountPreferences,
+} from "@/lib/actions/users/accountSettings";
 import { useAppearance } from "@/components/providers/AppearanceProvider";
 import { ACCENT_PALETTES, FONT_SIZES } from "@/lib/config/appearance.config";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -111,6 +117,7 @@ const SettingsPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const preferencesMutationRef = useRef(0);
 
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [installable, setInstallable] = useState(false);
@@ -176,26 +183,51 @@ const SettingsPage = () => {
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
-    newsletter: false,
+    inApp: true,
+    marketing: false,
     courseUpdates: true,
-    messageNotifications: true,
-    spaceReminders: true,
+    prayerReminders: true,
+    securityAlerts: true,
   });
 
   // Privacy state
   const [privacy, setPrivacy] = useState({
-    profileVisible: true,
-    showOnline: true,
-    allowMessages: true,
-    showEmail: false,
-    showAge: true,
-    showInterests: true,
+    profileVisibility: "public",
+    showActivity: true,
+    showLearningProgress: true,
+    allowMessagesFrom: "everyone",
+    showInLeaderboards: true,
   });
 
   // La UI ofrece "auto"; next-themes lo llama "system".
   const { theme: themeMode, setTheme: setThemeMode } = useTheme();
   const { accent, fontSize, setAccent, setFontSize, mounted } = useAppearance();
   const selectedMode = themeMode === "system" ? "auto" : themeMode;
+
+  useEffect(() => {
+    if (!user?._id) return undefined;
+
+    let active = true;
+    getAccountPreferences()
+      .then((preferences) => {
+        if (!active) return;
+        setNotifications((current) => ({
+          ...current,
+          ...(preferences.notifications || {}),
+        }));
+        setPrivacy((current) => ({
+          ...current,
+          ...(preferences.privacy || {}),
+        }));
+      })
+      .catch((error) => {
+        if (active) showMessage("error", error.message);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?._id]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -246,25 +278,68 @@ const SettingsPage = () => {
   const handleAccountSave = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    showMessage("success", "Account settings updated!");
-    setIsLoading(false);
+    try {
+      if (account.email && account.email !== user?.email) {
+        const result = await updateUser(user?._id, { email: account.email });
+        if (!result?.success) {
+          throw new Error(result?.message || "Unable to update your email.");
+        }
+      }
+      if (account.currentPassword || account.newPassword || account.confirmPassword) {
+        if (!account.currentPassword || !account.newPassword) {
+          throw new Error("Current and new password are required.");
+        }
+        if (account.newPassword !== account.confirmPassword) {
+          throw new Error("New passwords do not match.");
+        }
+        await changeAccountPassword(account);
+      }
+      showMessage("success", "Account settings updated by the server.");
+      setAccount((current) => ({
+        ...current,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      }));
+    } catch (error) {
+      showMessage("error", error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNotificationSave = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    showMessage("success", "Notification preferences saved!");
-    setIsLoading(false);
+    const mutationId = ++preferencesMutationRef.current;
+    try {
+      const saved = await updateAccountPreferences({ notifications });
+      if (mutationId === preferencesMutationRef.current && saved.notifications) {
+        setNotifications(saved.notifications);
+      }
+      showMessage("success", "Notification preferences saved on the server.");
+    } catch (error) {
+      showMessage("error", error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePrivacySave = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    showMessage("success", "Privacy settings updated!");
-    setIsLoading(false);
+    const mutationId = ++preferencesMutationRef.current;
+    try {
+      const saved = await updateAccountPreferences({ privacy });
+      if (mutationId === preferencesMutationRef.current && saved.privacy) {
+        setPrivacy(saved.privacy);
+      }
+      showMessage("success", "Privacy settings updated on the server.");
+    } catch (error) {
+      showMessage("error", error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Cada control persiste al momento de elegirlo; este submit solo confirma.
@@ -273,16 +348,21 @@ const SettingsPage = () => {
     showMessage("success", "Theme preferences saved!");
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (
       confirm(
         "Are you sure you want to delete your account? This action cannot be undone."
       )
     ) {
-      showMessage(
-        "error",
-        "Account deletion initiated. Please check your email for confirmation."
-      );
+      setIsLoading(true);
+      try {
+        const result = await deleteAccount(user?._id);
+        showMessage("success", result?.message || "Account deleted successfully.");
+      } catch (error) {
+        showMessage("error", error.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -367,7 +447,7 @@ const SettingsPage = () => {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-2xl border border-accent/10 bg-surface-raised p-1.5 shadow-sm">
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-2xl border border-accent/10 bg-surface-raised p-1.5 shadow-sm sm:grid-cols-3 lg:grid-cols-6">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" /> Profile
             </TabsTrigger>
@@ -379,6 +459,15 @@ const SettingsPage = () => {
               className="flex items-center gap-2"
             >
               <Bell className="h-4 w-4" /> Notifications
+            </TabsTrigger>
+            <TabsTrigger value="privacy" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" /> Privacy
+            </TabsTrigger>
+            <TabsTrigger value="theme" className="flex items-center gap-2">
+              <Palette className="h-4 w-4" /> Appearance
+            </TabsTrigger>
+            <TabsTrigger value="danger" className="flex items-center gap-2">
+              <Trash2 className="h-4 w-4" /> Danger zone
             </TabsTrigger>
           </TabsList>
 
@@ -689,29 +778,29 @@ const SettingsPage = () => {
                   />
                   <ToggleRow
                     icon={Mail}
-                    title="Message Notifications"
+                    title="In-app Notifications"
                     description="New messages and replies"
-                    checked={notifications.messageNotifications}
+                    checked={notifications.inApp}
                     onCheckedChange={() =>
-                      handleNotificationChange("messageNotifications")
+                      handleNotificationChange("inApp")
                     }
                   />
                   <ToggleRow
                     icon={Globe}
-                    title="Space Reminders"
+                    title="Prayer Reminders"
                     description="Upcoming space sessions"
-                    checked={notifications.spaceReminders}
+                    checked={notifications.prayerReminders}
                     onCheckedChange={() =>
-                      handleNotificationChange("spaceReminders")
+                      handleNotificationChange("prayerReminders")
                     }
                   />
                   <ToggleRow
                     icon={Mail}
-                    title="Newsletter"
+                    title="Marketing"
                     description="Weekly updates and insights"
-                    checked={notifications.newsletter}
+                    checked={notifications.marketing}
                     onCheckedChange={() =>
-                      handleNotificationChange("newsletter")
+                      handleNotificationChange("marketing")
                     }
                   />
                 </div>
@@ -737,45 +826,48 @@ const SettingsPage = () => {
                     icon={User}
                     title="Profile Visibility"
                     description="Allow others to view your profile"
-                    checked={privacy.profileVisible}
+                    checked={privacy.profileVisibility !== "private"}
                     onCheckedChange={() =>
-                      handlePrivacyChange("profileVisible")
+                      setPrivacy((current) => ({
+                        ...current,
+                        profileVisibility:
+                          current.profileVisibility === "private" ? "public" : "private",
+                      }))
                     }
                   />
                   <ToggleRow
                     icon={Globe}
-                    title="Online Status"
-                    description="Show when you're online"
-                    checked={privacy.showOnline}
-                    onCheckedChange={() => handlePrivacyChange("showOnline")}
+                    title="Activity Status"
+                    description="Show your activity to other users"
+                    checked={privacy.showActivity}
+                    onCheckedChange={() => handlePrivacyChange("showActivity")}
                   />
                   <ToggleRow
                     icon={Mail}
                     title="Allow Messages"
                     description="Let others send you messages"
-                    checked={privacy.allowMessages}
-                    onCheckedChange={() => handlePrivacyChange("allowMessages")}
+                    checked={privacy.allowMessagesFrom !== "none"}
+                    onCheckedChange={() =>
+                      setPrivacy((current) => ({
+                        ...current,
+                        allowMessagesFrom:
+                          current.allowMessagesFrom === "none" ? "everyone" : "none",
+                      }))
+                    }
                   />
                   <ToggleRow
                     icon={Mail}
-                    title="Show Email"
-                    description="Display email on profile"
-                    checked={privacy.showEmail}
-                    onCheckedChange={() => handlePrivacyChange("showEmail")}
+                    title="Learning Progress"
+                    description="Share your learning progress"
+                    checked={privacy.showLearningProgress}
+                    onCheckedChange={() => handlePrivacyChange("showLearningProgress")}
                   />
                   <ToggleRow
                     icon={User}
-                    title="Show Age"
-                    description="Display age on profile"
-                    checked={privacy.showAge}
-                    onCheckedChange={() => handlePrivacyChange("showAge")}
-                  />
-                  <ToggleRow
-                    icon={Palette}
-                    title="Show Interests"
-                    description="Display interests on profile"
-                    checked={privacy.showInterests}
-                    onCheckedChange={() => handlePrivacyChange("showInterests")}
+                    title="Leaderboard Presence"
+                    description="Appear on learning leaderboards"
+                    checked={privacy.showInLeaderboards}
+                    onCheckedChange={() => handlePrivacyChange("showInLeaderboards")}
                   />
                 </div>
                 <SubmitButton
