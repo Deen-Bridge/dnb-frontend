@@ -1,4 +1,5 @@
 import NextTopLoader from "nextjs-toploader";
+import { requireAdminRoute } from "@/lib/auth/admin-route";
 
 export const metadata = {
   robots: {
@@ -8,7 +9,10 @@ export const metadata = {
 };
 
 /** A lightweight shell for the localized admin route segment. */
-export default function AdminLayout({ children }) {
+export default async function AdminLayout({ children, params }) {
+  const { locale } = await params;
+  await requireAdminRoute(locale);
+
   return (
     <>
       <NextTopLoader
