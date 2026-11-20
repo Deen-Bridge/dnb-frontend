@@ -174,7 +174,7 @@ function InviteDialog({ open, onClose, onCreateInvite }) {
                     variant={tier === option ? "default" : "outline"}
                     className={cn(
                       "rounded-full",
-                      tier === option && "bg-accent text-white hover:bg-accent/90"
+                      tier === option && "bg-accent-card text-white hover:bg-accent/90"
                     )}
                     onClick={() => setTier(option)}
                   >
@@ -207,7 +207,7 @@ function InviteDialog({ open, onClose, onCreateInvite }) {
           </Button>
           {!invite && (
             <Button
-              className="rounded-full bg-accent text-white hover:bg-accent/90"
+              className="rounded-full bg-accent-card text-white hover:bg-accent/90"
               disabled={isCreating}
               onClick={handleGenerate}
             >
@@ -434,7 +434,7 @@ function AdminTeamContent() {
         subtitle="Manage admin access and role tiers across DeenBridge"
         actions={
           <Button
-            className="rounded-full bg-accent text-white hover:bg-accent/90"
+            className="rounded-full bg-accent-card text-white hover:bg-accent/90"
             onClick={() => setInviteOpen(true)}
           >
             <Link2 className="mr-0 sm:mr-1 h-4 w-4" />

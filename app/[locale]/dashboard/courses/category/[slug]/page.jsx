@@ -105,7 +105,7 @@ const CategoryPageContent = () => {
             href="/dashboard/courses/categories"
             className={cn(
               poppins_500,
-              "rounded-full bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
+              "rounded-full bg-accent-card px-4 py-2 text-sm text-white hover:bg-accent/90"
             )}
           >
             Browse all categories
@@ -211,7 +211,7 @@ const CategoryPageContent = () => {
               onClick={() => setModalOpen(true)}
               className={cn(
                 poppins_500,
-                "rounded-full bg-accent px-4 py-2 text-sm text-white hover:bg-accent/90"
+                "rounded-full bg-accent-card px-4 py-2 text-sm text-white hover:bg-accent/90"
               )}
             >
               Create first course

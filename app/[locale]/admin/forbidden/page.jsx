@@ -51,7 +51,7 @@ export default function ForbiddenPage() {
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href={dashboardHref}
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-8 py-3 text-base font-bold text-white transition hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent-card px-8 py-3 text-base font-bold text-white transition hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             Return to dashboard
           </Link>

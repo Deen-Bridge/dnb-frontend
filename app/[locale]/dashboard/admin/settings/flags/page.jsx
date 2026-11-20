@@ -265,7 +265,7 @@ function CreateFlagDialog({ open, onOpenChange, existingKeys, onCreate }) {
             </Button>
             <Button
               type="submit"
-              className="rounded-full bg-accent text-white hover:bg-accent/90"
+              className="rounded-full bg-accent-card text-white hover:bg-accent/90"
               disabled={!canSubmit}
             >
               {isSaving ? "Creating…" : "Create flag"}
@@ -453,7 +453,7 @@ function FeatureFlagsContent() {
         actions={
           <Button
             type="button"
-            className="rounded-full bg-accent text-white hover:bg-accent/90"
+            className="rounded-full bg-accent-card text-white hover:bg-accent/90"
             onClick={() => setCreateOpen(true)}
           >
             <Plus className="mr-1 h-4 w-4" />
@@ -493,7 +493,7 @@ function FeatureFlagsContent() {
           action={
             <Button
               type="button"
-              className="rounded-full bg-accent text-white hover:bg-accent/90"
+              className="rounded-full bg-accent-card text-white hover:bg-accent/90"
               onClick={() => setCreateOpen(true)}
             >
               <Plus className="mr-1 h-4 w-4" />
