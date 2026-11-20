@@ -2,6 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { scrubSentryEvent } from "./lib/sentry/pii";
+import { getTelemetryConsent } from "./lib/privacy/scrubTelemetryPayload";
 
 // Wallet modal cancellations are intentional user actions, not bugs.
 // Patterns mirror lib/stellar/stellarErrors.js (isUserRejection / isNoWalletError).
@@ -21,6 +22,6 @@ Sentry.init({
   sendDefaultPii: false,
   ignoreErrors,
   beforeSend(event) {
-    return scrubSentryEvent(event);
+    return getTelemetryConsent() === "granted" ? scrubSentryEvent(event) : null;
   },
 });

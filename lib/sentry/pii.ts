@@ -2,16 +2,18 @@ const EMAIL_REGEX = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
 const PHONE_REGEX = /(?<!\d)\+?\d[\d .()\-]{8,}\d(?!\d)/g;
 const BEARER_REGEX = /Bearer\s+[A-Za-z0-9\-._~+/]+=*/gi;
 const JWT_REGEX = /\b[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g;
+const URL_REGEX = /https?:\/\/[^\s"'<>]+/gi;
 const REDACTED = "[redacted]";
 
 export const SENTRY_REDACTION_SCHEMA = Object.freeze({
   sensitiveKeys: [
-    "accessToken", "apiKey", "authorization", "authToken", "cookie", "csrfToken",
-    "idToken", "jwt", "password", "privateKey", "refreshToken", "secret", "seed",
-    "session", "setCookie", "token", "userInfo", "accountNumber", "bankAccount",
-    "cardNumber", "iban", "paymentId", "routingNumber", "walletAddress", "walletPublicKey",
-    "answer", "assessment", "courseContent", "lessonContent", "learningData", "prompt",
-    "question", "quizAnswer", "studentAnswer",
+    "accessToken", "apiKey", "authorization", "authToken", "cookie", "cookies",
+    "csrfToken", "idToken", "jwt", "password", "privateKey", "query",
+    "query_string", "refreshToken", "secret", "seed", "session", "setCookie",
+    "token", "userInfo", "accountNumber", "bankAccount", "cardNumber", "iban",
+    "paymentId", "routingNumber", "walletAddress", "walletPublicKey", "answer",
+    "assessment", "courseContent", "lessonContent", "learningData", "prompt",
+    "question", "quizAnswer", "studentAnswer", "url", "href", "path",
   ],
   maxDepth: 8,
   maxEntries: 500,
@@ -41,7 +43,8 @@ function scrubString(value: string): string {
     .replace(BEARER_REGEX, "Bearer [redacted-token]")
     .replace(JWT_REGEX, "[redacted-token]")
     .replace(EMAIL_REGEX, "[redacted-email]")
-    .replace(PHONE_REGEX, "[redacted-phone]");
+    .replace(PHONE_REGEX, "[redacted-phone]")
+    .replace(URL_REGEX, "[redacted-url]");
 
   scrubbed = scrubbed.replace(
     /([?&](?:access[_-]?token|api[_-]?key|auth(?:orization)?|cookie|email|password|phone|refresh[_-]?token|secret|session|token|user[_-]?id|wallet[_-]?address)=)[^&#\s]+/gi,
@@ -91,17 +94,41 @@ function scrubValue(value: unknown, state: ScrubState, depth: number): unknown {
 
 export function scrubSentryEvent(event: unknown): unknown {
   if (!event || typeof event !== "object") return event;
-  const scrubbed = scrubValue(event, { entries: 0, seen: new WeakMap() }, 0) as Record<string, unknown>;
+  const scrubbed = scrubValue(
+    event,
+    { entries: 0, seen: new WeakMap() },
+    0
+  ) as Record<string, unknown>;
 
-  if (scrubbed.request && typeof scrubbed.request === "object") {
-    const request = scrubbed.request as Record<string, unknown>;
-    if (request.cookies) request.cookies = {};
+  if (Array.isArray(scrubbed.breadcrumbs)) {
+    scrubbed.breadcrumbs = scrubbed.breadcrumbs.map((crumb) => {
+      if (!crumb || typeof crumb !== "object") return crumb;
+      const { data } = crumb as Record<string, unknown>;
+      return data && typeof data === "object" ? { data } : {};
+    });
+  }
+
+  if (scrubbed.exception && typeof scrubbed.exception === "object") {
+    const exception = scrubbed.exception as Record<string, unknown>;
+    if (Array.isArray(exception.values)) {
+      exception.values = exception.values.map((value) => ({
+        type:
+          value &&
+          typeof value === "object" &&
+          typeof (value as Record<string, unknown>).type === "string"
+            ? (value as Record<string, unknown>).type
+            : "Error",
+      }));
+    }
   }
 
   if (scrubbed.user && typeof scrubbed.user === "object") {
     const user = scrubbed.user as Record<string, unknown>;
     scrubbed.user = user.id != null ? { id: user.id } : {};
   }
+
+  delete scrubbed.message;
+  delete scrubbed.request;
 
   return scrubbed;
 }
