@@ -278,7 +278,7 @@ export default function EarningsPage() {
                         poppins_500.className,
                         "rounded-lg px-3 py-1.5 text-sm transition-all",
                         chartRange === range
-                          ? "bg-accent text-white shadow-sm"
+                          ? "bg-accent-card text-white shadow-sm"
                           : "border border-accent/15 bg-surface text-ink-muted hover:border-secondary/40 hover:text-ink"
                       )}
                     >

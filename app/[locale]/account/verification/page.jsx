@@ -374,7 +374,7 @@ export default function VerificationPage() {
               <Button
                 round
                 onClick={handleRefresh}
-                className="mt-2 bg-accent px-5 text-sm text-white hover:bg-highlight"
+                className="mt-2 bg-accent-card px-5 text-sm text-white hover:bg-highlight"
               >
                 <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
                 Try again
@@ -536,7 +536,7 @@ export default function VerificationPage() {
                       round
                       onClick={handleCta}
                       data-testid="empty-panel-cta-btn"
-                      className="mt-2 bg-accent px-6 text-sm text-white hover:bg-highlight"
+                      className="mt-2 bg-accent-card px-6 text-sm text-white hover:bg-highlight"
                     >
                       <BadgeCheck className="mr-1.5 h-4 w-4" aria-hidden="true" />
                       Start verification

@@ -55,13 +55,6 @@ The previously excluded Modal (#82), reader keyboard navigation (#86), and reels
 
 ## Known gaps
 
-- **Dark-mode `bg-accent` text contrast** — `--color-accent: #5aa83e` in dark
-  mode fails AA for `bg-accent text-white` (2.96:1). The token cannot satisfy
-  both white-on-fill and bright-text-on-dark requirements, so the flagged
-  surfaces were migrated to a new constant token `--color-accent-card`
-  (`#265902`, white = 8.36:1 in both themes). Roughly 51 other `bg-accent
-  text-white` usages remain; migrating them is coordinated with the theming
-  token work, not this branch.
 - **Video captions** — user-generated reels have no caption tracks; the
   `media-has-caption` rule is suppressed per element with the video given an
   `aria-label`. Adding caption support is a product decision.

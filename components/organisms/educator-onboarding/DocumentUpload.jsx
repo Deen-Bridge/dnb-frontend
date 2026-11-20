@@ -472,7 +472,7 @@ export default function DocumentUpload({
           onClick={onComplete}
           disabled={!allRequiredUploaded}
           data-testid="documents-continue"
-          className="ml-auto rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="ml-auto rounded-full bg-accent-card px-5 py-2 text-sm font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           Continue
         </button>

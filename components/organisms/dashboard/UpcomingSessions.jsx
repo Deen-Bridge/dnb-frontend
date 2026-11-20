@@ -72,7 +72,7 @@ const UpcomingSessions = () => {
                     ))}
                 </ul>
             )}
-            <Button wide round className="mt-4 bg-accent text-white py-2 text-sm font-stretch-125%" to="/dashboard/spaces">View Upcomings</Button>
+            <Button wide round className="mt-4 bg-accent-card text-white py-2 text-sm font-stretch-125%" to="/dashboard/spaces">View Upcomings</Button>
         </div>
     );
 };

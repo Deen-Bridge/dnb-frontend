@@ -121,7 +121,7 @@ export default function BlogPage() {
                                 alt={post.title}
                                 className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                             />
-                            <span className="absolute top-4 left-4 bg-accent text-white text-xs px-3 py-1 rounded-full shadow font-semibold">
+                            <span className="absolute top-4 left-4 bg-accent-card text-white text-xs px-3 py-1 rounded-full shadow font-semibold">
                                 {new Date(post.date).toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",

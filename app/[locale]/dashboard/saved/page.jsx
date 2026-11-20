@@ -110,7 +110,7 @@ export default function SavedPage() {
           variant={activeTab === "courses" ? "default" : "outline"}
           className={cn(
             "rounded-full",
-            activeTab === "courses" && "bg-accent text-white hover:bg-accent/90"
+            activeTab === "courses" && "bg-accent-card text-white hover:bg-accent/90"
           )}
           onClick={() => setActiveTab("courses")}
         >
@@ -121,7 +121,7 @@ export default function SavedPage() {
           variant={activeTab === "books" ? "default" : "outline"}
           className={cn(
             "rounded-full",
-            activeTab === "books" && "bg-accent text-white hover:bg-accent/90"
+            activeTab === "books" && "bg-accent-card text-white hover:bg-accent/90"
           )}
           onClick={() => setActiveTab("books")}
         >

@@ -346,7 +346,7 @@ function ReconciliationContent() {
         <Button
           type="submit"
           disabled={isLoading || !from || !to}
-          className="rounded-full bg-accent text-white hover:bg-accent/90 w-full sm:w-auto"
+          className="rounded-full bg-accent-card text-white hover:bg-accent/90 w-full sm:w-auto"
         >
           <Scale className="mr-1 h-4 w-4" aria-hidden="true" />
           {isLoading ? "Reconciling…" : "Reconcile"}
