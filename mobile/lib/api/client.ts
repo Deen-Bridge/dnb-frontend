@@ -5,6 +5,13 @@ import { API_ENDPOINTS } from "./endpoints";
 
 const TOKEN_KEY = "auth_access_token";
 const REFRESH_TOKEN_KEY = "auth_refresh_token";
+type AccessTokenRefresher = () => Promise<string>;
+let accessTokenRefresher: AccessTokenRefresher | null = null;
+
+/** Register the provider-owned refresh path used by Firebase sessions. */
+export function setAccessTokenRefresher(refresher: AccessTokenRefresher | null): void {
+  accessTokenRefresher = refresher;
+}
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -63,22 +70,11 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
-      if (!refreshToken) {
-        throw new Error("No refresh token");
-      }
-
-      const { data } = await axios.post(
-        `${API_BASE_URL}${API_ENDPOINTS.auth.refresh}`,
-        { refreshToken }
-      );
-
-      const newToken = data.accessToken;
+      const newToken = accessTokenRefresher
+        ? await accessTokenRefresher()
+        : await refreshBackendToken();
+      if (!newToken) throw new Error("Token refresh returned no access token");
       await SecureStore.setItemAsync(TOKEN_KEY, newToken);
-
-      if (data.refreshToken) {
-        await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, data.refreshToken);
-      }
 
       processQueue(null, newToken);
 
@@ -97,10 +93,19 @@ apiClient.interceptors.response.use(
 
 export async function storeTokens(
   accessToken: string,
-  refreshToken: string
+  refreshToken?: string
 ): Promise<void> {
   await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
-  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+  if (refreshToken) await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+  else await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+}
+
+async function refreshBackendToken(): Promise<string> {
+  const refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+  if (!refreshToken) throw new Error("No configured token refresh provider");
+  const { data } = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.auth.refresh}`, { refreshToken });
+  if (data.refreshToken) await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, data.refreshToken);
+  return data.accessToken;
 }
 
 export async function getAccessToken(): Promise<string | null> {
