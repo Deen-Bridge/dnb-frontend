@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint app components lib hooks contexts types __tests__ e2e",
     "lint:any": "node scripts/check-explicit-any.mjs",
+    "check:image-hosts": "node scripts/check-image-host-allowlist.mjs",
     "a11y": "eslint --config eslint.config.a11y.mjs components app",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run",

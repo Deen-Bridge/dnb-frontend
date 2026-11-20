@@ -42,6 +42,9 @@ jobs:
       # loses its `-- <reason>` justification.
       - name: Guard explicit-any count
         run: npm run lint:any
+
+      - name: Guard production image host allowlist
+        run: npm run check:image-hosts
       
       - name: Run component tests
         run: npm test
