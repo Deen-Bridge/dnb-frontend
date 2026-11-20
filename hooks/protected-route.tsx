@@ -2,20 +2,23 @@
 import React, { useEffect, PropsWithChildren } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Loader from "@/components/molecules/loaders/rootLoader";
+import { loginRedirectPath } from "@/lib/auth/safeRedirect";
 
 export interface ProtectedRouteProps extends PropsWithChildren {}
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     // Only redirect if we're done loading AND user is not authenticated
     if (!loading && !isAuthenticated) {
-      router.push("/login");
+      router.replace(loginRedirectPath(pathname));
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, pathname, router]);
 
   // Show loader while checking authentication
   if (loading) {

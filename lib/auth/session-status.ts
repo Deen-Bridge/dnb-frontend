@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { loginRedirectPath } from "@/lib/auth/safeRedirect";
 
 export const SESSION_END_REASONS = Object.freeze({
   SESSION_EXPIRED: "expired",
@@ -52,7 +53,10 @@ export function reasonMessage(reason: unknown): ReasonCopy | null {
 
 export function loginUrlWithReason(reason: string): string {
   const key = normalizeReason(reason);
-  return key ? `/login?reason=${key}` : "/login";
+  return loginRedirectPath(
+    typeof window === "undefined" ? "/" : window.location.pathname,
+    key
+  );
 }
 
 export function decodeJwt(token: unknown): Record<string, any> | null { // TODO(types): Decoded arbitrary JWT claims dictionary
