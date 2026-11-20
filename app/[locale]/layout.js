@@ -15,6 +15,7 @@ import {
   siteDescription,
   isProduction,
 } from "@/lib/config/site.config";
+import { canonicalPath, localeAlternates } from "@/lib/seo/metadataPolicy";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,11 +65,8 @@ export async function generateMetadata({ params }) {
     creator: siteName,
     publisher: siteName,
     alternates: {
-      canonical: isArabic ? "/ar" : "/",
-      languages: {
-        en: "/",
-        ar: "/ar",
-      },
+      canonical: canonicalPath(locale),
+      languages: localeAlternates(),
     },
     robots: isProduction
       ? {
