@@ -64,10 +64,13 @@ describe("production admin action integrations", () => {
     await expect(
       setMaintenanceState({ enabled: true, message: "Back soon", actor: { id: "spoof" } })
     ).resolves.toEqual(response);
-    expect(axios.get).toHaveBeenCalledWith("/api/admin/maintenance");
+    expect(axios.get).toHaveBeenCalledWith("/api/admin/maintenance", {
+      headers: { "Cache-Control": "no-cache" },
+    });
     expect(axios.put).toHaveBeenCalledWith("/api/admin/maintenance", {
       enabled: true,
       message: "Back soon",
+      etaAt: null,
     });
   });
 

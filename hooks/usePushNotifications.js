@@ -96,8 +96,13 @@ export function usePushNotifications() {
         if (active) setSubscribed(Boolean(sub));
       })
       .catch(() => {});
+    const refreshPermission = () => setPermission(getNotificationPermission());
+    window.addEventListener("focus", refreshPermission);
+    document.addEventListener("visibilitychange", refreshPermission);
     return () => {
       active = false;
+      window.removeEventListener("focus", refreshPermission);
+      document.removeEventListener("visibilitychange", refreshPermission);
     };
   }, []);
 

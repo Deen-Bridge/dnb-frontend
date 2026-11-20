@@ -260,6 +260,33 @@ describe("LoginForm", () => {
     expect(window.location.href).toBe("");
   });
 
+  it("routes an admin to the admin dashboard after Google sign-in", async () => {
+    loginWithGoogleMock.mockResolvedValue({ role: "admin" });
+    render(<LoginForm />);
+
+    const user = userEvent.setup();
+    await act(async () => {
+      await user.click(screen.getByRole("button", { name: /continue with google/i }));
+    });
+
+    await waitFor(() => expect(routerReplaceMock).toHaveBeenCalledWith("/admin"));
+    expect(window.location.href).toBe("");
+  });
+
+  it("does not navigate when the Google exchange is rejected", async () => {
+    loginWithGoogleMock.mockResolvedValue(null);
+    render(<LoginForm />);
+
+    const user = userEvent.setup();
+    await act(async () => {
+      await user.click(screen.getByRole("button", { name: /continue with google/i }));
+    });
+
+    await waitFor(() => expect(loginWithGoogleMock).toHaveBeenCalledWith("google-id-token"));
+    expect(routerReplaceMock).not.toHaveBeenCalled();
+    expect(window.location.href).toBe("");
+  });
+
   it("disables the Stellar button when the SEP-10 endpoint is unavailable", () => {
     stellarState.stellarAuthAvailable = false;
     render(<LoginForm />);
