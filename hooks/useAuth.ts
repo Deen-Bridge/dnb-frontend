@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
 import { User } from "@/types/api";
+import { AUTH_EVENTS, broadcastAuthEvent } from "@/lib/auth/authSync";
 
 const COOKIE_OPTIONS = { expires: 1, path: "/" };
 
@@ -22,6 +23,7 @@ export const persistSession = (token: string, user: any): any => { // TODO(types
   Cookies.set("userInfo", JSON.stringify(user), COOKIE_OPTIONS);
 
   __triggerAuthUpdate(user);
+  broadcastAuthEvent(AUTH_EVENTS.LOGIN, user._id ?? user.id ?? null);
 
   return user;
 };

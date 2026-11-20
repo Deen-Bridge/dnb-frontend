@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { AUTH_EVENTS, broadcastAuthEvent, listenForAuthEvents } from "@/lib/auth/authSync";
 
 const AuthContext = createContext(null);
 
@@ -66,6 +67,24 @@ export default function AuthProvider({ children }) {
     };
   }, [setAuthState]);
 
+  useEffect(() => listenForAuthEvents((event) => {
+    if (event.type === AUTH_EVENTS.LOGIN) {
+      try {
+        const raw = Cookies.get("userInfo");
+        if (raw) setAuthState(JSON.parse(raw));
+      } catch {
+        setAuthState(null);
+      }
+      return;
+    }
+    if (event.type === AUTH_EVENTS.LOGOUT || event.type === AUTH_EVENTS.SESSION_REVOKED) {
+      Cookies.remove("authToken", { path: "/" });
+      Cookies.remove("userInfo", { path: "/" });
+      setAuthState(null);
+      router.push("/");
+    }
+  }), [router, setAuthState]);
+
   // Anonymous error-tracking context: id only, never email or name.
   useEffect(() => {
     let active = true;
@@ -84,6 +103,7 @@ export default function AuthProvider({ children }) {
   const logout = useCallback(() => {
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
+    broadcastAuthEvent(AUTH_EVENTS.LOGOUT, user?._id ?? null);
     setUser(null);
     setIsAuthenticated(false);
 
