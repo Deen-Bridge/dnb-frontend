@@ -58,25 +58,35 @@ export default function ContactPage() {
     topic: topics[0],
     message: "",
   });
+  const [submission, setSubmission] = useState({ state: "idle", message: "", requestId: "" });
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
-  /* The old form only called preventDefault, so every message was silently
-     dropped. There is no contact endpoint on the backend, so compose a real
-     mail instead of pretending to send one. */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmission({ state: "sending", message: "", requestId: "" });
+    const idempotencyKey = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${form.email}`;
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
+        body: JSON.stringify({ ...form, website: "" }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok) {
+        setSubmission({ state: "success", message: "Your request was received. We’ll get back to you soon.", requestId: result.requestId || "" });
+        return;
+      }
+      setSubmission({ state: "error", message: result.error || "We could not send your request.", requestId: result.requestId || "" });
+    } catch {
+      setSubmission({ state: "error", message: "We could not reach support. You can use the email fallback below.", requestId: "" });
+    }
+  };
+
+  const openMailFallback = () => {
     const subject = `[${form.topic}] from ${form.name || "a visitor"}`;
-    const body = [
-      `Name: ${form.name}`,
-      `Email: ${form.email}`,
-      `Topic: ${form.topic}`,
-      "",
-      form.message,
-    ].join("\n");
-    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+    const body = [`Name: ${form.name}`, `Email: ${form.email}`, `Topic: ${form.topic}`, "", form.message].join("\n");
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const field =
@@ -354,7 +364,7 @@ export default function ContactPage() {
                   type="submit"
                   className="w-full bg-gradient-to-r from-accent to-highlight hover:from-highlight hover:to-accent text-white py-4 text-base font-bold shadow-lg transition-all hover:shadow-xl"
                 >
-                  Send message
+                  {submission.state === "sending" ? "Sending…" : "Send message"}
                 </Button>
 
                 <p
@@ -363,8 +373,14 @@ export default function ContactPage() {
                     "text-center text-xs text-ink-muted/80"
                   )}
                 >
-                  This opens your email app with the message ready to send.
+                  {submission.state === "success" ? submission.message : submission.message || "Your message is sent through our support channel. We do not store sensitive content in browser logs."}
                 </p>
+                {submission.state === "error" ? (
+                  <button type="button" onClick={openMailFallback} className="mx-auto block text-sm text-highlight underline underline-offset-4">
+                    Use email fallback instead
+                  </button>
+                ) : null}
+                {submission.requestId ? <p className="text-center text-xs text-ink-muted">Request ID: {submission.requestId}</p> : null}
               </form>
             </div>
           </div>
