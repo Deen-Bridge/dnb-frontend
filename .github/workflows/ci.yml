@@ -32,6 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
@@ -110,6 +112,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       # #489 -- Browser binaries are cached per installed Playwright version
       # (read from the resolved node_modules/@playwright/test entry, i.e. the
@@ -179,6 +183,17 @@ jobs:
         env:
           E2E_PORT: 3123
 
+      - name: Run production smoke contract
+        run: npm run test:e2e:smoke
+        env:
+          SMOKE_BASE_URL: http://localhost:3123
+          SMOKE_RUN_ID: ci-${{ github.run_id }}
+
+      - name: Verify security headers
+        run: npm run check:security-headers
+        env:
+          SECURITY_HEADERS_URL: http://localhost:3123
+
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
@@ -200,6 +215,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       - name: Validate production preflight profile
         run: npm run release:check
@@ -208,7 +225,7 @@ jobs:
           NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
           NEXT_PUBLIC_STELLAR_NETWORK: mainnet
           NEXT_PUBLIC_USDC_ISSUER: GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
-      
+
       - name: Build application
         run: npm run build
         env:
@@ -234,3 +251,12 @@ jobs:
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: ./lighthouserc.json
+          uploadArtifacts: true
+
+      - name: Run Lighthouse CI (mobile)
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        env:
+          LHCI_COLLECT_SETTINGS__PRESET: mobile
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
