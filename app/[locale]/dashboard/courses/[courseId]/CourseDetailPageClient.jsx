@@ -98,6 +98,8 @@ export default function CourseDetailClient({ course }) {
 
   const {
     progress,
+    syncStatus,
+    retrySync,
     reportProgress,
     resetProgress,
     resumeTime,
@@ -383,6 +385,18 @@ export default function CourseDetailClient({ course }) {
                       </span>
                     </div>
                     <Progress value={progress.percent} className="h-1.5" />
+                    {(syncStatus === "offline" || syncStatus === "error") && (
+                      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-ink-muted">
+                        <span>
+                          {syncStatus === "offline"
+                            ? "Progress is saved on this device and will sync when available."
+                            : "Progress sync needs attention."}
+                        </span>
+                        <Button round outlined className="px-3 py-1 text-xs" onClick={() => void retrySync()}>
+                          Retry sync
+                        </Button>
+                      </div>
+                    )}
                   </Panel>
                 )}
               </div>

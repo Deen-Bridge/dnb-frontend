@@ -38,7 +38,6 @@ export default function RecentActivityFeed() {
           </CardTitle>
           <CardDescription>Latest platform events, refreshed every 30 seconds.</CardDescription>
         </div>
-        {/* Stub: dedicated activity page is not built yet; reuse activity monitor. */}
         <Link href="/admin/activity-monitor" className="text-sm text-primary hover:underline">
           View all
         </Link>
@@ -51,9 +50,10 @@ export default function RecentActivityFeed() {
             <Skeleton className="h-6 w-full" />
           </div>
         ) : error && events.length === 0 ? (
-          <p role="alert" className="text-sm text-destructive">
-            {error}
-          </p>
+          <div role="alert" data-testid="activity-unavailable" className="space-y-2 text-sm text-destructive">
+            <p>{error}</p>
+            <p className="text-xs text-muted-foreground">The server did not return activity data. Try again shortly.</p>
+          </div>
         ) : events.length === 0 ? (
           <p className="text-sm text-muted-foreground">No recent activity yet.</p>
         ) : (

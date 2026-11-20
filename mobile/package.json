@@ -10,6 +10,8 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test:locales": "node scripts/validate-locales.mjs",
+    "verify:release": "node scripts/verify-release-config.mjs",
     "config:check": "node scripts/validate-mobile-config.mjs",
     "config:test": "node --test scripts/validate-mobile-config.test.mjs"
   },

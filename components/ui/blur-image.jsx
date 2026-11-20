@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useMediaBlurContext } from "@/contexts/MediaBlurContext";
+import { safeMediaUrl } from "@/lib/media/safeMediaUrl";
 
 /**
  * Blurred media wrapper (#268)
@@ -64,6 +65,7 @@ export default function BlurImage({
   }, [shouldBlur]);
 
   const isBlurred = shouldBlur && !revealed;
+  const safeSrc = safeMediaUrl(src);
 
   return (
     <div
@@ -88,9 +90,9 @@ export default function BlurImage({
       }}
     >
       {/* Main content — either a Next.js Image or arbitrary children */}
-      {children ?? (
+      {children ?? (safeSrc ? (
         <Image
-          src={src}
+          src={safeSrc}
           alt={alt}
           width={width}
           height={height}
@@ -101,7 +103,11 @@ export default function BlurImage({
           draggable={!isBlurred}
           {...rest}
         />
-      )}
+      ) : (
+        <div className="flex min-h-24 items-center justify-center bg-muted text-xs text-muted-foreground" role="img" aria-label={alt}>
+          Media unavailable
+        </div>
+      ))}
 
       {/* Overlay that covers the blurred content */}
       {isBlurred && (
