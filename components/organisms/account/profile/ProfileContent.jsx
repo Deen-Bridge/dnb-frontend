@@ -43,10 +43,9 @@ const ProfileContent = ({ selectedTab, profileId }) => {
 
 export default ProfileContent;
 
-// Temporary placeholder components
-const Placeholder = ({ title }) => (
-  <div className="p-6 text-center text-ink-muted text-lg">
-    No {title} yet. Stay tuned!
+const Placeholder = ({ title, profileId }) => (
+  <div className="p-6 text-center text-ink-muted text-lg" role="status" aria-live="polite">
+    {profileId ? `No ${title} are available for this profile.` : "This profile is unavailable."}
   </div>
 );
 
@@ -58,26 +57,27 @@ const CoursesTab = ({ profileId }) => {
 
   useEffect(() => {
     if (loading) return;
+    let cancelled = false;
     const getCourses = async () => {
       setIsLoading(true);
       setError(null);
+      setUserCourses([]);
       try {
         if (profileId) {
           const data = await fetchUserCourses(profileId);
-          setUserCourses(data);
+          if (!cancelled) setUserCourses(data);
         } else {
-          userCourses([]);
-          setError("User not found or not logged in");
+          setError("This profile is unavailable.");
         }
       } catch (err) {
-        setUserCourses([]);
-        setError("Failed to fetch courses. Please check your connection.");
+        if (!cancelled) setError("Failed to load courses. Try again.");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     getCourses();
-  }, [loading]);
+    return () => { cancelled = true; };
+  }, [loading, profileId]);
 
   if (error) {
     return (
@@ -110,7 +110,7 @@ const CoursesTab = ({ profileId }) => {
           <CourseCard key={course.id || course._id || index} course={course} />
         ))
       ) : (
-        <Placeholder title="courses" />
+        <Placeholder title="courses" profileId={profileId} />
       )}
     </div>
   );
@@ -182,26 +182,28 @@ const SpaceTab = ({ profileId }) => {
 
   useEffect(() => {
     if (loading) return;
+    let cancelled = false;
     const getSpaces = async () => {
       setIsLoading(true);
       setError(null);
+      setUserSpaces([]);
       try {
         if (profileId) {
           const data = await fetchUserSpaces(profileId);
-          setUserSpaces(data.spaces || []);
+          if (!cancelled) setUserSpaces(data.spaces || []);
         } else {
           setUserSpaces([]);
-          setError("User not found or not logged in");
+          setError("This profile is unavailable.");
         }
       } catch (err) {
-        setUserSpaces([]);
-        setError("Failed to fetch spaces. Please check your connection.");
+        if (!cancelled) setError("Failed to load spaces. Try again.");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     getSpaces();
-  }, [loading]);
+    return () => { cancelled = true; };
+  }, [loading, profileId]);
 
   if (error) {
     return (
@@ -234,7 +236,7 @@ const SpaceTab = ({ profileId }) => {
           <SpaceCard key={space.id || space._id || index} space={space} />
         ))
       ) : (
-        <Placeholder title="spaces" />
+        <Placeholder title="spaces" profileId={profileId} />
       )}
     </div>
   );
@@ -339,7 +341,7 @@ const FollowersTab = ({ profileId }) => {
           ))}
         </div>
       ) : (
-        <Placeholder title="followers" />
+        <Placeholder title="followers" profileId={profileId} />
       )}
     </div>
   );
@@ -445,7 +447,7 @@ const FollowingTab = ({ profileId }) => {
           ))}
         </div>
       ) : (
-        <Placeholder title="following" />
+        <Placeholder title="following" profileId={profileId} />
       )}
     </div>
   );
