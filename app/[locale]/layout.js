@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Toaster } from "sonner";
 import AppProviders from "@/components/providers/AppProviders";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { appearanceInitScript } from "@/lib/config/appearance.config";
 import { ibmPlexArabic } from "@/lib/config/font.config";
 import { routing } from "@/i18n/routing";
@@ -15,6 +16,7 @@ import {
   siteDescription,
   isProduction,
 } from "@/lib/config/site.config";
+import { canonicalPath, localeAlternates } from "@/lib/seo/metadataPolicy";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,11 +66,8 @@ export async function generateMetadata({ params }) {
     creator: siteName,
     publisher: siteName,
     alternates: {
-      canonical: isArabic ? "/ar" : "/",
-      languages: {
-        en: "/",
-        ar: "/ar",
-      },
+      canonical: canonicalPath(locale),
+      languages: localeAlternates(),
     },
     robots: isProduction
       ? {
@@ -192,10 +191,7 @@ export default async function LocaleLayout({ children, params }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: appearanceInitScript() }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+        <JsonLd data={structuredData} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.variable} antialiased${

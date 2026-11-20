@@ -3,7 +3,7 @@
  * MaintenanceGate — layout-level, client-side maintenance gate (#303).
  * ---------------------------------------------------------------------------
  * WHY A LAYOUT GATE, NOT MIDDLEWARE: auth in this app is entirely CLIENT-SIDE
- * (a JWT in a cookie decoded by `useAuth`), so a Next.js `middleware.js` running
+ * (a JWT in a cookie decoded by `useAuth`), so a Next.js `proxy.js` running
  * on the edge cannot reliably tell an admin apart from a learner — it would
  * either lock admins out or leak the app to everyone. Instead this gate is a
  * client provider mounted once in `AppProviders`, so it re-evaluates the flag on
