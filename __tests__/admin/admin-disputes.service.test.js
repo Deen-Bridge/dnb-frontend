@@ -45,8 +45,12 @@ describe("admin-disputes service", () => {
 
     const result = await fetchDisputeEvidenceSignedUrl("dsp_001", "ev_001");
 
-    expect(result.success).toBe(false);
-    expect(result.signedUrl).toBe("");
+    expect(result).toEqual({
+      success: false,
+      signedUrl: "",
+      expiresAt: "",
+      error: "Failed to fetch signed URL",
+    });
   });
 
   it("loads disputes with server-side pagination and status", async () => {
@@ -119,5 +123,20 @@ describe("admin-disputes service", () => {
 
     expect(result.success).toBe(true);
     expect(result.evidence.fileName).toBe("document.pdf");
+  });
+
+  it("does not report a successful upload when the endpoint is unavailable", async () => {
+    axiosInstance.post.mockRejectedValueOnce({
+      response: { status: 404 },
+    });
+
+    const result = await uploadAdminDisputeEvidence("dsp_001", {
+      note: "Admin review note",
+    });
+
+    expect(result).toEqual({
+      success: false,
+      error: "Failed to upload evidence",
+    });
   });
 });
