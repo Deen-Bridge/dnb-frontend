@@ -9,23 +9,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { updateReelPoster } from "@/lib/actions/reels-action";
 
+const patch = vi.fn();
+vi.mock("@/lib/config/axios.config", () => ({ default: { patch } }));
+
 describe("updateReelPoster()", () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    vi.clearAllMocks();
+    patch.mockResolvedValue({ data: { reel: { id: "reel-1", poster: "https://res.cloudinary.com/demo/image/upload/reel-1.jpg", updatedAt: "2026-01-01T00:00:00.000Z" } } });
   });
 
   it("resolves with the reel id, poster url, and an updatedAt timestamp", async () => {
-    const promise = updateReelPoster("reel-1", {
+    const result = await updateReelPoster("reel-1", {
       posterUrl: "https://res.cloudinary.com/demo/image/upload/reel-1.jpg",
     });
-    await vi.advanceTimersByTimeAsync(500);
-    const result = await promise;
 
     expect(result.reel.id).toBe("reel-1");
     expect(result.reel.poster).toBe(
       "https://res.cloudinary.com/demo/image/upload/reel-1.jpg"
     );
     expect(typeof result.reel.updatedAt).toBe("string");
+    expect(patch).toHaveBeenCalledWith("/api/reels/reel-1/poster", { posterUrl: result.reel.poster });
   });
 
   it("rejects when posterUrl is missing", async () => {
@@ -40,13 +43,8 @@ describe("updateReelPoster()", () => {
     ).rejects.toThrow(/poster url is required/i);
   });
 
-  it("keeps separate reels' posters independent", async () => {
-    const p1 = updateReelPoster("reel-1", { posterUrl: "https://cdn/one.jpg" });
-    const p2 = updateReelPoster("reel-2", { posterUrl: "https://cdn/two.jpg" });
-    await vi.advanceTimersByTimeAsync(500);
-    const [r1, r2] = await Promise.all([p1, p2]);
-
-    expect(r1.reel.poster).toBe("https://cdn/one.jpg");
-    expect(r2.reel.poster).toBe("https://cdn/two.jpg");
+  it("rejects unapproved poster origins before making a request", async () => {
+    await expect(updateReelPoster("reel-1", { posterUrl: "https://evil.example/poster.jpg" })).rejects.toThrow(/Cloudinary/i);
+    expect(patch).not.toHaveBeenCalled();
   });
 });

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   resolveSafeCallbackRedirect,
   resolveSafeRedirectTarget,
+  resolveSafeDeepLink,
 } from "@/lib/auth/safeRedirect";
 
 describe("resolveSafeRedirectTarget (#568)", () => {
@@ -44,5 +45,11 @@ describe("resolveSafeRedirectTarget (#568)", () => {
       "/admin"
     );
     expect(resolveSafeCallbackRedirect(undefined, "/admin")).toBe("/admin");
+  });
+
+  it("adds locale and drops token-like deep-link query state", () => {
+    expect(resolveSafeDeepLink("/dashboard/courses/42?tab=reviews&token=secret", "ar"))
+      .toBe("/ar/dashboard/courses/42?tab=reviews");
+    expect(resolveSafeDeepLink("https://evil.example/phish", "en")).toBe("/dashboard");
   });
 });

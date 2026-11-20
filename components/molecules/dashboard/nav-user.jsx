@@ -1,13 +1,13 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-    BadgeCheck,
     Bell,
     CreditCard,
     ChevronsUpDown,
     LogOut,
     Sparkles,
-    SettingsIcon
+    SettingsIcon,
+    UserRound,
 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -36,9 +36,14 @@ import { useState } from "react"
 import Button from "@/components/atoms/form/Button"
 export function NavUser({
     user }) {
-    const { isMobile } = useSidebar();
+    const { isMobile, setOpenMobile } = useSidebar();
     const { user: currentUser, logout } = useAuth();
     const [modalOpen, setModalOpen] = useState(false);
+    const profileUser = currentUser || user;
+    const profileHref = profileUser?._id ? `/account/profile/${profileUser._id}` : null;
+    const handleProfileClick = () => {
+        if (isMobile) setOpenMobile(false);
+    };
     const upgrade = () => {
         setModalOpen(true);
     }
@@ -91,12 +96,14 @@ export function NavUser({
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <Link href={`/account/profile/${currentUser?._id}`}>
-                                    <DropdownMenuItem className="focus:text-ink-inverse">
-                                        <BadgeCheck className="text-ink" />
-                                        Account
+                                {profileHref ? (
+                                    <DropdownMenuItem asChild className="focus:text-ink-inverse">
+                                        <Link href={profileHref} aria-label="View profile" onClick={handleProfileClick}>
+                                            <UserRound className="text-ink" />
+                                            Profile
+                                        </Link>
                                     </DropdownMenuItem>
-                                </Link>
+                                ) : null}
                                 <DropdownMenuItem className="focus:text-ink-inverse">
                                     <CreditCard className="text-ink" />
                                     Billing

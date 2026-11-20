@@ -5,7 +5,7 @@ import { JitsiMeeting } from '@jitsi/react-sdk';
 
 const INITIALIZATION_TIMEOUT_MS = 20000;
 
-const getNormalizedDomain = (domain = 'meet.jit.si') =>
+const getNormalizedDomain = (domain) =>
   domain.replace(/^https?:\/\//i, '').replace(/\/+$/g, '');
 
 const getErrorMessage = (error) => {
@@ -26,12 +26,12 @@ const getErrorMessage = (error) => {
 const JitsiMeetComponent = ({
   roomName,
   displayName = 'Guest User',
-  domain = 'meet.jit.si',
+  domain,
   height = '80vh',
   onReadyToClose,
   className,
   jwt,
-  requiresJwt = false,
+  requiresJwt = true,
 }) => {
   const apiRef = useRef(null);
   const apiErrorListenerRef = useRef(null);

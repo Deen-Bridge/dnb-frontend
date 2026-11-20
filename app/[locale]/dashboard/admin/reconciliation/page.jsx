@@ -10,7 +10,7 @@
  * both the platform record and the on-chain explorer. Nothing here mutates
  * state.
  *
- * Layering mirrors the admin-team page: a stubbed service
+ * The page reads the authoritative reconciliation status endpoint
  * (`lib/actions/admin-reconciliation`) → a data hook (`useReconciliation`) →
  * this page, wrapped in `AdminTierGuard` (super-admin only).
  */
@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   ArrowUpRight,
   CheckCircle2,
+  Clock3,
   ExternalLink,
   Scale,
   SearchX,
@@ -69,6 +70,13 @@ const STATUS_META = {
   "amount-mismatch": {
     label: "Amount mismatch",
     icon: AlertTriangle,
+    badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+    rowClass: "bg-amber-500/5 hover:bg-amber-500/10",
+    highlighted: true,
+  },
+  pending: {
+    label: "Pending provider/ledger",
+    icon: Clock3,
     badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
     rowClass: "bg-amber-500/5 hover:bg-amber-500/10",
     highlighted: true,
@@ -369,6 +377,11 @@ function ReconciliationContent() {
           <SummaryStat
             label="amount mismatch"
             value={summary.mismatch}
+            className="bg-amber-500/10 text-amber-600 border-amber-500/20"
+          />
+          <SummaryStat
+            label="pending provider/ledger"
+            value={summary.pending}
             className="bg-amber-500/10 text-amber-600 border-amber-500/20"
           />
           <SummaryStat

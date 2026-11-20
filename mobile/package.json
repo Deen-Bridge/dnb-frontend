@@ -9,7 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:locales": "node scripts/validate-locales.mjs",
+    "verify:release": "node scripts/verify-release-config.mjs"
   },
   "dependencies": {
     "expo": "~52.0.0",

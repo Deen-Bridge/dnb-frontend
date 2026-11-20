@@ -2,7 +2,7 @@
 /**
  * useEmergencyBroadcast — data hook for the emergency-broadcast quick-action (#307).
  * ---------------------------------------------------------------------------
- * Loads the currently active emergency broadcast via the stubbed service in
+ * Loads the currently active emergency broadcast via the backend service in
  * `lib/actions/admin-emergency-broadcast` and exposes the immediate `send` /
  * `clear` mutations the admin quick-action page uses, so the page and the
  * learner-side `EmergencyBroadcastBanner` drive one code path and stay
