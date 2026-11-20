@@ -52,12 +52,10 @@ export default function AuthProvider({ children }) {
       const raw = Cookies.get("userInfo");
       if (raw) userInfo = JSON.parse(raw);
     } catch {
-      Cookies.remove("authToken", { path: "/" });
       Cookies.remove("userInfo", { path: "/" });
     }
 
-    const token = Cookies.get("authToken");
-    if (token && userInfo) {
+    if (userInfo) {
       if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
       setUser(userInfo);
       setIsAuthenticated(true);
@@ -85,8 +83,8 @@ export default function AuthProvider({ children }) {
   }, [user?._id]);
 
   const logout = useCallback(() => {
-    Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
+    axiosInstance.post("/api/auth/logout").catch(() => {});
     setUser(null);
     setIsAuthenticated(false);
     setCacheScope(null);
