@@ -1,0 +1,529 @@
+/**
+ * Streaming AI Chat Component
+ *
+ * A modern AI chat interface with real-time streaming responses
+ * and conversation history support.
+ */
+
+"use client";
+import { captureClientError } from "@/lib/sentry/captureClientError";
+import {
+  Bot,
+  CornerDownLeft,
+  Mic,
+  Paperclip,
+  ImageIcon,
+  StopCircle,
+  Sparkles,
+} from "lucide-react";
+import Button from "@/components/atoms/form/Button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
+import { useStreamingChat } from "@/hooks/useStreamingChat";
+import {
+  loadChatHistory,
+  loadChatMessages,
+} from "@/lib/actions/ai/load-chat-history";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import {
+  poppins_400,
+  poppins_500,
+  poppins_600,
+} from "@/lib/config/font.config";
+
+export default function StreamingAIChat({ chatData, onChatUpdate }) {
+  const { user } = useAuth();
+  const [inputMessage, setInputMessage] = useState("");
+  const messagesEndRef = useRef(null);
+
+  // Use the streaming chat hook
+  const {
+    messages,
+    isStreaming,
+    chatId,
+    sendMessage,
+    stopStreaming,
+    newConversation,
+    setMessagesFromHistory,
+  } = useStreamingChat(user?._id, chatData?.chatId);
+
+  // Sync with chatData from layout when sidebar selection changes
+  useEffect(() => {
+    if (chatData?.messages) {
+      setMessagesFromHistory(chatData.messages);
+    }
+  }, [chatData, setMessagesFromHistory]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Load chat history when user ID becomes available
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const loadHistory = async () => {
+      try {
+        // Load user's most recent chat if no chatData provided
+        if (!chatData) {
+          const data = await loadChatHistory(user._id);
+
+          if (data.chats && data.chats.length > 0) {
+            // Load the most recent chat
+            const latestChat = data.chats[0];
+
+            // Load the chat history messages
+            const history = await loadChatMessages(latestChat.chat_id);
+            setMessagesFromHistory(history);
+          }
+        }
+      } catch (error) {
+        captureClientError(error);
+      }
+    };
+
+    loadHistory();
+  }, [user?._id, chatData, setMessagesFromHistory]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!inputMessage.trim() || isStreaming) return;
+
+    const userMessage = inputMessage.trim();
+    setInputMessage("");
+
+    // Send message with streaming
+    const result = await sendMessage(userMessage);
+
+    // Notify layout about chat update if callback provided
+    if (result?.chatId && onChatUpdate) {
+      onChatUpdate(result.chatId);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  const handleNewConversation = () => {
+    newConversation();
+    if (onChatUpdate) {
+      onChatUpdate(null);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-surface">
+      <div className="grid flex-1 gap-4 overflow-y-auto">
+        <div className="relative flex flex-col rounded-2xl border border-accent/10 bg-surface-raised p-4 shadow-sm lg:col-span-2">
+          <div className="absolute right-3 top-3 flex gap-2">
+            <span
+              className={cn(
+                poppins_500,
+                "inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 text-xs text-accent"
+              )}
+            >
+              {isStreaming ? (
+                <span className="flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 animate-pulse" />
+                  Streaming...
+                </span>
+              ) : (
+                "Ready"
+              )}
+            </span>
+            {messages.length > 0 && (
+              <Button
+                onClick={handleNewConversation}
+                className={cn(poppins_500, "text-xs p-1.5 h-auto")}
+              >
+                New Chat
+              </Button>
+            )}
+          </div>
+
+          <div className="relative flex-1 overflow-y-auto mb-4 overscroll-auto">
+            {/* Welcome Screen - Show when no messages */}
+            {messages.length === 0 && !isStreaming && (
+              <div className="flex flex-col items-center justify-center h-full text-center px-4 py-8">
+                {/* AI Image with stunning effects */}
+                <div className="relative mb-8 group">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-highlight/20 rounded-full blur-2xl"></div>
+                    <div className="relative bg-gradient-to-br from-surface to-surface-raised p-2 rounded-full border-4 border-accent/30 shadow-2xl group-hover:scale-105 transition-transform duration-300">
+                      <Image
+                        src="/images/ai.png"
+                        alt="DeenBridge AI Assistant"
+                        width={140}
+                        height={140}
+                        className="rounded-full"
+                        priority
+                      />
+                    </div>
+                    <div className="absolute top-0 right-0 w-3 h-3 bg-accent rounded-full animate-ping"></div>
+                    <div
+                      className="absolute bottom-0 left-0 w-2 h-2 bg-highlight rounded-full animate-ping"
+                      style={{ animationDelay: "0.5s" }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Welcome Text with gradient */}
+                <div className="mb-10 space-y-4 max-w-2xl">
+                  <h1 className={cn(poppins_600, "text-5xl md:text-6xl mb-3")}>
+                    <span className="bg-gradient-to-r from-secondary via-highlight to-accent bg-clip-text text-transparent">
+                      Assalamu Alaikum!
+                    </span>
+                  </h1>
+                  <p
+                    className={cn(
+                      poppins_400,
+                      "text-lg md:text-xl text-ink-muted max-w-xl mx-auto leading-relaxed"
+                    )}
+                  >
+                    I&apos;m your Islamic AI assistant powered by knowledge of the{" "}
+                    <span className={cn(poppins_600, "text-ink")}>Quran</span> and{" "}
+                    <span className={cn(poppins_600, "text-highlight")}>Hadith</span>
+                    . Experience real-time streaming responses!
+                  </p>
+
+                  {/* AI Features badges */}
+                  <div className="flex flex-wrap gap-2 justify-center mt-6">
+                    <span
+                      className={cn(
+                        poppins_500,
+                        "px-3 py-1 bg-secondary/10 text-highlight text-xs rounded-full border border-highlight/20"
+                      )}
+                    >
+                      ⚡ Real-time Streaming
+                    </span>
+                    <span
+                      className={cn(
+                        poppins_500,
+                        "px-3 py-1 bg-secondary/10 text-highlight text-xs rounded-full border border-highlight/20"
+                      )}
+                    >
+                      📖 Islamic Knowledge
+                    </span>
+                    <span
+                      className={cn(
+                        poppins_500,
+                        "px-3 py-1 bg-secondary/10 text-highlight text-xs rounded-full border border-highlight/20"
+                      )}
+                    >
+                      💬 Conversation History
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quick Questions */}
+                <div className="w-full max-w-4xl">
+                  <h3
+                    className={cn(
+                      poppins_600,
+                      "text-sm text-ink-muted mb-4 uppercase tracking-wider"
+                    )}
+                  >
+                    Popular Questions
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                      {
+                        emoji: "🕌",
+                        question: "What are the 5 pillars of Islam?",
+                      },
+                      {
+                        emoji: "🤲",
+                        question: "Explain the importance of Salah",
+                      },
+                      {
+                        emoji: "✨",
+                        question: "Tell me about Prophet Muhammad ﷺ",
+                      },
+                      {
+                        emoji: "🌙",
+                        question: "What is the meaning of Ramadan?",
+                      },
+                      {
+                        emoji: "💧",
+                        question: "How do I perform Wudu?",
+                      },
+                      {
+                        emoji: "📖",
+                        question: "What are the benefits of reading Quran?",
+                      },
+                    ].map((item, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setInputMessage(item.question)}
+                        className="group relative p-5 text-left border border-accent/15 rounded-2xl hover:border-secondary/50 hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300 hover:-translate-y-1 bg-surface overflow-hidden"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                        <div className="relative flex items-start gap-3">
+                          <span className="text-3xl group-hover:scale-110 transition-transform duration-300">
+                            {item.emoji}
+                          </span>
+                          <span
+                            className={cn(
+                              poppins_500,
+                              "text-sm leading-relaxed flex-1 text-ink"
+                            )}
+                          >
+                            {item.question}
+                          </span>
+                        </div>
+
+                        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <svg
+                            className="w-4 h-4 text-ink"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 7l5 5m0 0l-5 5m5-5H6"
+                            />
+                          </svg>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Messages */}
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`mb-4 flex gap-3 items-start ${
+                  message.role === "user" ? "flex-row-reverse" : ""
+                }`}
+              >
+                {/* Avatar */}
+                <div className="flex-shrink-0">
+                  {message.role === "user" ? (
+                    <Avatar className="h-10 w-10 rounded-lg mt-2">
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
+                      <AvatarFallback
+                        className={cn(
+                          poppins_500,
+                          "bg-accent-card text-white text-sm"
+                        )}
+                      >
+                        {user?.name?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full mt-2 overflow-hidden">
+                      <Image
+                        src="/images/ai.png"
+                        alt="AI Assistant"
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Message Content */}
+                <div
+                  className={`p-4 rounded-xl max-w-[80%] ${
+                    message.role === "user"
+                      ? "bg-accent/10"
+                      : "border border-accent/10 bg-surface"
+                  } ${message.isStreaming ? "animate-pulse" : ""}`}
+                >
+                  {message.role === "assistant" ? (
+                    <div className="relative">
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => (
+                            <p className={cn(poppins_400, "text-sm mb-2 text-ink")}>
+                              {children}
+                            </p>
+                          ),
+                          h1: ({ children }) => (
+                            <h1 className={cn(poppins_600, "text-xl mb-2 text-ink")}>
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 className={cn(poppins_600, "text-lg mb-2 text-ink")}>
+                              {children}
+                            </h2>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 className={cn(poppins_600, "text-base mb-2 text-ink")}>
+                              {children}
+                            </h3>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className={cn(poppins_400, "list-disc pl-4 mb-2 text-ink")}>
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className={cn(poppins_400, "list-decimal pl-4 mb-2 text-ink")}>
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li className="mb-1">{children}</li>
+                          ),
+                          code: ({ children }) => (
+                            <code className="bg-accent/10 px-1 py-0.5 rounded text-xs">
+                              {children}
+                            </code>
+                          ),
+                          pre: ({ children }) => (
+                            <pre className="bg-accent/10 p-2 rounded text-xs overflow-x-auto mb-2">
+                              {children}
+                            </pre>
+                          ),
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                      {message.isStreaming && (
+                        <span className="inline-block w-2 h-4 bg-accent ml-1 animate-pulse"></span>
+                      )}
+                    </div>
+                  ) : (
+                    <p
+                      className={cn(
+                        poppins_400,
+                        "text-sm whitespace-pre-line text-ink"
+                      )}
+                    >
+                      {message.content}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {isStreaming &&
+              messages[messages.length - 1]?.role !== "assistant" && (
+                <div
+                  className={cn(
+                    poppins_400,
+                    "flex items-center gap-2 text-sm text-ink-muted bg-accent/10 p-4 rounded-xl w-fit"
+                  )}
+                >
+                  <Bot className="size-4 animate-bounce text-accent" />
+                  AI is thinking...
+                </div>
+              )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="bottom-0 overflow-hidden rounded-xl border border-accent/15 bg-surface focus-within:ring-1 focus-within:ring-secondary"
+          >
+            <Label htmlFor="message" className="sr-only">
+              Message
+            </Label>
+            <Textarea
+              id="message"
+              placeholder="Type your message here... (Press Enter to send)"
+              className={cn(
+                poppins_400,
+                "min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+              )}
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isStreaming}
+            />
+            <div className="flex justify-between items-center p-3 pt-0">
+              <div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="p-2 h-auto" disabled>
+                      <Paperclip className="size-4" />
+                      <span className="sr-only">Attach file</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    File attachments are not available yet
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="p-2 h-auto" disabled>
+                      <ImageIcon className="size-4" />
+                      <span className="sr-only">Attach Image</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Image attachments are not available yet
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="p-2 h-auto" disabled>
+                      <Mic className="size-4" />
+                      <span className="sr-only">Use Microphone</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Voice input is not available yet
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex gap-2">
+                {isStreaming && (
+                  <Button
+                    type="button"
+                    onClick={stopStreaming}
+                    round
+                    aria-label="Stop generating"
+                    className="text-sm gap-1.5 text-white flex bg-red-600 hover:bg-red-600/90"
+                  >
+                    <StopCircle className="size-3.5" />
+                  </Button>
+                )}
+                <Button
+                  round
+                  type="submit"
+                  aria-label="Send message"
+                  className="text-sm gap-1.5 text-white flex bg-accent-card hover:bg-highlight"
+                  disabled={isStreaming || !inputMessage.trim()}
+                >
+                  <CornerDownLeft className="size-3.5" />
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

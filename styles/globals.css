@@ -1,0 +1,496 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-brand-text: var(--brand-text);
+}
+
+:root {
+  --radius: 0.5rem;
+  /* El accent de marca es una superficie oscura fija y no sirve como color de
+     texto sobre fondo oscuro. El rol de texto vive aparte, con un valor por tema;
+     el selector de apariencia solo reescribe los dos de abajo. */
+  --brand-text-light: #046b30;
+  --brand-text-dark: #4ade80;
+  --brand-text: var(--brand-text-light);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.723 0.219 149.579);
+  --primary-foreground: oklch(0.141 0.005 285.823);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.723 0.219 149.579);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.723 0.219 149.579);
+  --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.723 0.219 149.579);
+}
+
+.dark {
+  --brand-text: var(--brand-text-dark);
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.75 0.16 152);
+  --primary-foreground: oklch(0.141 0.005 285.823);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.527 0.154 150.069);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.75 0.16 152);
+  --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.527 0.154 150.069);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* WCAG 2.4.7: every interactive element shows a visible keyboard-focus
+     indicator. Components with their own focus:ring/focus-visible:ring
+     utilities win this cascade; this is the safety net for everything else
+     (links, custom buttons, textareas, etc.). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* WCAG 2.4.7 – High-contrast focus ring override for dark mode admin chrome.
+     The default ring color is too low-contrast on dark backgrounds; a white
+     ring is immediately visible against any dark surface. */
+  .dark :focus-visible {
+    outline-color: oklch(0.985 0 0);
+  }
+}
+
+@theme {
+  --color-basic: #092601;
+  --color-secondary: #009900;
+  --color-accent: #265902;
+  --color-highlight: #008200;
+
+  /* Accent surface that must stay dark enough for white text in BOTH themes.
+     Dark-mode --color-accent (#5aa83e) is too light for text-white (~2.96:1),
+     so surfaces that carry white text use this stable dark green instead. */
+  --color-accent-card: #265902;
+
+  /* Light surfaces. Pure #fff reads too bright next to the brand greens, so
+     sections and cards sit on a faint green-tinted off-white instead. */
+  --color-surface: #f3f7f1;
+  --color-surface-raised: #fafcf9;
+
+  /* Text on light surfaces — desaturated greens rather than neutral grays,
+     so the page stays strictly white-and-green. */
+  --color-ink: #14260c;
+  --color-ink-muted: #40593a;
+
+  /* Text on the dark --color-basic sections. Softer than #fff. */
+  --color-ink-inverse: #eef5ec;
+  --color-ink-inverse-muted: #b9d1b0;
+}
+
+/* Dark-mode brand tokens. Defined AFTER @theme so they win the cascade when the
+   .dark class is present. Flips design-system surfaces dark and ink light, so
+   every bg-surface / text-ink / text-accent utility stays legible in dark mode
+   without touching individual components. */
+.dark {
+  --color-surface: #0f1f0a;
+  --color-surface-raised: #17290f;
+  --color-ink: #eaf3e6;
+  --color-ink-muted: #9fbb93;
+  --color-accent: #5aa83e;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Auto-scrolling animation for partners logos */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover,
+.animate-scroll:focus-within {
+  animation-play-state: paused;
+}
+
+/* AI Chat Welcome Screen Animations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradient 3s ease infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
+
+/* Marquee animations for testimonials */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 30s linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee:focus-within,
+.animate-marquee-reverse:hover,
+.animate-marquee-reverse:focus-within {
+  animation-play-state: paused;
+}
+
+/* Variable-speed marquee driven by components/ui/marquee.jsx.
+   Kept separate from the fixed-speed .animate-marquee above, which
+   Testimonials relies on. */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+/* Longhands, not the `animation:` shorthand — the shorthand resets
+   animation-direction and animation-play-state, which would override the
+   reverse / pause-on-hover utilities Tailwind emits earlier in the cascade. */
+.animate-marquee-x {
+  animation-name: marquee-x;
+  animation-duration: var(--duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-marquee-y {
+  animation-name: marquee-y;
+  animation-duration: var(--duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Arabic webfont (IBM Plex Sans Arabic, loaded via next/font as --font-arabic).
+   The `[locale]` layout adds `font-arabic` to <body> when dir="rtl"; the RTL
+   selector is a belt-and-braces fallback so Arabic never renders in a
+   Latin-serif substitute even if the class is ever dropped. */
+.font-arabic,
+html[dir="rtl"] body {
+  font-family: var(--font-arabic), var(--font-geist-sans), ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+/* ─── Media Blur Gate (#268) ─────────────────────────────────────────── */
+/*
+ * When the user has opted into reduced-motion via their OS we strip all
+ * blur/transition utilities from media-blur containers so the UI stays
+ * calm and accessible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll,
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-marquee-x,
+  .animate-marquee-y {
+    animation: none !important;
+  }
+
+  .group\/media-blur [data-slot="image"],
+  .group\/media-blur img,
+  .group\/media-blur video {
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
+/* WCAG 2.4.1 – Skip navigation link. Visually hidden until focused. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0.375rem;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* WCAG 1.4.11 – Focus ring for dark admin chrome elements.
+   Overrides the default ring color on dark surfaces for contrast. */
+.dark [data-slot="table-row"]:focus-visible {
+  outline-color: oklch(0.985 0 0);
+}
+.dark button:focus-visible {
+  outline-color: oklch(0.985 0 0);
+}
+.dark a:focus-visible {
+  outline-color: oklch(0.985 0 0);
+}
+
+/* ─── Print Stylesheet (#338) ────────────────────────────────────────── */
+@media print {
+  @page {
+    size: auto;
+    margin: 12mm 15mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide Admin Chrome and Non-Printable Elements */
+  .no-print,
+  nav,
+  header,
+  footer,
+  aside,
+  button:not(.print-keep),
+  .skip-link,
+  [data-slot="popover-content"],
+  [role="dialog"] > button[aria-label*="Close"],
+  .border-b.bg-muted\/40 button {
+    display: none !important;
+  }
+
+  /* Print Root Container Formatting */
+  .print-root {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Cards & Sections Print Formatting */
+  .print-root .card,
+  .print-root [class*="Card"] {
+    break-inside: avoid;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+  }
+
+  /* Make URLs visible for printed links */
+  .print-root a[href]:after,
+  a.print-url[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 85%;
+    font-family: var(--font-mono, monospace);
+    word-break: break-all;
+    color: #4b5563;
+  }
+
+  .print-root a[href^="#"]:after,
+  .print-root a[href^="javascript:"]:after {
+    content: "";
+  }
+
+  /* Dialog Modal Print Formatting */
+  [role="dialog"] {
+    position: absolute !important;
+    inset: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+  }
+
+  /* Tables & Badges Print Formatting */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #e5e7eb !important;
+    padding: 6px 8px !important;
+  }
+
+  .badge,
+  [class*="Badge"] {
+    border: 1px solid #9ca3af !important;
+    color: #000000 !important;
+    background: #f3f4f6 !important;
+  }
+}
+

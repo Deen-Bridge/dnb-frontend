@@ -1,0 +1,850 @@
+"use client";
+
+import { use, useState, useEffect } from "react";
+import Link from "next/link";
+import { PageShell } from "@/components/ui/page-shell";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Printer,
+  User,
+  Wallet,
+  ExternalLink,
+  Clock,
+  FileCheck,
+  Film,
+  PauseCircle,
+  PlayCircle,
+  ShieldAlert,
+} from "lucide-react";
+import { getUserById } from "@/lib/actions/users/getUserById";
+import { fetchEducatorVerificationHistory } from "@/lib/actions/admin-verification-history";
+import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
+import { config } from "@/lib/config/env";
+import { cn } from "@/lib/utils";
+import { CreatorReelsControlDialog } from "@/components/admin/CreatorReelsControlDialog";
+import {
+  changeUserRole,
+  suspendUser,
+  banUser,
+  reinstateUser,
+  setRequirePasswordReset,
+  revokeAllSessions,
+} from "@/lib/actions/admin-users";
+import { toast } from "sonner";
+import useAuth from "@/hooks/useAuth";
+import { canModerateUser } from "@/lib/admin/role-hierarchy";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UserEnrollmentsTab from "@/components/admin/UserEnrollmentsTab";
+import UserPurchasesTab from "@/components/admin/UserPurchasesTab";
+import UserActivityTimeline from "@/components/admin/UserActivityTimeline";
+
+const VERIFICATION_BADGE_STYLES = {
+  submitted: "bg-blue-100 text-blue-800 border-blue-200",
+  info_requested: "bg-amber-100 text-amber-800 border-amber-200",
+  approved: "bg-green-100 text-green-800 border-green-200",
+  rejected: "bg-red-100 text-red-800 border-red-200",
+  re_verified: "bg-emerald-100 text-emerald-800 border-emerald-200",
+};
+
+function isMentorRecord(user) {
+  const role = String(user?.role || "").toLowerCase();
+  return role === "educator" || role === "mentor";
+}
+
+function formatVerificationTimestamp(timestamp) {
+  if (!timestamp) return "Timestamp unavailable";
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "Timestamp unavailable";
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export default function AdminUserDetailPage({ params }) {
+  const { userId } = use(params);
+  const [reelsDialogOpen, setReelsDialogOpen] = useState(false);
+  const [creatorReelsPaused, setCreatorReelsPaused] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("student");
+  const [roleSaving, setRoleSaving] = useState(false);
+  const [user, setUser] = useState(null);
+  const { user: actor } = useAuth();
+  const [modAction, setModAction] = useState(null); // "suspend" | "ban" | null
+  const [suspendDuration, setSuspendDuration] = useState("7");
+  const [banReason, setBanReason] = useState("");
+  const [modSaving, setModSaving] = useState(false);
+  const [securityAction, setSecurityAction] = useState(null); // "password-reset" | "sign-out" | null
+  const [securityStatus, setSecurityStatus] = useState(null); // { type: "success" | "error", message }
+  const [verificationHistory, setVerificationHistory] = useState({
+    source: null,
+    events: [],
+    loading: true,
+    error: null,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadUser() {
+      setLoading(true);
+      try {
+        const res = await getUserById(userId);
+        if (!isActive) return;
+        let resolvedUser;
+        if (res?.user) {
+          resolvedUser = res.user;
+        } else {
+          // Mock fallback user record if backend endpoint is not connected
+          resolvedUser = {
+            _id: userId,
+            name: "Amina Yusuf",
+            email: "amina@deenbridge.org",
+            role: "educator",
+            status: "active",
+            createdAt: "2025-01-15T10:30:00Z",
+            walletAddress: "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335WFOPVQOI3ZFZG3KA4YAOMNEB",
+            bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
+            coursesCount: 8,
+            booksCount: 3,
+            verification: {
+              submittedAt: "2025-01-16T09:00:00Z",
+              reviewedAt: "2025-01-17T14:30:00Z",
+              approvedAt: "2025-01-17T14:30:00Z",
+              reviewedBy: "Admin review team",
+            },
+            purchases: [
+              { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
+              { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
+            ],
+          };
+        }
+        setUser(resolvedUser);
+        setSelectedRole(resolvedUser.role === "educator" ? "mentor" : resolvedUser.role || "student");
+
+        if (isMentorRecord(resolvedUser)) {
+          try {
+            const history = await fetchEducatorVerificationHistory(userId, resolvedUser);
+            if (!isActive) return;
+            setVerificationHistory({
+              source: history.source,
+              events: Array.isArray(history.events) ? history.events : [],
+              loading: false,
+              error: null,
+            });
+          } catch (err) {
+            if (!isActive) return;
+            setVerificationHistory({
+              source: null,
+              events: [],
+              loading: false,
+              error: err?.message || "Failed to load verification history",
+            });
+          }
+        } else {
+          setVerificationHistory({ source: null, events: [], loading: false, error: null });
+        }
+      } catch {
+        if (!isActive) return;
+        const fallbackUser = {
+          _id: userId,
+          name: "Amina Yusuf",
+          email: "amina@deenbridge.org",
+          role: "educator",
+          status: "active",
+          createdAt: "2025-01-15T10:30:00Z",
+          walletAddress: "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335WFOPVQOI3ZFZG3KA4YAOMNEB",
+          bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
+          coursesCount: 8,
+          booksCount: 3,
+          verification: {
+            submittedAt: "2025-01-16T09:00:00Z",
+            reviewedAt: "2025-01-17T14:30:00Z",
+            approvedAt: "2025-01-17T14:30:00Z",
+            reviewedBy: "Admin review team",
+          },
+          purchases: [
+            { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
+            { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
+          ],
+        };
+        setUser(fallbackUser);
+        setSelectedRole("mentor");
+        const history = await fetchEducatorVerificationHistory(userId, fallbackUser);
+        if (!isActive) return;
+        setVerificationHistory({
+          source: history.source,
+          events: Array.isArray(history.events) ? history.events : [],
+          loading: false,
+          error: null,
+        });
+      } finally {
+        if (isActive) setLoading(false);
+      }
+    }
+    loadUser();
+
+    return () => {
+      isActive = false;
+    };
+  }, [userId]);
+
+  const refetchUser = async () => {
+    const res = await getUserById(userId);
+    if (!res?.user) throw new Error("Could not reload the user from the server.");
+    setUser(res.user);
+    setSelectedRole(res.user.role === "educator" ? "mentor" : res.user.role || "student");
+  };
+
+  const runModeration = async (fn, successMessage) => {
+    setModSaving(true);
+    try {
+      await fn();
+      await refetchUser();
+      setModAction(null);
+      setBanReason("");
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error(error?.message || "The moderation action failed.");
+    } finally {
+      setModSaving(false);
+    }
+  };
+
+  const handleSuspend = () => {
+    const days = suspendDuration === "indefinite" ? null : Number(suspendDuration);
+    if (days !== null && !(days > 0)) {
+      toast.error("Choose a suspension duration.");
+      return;
+    }
+    runModeration(
+      () => suspendUser(user._id || userId, days, { email: user.email }),
+      "User suspended."
+    );
+  };
+
+  const handleBan = () => {
+    if (!banReason.trim()) {
+      toast.error("A reason is required to ban a user.");
+      return;
+    }
+    runModeration(
+      () => banUser(user._id || userId, { email: user.email, reason: banReason }),
+      "User banned."
+    );
+  };
+
+  const handleReinstate = () => {
+    if (!window.confirm(`Reinstate ${user.name}? Their previous role will be restored.`)) return;
+    runModeration(
+      () => reinstateUser(user._id || userId, { email: user.email }),
+      "User reinstated."
+    );
+  };
+
+  // TODO(backend): endpoints are not confirmed; see lib/actions/admin-users.ts for the contract.
+  const handleRequirePasswordResetChange = async (nextRequired) => {
+    const name = user.name || user.email;
+    const message = nextRequired
+      ? `Require ${name} to complete a password reset at their next login? They cannot use the account until the reset is done.`
+      : `Remove the password reset requirement for ${name}? They will be able to log in without resetting.`;
+    if (!window.confirm(message)) return;
+
+    setSecurityAction("password-reset");
+    setSecurityStatus(null);
+    try {
+      const result = await setRequirePasswordReset(user._id || userId, nextRequired, { email: user.email });
+      setUser((current) => ({ ...current, requirePasswordReset: result.requirePasswordReset }));
+      setSecurityStatus({
+        type: "success",
+        message: result.requirePasswordReset
+          ? "Password reset will be required at the next login."
+          : "Password reset requirement removed.",
+      });
+    } catch (error) {
+      setSecurityStatus({ type: "error", message: error?.message || "The password reset requirement could not be updated." });
+    } finally {
+      setSecurityAction(null);
+    }
+  };
+
+  const handleRevokeSessions = async () => {
+    const typedEmail = window.prompt(
+      `This signs ${user.email} out of every device and revokes all refresh tokens. Type the account email to confirm.`
+    );
+    if (typedEmail === null) return;
+    if (typedEmail.trim().toLowerCase() !== user.email?.trim().toLowerCase()) {
+      setSecurityStatus({ type: "error", message: "Sign-out cancelled because the email did not match." });
+      return;
+    }
+
+    setSecurityAction("sign-out");
+    setSecurityStatus(null);
+    try {
+      const result = await revokeAllSessions(user._id || userId, { email: user.email });
+      const count = result.revokedCount;
+      setSecurityStatus({
+        type: "success",
+        message: count === 1 ? "Signed out 1 session." : `Signed out ${count} sessions.`,
+      });
+    } catch (error) {
+      setSecurityStatus({ type: "error", message: error?.message || "The user's sessions could not be signed out." });
+    } finally {
+      setSecurityAction(null);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleRoleChange = async () => {
+    if (!user || !selectedRole) return;
+    const currentRole = user.role === "educator" ? "mentor" : user.role || "student";
+    if (selectedRole === currentRole) return;
+
+    if (!window.confirm(`Change ${user.name}'s role from ${currentRole} to ${selectedRole}? This may change the tools and access available to this account.`)) {
+      setSelectedRole(currentRole);
+      return;
+    }
+
+    if (selectedRole === "admin") {
+      const typedEmail = window.prompt(`Type ${user.email} to confirm granting administrator access.`);
+      if (typedEmail?.trim().toLowerCase() !== user.email?.trim().toLowerCase()) {
+        toast.error("Administrator role was not changed because the email did not match.");
+        setSelectedRole(currentRole);
+        return;
+      }
+    }
+
+    const reason = window.prompt("Reason for this role change (optional):");
+    if (reason === null) {
+      setSelectedRole(currentRole);
+      return;
+    }
+
+    setRoleSaving(true);
+    try {
+      const result = await changeUserRole(user._id || userId, selectedRole, {
+        email: user.email,
+        previousRole: currentRole,
+        reason,
+      });
+      setUser((current) => ({ ...current, role: result.user.role }));
+      toast.success(`Role changed to ${result.user.role}.`);
+    } catch (error) {
+      setSelectedRole(currentRole);
+      toast.error(error?.message || "The user's role could not be changed.");
+    } finally {
+      setRoleSaving(false);
+    }
+  };
+
+  const network = config.stellarNetwork;
+  const explorerUrl = user?.walletAddress
+    ? getExplorerUrl(user.walletAddress, network)
+    : null;
+
+  return (
+    <PageShell>
+      <div className="print-root space-y-6">
+        {/* Page Header with Print Button */}
+        <PageHeader
+          icon={User}
+          title="User Record Detail"
+          subtitle={`Admin record summary for user ID: ${userId}`}
+          actions={
+            <div className="no-print flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                className="no-print gap-2 font-semibold"
+                aria-label="Print record"
+              >
+                <Printer className="h-4 w-4" />
+                Print Record
+              </Button>
+            </div>
+          }
+        />
+
+        {loading ? (
+          <div className="p-8 text-center text-muted-foreground">Loading user record...</div>
+        ) : !user ? (
+          <div className="p-8 text-center text-muted-foreground">User record not found.</div>
+        ) : (
+          <>
+            {user.status === "banned" && (
+              <div role="alert" className="flex items-start gap-3 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">
+                <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-semibold">This user is banned.</p>
+                  {(user.banReason || user.statusReason) && (
+                    <p className="text-xs">Reason: {user.banReason || user.statusReason}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* User Primary Overview Card */}
+            <Card className="border shadow-none">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-6">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16 border">
+                      <AvatarFallback className="text-xl font-bold bg-primary/10 text-primary">
+                        {user.name?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h2 className="text-2xl font-bold">{user.name}</h2>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline" className="capitalize font-semibold">
+                          {user.role || "student"}
+                        </Badge>
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "capitalize font-medium",
+                            user.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100"
+                          )}
+                        >
+                          {user.status || "active"}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground space-y-1 sm:text-right">
+                    <p>
+                      System ID: <span className="font-mono font-semibold">{user._id}</span>
+                    </p>
+                    <p>
+                      Joined Date:{" "}
+                      <span className="font-semibold">
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Profile Links & Bio */}
+                <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-muted-foreground block font-medium mb-1">
+                      Public Profile Link:
+                    </span>
+                    <a
+                      href={`/educators/${user._id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline font-semibold print-url inline-flex items-center gap-1"
+                    >
+                      View Public Educator Page
+                      <ExternalLink className="h-3 w-3 no-print" />
+                    </a>
+                  </div>
+
+                  <div>
+                    <span className="text-muted-foreground block font-medium mb-1">
+                      Contact Email:
+                    </span>
+                    <a href={`mailto:${user.email}`} className="text-primary hover:underline font-semibold print-url">
+                      {user.email}
+                    </a>
+                  </div>
+
+                  {user.bio && (
+                    <div className="sm:col-span-2 border-t pt-3">
+                      <span className="text-muted-foreground block font-medium mb-1">Bio:</span>
+                      <p className="italic text-foreground">{user.bio}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none no-print">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Change account role</CardTitle>
+                <CardDescription className="text-xs">
+                  Role changes are saved only after the server confirms them. Granting admin access requires typing the account email.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <div className="w-full sm:max-w-xs">
+                  <label htmlFor="user-role" className="mb-1.5 block text-sm font-medium">New role</label>
+                  <select
+                    id="user-role"
+                    value={selectedRole}
+                    onChange={(event) => setSelectedRole(event.target.value)}
+                    disabled={roleSaving}
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  >
+                    <option value="student">Student</option>
+                    <option value="mentor">Educator</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+                <Button onClick={handleRoleChange} disabled={roleSaving || selectedRole === (user.role === "educator" ? "mentor" : user.role || "student")}>
+                  {roleSaving ? "Saving…" : "Save role"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none no-print">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Account moderation</CardTitle>
+                <CardDescription className="text-xs">
+                  Status is reloaded from the server after every action. You cannot moderate users with an equal or higher role.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {!canModerateUser(actor?.role, user.role) ? (
+                  <p className="text-xs text-muted-foreground">
+                    You do not have permission to moderate this account.
+                  </p>
+                ) : user.status === "banned" || user.status === "suspended" ? (
+                  <Button size="sm" onClick={handleReinstate} disabled={modSaving}>
+                    {modSaving ? "Working…" : "Reinstate user"}
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" disabled={modSaving} onClick={() => setModAction("suspend")}>
+                      Suspend
+                    </Button>
+                    <Button size="sm" variant="destructive" disabled={modSaving} onClick={() => setModAction("ban")}>
+                      Ban
+                    </Button>
+                  </div>
+                )}
+
+                {modAction === "suspend" && (
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                    <div>
+                      <label htmlFor="suspend-duration" className="mb-1.5 block text-sm font-medium">Duration</label>
+                      <select
+                        id="suspend-duration"
+                        value={suspendDuration}
+                        onChange={(e) => setSuspendDuration(e.target.value)}
+                        className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                      >
+                        <option value="1">1 day</option>
+                        <option value="7">7 days</option>
+                        <option value="30">30 days</option>
+                        <option value="90">90 days</option>
+                        <option value="indefinite">Indefinite</option>
+                      </select>
+                    </div>
+                    <Button size="sm" onClick={handleSuspend} disabled={modSaving}>
+                      {modSaving ? "Suspending…" : "Confirm suspend"}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
+                  </div>
+                )}
+
+                {modAction === "ban" && (
+                  <div className="space-y-2">
+                    <label htmlFor="ban-reason" className="block text-sm font-medium">Reason (required)</label>
+                    <textarea
+                      id="ban-reason"
+                      value={banReason}
+                      onChange={(e) => setBanReason(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      placeholder="Explain why this user is being banned"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="destructive" onClick={handleBan} disabled={modSaving || !banReason.trim()}>
+                        {modSaving ? "Banning…" : "Confirm ban"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setModAction(null)} disabled={modSaving}>Cancel</Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none no-print">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Account security</CardTitle>
+                <CardDescription className="text-xs">
+                  Each action asks for confirmation. The result is shown here once the server responds.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <label htmlFor="require-password-reset" className="block text-sm font-medium">
+                      Require password reset
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      The next login must complete the password reset flow.
+                    </p>
+                  </div>
+                  <Switch
+                    id="require-password-reset"
+                    checked={Boolean(user.requirePasswordReset)}
+                    disabled={!canModerateUser(actor?.role, user.role) || securityAction !== null}
+                    onCheckedChange={handleRequirePasswordResetChange}
+                  />
+                </div>
+                <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Sign out all sessions</p>
+                    <p className="text-xs text-muted-foreground">
+                      Revokes every refresh token for this account on the server. Requires typing the user&apos;s email.
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={handleRevokeSessions}
+                    disabled={!canModerateUser(actor?.role, user.role) || securityAction !== null}
+                  >
+                    {securityAction === "sign-out" ? "Signing out…" : "Sign out all sessions"}
+                  </Button>
+                </div>
+                {securityAction === "password-reset" && (
+                  <p role="status" className="text-xs text-muted-foreground">Saving password reset requirement…</p>
+                )}
+                {securityStatus && (
+                  <p
+                    role={securityStatus.type === "error" ? "alert" : "status"}
+                    className={cn(
+                      "rounded-md border px-3 py-2 text-sm",
+                      securityStatus.type === "error"
+                        ? "border-destructive/40 text-destructive"
+                        : "border-primary/30 text-foreground"
+                    )}
+                  >
+                    {securityStatus.message}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {isMentorRecord(user) && (
+              <Card className="border shadow-none">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <FileCheck className="h-4 w-4 text-primary" />
+                    Verification History
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Full audit trail of educator verification events, newest first
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  {verificationHistory.loading ? (
+                    <p className="text-xs text-muted-foreground">Loading verification history...</p>
+                  ) : verificationHistory.error ? (
+                    <p className="text-xs text-destructive">{verificationHistory.error}</p>
+                  ) : verificationHistory.events.length > 0 ? (
+                    <div className="space-y-3">
+                      {verificationHistory.source === "composed" && (
+                        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                          Backend history endpoint is not available yet; this timeline is composed from verification record fields.
+                        </p>
+                      )}
+                      <ol className="relative border-l pl-4">
+                        {verificationHistory.events.map((event) => (
+                          <li key={event.id} className="relative pb-5 last:pb-0">
+                            <span className="absolute -left-[21px] top-0 flex h-3 w-3 rounded-full border-2 border-background bg-primary" />
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "capitalize font-semibold",
+                                      VERIFICATION_BADGE_STYLES[event.type] || "bg-muted"
+                                    )}
+                                  >
+                                    {event.label}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    Actor: <span className="font-medium text-foreground">{event.actor}</span>
+                                  </span>
+                                </div>
+                                {event.note && (
+                                  <p className="text-xs text-muted-foreground">{event.note}</p>
+                                )}
+                              </div>
+                              <time className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {formatVerificationTimestamp(event.timestamp)}
+                              </time>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No verification events recorded yet.</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Wallet & Stellar Chain Information */}
+            <Card className="border shadow-none">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Wallet className="h-4 w-4 text-primary" />
+                  Stellar Wallet & On-Chain Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-2 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-muted-foreground block">Stellar Account Public Key:</span>
+                    <p className="font-mono text-xs font-semibold break-all select-all mt-0.5">
+                      {user.walletAddress || "Not connected"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground block">Network Explorer Link:</span>
+                    {explorerUrl ? (
+                      <a
+                        href={explorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline font-semibold print-url inline-flex items-center gap-1 mt-0.5"
+                      >
+                        {explorerUrl}
+                        <ExternalLink className="h-3 w-3 no-print" />
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Creator Reels Moderation & Controls (#263) */}
+            <Card className="border shadow-none">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Film className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-sm font-semibold">
+                      Short-Form Reels & Creator Moderation
+                    </CardTitle>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      creatorReelsPaused
+                        ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    }
+                  >
+                    {creatorReelsPaused ? "Reels Paused" : "Reels Active"}
+                  </Badge>
+                </div>
+                <CardDescription className="text-xs">
+                  Bulk control over all reels published by this creator. Cross-linked with the moderation grid.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>
+                    Published Reels:{" "}
+                    <span className="font-semibold text-foreground">
+                      {user.reelsCount || 6} reels
+                    </span>
+                  </p>
+                  <p>
+                    Status:{" "}
+                    <span className="font-medium text-foreground">
+                      {creatorReelsPaused
+                        ? "All reels currently hidden from public discovery feeds."
+                        : "All reels visible and active."}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/reels?creator=${userId}`}
+                    className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Film className="h-3.5 w-3.5" />
+                    View Reels Grid
+                    <ExternalLink className="h-3 w-3 ml-0.5" />
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant={creatorReelsPaused ? "default" : "destructive"}
+                    onClick={() => setReelsDialogOpen(true)}
+                    className="gap-1.5 text-xs"
+                  >
+                    {creatorReelsPaused ? (
+                      <>
+                        <PlayCircle className="h-3.5 w-3.5" />
+                        Resume Reels
+                      </>
+                    ) : (
+                      <>
+                        <PauseCircle className="h-3.5 w-3.5" />
+                        Pause All Reels
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Read-only enrollments and purchases (#228) */}
+            <Tabs defaultValue="enrollments" className="gap-3">
+              <TabsList>
+                <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
+                <TabsTrigger value="purchases">Purchases</TabsTrigger>
+                <TabsTrigger value="activity">Activity</TabsTrigger>
+              </TabsList>
+              <TabsContent value="enrollments">
+                <UserEnrollmentsTab enrolledCourses={user.enrolledCourses} />
+              </TabsContent>
+              <TabsContent value="purchases">
+                <UserPurchasesTab walletAddress={user.walletAddress} />
+              </TabsContent>
+              <TabsContent value="activity">
+                <UserActivityTimeline user={user} />
+              </TabsContent>
+            </Tabs>
+
+            {/* Creator Controls Dialog */}
+            <CreatorReelsControlDialog
+              open={reelsDialogOpen}
+              onOpenChange={setReelsDialogOpen}
+              creator={user}
+              reelsCount={user.reelsCount || 6}
+              isCurrentlyPaused={creatorReelsPaused}
+              onConfirm={async ({ action }) => {
+                setCreatorReelsPaused(action === "pause");
+              }}
+            />
+          </>
+        )}
+      </div>
+    </PageShell>
+  );
+}

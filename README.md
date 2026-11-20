@@ -1,0 +1,125 @@
+<div align="center">
+
+# 🕌 Deen Bridge
+
+**Authentic Islamic education — courses, books, community, and mentorship, with payments on Stellar.**
+
+[![CI](https://github.com/Deen-Bridge/dnb-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/Deen-Bridge/dnb-frontend/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue.svg)](CONTRIBUTING.md)
+[![Stellar](https://img.shields.io/badge/Payments-Stellar%20USDC-0e75dd.svg)](https://stellar.org)
+
+[Live App](https://dnb-frontend.vercel.app) · [Report a Bug](https://github.com/Deen-Bridge/dnb-frontend/issues) · [Contribute](CONTRIBUTING.md)
+
+</div>
+
+---
+
+## 📸 Screenshots
+
+| Landing Page | Login / Sign Up |
+|:---:|:---:|
+| ![Landing Page](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Admin Area](docs/screenshots/admin.png) |
+
+
+---
+
+## About
+
+Deen Bridge is a modern learning platform that connects Muslims worldwide with authentic Islamic knowledge. Learners enroll in interactive courses, read from a digital library, join live community spaces, message mentors directly, and get instant answers from an Islamic-knowledge AI assistant. Courses and books are purchased with **USDC on the Stellar network** — non-custodial, with creators paid directly to their own wallets.
+
+This repository is the web client. The platform is composed of three services:
+
+| Repository | Role | Live |
+|------------|------|------|
+| **dnb-frontend** (this repo) | Next.js web application | [dnb-frontend.vercel.app](https://dnb-frontend.vercel.app) |
+| [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) | REST API — auth, content, Stellar payments | [dnb-backend-api.onrender.com](https://dnb-backend-api.onrender.com) |
+| [dnb-ai](https://github.com/Deen-Bridge/dnb-ai) | FastAPI service for the AI assistant | [dnb-ai.onrender.com](https://dnb-ai.onrender.com) |
+
+## ✨ Features
+
+- 🎓 **Interactive Courses** — enroll, learn, review, and track progress
+- 📚 **Digital Library** — read Islamic books online with a built-in PDF reader
+- 💬 **Community Spaces** — live sessions and video rooms with mentors
+- 🎬 **Reels** — short-form Islamic content
+- ✉️ **Direct Messaging** — real-time chat between students and mentors
+- 🤖 **AI Assistant** — Islamic-knowledge chatbot with conversation history
+- ⭐ **Stellar Payments** — buy courses and books with USDC; creators are paid directly
+- 🎓 **Stellar Scholarship Escrow** — private scholarship applications with two-review selection, Soroban USDC funding, and arbiter-reviewed milestone releases
+- 👛 **Multi-Wallet Support** — Freighter, xBull, and Albedo via Stellar Wallets Kit
+- 🔒 **Role-Based Access** — student, mentor, and admin experiences
+- 🛡️ **Admin Area** — role-tiered admin access (staff / super-admin) with isolated gating logic ([architecture guide](docs/admin-architecture.md)); see the [admin route map](docs/admin-routes.md) for route status and API wiring.
+- 👥 **Team Management** — super-admin-only admin roster with invite links and demote/revoke actions guarded by step-up confirmation
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | [Next.js 15](https://nextjs.org/) (App Router) · [React 19](https://react.dev/) |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) · [Radix UI](https://www.radix-ui.com/) · [Framer Motion](https://www.framer.com/motion/) |
+| Forms & Validation | [React Hook Form](https://www.react-hook-form.com/) · [Zod](https://zod.dev/) |
+| Blockchain | [@stellar/stellar-sdk](https://github.com/stellar/js-stellar-sdk) · [Stellar Wallets Kit](https://github.com/creit-tech/stellar-wallets-kit) |
+| Data & Media | [Axios](https://axios-http.com/) · [Firebase](https://firebase.google.com/) · Vidstack · pdf.js |
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- npm (or yarn/pnpm)
+
+### Setup
+
+```bash
+git clone https://github.com/Deen-Bridge/dnb-frontend.git
+cd dnb-frontend
+npm install
+cp .env.example .env.local   # then fill in your values
+npm run dev
+```
+
+The app runs at `http://localhost:3000`.
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | No (default `http://localhost:5000`) | Base URL of the [dnb-backend](https://github.com/Deen-Bridge/dnb-backend) API |
+| `NEXT_PUBLIC_AI_API_URL` | No (default `http://localhost:8000`) | Base URL of the [dnb-ai](https://github.com/Deen-Bridge/dnb-ai) AI assistant service |
+| `NEXT_PUBLIC_STELLAR_NETWORK` | No (default `testnet`) | Stellar network — `testnet` or `mainnet` |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | **Yes** | Cloudinary cloud name for unsigned image/video uploads |
+| `NEXT_PUBLIC_JITSI_DOMAIN` | No (default `meet.jit.si`) | Jitsi Meet domain for live video spaces |
+| `NEXT_PUBLIC_JITSI_REQUIRE_JWT` | No (default `false`) | Whether the Jitsi deployment requires a signed JWT token |
+| `NEXT_PUBLIC_FIREBASE_*` | No | Firebase Web SDK config values (apiKey, authDomain, projectId, etc.) — defaults to the project's current values |
+| `NEXT_PUBLIC_ADMIN_INVITE_BASE_URL` | No (default current origin) | Base URL used when building admin invite links generated on the team management page |
+| `NEXT_PUBLIC_ADMIN_INVITE_TTL_HOURS` | No (default `72`) | Validity window (in hours) surfaced for admin invite tokens — enforced by the backend |
+
+See `.env.example` for the full variable list with example values.
+
+### Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Start the development server (Turbopack) |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Run ESLint |
+
+## Contributing
+
+- Pull requests target **`main`** and are squash-merged automatically when repository checks and review gates pass.
+- CI (lint + build) must pass before review
+- Claim or confirm an issue with the maintainers before starting substantial work.
+
+Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full workflow and coding standards.
+
+## 📜 License
+
+[MIT](LICENSE) © Deen Bridge
+
+## 🔗 Links
+
+- 🌐 Website: [dnb-frontend.vercel.app](https://dnb-frontend.vercel.app)
+- 🐦 X/Twitter: [@deen_bridge](https://x.com/deen_bridge)
+- 🏢 Organization: [github.com/Deen-Bridge](https://github.com/Deen-Bridge)
