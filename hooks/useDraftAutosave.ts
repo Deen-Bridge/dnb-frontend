@@ -1,6 +1,12 @@
 import { useEffect, useCallback } from "react";
 import useAuth from "@/hooks/useAuth";
-import { accountStorageKey, getAccountValue, setAccountValue } from "@/lib/storage/accountStorage";
+import {
+  learningStorageKey,
+  LEARNING_RETENTION_MS,
+  readLearningValue,
+  removeLearningValue,
+  writeLearningValue,
+} from "@/lib/privacy/learningStorage";
 
 export interface UseDraftAutosaveResult<T> {
   hasDraft: () => boolean;
@@ -13,7 +19,10 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
   courseId: string | null = null
 ): UseDraftAutosaveResult<T> {
   const { user } = useAuth();
-  const storageKey = accountStorageKey("course-draft", user?._id || null, courseId || "default");
+  const userId = user?._id;
+  const storageKey = userId
+    ? learningStorageKey("courseDraft", userId, courseId || "new")
+    : null;
 
   useEffect(() => {
     if (!watch) return;
@@ -34,7 +43,9 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
               return value;
             })
           );
-          setAccountValue(localStorage, storageKey, serializable, 24 * 60 * 60 * 1000);
+          if (storageKey) {
+            writeLearningValue(storageKey, serializable, LEARNING_RETENTION_MS.courseDraft);
+          }
         } catch {
           // Ignore quota exceeded or storage disabled
         }
@@ -48,30 +59,15 @@ export function useDraftAutosave<T = any>( // TODO(types): Autosaved draft form 
   }, [watch, storageKey]);
 
   const hasDraft = useCallback((): boolean => {
-    if (typeof window === "undefined") return false;
-    try {
-      return getAccountValue(localStorage, storageKey) !== null;
-    } catch {
-      return false;
-    }
+    return storageKey ? readLearningValue(storageKey) !== null : false;
   }, [storageKey]);
 
   const loadDraft = useCallback((): T | null => {
-    if (typeof window === "undefined") return null;
-    try {
-      return getAccountValue<T>(localStorage, storageKey);
-    } catch {
-      return null;
-    }
+    return storageKey ? readLearningValue<T>(storageKey) : null;
   }, [storageKey]);
 
   const clearDraft = useCallback((): void => {
-    if (typeof window === "undefined") return;
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {
-      // Ignore errors
-    }
+    if (storageKey) removeLearningValue(storageKey);
   }, [storageKey]);
 
   return {
