@@ -39,6 +39,9 @@ jobs:
       # loses its `-- <reason>` justification.
       - name: Guard explicit-any count
         run: npm run lint:any
+
+      - name: Verify type-boundary ownership
+        run: npm run lint:type-boundaries
       
       - name: Run component tests
         run: npm test

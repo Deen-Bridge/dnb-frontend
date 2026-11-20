@@ -152,6 +152,15 @@ When you pick one up:
 3. Run `npm run lint:any -- --update` to refresh the baseline.
 4. Flip the rule to `error` in `eslint.config.mjs` once the total is `0`.
 
+## 6. Ownership and expiry
+
+Every file represented in the explicit-`any` baseline is covered by
+`scripts/type-boundary-owners.json`. Each entry records the owning team, the
+tracking issue, and an expiry date for the exception. CI runs
+`npm run lint:type-boundaries` so a new baseline file cannot be added without
+an accountable owner or an overdue exception. When a module is fully typed,
+remove its baseline entry and its ownership entry together.
+
 ---
 
 ## 5. Related documents
