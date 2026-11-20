@@ -370,7 +370,7 @@ export default function Page({ params }) {
             type="submit"
             size="icon"
             aria-label="Send message"
-            className="absolute right-1 h-8 w-8 sm:h-10 sm:w-10 text-white font-thin bg-accent hover:bg-accent/90"
+            className="absolute right-1 h-8 w-8 sm:h-10 sm:w-10 text-white font-thin bg-accent-card hover:bg-accent/90"
             disabled={!newMessage.trim()}
           >
             <FiSend className="h-3 w-3 sm:h-4 sm:w-4" />

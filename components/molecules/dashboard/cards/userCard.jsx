@@ -64,7 +64,7 @@ const UserCard = ({ user, showFollowButton = true }) => {
   };
 
   return (
-    <Card className="flex items-start gap-4 p-4 hover:shadow-md transition-shadow bg-accent text-white cursor-pointer">
+    <Card className="flex items-start gap-4 p-4 hover:shadow-md transition-shadow bg-accent-card text-white cursor-pointer">
       <Link
         href={`/account/profile/${user._id}`}
         className="flex items-center gap-4 flex-1"
@@ -91,7 +91,7 @@ const UserCard = ({ user, showFollowButton = true }) => {
             loading={followLoading}
             className={cn(
               "text-sm px-4 py-2 whitespace-nowrap",
-              following && "bg-accent text-white hover:bg-accent/90"
+              following && "bg-accent-card text-white hover:bg-accent/90"
             )}
             onClick={handleFollowToggle}
           >

@@ -342,7 +342,7 @@ export default function JaasMeetingClientButtons({ space }) {
     <>
                 <Button
                     wide
-                    className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
+                    className="bg-accent-card hover:bg-highlight text-white font-bold shadow-lg transition"
                     round
         disabled={spaceStatus !== "live" || joinLoading}
         loading={joinLoading}
@@ -383,7 +383,7 @@ export default function JaasMeetingClientButtons({ space }) {
       {!meetingActive ? (
         <Button
           wide
-          className="bg-accent hover:bg-highlight text-white font-bold shadow-lg transition"
+          className="bg-accent-card hover:bg-highlight text-white font-bold shadow-lg transition"
           round
           loading={isUpdatingStatus}
           onClick={startMeeting}
