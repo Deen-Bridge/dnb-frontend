@@ -1,9 +1,15 @@
-const MOCK_DELAY_MS = 300;
+import axiosInstance from "@/lib/config/axios.config";
+
+export const SESSION_SECURITY_ENDPOINT = "/api/admin/session-security";
 
 export interface SessionSecurityConfig {
   idleTimeoutMinutes: number;
   idleWarningSeconds: number;
   reauthAfterMinutes: number;
+  /** Server revision used to reject stale concurrent edits. */
+  version?: number;
+  /** Timestamp at which the backend made this policy effective. */
+  updatedAt?: string;
 }
 
 export const DEFAULT_SESSION_SECURITY_CONFIG: SessionSecurityConfig = Object.freeze({
@@ -17,12 +23,6 @@ export const SESSION_SECURITY_BOUNDS = Object.freeze({
   idleWarningSeconds: Object.freeze({ min: 5, max: 600 }),
   reauthAfterMinutes: Object.freeze({ min: 1, max: 1440 }),
 });
-
-let mockConfig: SessionSecurityConfig = { ...DEFAULT_SESSION_SECURITY_CONFIG };
-
-function withMockDelay<T>(value: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), MOCK_DELAY_MS));
-}
 
 function isIntegerInRange(value: unknown, { min, max }: { min: number; max: number }): boolean {
   return typeof value === "number" && Number.isInteger(value) && value >= min && value <= max;
@@ -69,21 +69,70 @@ export function validateSessionSecurityConfig(cfg?: Partial<SessionSecurityConfi
   return { valid: Object.keys(errors).length === 0, errors };
 }
 
-export async function getSessionSecurityConfig(): Promise<SessionSecurityConfig> {
-  return withMockDelay({ ...mockConfig });
+function policyFromResponse(data: unknown): SessionSecurityConfig {
+  const payload = (data as { policy?: SessionSecurityConfig; config?: SessionSecurityConfig } | undefined) || {};
+  const policy = payload.policy || payload.config || (data as SessionSecurityConfig);
+
+  if (!policy || typeof policy !== "object") {
+    throw new Error("The session-security policy response was invalid.");
+  }
+
+  const { valid, errors } = validateSessionSecurityConfig(policy);
+  if (!valid) {
+    throw new Error(`The server returned an invalid session-security policy: ${Object.values(errors).join(" ")}`);
+  }
+
+  return {
+    idleTimeoutMinutes: policy.idleTimeoutMinutes,
+    idleWarningSeconds: policy.idleWarningSeconds,
+    reauthAfterMinutes: policy.reauthAfterMinutes,
+    ...(typeof policy.version === "number" ? { version: policy.version } : {}),
+    ...(typeof policy.updatedAt === "string" ? { updatedAt: policy.updatedAt } : {}),
+  };
 }
 
-export async function updateSessionSecurityConfig(cfg: SessionSecurityConfig): Promise<SessionSecurityConfig> {
+function serverError(error: any): Error { // TODO(types): Axios error response shape
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message || error?.response?.data?.error;
+  if (status === 409) {
+    return Object.assign(
+      new Error(message || "This policy changed while you were editing it. Reload the effective policy and try again."),
+      { code: "SESSION_POLICY_CONFLICT", status }
+    );
+  }
+  return new Error(message || error?.message || "Unable to load the session-security policy.");
+}
+
+export async function getSessionSecurityConfig(): Promise<SessionSecurityConfig> {
+  try {
+    const response = await axiosInstance.get(SESSION_SECURITY_ENDPOINT);
+    return policyFromResponse(response.data);
+  } catch (error) {
+    throw serverError(error);
+  }
+}
+
+export async function updateSessionSecurityConfig(
+  cfg: SessionSecurityConfig
+): Promise<SessionSecurityConfig> {
   const { valid, errors } = validateSessionSecurityConfig(cfg);
   if (!valid) {
-    const err = new Error("Invalid session-security configuration.") as Error & { fieldErrors?: any }; // TODO(types): Field validation errors map
+    const err = new Error("Invalid session-security configuration.") as Error & {
+      fieldErrors?: SessionConfigValidationResult["errors"];
+    };
     err.fieldErrors = errors;
     throw err;
   }
-  mockConfig = {
-    idleTimeoutMinutes: cfg.idleTimeoutMinutes,
-    idleWarningSeconds: cfg.idleWarningSeconds,
-    reauthAfterMinutes: cfg.reauthAfterMinutes,
-  };
-  return withMockDelay({ ...mockConfig });
+
+  try {
+    const response = await axiosInstance.put(SESSION_SECURITY_ENDPOINT, {
+      idleTimeoutMinutes: cfg.idleTimeoutMinutes,
+      idleWarningSeconds: cfg.idleWarningSeconds,
+      reauthAfterMinutes: cfg.reauthAfterMinutes,
+      ...(typeof cfg.version === "number" ? { version: cfg.version } : {}),
+    });
+    return policyFromResponse(response.data);
+  } catch (error) {
+    throw serverError(error);
+  }
 }

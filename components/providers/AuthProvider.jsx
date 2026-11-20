@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { setCacheScope } from "@/lib/utils/cache";
+import { clearClientLearningData } from "@/lib/privacy/learningStorage";
 
 const AuthContext = createContext(null);
 
@@ -34,9 +36,11 @@ export default function AuthProvider({ children }) {
       if (userData.id && !userData._id) userData._id = userData.id;
       setUser(userData);
       setIsAuthenticated(true);
+      setCacheScope(userData._id || userData.id || null);
     } else {
       setUser(null);
       setIsAuthenticated(false);
+      setCacheScope(null);
     }
     setLoading(false);
   }, []);
@@ -49,12 +53,10 @@ export default function AuthProvider({ children }) {
       const raw = Cookies.get("userInfo");
       if (raw) userInfo = JSON.parse(raw);
     } catch {
-      Cookies.remove("authToken", { path: "/" });
       Cookies.remove("userInfo", { path: "/" });
     }
 
-    const token = Cookies.get("authToken");
-    if (token && userInfo) {
+    if (userInfo) {
       if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
       setUser(userInfo);
       setIsAuthenticated(true);
@@ -82,17 +84,17 @@ export default function AuthProvider({ children }) {
   }, [user?._id]);
 
   const logout = useCallback(() => {
+    clearClientLearningData();
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
+    axiosInstance.post("/api/auth/logout").catch(() => {});
     setUser(null);
     setIsAuthenticated(false);
+    setCacheScope(null);
 
     if (typeof window !== "undefined" && "caches" in window) {
       caches.keys().then((names) => {
-        const runtimeCaches = names.filter(
-          (name) =>
-            name.startsWith("serwist-") || name === "book-previews"
-        );
+        const runtimeCaches = names.filter((name) => name.startsWith("dnb-runtime-"));
         return Promise.all(
           runtimeCaches.map((name) => caches.delete(name))
         );
