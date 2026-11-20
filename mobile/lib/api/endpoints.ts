@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     profile: "/api/users/profile",
     updateProfile: "/api/users/profile",
     avatar: "/api/users/avatar",
+    learning: "/api/users/me/learning",
   },
   courses: {
     list: "/api/courses",
