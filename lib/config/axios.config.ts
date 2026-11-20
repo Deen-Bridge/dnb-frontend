@@ -1,5 +1,7 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 import { config } from "@/lib/config/env";
+import { loginUrlWithReason } from "@/lib/auth/session-status";
+import { sessionEndReason } from "@/lib/auth/lifecycle";
 
 declare module "axios" {
   export interface AxiosRequestConfig {
@@ -152,7 +154,7 @@ axiosInstance.interceptors.response.use(
 
         if (typeof window !== "undefined") {
           // Axios runs outside React; this hard redirect handles an expired session.
-          window.location.href = "/login";
+          window.location.href = loginUrlWithReason(sessionEndReason(refreshError));
         }
 
         return Promise.reject(refreshError);
