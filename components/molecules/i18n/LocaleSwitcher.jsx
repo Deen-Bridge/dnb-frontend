@@ -65,7 +65,7 @@ export default function LocaleSwitcher({ tone = "default", className }) {
             className={cn(
               "rounded-full px-2.5 py-1 transition-colors",
               isActive
-                ? "bg-accent text-white"
+                ? "bg-accent-card text-white"
                 : inverse
                   ? "text-ink-inverse/80 hover:text-ink-inverse"
                   : "text-ink-muted hover:text-ink"

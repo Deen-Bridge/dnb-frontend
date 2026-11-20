@@ -56,7 +56,7 @@ const NetworkErrorComp = ({ className, errMsg, reset, onRetry }) => {
       <Button
         round
         onClick={handleRetry}
-        className="text-base lg:text-lg bg-accent hover:bg-highlight text-white"
+        className="text-base lg:text-lg bg-accent-card hover:bg-highlight text-white"
       >
         Retry
       </Button>
