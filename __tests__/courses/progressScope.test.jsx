@@ -8,8 +8,8 @@ describe("course progress scope invariants", () => {
   });
 
   it("documents that progress is keyed by user and course", () => {
-    const userA = "dnb:progress:user-a:course-1";
-    const userB = "dnb:progress:user-b:course-1";
+    const userA = "dnb:learning:v1:courseProgress:user-a:course-1";
+    const userB = "dnb:learning:v1:courseProgress:user-b:course-1";
     expect(userA).not.toBe(userB);
   });
 });
