@@ -24,6 +24,9 @@ jobs:
       
       - name: Install dependencies
         run: npm ci || npm install --no-audit --no-fund
+
+      - name: Check mobile store configuration
+        run: npm run mobile:preflight
       
       - name: Run ESLint
         run: npm run lint
