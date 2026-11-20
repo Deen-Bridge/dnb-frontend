@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
 import { setCacheScope } from "@/lib/utils/cache";
+import { clearClientLearningData } from "@/lib/privacy/learningStorage";
 
 const AuthContext = createContext(null);
 
@@ -83,6 +84,8 @@ export default function AuthProvider({ children }) {
   }, [user?._id]);
 
   const logout = useCallback(() => {
+    clearClientLearningData();
+    Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
     axiosInstance.post("/api/auth/logout").catch(() => {});
     setUser(null);

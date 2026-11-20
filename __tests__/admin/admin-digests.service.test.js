@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const get = vi.fn();
 const put = vi.fn();
@@ -22,6 +22,10 @@ const validConfig = {
 };
 
 describe("admin digest service", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("loads the server response without inventing recipients", async () => {
     const response = { config: { ...validConfig, recipients: [] } };
     get.mockResolvedValueOnce({ data: response });
