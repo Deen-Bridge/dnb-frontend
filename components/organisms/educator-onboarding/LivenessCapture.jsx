@@ -109,7 +109,15 @@ export default function LivenessCapture({ onSuccess, onCancel }) {
     setPhase(Phase.CAPTURING);
     setErrorMessage(null);
 
-    const adapter = getLivenessAdapter();
+    let adapter;
+    try {
+      adapter = getLivenessAdapter();
+    } catch (error) {
+      setPhase(Phase.FAILURE);
+      setErrorMessage(error?.message || "Identity verification is unavailable. Please contact support.");
+      setError({ phase: "configuration", message: error?.message });
+      return;
+    }
     adapterRef.current = adapter;
 
     const session = {
