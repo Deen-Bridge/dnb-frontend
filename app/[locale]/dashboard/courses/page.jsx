@@ -18,6 +18,7 @@ import { CAPABILITIES } from "@/lib/auth/roles";
 import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
+import useBoundedList from "@/hooks/useBoundedList";
 import {
   ISLAMIC_CATEGORIES,
   resolveCategorySlug,
@@ -117,6 +118,9 @@ const CoursesPageContent = () => {
 
     return sortCourses(result, sort);
   }, [courses, search, category, sort, showBookmarks, user?._id]);
+
+  const { visibleItems: visibleCourses, hasMore, loadMore } =
+    useBoundedList(filteredCourses);
 
   const handleClearFilters = () => {
     setSearchInput("");
@@ -254,20 +258,29 @@ const CoursesPageContent = () => {
           }
         />
       ) : (
-        <CardGrid>
-          {filteredCourses.map((course) => (
-            <CourseCard
-              key={course._id}
-              course={course}
-              progress={progressMap[course._id]}
-              onBookmarkChange={(isBookmarked) => {
-                if (showBookmarks && !isBookmarked) {
-                  setCourses(courses.filter((c) => c._id !== course._id));
-                }
-              }}
-            />
-          ))}
-        </CardGrid>
+        <>
+          <CardGrid>
+            {visibleCourses.map((course) => (
+              <CourseCard
+                key={course._id}
+                course={course}
+                progress={progressMap[course._id]}
+                onBookmarkChange={(isBookmarked) => {
+                  if (showBookmarks && !isBookmarked) {
+                    setCourses(courses.filter((c) => c._id !== course._id));
+                  }
+                }}
+              />
+            ))}
+          </CardGrid>
+          {hasMore && (
+            <div className="mt-6 flex justify-center">
+              <Button variant="outline" onClick={loadMore}>
+                Load more courses
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </PageShell>
   );
