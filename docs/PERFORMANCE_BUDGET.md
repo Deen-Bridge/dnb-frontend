@@ -52,4 +52,18 @@ boundary.
 
 No new state-management or utility libraries "for performance" without team
 discussion. Prefer code-splitting and tree-shaking existing deps over adding new
-ones. This PR adds **no** dependencies.
+ones. This PR adds only the Puppeteer runtime used by the Lighthouse auth fixture.
+
+## Lighthouse route and profile gate (#717)
+
+CI runs Lighthouse three times per URL and retains reports as workflow
+artifacts. The matrix covers public home/login plus authenticated dashboard,
+courses, library, scholarships, and live-spaces surfaces. The auth script seeds
+only deterministic browser-local fixture cookies; it never calls the backend or
+uses a real account.
+
+The same matrix runs with documented desktop and mobile Lighthouse presets. The
+enforced budgets are performance ≥ 0.85, LCP ≤ 2.5s, INP ≤ 500ms, CLS ≤ 0.1,
+total transfer ≤ 5 MiB, and initial script transfer ≤ 1.5 MiB. Three runs
+reduce single-run noise; threshold changes should include the retained baseline
+reports.
