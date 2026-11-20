@@ -210,6 +210,21 @@ async function run({ github, context, core }) {
       skip(`is not cleanly mergeable (${review.mergeable}).`);
       continue;
     }
+    if (review.mergeStateStatus === "BEHIND") {
+      try {
+        await github.rest.pulls.updateBranch({
+          owner,
+          repo,
+          pull_number: number,
+          expected_head_sha: pr.head.sha,
+          update_method: "merge",
+        });
+        skip("was behind; requested an automatic branch update and will wait for refreshed checks.");
+      } catch (error) {
+        skip(`could not update the behind branch safely: ${error.message}`);
+      }
+      continue;
+    }
     if (review.mergeStateStatus !== "CLEAN") {
       skip(`GitHub reports merge state ${review.mergeStateStatus}, not CLEAN.`);
       continue;
