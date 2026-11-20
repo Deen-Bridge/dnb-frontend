@@ -53,6 +53,9 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://api.example.com
+          # CI exercises the safe development build profile; strict staging
+          # and production profiles are covered by the environment tests.
+          NEXT_PUBLIC_APP_ENV: development
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").

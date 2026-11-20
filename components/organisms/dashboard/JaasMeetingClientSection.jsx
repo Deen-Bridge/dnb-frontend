@@ -27,7 +27,7 @@ const JaasMeetingComponent = dynamic(
   }
 );
 
-const normalizeDomain = (domain = "meet.jit.si") =>
+const normalizeDomain = (domain) =>
   domain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "");
 
 const ensureHttpsUrl = (url) => {
