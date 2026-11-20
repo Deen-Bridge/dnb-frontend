@@ -133,6 +133,17 @@ jobs:
         env:
           E2E_PORT: 3123
 
+      - name: Run production smoke contract
+        run: npm run test:e2e:smoke
+        env:
+          SMOKE_BASE_URL: http://localhost:3123
+          SMOKE_RUN_ID: ci-${{ github.run_id }}
+
+      - name: Verify security headers
+        run: npm run check:security-headers
+        env:
+          SECURITY_HEADERS_URL: http://localhost:3123
+
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
