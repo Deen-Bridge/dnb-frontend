@@ -21,6 +21,7 @@ if (dangerous.length > 0) {
 }
 
 const raw = {
+  NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_AI_API_URL: process.env.NEXT_PUBLIC_AI_API_URL,
   NEXT_PUBLIC_STELLAR_NETWORK: process.env.NEXT_PUBLIC_STELLAR_NETWORK,
@@ -48,6 +49,7 @@ const raw = {
   NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
     process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  NEXT_PUBLIC_USDC_ISSUER: process.env.NEXT_PUBLIC_USDC_ISSUER,
   // ─── Liveness / Face-Verification ──────────────────────────────────────────
   // Identifies which provider adapter to load: "mock" | "persona" | "onfido"
   // No secrets here — API keys/tokens live server-side only.
@@ -63,6 +65,7 @@ const raw = {
 };
 
 const envSchema = z.object({
+  NEXT_PUBLIC_APP_ENV: z.enum(["development", "staging", "production"]).optional(),
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
   NEXT_PUBLIC_AI_API_URL: z.string().url().optional(),
   NEXT_PUBLIC_STELLAR_NETWORK: z.enum(["testnet", "mainnet"]).optional(),
@@ -79,6 +82,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().optional(),
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().optional(),
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
+  NEXT_PUBLIC_USDC_ISSUER: z.string().optional(),
   // Liveness
   NEXT_PUBLIC_LIVENESS_PROVIDER: z
     .enum(["mock", "persona", "onfido"])
@@ -103,8 +107,137 @@ if (!parsed.success) {
 }
 
 const env = parsed.data;
+const isProduction = process.env.NODE_ENV === "production";
+const productionJitsiDomain = env.NEXT_PUBLIC_JITSI_DOMAIN?.trim();
+
+if (isProduction) {
+  const insecureProvider =
+    !productionJitsiDomain ||
+    /^https?:\/\/localhost(?:[:/]|$)/i.test(productionJitsiDomain) ||
+    productionJitsiDomain.replace(/^https?:\/\//i, "").replace(/\/+$/g, "") ===
+      "meet.jit.si";
+  if (insecureProvider || env.NEXT_PUBLIC_JITSI_REQUIRE_JWT !== "true") {
+    throw new Error(
+      "Production Jitsi requires NEXT_PUBLIC_JITSI_DOMAIN to name the approved provider and NEXT_PUBLIC_JITSI_REQUIRE_JWT=true."
+    );
+  }
+}
+
+const runtimeProfile =
+  env.NEXT_PUBLIC_APP_ENV ??
+  (process.env.NODE_ENV === "production" ? "production" : "development");
+const strictProfile = runtimeProfile !== "development" || process.env.NODE_ENV === "production";
+
+function isUnsafeEndpoint(value: string | undefined): boolean {
+  if (!value) return true;
+
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol !== "https:" ||
+      ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(url.hostname) ||
+      url.hostname.endsWith(".local")
+    );
+  } catch {
+    return true;
+  }
+}
+
+function missing(...values: Array<string | undefined>): boolean {
+  return values.some((value) => !value?.trim());
+}
+
+function strictConfigurationIssues(): string[] {
+  const issues: string[] = [];
+
+  if (isUnsafeEndpoint(env.NEXT_PUBLIC_API_URL)) {
+    issues.push("NEXT_PUBLIC_API_URL must be a configured HTTPS endpoint");
+  }
+  if (isUnsafeEndpoint(env.NEXT_PUBLIC_AI_API_URL)) {
+    issues.push("NEXT_PUBLIC_AI_API_URL must be a configured HTTPS endpoint");
+  }
+  if (env.NEXT_PUBLIC_STELLAR_NETWORK !== "mainnet") {
+    issues.push("NEXT_PUBLIC_STELLAR_NETWORK must be mainnet");
+  }
+  if (missing(env.NEXT_PUBLIC_DONATION_WALLET, env.NEXT_PUBLIC_USDC_ISSUER)) {
+    issues.push("NEXT_PUBLIC_DONATION_WALLET and NEXT_PUBLIC_USDC_ISSUER are required");
+  }
+  if (missing(env.NEXT_PUBLIC_JITSI_DOMAIN)) {
+    issues.push("NEXT_PUBLIC_JITSI_DOMAIN is required");
+  }
+  if (env.NEXT_PUBLIC_JITSI_REQUIRE_JWT !== "true") {
+    issues.push("NEXT_PUBLIC_JITSI_REQUIRE_JWT must be true");
+  }
+  if (missing(env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME)) {
+    issues.push("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is required");
+  }
+  if (env.NEXT_PUBLIC_LIVENESS_PROVIDER === "mock" || missing(env.NEXT_PUBLIC_LIVENESS_PROVIDER)) {
+    issues.push("NEXT_PUBLIC_LIVENESS_PROVIDER must select a configured production provider");
+  }
+  if (
+    missing(
+      env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      env.NEXT_PUBLIC_FIREBASE_APP_ID,
+      env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+      env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+    )
+  ) {
+    issues.push("Firebase configuration and NEXT_PUBLIC_GOOGLE_CLIENT_ID are required");
+  }
+
+  return issues;
+}
+
+const configurationIssues = strictProfile ? strictConfigurationIssues() : [];
+if (configurationIssues.length > 0) {
+  throw new Error(
+    `❌ ${runtimeProfile} runtime configuration is unsafe or incomplete:\n` +
+      configurationIssues.map((issue) => `  - ${issue}`).join("\n") +
+      "\n\nSet the required deployment variables before building or starting this profile."
+  );
+}
+
+export type LivenessProvider = "mock" | "persona" | "onfido";
+
+export function resolveLivenessProvider(
+  value: string | undefined,
+  nodeEnv: string | undefined = process.env.NODE_ENV
+): LivenessProvider {
+  const provider = value?.trim() || (nodeEnv === "production" ? "" : "mock");
+  if (nodeEnv === "production" && (!provider || provider === "mock")) {
+    throw new Error(
+      "Liveness provider is unavailable: production requires an approved Persona or Onfido provider."
+    );
+  }
+  if (provider !== "mock" && provider !== "persona" && provider !== "onfido") {
+    throw new Error(`Unsupported liveness provider "${provider}".`);
+  }
+  return provider;
+}
 
 export const config = Object.freeze({
+  get runtimeProfile() {
+    return runtimeProfile;
+  },
+
+  get diagnostics() {
+    return {
+      profile: runtimeProfile,
+      strict: strictProfile,
+      configured: {
+        api: Boolean(env.NEXT_PUBLIC_API_URL),
+        ai: Boolean(env.NEXT_PUBLIC_AI_API_URL),
+        stellar: Boolean(env.NEXT_PUBLIC_STELLAR_NETWORK && env.NEXT_PUBLIC_USDC_ISSUER),
+        video: Boolean(env.NEXT_PUBLIC_JITSI_DOMAIN && env.NEXT_PUBLIC_JITSI_REQUIRE_JWT === "true"),
+        identity: Boolean(env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
+      },
+    };
+  },
+
   get apiUrl() {
     return (
       env.NEXT_PUBLIC_API_URL ??
@@ -123,6 +256,10 @@ export const config = Object.freeze({
 
   get stellarNetwork() {
     return env.NEXT_PUBLIC_STELLAR_NETWORK ?? "testnet";
+  },
+
+  get usdcIssuer() {
+    return env.NEXT_PUBLIC_USDC_ISSUER?.trim() || null;
   },
 
   get donationWallet() {
@@ -150,33 +287,22 @@ export const config = Object.freeze({
   },
 
   get jitsiDomain() {
-    return env.NEXT_PUBLIC_JITSI_DOMAIN ?? "meet.jit.si";
+    return env.NEXT_PUBLIC_JITSI_DOMAIN ?? (isProduction ? "" : "meet.jit.si");
   },
 
   get jitsiRequireJwt() {
-    return env.NEXT_PUBLIC_JITSI_REQUIRE_JWT === "true";
+    return isProduction || env.NEXT_PUBLIC_JITSI_REQUIRE_JWT === "true";
   },
 
   get firebase() {
     return {
-      apiKey:
-        env.NEXT_PUBLIC_FIREBASE_API_KEY ??
-        "AIzaSyC8LlmtlWXvbcbyVbdyv4r-tDsGhhukdag",
-      authDomain:
-        env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ??
-        "deen-bridge-22195.firebaseapp.com",
-      projectId:
-        env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "deen-bridge-22195",
-      storageBucket:
-        env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ??
-        "deen-bridge-22195.firebasestorage.app",
-      messagingSenderId:
-        env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "368531944242",
-      appId:
-        env.NEXT_PUBLIC_FIREBASE_APP_ID ??
-        "1:368531944242:web:7994b11820741a69d35d2b",
-      measurementId:
-        env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "G-ZZ81THLVCC",
+      apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: env.NEXT_PUBLIC_FIREBASE_APP_ID,
+      measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     };
   },
 
@@ -190,7 +316,7 @@ export const config = Object.freeze({
    * Defaults to "mock" so the dev environment works out of the box.
    */
   get livenessProvider() {
-    return env.NEXT_PUBLIC_LIVENESS_PROVIDER ?? "mock";
+    return resolveLivenessProvider(env.NEXT_PUBLIC_LIVENESS_PROVIDER);
   },
 
   /**

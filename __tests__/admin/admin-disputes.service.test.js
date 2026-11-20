@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   fetchDisputeEvidenceSignedUrl,
+  listAdminDisputes,
+  resolveAdminDispute,
   uploadAdminDisputeEvidence,
 } from "@/lib/actions/admin-disputes";
 import axiosInstance from "@/lib/config/axios.config";
@@ -8,6 +10,8 @@ import axiosInstance from "@/lib/config/axios.config";
 vi.mock("@/lib/config/axios.config", () => ({
   default: {
     post: vi.fn(),
+    get: vi.fn(),
+    patch: vi.fn(),
   },
 }));
 
@@ -34,7 +38,7 @@ describe("admin-disputes service", () => {
     expect(result.signedUrl).toContain("https://example.com/signed/");
   });
 
-  it("does not fabricate a signed URL when the endpoint is unavailable", async () => {
+  it("reports signed URL endpoint failures instead of fabricating evidence URLs", async () => {
     axiosInstance.post.mockRejectedValueOnce({
       response: { status: 404 },
     });
@@ -47,6 +51,32 @@ describe("admin-disputes service", () => {
       expiresAt: "",
       error: "Failed to fetch signed URL",
     });
+  });
+
+  it("loads disputes with server-side pagination and status", async () => {
+    axiosInstance.get.mockResolvedValueOnce({
+      data: { success: true, disputes: [{ _id: "dsp_1" }], pagination: { page: 2, limit: 10, total: 11, pages: 2 } },
+    });
+
+    const result = await listAdminDisputes({ page: 2, limit: 10, status: "open" });
+
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/admin/payments/disputes", {
+      params: { page: 2, limit: 10, status: "open" },
+    });
+    expect(result.disputes).toHaveLength(1);
+    expect(result.pagination.pages).toBe(2);
+  });
+
+  it("resolves a dispute with an idempotency key", async () => {
+    axiosInstance.patch.mockResolvedValueOnce({ data: { success: true, dispute: { id: "dsp_1" } } });
+
+    await resolveAdminDispute("dsp_1", "approved", "Refund approved");
+
+    expect(axiosInstance.patch).toHaveBeenCalledWith(
+      "/api/admin/payments/disputes/dsp_1/resolution",
+      { decision: "approved", notes: "Refund approved" },
+      { headers: { "Idempotency-Key": "admin-dispute-resolution:dsp_1:approved" } }
+    );
   });
 
   it("uploadAdminDisputeEvidence validates file policy before posting", async () => {

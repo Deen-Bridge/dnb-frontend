@@ -2,7 +2,7 @@
 /**
  * useDigestConfig — data hook for the scheduled digests configuration page (#306).
  * ---------------------------------------------------------------------------
- * Loads the digest configuration via the stubbed service in
+ * Loads the digest configuration via the backend service in
  * `lib/actions/admin-digests` (same shape as `useFeatureFlags`/`useAdminTeam`:
  * local state + effect + explicit refresh) and holds an **editable local draft**
  * the admin mutates through the exposed helpers before an explicit `save`.
@@ -12,7 +12,7 @@
  * the render decision — this hook just refuses to fetch without one.
  *
  * `save` runs `validateDigestConfig` first and blocks + toasts on invalid input
- * so a malformed cron-ish selection never reaches the (stubbed) backend.
+ * so a malformed cron-ish selection never reaches the backend.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";

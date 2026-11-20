@@ -16,6 +16,10 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import {
+  normalizeProfileCollection,
+  profileEmptyMessage,
+} from "@/lib/profile/profile-content";
 
 const ProfileContent = ({ selectedTab, profileId }) => {
   switch (selectedTab) {
@@ -45,8 +49,8 @@ export default ProfileContent;
 
 // Temporary placeholder components
 const Placeholder = ({ title }) => (
-  <div className="p-6 text-center text-ink-muted text-lg">
-    No {title} yet. Stay tuned!
+  <div className="col-span-full rounded-xl border border-dashed border-accent/15 bg-surface-raised p-8 text-center text-ink-muted" role="status">
+    <p className="text-sm">{profileEmptyMessage(title)}</p>
   </div>
 );
 
@@ -64,9 +68,9 @@ const CoursesTab = ({ profileId }) => {
       try {
         if (profileId) {
           const data = await fetchUserCourses(profileId);
-          setUserCourses(data);
+          setUserCourses(normalizeProfileCollection(data, ["courses", "items"]));
         } else {
-          userCourses([]);
+          setUserCourses([]);
           setError("User not found or not logged in");
         }
       } catch (err) {
@@ -77,7 +81,7 @@ const CoursesTab = ({ profileId }) => {
       }
     };
     getCourses();
-  }, [loading]);
+  }, [loading, profileId]);
 
   if (error) {
     return (
@@ -88,7 +92,9 @@ const CoursesTab = ({ profileId }) => {
           setIsLoading(true);
           if (profileId) {
             fetchUserCourses(profileId)
-              .then((data) => setUserCourses(data))
+              .then((data) =>
+                setUserCourses(normalizeProfileCollection(data, ["courses", "items"]))
+              )
               .catch(() =>
                 setError(
                   "Failed to fetch courses. Please check your connection."
@@ -117,19 +123,24 @@ const CoursesTab = ({ profileId }) => {
 };
 
 const BooksTab = ({ profileId }) => {
-  const { loading } = useAuth(); // you don't need user here
+  const { loading } = useAuth();
   const [userBooks, setUserBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (loading || !profileId) return; // Wait for loading to finish
+    if (loading) return;
+    if (!profileId) {
+      setUserBooks([]);
+      setIsLoading(false);
+      return;
+    }
     const getBooks = async () => {
       setIsLoading(true);
       setError(null);
       try {
         const data = await fetchUserBooks(profileId);
-        setUserBooks(data);
+        setUserBooks(normalizeProfileCollection(data, ["books", "items"]));
       } catch (err) {
         setUserBooks([]);
         setError("Failed to fetch books. Please check your connection.");
@@ -149,7 +160,9 @@ const BooksTab = ({ profileId }) => {
           setIsLoading(true);
           if (profileId) {
             fetchUserBooks(profileId)
-              .then((data) => setUserBooks(data))
+              .then((data) =>
+                setUserBooks(normalizeProfileCollection(data, ["books", "items"]))
+              )
               .catch(() =>
                 setError("Failed to fetch books. Please check your connection.")
               )
@@ -165,8 +178,8 @@ const BooksTab = ({ profileId }) => {
       {isLoading ? (
         [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
       ) : userBooks && userBooks.length > 0 ? (
-        userBooks.map((book) => (
-          <LibraryBookCard key={book.id || book._id} book={book} />
+          userBooks.map((book, index) => (
+          <LibraryBookCard key={book.id || book._id || index} book={book} />
         ))
       ) : (
         <Placeholder title="books" />
@@ -182,17 +195,17 @@ const SpaceTab = ({ profileId }) => {
 
   useEffect(() => {
     if (loading) return;
+    if (!profileId) {
+      setUserSpaces([]);
+      setIsLoading(false);
+      return;
+    }
     const getSpaces = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        if (profileId) {
-          const data = await fetchUserSpaces(profileId);
-          setUserSpaces(data.spaces || []);
-        } else {
-          setUserSpaces([]);
-          setError("User not found or not logged in");
-        }
+        const data = await fetchUserSpaces(profileId);
+        setUserSpaces(normalizeProfileCollection(data, ["spaces", "items"]));
       } catch (err) {
         setUserSpaces([]);
         setError("Failed to fetch spaces. Please check your connection.");
@@ -201,7 +214,7 @@ const SpaceTab = ({ profileId }) => {
       }
     };
     getSpaces();
-  }, [loading]);
+  }, [loading, profileId]);
 
   if (error) {
     return (
@@ -212,7 +225,9 @@ const SpaceTab = ({ profileId }) => {
           setIsLoading(true);
           if (profileId) {
             fetchUserSpaces(profileId)
-              .then((data) => setUserSpaces(data.spaces || []))
+              .then((data) =>
+                setUserSpaces(normalizeProfileCollection(data, ["spaces", "items"]))
+              )
               .catch(() =>
                 setError(
                   "Failed to fetch spaces. Please check your connection."
@@ -248,7 +263,13 @@ const FollowersTab = ({ profileId }) => {
 
   useEffect(() => {
 
-    if (authLoading || !profileId) {
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
+    if (!profileId) {
+      setFollowers([]);
+      setFollowersCount(0);
       setIsLoading(false);
       return;
     }
@@ -264,7 +285,7 @@ const FollowersTab = ({ profileId }) => {
 
 
         if (followersData.success) {
-          setFollowers(followersData.followers || []);
+          setFollowers(normalizeProfileCollection(followersData, ["followers", "items"]));
         }
 
         if (countData.success) {
@@ -294,7 +315,9 @@ const FollowersTab = ({ profileId }) => {
             Promise.all([getFollowers(profileId), getFollowersCount(profileId)])
               .then(([followersData, countData]) => {
                 if (followersData.success) {
-                  setFollowers(followersData.followers || []);
+                  setFollowers(
+                    normalizeProfileCollection(followersData, ["followers", "items"])
+                  );
                 }
                 if (countData.success) {
                   setFollowersCount(
@@ -354,7 +377,13 @@ const FollowingTab = ({ profileId }) => {
 
   useEffect(() => {
 
-    if (authLoading || !profileId) {
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
+    if (!profileId) {
+      setFollowing([]);
+      setFollowingCount(0);
       setIsLoading(false);
       return;
     }
@@ -370,7 +399,7 @@ const FollowingTab = ({ profileId }) => {
 
 
         if (followingData.success) {
-          setFollowing(followingData.following || []);
+          setFollowing(normalizeProfileCollection(followingData, ["following", "items"]));
         }
 
         if (countData.success) {
@@ -400,7 +429,9 @@ const FollowingTab = ({ profileId }) => {
             Promise.all([getFollowing(profileId), getFollowingCount(profileId)])
               .then(([followingData, countData]) => {
                 if (followingData.success) {
-                  setFollowing(followingData.following || []);
+                  setFollowing(
+                    normalizeProfileCollection(followingData, ["following", "items"])
+                  );
                 }
                 if (countData.success) {
                   setFollowingCount(

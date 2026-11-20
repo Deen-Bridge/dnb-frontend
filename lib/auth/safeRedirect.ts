@@ -2,6 +2,7 @@ const DEFAULT_FALLBACK_PATH = "/dashboard";
 const SENTINEL_ORIGIN = "https://deenbridge.local";
 const UNSAFE_PATH_CHARS = /[\p{Cc}\\]/u;
 const REDIRECT_QUERY_KEYS = ["returnTo", "callbackUrl", "redirect", "next"] as const;
+const SAFE_DEEP_LINK_QUERY_KEYS = new Set(["tab", "view", "page", "filter"]);
 
 /**
  * Validates post-login and wallet callback redirect targets to prevent open-redirect phishing (#568).
@@ -95,4 +96,23 @@ export function resolveSafeCallbackRedirect(
     }
   }
   return fallback;
+}
+
+/** Validate a deep-link destination while dropping sensitive query state. */
+export function resolveSafeDeepLink(
+  rawTarget: string | null | undefined,
+  locale: string = "en",
+  fallback: string = "/dashboard",
+): string {
+  const target = resolveSafeRedirectTarget(rawTarget, fallback);
+  if (target === fallback) return fallback;
+  const parsed = new URL(target, SENTINEL_ORIGIN);
+  const pathname = parsed.pathname.startsWith(`/${locale}/`)
+    ? parsed.pathname
+    : `/${locale}${parsed.pathname === "/" ? "" : parsed.pathname}`;
+  const safeQuery = new URLSearchParams();
+  for (const [key, value] of parsed.searchParams) {
+    if (SAFE_DEEP_LINK_QUERY_KEYS.has(key) && value.length <= 80) safeQuery.set(key, value);
+  }
+  return `${pathname}${safeQuery.toString() ? `?${safeQuery}` : ""}`;
 }

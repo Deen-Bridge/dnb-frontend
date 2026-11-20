@@ -2,7 +2,7 @@
 /**
  * useRefunds — data hook for the admin refunds register page (#282).
  * ------------------------------------------------------------------
- * Loads the refund register via the stubbed service in `lib/actions/admin-refunds`
+ * Loads the refund register via the authoritative service in `lib/actions/admin-refunds`
  * (same shape as `useAdminTeam`: local state + effect + explicit refresh) and
  * exposes the retry mutation for failed refunds. Holds the client-side filter
  * state (status / initiator / requested-date range) and derives the filtered
@@ -84,40 +84,32 @@ export default function useRefunds() {
   }, [user, authLoading]);
 
   /**
-   * Retry a failed refund. Optimistically moves the row to `processing` and
-   * appends an audit entry; rolls back and toasts on failure.
+   * Retry a failed refund. The server response is the source of truth: an
+   * unknown provider result remains visibly pending instead of being shown as
+   * successful from an optimistic client update.
    */
   const retry = useCallback(async (refundId, context) => {
     setRetryingId(refundId);
-    const previous = refunds;
-    setRefunds((prev) =>
-      prev.map((r) =>
-        r.id === refundId
-          ? {
-              ...r,
-              status: "processing",
-              audit: [
-                ...(Array.isArray(r.audit) ? r.audit : []),
-                {
-                  at: new Date().toISOString(),
-                  actor: "admin",
-                  note: "Retry requested — re-entering processing.",
-                },
-              ],
-            }
-          : r
-      )
-    );
     try {
-      await retryRefund(refundId, context);
-      toast.success("Refund retry started");
+      const result = await retryRefund(refundId, context);
+      if (result?.refund) {
+        setRefunds((prev) =>
+          prev.map((refund) =>
+            refund.id === refundId ? { ...refund, ...result.refund } : refund
+          )
+        );
+      }
+      toast.success(
+        result?.refund?.status === "pending"
+          ? "Refund retry submitted; awaiting provider reconciliation"
+          : "Refund retry started"
+      );
     } catch (err) {
-      setRefunds(previous);
       toast.error(err?.message || "Failed to retry refund");
     } finally {
       setRetryingId(null);
     }
-  }, [refunds]);
+  }, []);
 
   const filters = useMemo(
     () => ({ status, initiator, from, to }),

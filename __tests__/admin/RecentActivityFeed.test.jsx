@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 
 const state = vi.hoisted(() => ({ current: [] }));
 vi.mock("@/lib/actions/admin-recent-events", () => ({
-  fetchRecentEvents: () => Promise.resolve(state.current),
+  fetchRecentEvents: vi.fn(() => Promise.resolve(state.current)),
 }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }) => (
@@ -36,5 +36,13 @@ describe("RecentActivityFeed", () => {
     render(<RecentActivityFeed />);
     const link = await screen.findByText("Aisha");
     expect(link.getAttribute("href")).toBe("/admin/users/u1");
+  });
+
+  it("distinguishes an unavailable server from an empty feed", async () => {
+    const action = await import("@/lib/actions/admin-recent-events");
+    action.fetchRecentEvents.mockRejectedValueOnce(new Error("Service unavailable"));
+    render(<RecentActivityFeed />);
+    expect(await screen.findByTestId("activity-unavailable")).toBeTruthy();
+    expect(screen.queryByText("No recent activity yet.")).toBeNull();
   });
 });
