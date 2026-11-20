@@ -26,7 +26,6 @@ const ProfilePage = ({ params }) => {
       setErr(false);
       const res = await getUserById(profileid);
       setUser(res?.user || null);
-      console.log("Fetched user:", res?.user);
       setLoading(false);
     } catch (e) {
       console.log(e);
@@ -76,7 +75,11 @@ const ProfilePage = ({ params }) => {
           </div>
         </div>
         <ProfileTabs selectedTab={selectedTab} onChange={setSelectedTab} />
-        <ProfileContent selectedTab={selectedTab} profileId={user?._id} />
+        <ProfileContent
+          key={`${user?._id}:${selectedTab}`}
+          selectedTab={selectedTab}
+          profileId={user?._id}
+        />
       </div>
     </PageShell>
   );

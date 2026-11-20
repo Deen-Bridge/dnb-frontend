@@ -1,5 +1,4 @@
 import axiosInstance from "@/lib/config/axios.config";
-import { getLocalSearchResults } from "@/lib/search-fallback";
 
 export async function searchQuery(query?: string): Promise<any[]> { // TODO(types): Search query result items
   const cleanQuery = query ? query.trim() : "";
@@ -8,15 +7,10 @@ export async function searchQuery(query?: string): Promise<any[]> { // TODO(type
   try {
     const encoded = encodeURIComponent(cleanQuery);
     const response = await axiosInstance.get(`/api/search?q=${encoded}`);
-    if (Array.isArray(response.data)) {
-      return response.data;
-    }
+    const payload = response.data?.results ?? response.data?.data ?? response.data;
+    if (!Array.isArray(payload)) throw new Error("The search response has an invalid shape.");
+    return payload;
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      return getLocalSearchResults(cleanQuery);
-    }
     throw error;
   }
-
-  return [];
 }
