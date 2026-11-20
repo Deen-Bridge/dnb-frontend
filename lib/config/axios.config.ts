@@ -1,14 +1,26 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 import { config } from "@/lib/config/env";
+import {
+  getOperationPolicy,
+  getRetryDelayMs,
+  waitForRetry,
+  type RequestOperation,
+} from "@/lib/config/request-policy";
 
 declare module "axios" {
   export interface AxiosRequestConfig {
     retryOnServerError?: boolean;
+    operation?: RequestOperation;
     _retry?: boolean;
+    _authRetry?: boolean;
+    _retryAttempt?: number;
   }
   export interface InternalAxiosRequestConfig {
     retryOnServerError?: boolean;
+    operation?: RequestOperation;
     _retry?: boolean;
+    _authRetry?: boolean;
+    _retryAttempt?: number;
   }
 }
 
@@ -17,7 +29,7 @@ const baseURL = config.apiUrl;
 const axiosInstance = axios.create({
   baseURL,
   withCredentials: true,
-  timeout: 90000,
+  timeout: 15000,
 });
 
 // Track ongoing refresh to avoid multiple concurrent refresh calls
@@ -41,6 +53,10 @@ const processQueue = (error: any | null, token: string | null = null): void => {
 // Add request interceptor to handle auth token
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    const policy = getOperationPolicy(config.url, config.operation);
+    if (config.timeout === 15000 || config.timeout == null) {
+      config.timeout = policy.timeoutMs;
+    }
     if (typeof window !== "undefined") {
       const token = document.cookie
         .split("; ")
@@ -63,11 +79,29 @@ axiosInstance.interceptors.request.use(
 // ---------------------------------------------------------------------------
 const IDEMPOTENT_METHODS = new Set(["get", "head", "options"]);
 
+const hasIdempotencyContract = (request: InternalAxiosRequestConfig) => {
+  if (IDEMPOTENT_METHODS.has(String(request.method ?? "get").toLowerCase())) {
+    return true;
+  }
+  if (request.headers?.["Idempotency-Key"]) return true;
+  if (typeof request.data === "string") {
+    try {
+      return Boolean(JSON.parse(request.data).idempotencyKey);
+    } catch {
+      return false;
+    }
+  }
+  return Boolean(request.data?.idempotencyKey);
+};
+
 const isRetryableRequest = (request?: InternalAxiosRequestConfig): boolean => {
   if (!request) return false;
-  if (request.retryOnServerError === true) return true;
+  if (request.retryOnServerError === true) {
+    return hasIdempotencyContract(request);
+  }
   if (request.retryOnServerError === false) return false;
-  return IDEMPOTENT_METHODS.has(String(request.method ?? "get").toLowerCase());
+  const policy = getOperationPolicy(request.url, request.operation);
+  return policy.retryMethods.includes(String(request.method ?? "get").toLowerCase());
 };
 
 // Add response interceptor to handle errors
@@ -76,8 +110,16 @@ axiosInstance.interceptors.response.use(
   async (error: any) => { // TODO(types): Generic error interceptor payload
     const originalRequest = error.config as InternalAxiosRequestConfig | undefined;
 
-    // Handle network errors
-    if (error.code === "ERR_NETWORK") {
+    const policy = getOperationPolicy(originalRequest?.url, originalRequest?.operation);
+    const attempt = originalRequest?._retryAttempt ?? 1;
+    const canRetry =
+      originalRequest &&
+      !originalRequest._authRetry &&
+      attempt < policy.maxAttempts &&
+      isRetryableRequest(originalRequest);
+
+    // Handle network errors when the operation has a bounded retry budget.
+    if (error.code === "ERR_NETWORK" && !canRetry) {
       console.error("Network error:", error);
       return Promise.reject({
         message:
@@ -87,7 +129,7 @@ axiosInstance.interceptors.response.use(
     }
 
     // Handle timeouts
-    if (error.code === "ECONNABORTED") {
+    if (error.code === "ECONNABORTED" && !canRetry) {
       console.log("Request timeout:", error);
       return Promise.reject({
         message: "Request timed out. Please try again.",
@@ -103,14 +145,14 @@ axiosInstance.interceptors.response.use(
       originalRequest?.url?.includes("/api/auth/stellar/") ||
       originalRequest?.url?.includes("/api/auth/google");
 
-    if (originalRequest && error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
+    if (originalRequest && error.response?.status === 401 && !originalRequest._authRetry && !isAuthRoute) {
       if (isRefreshing) {
         return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then(() => axiosInstance(originalRequest));
       }
 
-      originalRequest._retry = true;
+      originalRequest._authRetry = true;
       isRefreshing = true;
 
       try {
@@ -161,16 +203,22 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // Auto-retry once on 5xx errors after 1 second — idempotent requests only.
+    // Retry only within the operation budget, with bounded backoff and jitter.
+    const status = error.response?.status;
     if (
       originalRequest &&
-      !originalRequest._retry &&
-      error.response?.status >= 500 &&
-      isRetryableRequest(originalRequest)
+      canRetry &&
+      (error.code === "ERR_NETWORK" ||
+        error.code === "ECONNABORTED" ||
+        policy.retryStatuses.includes(status))
     ) {
-      originalRequest._retry = true;
+      originalRequest._retryAttempt = attempt + 1;
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const retryAfter = error.response?.headers?.["retry-after"];
+        await waitForRetry(
+          getRetryDelayMs(attempt, retryAfter),
+          originalRequest.signal
+        );
         return axiosInstance(originalRequest);
       } catch (retryError) {
         return Promise.reject(retryError);

@@ -6,6 +6,11 @@ import {
   StaleWhileRevalidate,
   NetworkFirst,
 } from "serwist";
+import {
+  isPrivateNavigationPath,
+  isPublicNavigationPath,
+  PRIVATE_RUNTIME_CACHE_NAMES,
+} from "../lib/pwa/cache-policy";
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
@@ -79,19 +84,6 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: /\/api\/books\/[^/]+\/preview/i,
-      handler: new StaleWhileRevalidate({
-        cacheName: "book-previews",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 10,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
-            maxAgeFrom: "last-used",
-          }),
-        ],
-      }),
-    },
-    {
       matcher: /^https:\/\/res\.cloudinary\.com\/.*/i,
       handler: new StaleWhileRevalidate({
         cacheName: "cloudinary-images",
@@ -114,33 +106,32 @@ const serwist = new Serwist({
       handler: new NetworkOnly(),
     },
     {
+      // Private navigations are never persisted or served from a shared cache.
       matcher: ({ request, url, sameOrigin }) =>
-        request.headers.get("Content-Type")?.includes("text/html") &&
-        sameOrigin,
-      handler: new NetworkFirst({
-        cacheName: "pages",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60,
-            maxAgeFrom: "last-used",
-          }),
-        ],
-      }),
+        request.mode === "navigate" &&
+        sameOrigin &&
+        isPrivateNavigationPath(url.pathname),
+      handler: new NetworkOnly(),
     },
     {
-      matcher: ({ sameOrigin, url }) => sameOrigin,
+      // Only the explicit public route allowlist may use an offline page cache.
+      matcher: ({ request, url, sameOrigin }) =>
+        request.mode === "navigate" &&
+        sameOrigin &&
+        isPublicNavigationPath(url.pathname),
       handler: new NetworkFirst({
-        cacheName: "same-origin-others",
+        cacheName: "public-pages",
         plugins: [
           new ExpirationPlugin({
-            maxEntries: 32,
+            maxEntries: 24,
             maxAgeSeconds: 24 * 60 * 60,
             maxAgeFrom: "last-used",
           }),
         ],
       }),
     },
+    // API and unclassified same-origin requests are network-only by default.
+    { matcher: ({ sameOrigin }) => sameOrigin, handler: new NetworkOnly() },
     {
       matcher: /.*/i,
       handler: new NetworkOnly(),
@@ -154,6 +145,25 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+const clearPrivateCaches = async () => {
+  const names = await caches.keys();
+  await Promise.all(
+    names
+      .filter((name) => PRIVATE_RUNTIME_CACHE_NAMES.includes(name))
+      .map((name) => caches.delete(name))
+  );
+};
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "CLEAR_PRIVATE_CACHES") {
+    event.waitUntil(clearPrivateCaches());
+  }
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(clearPrivateCaches());
+});
 
 // ─── Web Push notifications (issue #197) ────────────────────────────────────
 // The backend delivers pushes via the web-push library. Payloads are JSON of

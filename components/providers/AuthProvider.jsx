@@ -1,9 +1,10 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { requestPrivateCacheClear } from "@/lib/pwa/cache-isolation";
 
 const AuthContext = createContext(null);
 
@@ -28,6 +29,7 @@ export default function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const previousUserId = useRef(null);
 
   const setAuthState = useCallback((userData) => {
     if (userData) {
@@ -66,6 +68,16 @@ export default function AuthProvider({ children }) {
     };
   }, [setAuthState]);
 
+  // A browser can move directly between accounts without a full reload.
+  // Remove any worker-owned runtime entries before the new account renders.
+  useEffect(() => {
+    const nextUserId = user?._id ?? user?.id ?? null;
+    if (previousUserId.current && nextUserId && previousUserId.current !== nextUserId) {
+      requestPrivateCacheClear("account-switch");
+    }
+    previousUserId.current = nextUserId;
+  }, [user?._id, user?.id]);
+
   // Anonymous error-tracking context: id only, never email or name.
   useEffect(() => {
     let active = true;
@@ -86,6 +98,7 @@ export default function AuthProvider({ children }) {
     Cookies.remove("userInfo", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
+    requestPrivateCacheClear("logout");
 
     if (typeof window !== "undefined" && "caches" in window) {
       caches.keys().then((names) => {

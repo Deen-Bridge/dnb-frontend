@@ -13,7 +13,8 @@ const withSerwist = withSerwistInit({
   swSrc: "app/sw.js",
   swDest: "public/sw.js",
   disable: process.env.NODE_ENV === "development",
-  cacheOnNavigation: true,
+  // Navigation caching is opt-in in app/sw.js; private pages are network-only.
+  cacheOnNavigation: false,
   reloadOnOnline: true,
 });
 
