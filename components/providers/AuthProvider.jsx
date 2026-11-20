@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { setCacheScope } from "@/lib/utils/cache";
 
 const AuthContext = createContext(null);
 
@@ -34,9 +35,11 @@ export default function AuthProvider({ children }) {
       if (userData.id && !userData._id) userData._id = userData.id;
       setUser(userData);
       setIsAuthenticated(true);
+      setCacheScope(userData._id || userData.id || null);
     } else {
       setUser(null);
       setIsAuthenticated(false);
+      setCacheScope(null);
     }
     setLoading(false);
   }, []);
@@ -86,6 +89,7 @@ export default function AuthProvider({ children }) {
     Cookies.remove("userInfo", { path: "/" });
     setUser(null);
     setIsAuthenticated(false);
+    setCacheScope(null);
 
     if (typeof window !== "undefined" && "caches" in window) {
       caches.keys().then((names) => {
