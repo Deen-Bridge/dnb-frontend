@@ -13,6 +13,7 @@ import {
   apiClient,
   storeTokens,
   clearTokens,
+  setAccessTokenRefresher,
   API_ENDPOINTS,
 } from "@/lib/api";
 import type { User } from "@/types";
@@ -44,14 +45,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setFirebaseUser(fbUser);
       if (fbUser) {
         try {
+          setAccessTokenRefresher(() => fbUser.getIdToken(true));
           const token = await fbUser.getIdToken();
-          await storeTokens(token, "");
+          await storeTokens(token);
           const { data } = await apiClient.get(API_ENDPOINTS.auth.me);
           setUser(data.user ?? data);
         } catch {
           setUser(null);
         }
       } else {
+        setAccessTokenRefresher(null);
         setUser(null);
         await clearTokens();
       }
@@ -64,8 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (email: string, password: string) => {
     const auth = getAuth();
     const credential = await signInWithEmailAndPassword(auth, email, password);
+    setAccessTokenRefresher(() => credential.user.getIdToken(true));
     const token = await credential.user.getIdToken();
-    await storeTokens(token, "");
+    await storeTokens(token);
     const { data } = await apiClient.get(API_ENDPOINTS.auth.me);
     setUser(data.user ?? data);
   }, []);
@@ -78,9 +82,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password
       );
+      setAccessTokenRefresher(() => credential.user.getIdToken(true));
       await credential.user.updateProfile({ displayName: name });
       const token = await credential.user.getIdToken();
-      await storeTokens(token, "");
+      await storeTokens(token);
       await apiClient.post(API_ENDPOINTS.auth.register, { email, name });
       const { data } = await apiClient.get(API_ENDPOINTS.auth.me);
       setUser(data.user ?? data);
@@ -91,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     const auth = getAuth();
     await firebaseSignOut(auth);
+    setAccessTokenRefresher(null);
     await clearTokens();
     setUser(null);
     setFirebaseUser(null);
