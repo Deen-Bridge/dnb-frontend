@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Toaster } from "sonner";
 import AppProviders from "@/components/providers/AppProviders";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { appearanceInitScript } from "@/lib/config/appearance.config";
 import { ibmPlexArabic } from "@/lib/config/font.config";
 import { routing } from "@/i18n/routing";
@@ -192,10 +193,7 @@ export default async function LocaleLayout({ children, params }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: appearanceInitScript() }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+        <JsonLd data={structuredData} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.variable} antialiased${
