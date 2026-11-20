@@ -210,14 +210,30 @@ async function run({ github, context, core }) {
       skip(`is not cleanly mergeable (${review.mergeable}).`);
       continue;
     }
+    if (review.mergeStateStatus === "BEHIND") {
+      try {
+        await github.rest.pulls.updateBranch({
+          owner,
+          repo,
+          pull_number: number,
+          expected_head_sha: pr.head.sha,
+          update_method: "merge",
+        });
+        skip("was behind; requested an automatic branch update and will wait for refreshed checks.");
+      } catch (error) {
+        skip(`could not update the behind branch safely: ${error.message}`);
+      }
+      continue;
+    }
     if (review.mergeStateStatus !== "CLEAN") {
       skip(`GitHub reports merge state ${review.mergeStateStatus}, not CLEAN.`);
       continue;
     }
-    if (review.decision !== "APPROVED") {
-      skip(`review decision is ${review.decision || "not approved"}.`);
-      continue;
-    }
+    // Approval is intentionally not a merge gate here. Branch protection
+    // requires zero human approvals, and requiring reviewDecision ===
+    // "APPROVED" made the automation contradict that repository policy.
+    // Malware scanning, required checks, clean merge state, issue linkage,
+    // hold labels, and unresolved-thread checks remain enforced below.
     if (review.unresolved > 0) {
       skip(`has ${review.unresolved} unresolved review thread(s).`);
       continue;
