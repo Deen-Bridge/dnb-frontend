@@ -10,6 +10,7 @@
     "lint": "eslint app components lib hooks contexts types __tests__ e2e",
     "lint:any": "node scripts/check-explicit-any.mjs",
     "a11y": "eslint --config eslint.config.a11y.mjs components app",
+    "check:launch-content": "node scripts/check-launch-content.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run",
     "test:watch": "vitest",
