@@ -43,6 +43,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+
+      - name: Validate locale catalogs
+        run: npm run i18n:check
       
       - name: Run accessibility gate
         run: npm run a11y
@@ -58,6 +61,9 @@ jobs:
       # loses its `-- <reason>` justification.
       - name: Guard explicit-any count
         run: npm run lint:any
+
+      - name: Verify type-boundary ownership
+        run: npm run lint:type-boundaries
 
       - name: Validate unit release profile
         run: npm run release:check
@@ -89,6 +95,9 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
+      - name: Enforce emitted asset budget
+        run: npm run budget
 
   e2e:
     name: E2E

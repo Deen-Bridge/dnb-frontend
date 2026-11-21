@@ -18,10 +18,10 @@ export const coursesAPI = {
         forceRefresh,
         storage: "local",
       });
-      return data || [];
+      return data;
     } catch (error) {
       logger.error("Error fetching courses:", error);
-      return [];
+      throw error;
     }
   },
 
@@ -36,7 +36,7 @@ export const coursesAPI = {
       return data;
     } catch (error) {
       logger.error(`Error fetching course ${courseId}:`, error);
-      return null;
+      throw error;
     }
   },
 
@@ -58,10 +58,10 @@ export const booksAPI = {
         forceRefresh,
         storage: "local",
       });
-      return data || [];
+      return data;
     } catch (error) {
       logger.error("Error fetching books:", error);
-      return [];
+      throw error;
     }
   },
 
@@ -76,7 +76,7 @@ export const booksAPI = {
       return data;
     } catch (error) {
       logger.error(`Error fetching book ${bookId}:`, error);
-      return null;
+      throw error;
     }
   },
 
@@ -98,10 +98,10 @@ export const spacesAPI = {
         forceRefresh,
         storage: "session",
       });
-      return data || [];
+      return data;
     } catch (error) {
       logger.error("Error fetching spaces:", error);
-      return [];
+      throw error;
     }
   },
 
@@ -116,7 +116,7 @@ export const spacesAPI = {
       return data;
     } catch (error) {
       logger.error(`Error fetching space ${spaceId}:`, error);
-      return null;
+      throw error;
     }
   },
 
@@ -134,10 +134,10 @@ export const reelsAPI = {
         forceRefresh,
         storage: "memory",
       });
-      return data || [];
+      return data;
     } catch (error) {
       logger.error("Error fetching reels:", error);
-      return [];
+      throw error;
     }
   },
 
@@ -152,7 +152,7 @@ export const reelsAPI = {
       return data;
     } catch (error) {
       logger.error(`Error fetching reel ${reelId}:`, error);
-      return null;
+      throw error;
     }
   },
 
@@ -194,10 +194,10 @@ export const searchAPI = {
           storage: "session",
         }
       );
-      return data || { results: [] };
+      return data;
     } catch (error) {
       logger.error("Error searching:", error);
-      return { results: [] };
+      throw error;
     }
   },
 
