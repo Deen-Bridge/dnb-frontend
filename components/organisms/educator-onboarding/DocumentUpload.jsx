@@ -105,7 +105,7 @@ function StatusPill({ state }) {
 
 // ── One document slot ──────────────────────────────────────────────────────
 
-function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
+function DocumentSlot({ slot, definition, onSelectFile, onRemove, onCancelUpload }) {
   const inputId = useId();
   const cameraInputId = `${inputId}-camera`;
   const fileInputRef = useRef(null);
@@ -318,6 +318,16 @@ function DocumentSlot({ slot, definition, onSelectFile, onRemove }) {
                 </button>
               </div>
             )}
+            {isBusy && (
+              <button
+                type="button"
+                onClick={() => onCancelUpload(definition.type)}
+                data-testid={`cancel-${definition.type}`}
+                className="mt-2 rounded-full border border-destructive px-2.5 py-1 text-[11px] font-medium text-destructive hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
+              >
+                Cancel upload
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -376,7 +386,7 @@ export default function DocumentUpload({
   onCancel,
   uploadOptions,
 }) {
-  const { slots, getSlot, uploadDocument, replaceDocument, removeDocument } =
+  const { slots, getSlot, uploadDocument, replaceDocument, removeDocument, cancelUpload } =
     useDocumentUpload(uploadOptions);
 
   const handleSelectFile = useCallback(
@@ -452,6 +462,7 @@ export default function DocumentUpload({
             slot={getSlot(definition.type)}
             onSelectFile={handleSelectFile}
             onRemove={handleRemove}
+            onCancelUpload={cancelUpload}
           />
         ))}
       </div>

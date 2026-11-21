@@ -8,9 +8,8 @@
  *      upload that still to Cloudinary.
  *   2. "Upload image" - pick a custom image file directly.
  *
- * Both paths converge on the same unsigned Cloudinary upload
- * (`dnb_reels_posters` preset, matching the `dnb_*` naming used by course
- * thumbnails) and then persist the resulting URL via `useReelPoster`, which
+ * Both paths converge on the same server-issued, short-lived upload target
+ * and then persist the returned asset reference via `useReelPoster`, which
  * updates instantly and rolls back + toasts if the (stubbed) backend call
  * fails - see `lib/actions/reels-action.updateReelPoster`.
  */
@@ -33,7 +32,6 @@ import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 import { Loader2, ImageIcon, Film } from "lucide-react";
 import { toast } from "sonner";
 
-const POSTER_UPLOAD_PRESET = "dnb_reels_posters";
 const POSTER_VALIDATION = {
   maxSize: 5 * 1024 * 1024,
   allowedTypes: ["image/*"],
@@ -81,8 +79,8 @@ const ReelPosterDialog = ({ open, onOpenChange, reel, onUpdated }) => {
     reel?.id,
     reel?.poster
   );
-  const frameUpload = useCloudinaryUpload(POSTER_UPLOAD_PRESET, POSTER_VALIDATION);
-  const fileUpload = useCloudinaryUpload(POSTER_UPLOAD_PRESET, POSTER_VALIDATION);
+  const frameUpload = useCloudinaryUpload("reel-poster", POSTER_VALIDATION);
+  const fileUpload = useCloudinaryUpload("reel-poster", POSTER_VALIDATION);
 
   const busy = capturing || frameUpload.uploading || fileUpload.uploading || persisting;
 

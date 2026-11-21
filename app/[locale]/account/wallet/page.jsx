@@ -25,6 +25,7 @@ import {
   poppins_600,
 } from "@/lib/config/font.config";
 import { getExplorerUrl } from "@/lib/utils/stellarExplorer";
+import { loginRedirectPath } from "@/lib/auth/safeRedirect";
 
 /* ── building blocks (design-system consistent) ── */
 
@@ -65,7 +66,7 @@ export default function WalletPage() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/login");
+      router.replace(loginRedirectPath(window.location.pathname));
     }
   }, [authLoading, isAuthenticated, router]);
 

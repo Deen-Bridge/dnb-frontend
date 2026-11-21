@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import Cookies from "js-cookie";
 import axiosInstance from "@/lib/config/axios.config";
 import { config } from "@/lib/config/env";
 
@@ -9,8 +8,6 @@ const RECONNECT_DELAY = 1000;
 const getReconnectDelay = (attempts: number): number => {
   return Math.min(RECONNECT_DELAY * Math.pow(2, attempts), 30000);
 };
-
-const getAuthToken = (): string | undefined => Cookies.get("authToken");
 
 export interface SseNotification {
   _id: string;
@@ -63,9 +60,6 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
   }, []);
 
   const fetchNotifications = useCallback(async () => {
-    const token = getAuthToken();
-    if (!token) return;
-
     try {
       setIsLoading(true);
       const response = await axiosInstance.get("/api/notifications", {
@@ -89,14 +83,12 @@ export const useNotificationSSE = (): UseNotificationSSEResult => {
   }, []);
 
   const connectSSE = useCallback(() => {
-    const token = getAuthToken();
-    if (!token || eventSourceRef.current) return;
+    if (eventSourceRef.current) return;
 
     try {
-      const sseUrl = `${config.apiUrl}/api/notifications/sse?token=${encodeURIComponent(
-        token
-      )}`;
-      const eventSource = new EventSource(sseUrl);
+      const eventSource = new EventSource(`${config.apiUrl}/api/notifications/sse`, {
+        withCredentials: true,
+      });
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {

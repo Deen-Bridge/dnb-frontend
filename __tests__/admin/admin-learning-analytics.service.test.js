@@ -1,91 +1,81 @@
-/**
- * Admin learning-engagement analytics service — contract tests (#322).
- * ------------------------------------------------------------------
- * The service in `lib/actions/admin-learning-analytics.js` is the seam the
- * admin learning-analytics page calls for the engagement snapshot. These tests
- * pin the resolved shape the UI depends on and, crucially, that metrics without
- * backend instrumentation resolve with `tracked: false` so the page renders a
- * "not tracked yet" placeholder instead of a silent zero.
- */
-import { describe, it, expect } from "vitest";
-import { fetchEngagementAnalytics } from "@/lib/actions/admin-learning-analytics";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const FUNNEL_STAGES = ["enrolled", "started", "quarter", "completed"];
+const { get } = vi.hoisted(() => ({ get: vi.fn() }));
+
+vi.mock("@/lib/config/axios.config", () => ({ default: { get } }));
+
+import {
+  DEFAULT_ANALYTICS_RANGE_DAYS,
+  MAX_ANALYTICS_RANGE_DAYS,
+  fetchEngagementAnalytics,
+  normalizeAnalyticsRange,
+} from "@/lib/actions/admin-learning-analytics";
+
+const response = {
+  data: {
+    generatedAt: "2026-11-20T00:00:00.000Z",
+    freshness: "2026-11-20T00:00:00.000Z",
+    totals: {
+      students: { label: "Students", value: 3, tracked: true },
+      coursesEnrolled: { label: "Enrollments", value: 2, tracked: true },
+      lessonsCompleted: { label: "Completed", value: 1, tracked: true },
+      avgSessionLength: { label: "Session", value: null, tracked: false },
+    },
+    funnel: [{ stage: "enrolled", label: "Enrolled", value: 2, tracked: true }],
+    sessionLength: { tracked: false, avgMinutes: null },
+    lessonsCompleted: { tracked: true, buckets: [{ range: "1–5", value: 1 }] },
+    readingDepth: { tracked: false, buckets: [] },
+    geographic: {
+      tracked: true,
+      coverage: { label: "Coverage", value: 100, tracked: true },
+      countries: [{ code: "NG", name: "Nigeria", learners: 3, revenue: 10, tracked: true }],
+    },
+  },
+};
 
 describe("fetchEngagementAnalytics", () => {
-  it("resolves a snapshot with the documented shape", async () => {
-    const data = await fetchEngagementAnalytics();
-    expect(typeof data.generatedAt).toBe("string");
-
-    for (const key of ["students", "coursesEnrolled", "lessonsCompleted", "avgSessionLength"]) {
-      expect(data.totals[key]).toBeDefined();
-      expect(typeof data.totals[key].label).toBe("string");
-      expect(typeof data.totals[key].value).toBe("number");
-      expect(typeof data.totals[key].tracked).toBe("boolean");
-    }
+  beforeEach(() => {
+    get.mockReset();
+    get.mockResolvedValue(response);
   });
 
-  it("exposes all four funnel stages in learner-progression order", async () => {
-    const data = await fetchEngagementAnalytics();
-    expect(data.funnel.map((stage) => stage.stage)).toEqual(FUNNEL_STAGES);
-    for (const stage of data.funnel) {
-      expect(typeof stage.label).toBe("string");
-      expect(typeof stage.value).toBe("number");
-      expect(typeof stage.tracked).toBe("boolean");
-    }
-  });
-
-  it("marks the enrolled stage as tracked and later stages as not tracked", async () => {
-    const data = await fetchEngagementAnalytics();
-    expect(data.funnel.find((s) => s.stage === "enrolled").tracked).toBe(true);
-    for (const stage of ["started", "quarter", "completed"]) {
-      expect(data.funnel.find((s) => s.stage === stage).tracked).toBe(false);
-    }
-  });
-
-  it("flags non-instrumented metrics as not tracked", async () => {
-    const data = await fetchEngagementAnalytics();
-    expect(data.sessionLength.tracked).toBe(false);
-    expect(data.lessonsCompleted.tracked).toBe(false);
-    expect(data.readingDepth.tracked).toBe(false);
-  });
-
-  it("provides distribution bucket shapes for lessons and reading depth", async () => {
-    const data = await fetchEngagementAnalytics();
-    expect(Array.isArray(data.lessonsCompleted.buckets)).toBe(true);
-    expect(data.lessonsCompleted.buckets.length).toBeGreaterThan(0);
-    expect(Array.isArray(data.readingDepth.buckets)).toBe(true);
-    expect(data.readingDepth.buckets.length).toBeGreaterThan(0);
-    for (const bucket of [...data.lessonsCompleted.buckets, ...data.readingDepth.buckets]) {
-      expect(typeof bucket.range).toBe("string");
-      expect(typeof bucket.value).toBe("number");
-    }
-  });
-
-  it("resolves a geographic snapshot with coverage and country shapes", async () => {
-    const data = await fetchEngagementAnalytics();
-    expect(data.geographic).toBeDefined();
-    expect(typeof data.geographic.tracked).toBe("boolean");
-    expect(typeof data.geographic.coverage.label).toBe("string");
-    expect(typeof data.geographic.coverage.value).toBe("number");
-    expect(typeof data.geographic.coverage.tracked).toBe("boolean");
-    expect(Array.isArray(data.geographic.countries)).toBe(true);
-    expect(data.geographic.countries.length).toBeGreaterThan(0);
-    for (const country of data.geographic.countries) {
-      expect(typeof country.code).toBe("string");
-      expect(typeof country.name).toBe("string");
-      expect(typeof country.learners).toBe("number");
-      expect(typeof country.revenue).toBe("number");
-      expect(typeof country.tracked).toBe("boolean");
-    }
-  });
-
-  it("accepts an optional date range and still resolves the snapshot", async () => {
+  it("uses the authenticated authoritative endpoint and sends a bounded UTC range", async () => {
     const data = await fetchEngagementAnalytics({
-      from: "2026-01-01T00:00:00.000Z",
-      to: "2026-03-31T23:59:59.999Z",
+      from: "2026-11-01T00:00:00.000Z",
+      to: "2026-11-20T23:59:59.999Z",
     });
-    expect(typeof data.generatedAt).toBe("string");
-    expect(data.geographic.countries.length).toBeGreaterThan(0);
+    expect(get).toHaveBeenCalledWith("/api/admin/analytics/engagement", {
+      params: { from: "2026-11-01T00:00:00.000Z", to: "2026-11-20T23:59:59.999Z", timezone: "UTC" },
+    });
+    expect(data.totals.students.value).toBe(3);
+    expect(data.totals.avgSessionLength.tracked).toBe(false);
+    expect(data.freshness).toBe(response.data.freshness);
+  });
+
+  it("defaults to a bounded range when no dates are supplied", () => {
+    const range = normalizeAnalyticsRange();
+    expect((Date.parse(range.to) - Date.parse(range.from)) / 86400000).toBe(DEFAULT_ANALYTICS_RANGE_DAYS);
+  });
+
+  it("rejects malformed, reversed, and over-broad ranges before making a request", () => {
+    expect(() => normalizeAnalyticsRange({ from: "not-a-date" })).toThrow("from must be a valid ISO-8601 date");
+    expect(() => normalizeAnalyticsRange({ from: "2026-11-21", to: "2026-11-20" })).toThrow("from must be earlier");
+    expect(() => normalizeAnalyticsRange({ from: "2025-01-01", to: "2026-01-02" })).toThrow(`cannot exceed ${MAX_ANALYTICS_RANGE_DAYS} days`);
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it("does not turn an empty or partially instrumented response into zeroes", async () => {
+    get.mockResolvedValueOnce({ data: { totals: {}, geographic: { tracked: false } } });
+    const data = await fetchEngagementAnalytics({ from: "2026-11-01", to: "2026-11-02" });
+    expect(data.totals.students.value).toBeNull();
+    expect(data.totals.students.tracked).toBe(false);
+    expect(data.geographic.tracked).toBe(false);
+    expect(data.geographic.countries).toEqual([]);
+  });
+
+  it("preserves unauthorized endpoint failures for the admin route to handle", async () => {
+    const error = Object.assign(new Error("Forbidden"), { response: { status: 403 } });
+    get.mockRejectedValueOnce(error);
+    await expect(fetchEngagementAnalytics({ from: "2026-11-01", to: "2026-11-02" })).rejects.toBe(error);
   });
 });

@@ -105,34 +105,8 @@ export default function AdminUserDetailPage({ params }) {
       try {
         const res = await getUserById(userId);
         if (!isActive) return;
-        let resolvedUser;
-        if (res?.user) {
-          resolvedUser = res.user;
-        } else {
-          // Mock fallback user record if backend endpoint is not connected
-          resolvedUser = {
-            _id: userId,
-            name: "Amina Yusuf",
-            email: "amina@deenbridge.org",
-            role: "educator",
-            status: "active",
-            createdAt: "2025-01-15T10:30:00Z",
-            walletAddress: "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335WFOPVQOI3ZFZG3KA4YAOMNEB",
-            bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
-            coursesCount: 8,
-            booksCount: 3,
-            verification: {
-              submittedAt: "2025-01-16T09:00:00Z",
-              reviewedAt: "2025-01-17T14:30:00Z",
-              approvedAt: "2025-01-17T14:30:00Z",
-              reviewedBy: "Admin review team",
-            },
-            purchases: [
-              { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
-              { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
-            ],
-          };
-        }
+        if (!res?.user) throw new Error(res?.message || "User record is unavailable.");
+        const resolvedUser = res.user;
         setUser(resolvedUser);
         setSelectedRole(resolvedUser.role === "educator" ? "mentor" : resolvedUser.role || "student");
 
@@ -158,39 +132,14 @@ export default function AdminUserDetailPage({ params }) {
         } else {
           setVerificationHistory({ source: null, events: [], loading: false, error: null });
         }
-      } catch {
+      } catch (error) {
         if (!isActive) return;
-        const fallbackUser = {
-          _id: userId,
-          name: "Amina Yusuf",
-          email: "amina@deenbridge.org",
-          role: "educator",
-          status: "active",
-          createdAt: "2025-01-15T10:30:00Z",
-          walletAddress: "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335WFOPVQOI3ZFZG3KA4YAOMNEB",
-          bio: "Senior Arabic & Quranic Studies Educator at DeenBridge.",
-          coursesCount: 8,
-          booksCount: 3,
-          verification: {
-            submittedAt: "2025-01-16T09:00:00Z",
-            reviewedAt: "2025-01-17T14:30:00Z",
-            approvedAt: "2025-01-17T14:30:00Z",
-            reviewedBy: "Admin review team",
-          },
-          purchases: [
-            { id: "p1", title: "Tafsir of Surah Al-Fatihah", amount: "$24.50", date: "2026-01-10" },
-            { id: "p2", title: "The Sealed Nectar", amount: "$9.99", date: "2026-02-01" },
-          ],
-        };
-        setUser(fallbackUser);
-        setSelectedRole("mentor");
-        const history = await fetchEducatorVerificationHistory(userId, fallbackUser);
-        if (!isActive) return;
+        setUser(null);
         setVerificationHistory({
-          source: history.source,
-          events: Array.isArray(history.events) ? history.events : [],
+          source: null,
+          events: [],
           loading: false,
-          error: null,
+          error: error?.message || "User record is unavailable.",
         });
       } finally {
         if (isActive) setLoading(false);
