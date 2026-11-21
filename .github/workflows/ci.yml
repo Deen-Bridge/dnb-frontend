@@ -93,6 +93,9 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
+      - name: Enforce emitted asset budget
+        run: npm run budget
+
   e2e:
     name: E2E
     runs-on: ubuntu-latest
