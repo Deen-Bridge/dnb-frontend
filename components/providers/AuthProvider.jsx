@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { clearAllCaches } from "@/lib/actions/cached-api";
 import { setCacheScope } from "@/lib/utils/cache";
 import { clearClientLearningData } from "@/lib/privacy/learningStorage";
 import { requestPrivateCacheClear } from "@/lib/pwa/cache-isolation";
@@ -64,6 +65,7 @@ export default function AuthProvider({ children }) {
       if (raw) userInfo = JSON.parse(raw);
     } catch {
       Cookies.remove("userInfo", { path: "/" });
+      clearAllCaches();
     }
 
     queueMicrotask(() => {
@@ -116,6 +118,7 @@ export default function AuthProvider({ children }) {
     clearClientLearningData();
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
+    clearAllCaches();
     axiosInstance.post("/api/auth/logout").catch(() => {});
     setUser(null);
     setIsAuthenticated(false);
