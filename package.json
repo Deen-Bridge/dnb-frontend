@@ -14,6 +14,7 @@
     "lint:any": "node scripts/check-explicit-any.mjs",
     "release:check": "node scripts/validate-release-config.mjs",
     "check:image-hosts": "node scripts/check-image-host-allowlist.mjs",
+    "i18n:check": "node scripts/check-locales.mjs",
     "a11y": "eslint --config eslint.config.a11y.mjs components app",
     "check:launch-content": "node scripts/check-launch-content.mjs",
     "typecheck": "tsc --noEmit",
