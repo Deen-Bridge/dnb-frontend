@@ -46,6 +46,8 @@ const ReelCard = ({
   const [posterUrl, setPosterUrl] = useState(reel.poster ?? null);
   const [posterDialogOpen, setPosterDialogOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const [dataSaver, setDataSaver] = useState(false);
 
   const { user } = useAuth();
   // UI-visibility gate only, not access control -- the real enforcement
@@ -63,6 +65,7 @@ const ReelCard = ({
     setMuted(true);
     setPosterUrl(reel.poster ?? null);
     setDescriptionExpanded(false);
+    setVideoError(false);
   }, [
     reel.id,
     reel.viewerState?.liked,
@@ -88,6 +91,11 @@ const ReelCard = ({
     video.muted = muted;
     video.volume = muted ? 0 : 1;
   }, [muted]);
+
+  useEffect(() => {
+    const connection = navigator.connection;
+    setDataSaver(Boolean(connection?.saveData));
+  }, []);
 
   useEffect(() => {
     if (playing === reel.id) {
@@ -167,11 +175,27 @@ const ReelCard = ({
           className="h-full w-full object-cover"
           playsInline
           loop
-          preload="metadata"
+          preload={dataSaver ? "none" : "metadata"}
           controls={false}
           aria-label="Reel video"
+          tabIndex={0}
+          aria-describedby={`reel-${reel.id}-description`}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setPlaying(playing === reel.id ? null : reel.id);
+            }
+          }}
+          onError={() => setVideoError(true)}
           onClick={() => setPlaying(playing === reel.id ? null : reel.id)}
-        />
+        >
+          {reel.captionUrl && <track kind="captions" src={reel.captionUrl} srcLang="en" label="English" />}
+        </video>
+        {videoError && (
+          <p role="status" className="absolute inset-x-4 top-1/2 z-20 rounded bg-black/70 p-3 text-center text-sm text-white">
+            This video is unavailable. Try again later.
+          </p>
+        )}
 
         {/* Paused overlay */}
         {isPaused && (

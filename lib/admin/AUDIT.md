@@ -34,7 +34,7 @@ Backend contract (delegated via `lib/actions/admin-audit.js`):
 | 2 | Role change — revoke | `ROLE_REVOKE` | `hooks/useAdminTeam.js` (`revokeMember`) |
 | 3 | User ban | `BAN` | `lib/actions/admin-users.js` (`banUser`) |
 | 4 | Content takedown | `TAKEDOWN` | `lib/actions/admin-moderation.js` (`takedownContent`) |
-| 5 | Payment refund | `REFUND` | `lib/actions/admin-payments.js` (`refundPayment`, via `withAudit`) |
+| 5 | Payment refund | `REFUND` | Server-authoritative payment API integration |
 | 6 | Broadcast send | `BROADCAST` | `lib/actions/admin-broadcast.js` (`sendBroadcast`) |
 | 7 | Feature-flag toggle | `FLAG_TOGGLE` | `hooks/useFeatureFlags.js` (`toggleFlag`) |
 

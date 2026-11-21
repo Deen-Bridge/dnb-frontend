@@ -1,23 +1,17 @@
 
 import { config } from "@/lib/config/env";
+import { getAuthenticatedAiRequest, policyError } from "@/lib/ai/request-policy";
 
 export async function POST(req) {
   try {
-    const { message, chat_id, user_id, context } = await req.json();
-
-    console.log("Starting streaming chat:", {
-      message: message?.substring(0, 50),
-      chat_id,
-      user_id,
-    });
+    const request = await getAuthenticatedAiRequest(await req.json());
+    if (request.error) return policyError(request);
 
     const AI_API_URL = config.aiApiUrl;
     const endpoint = `${AI_API_URL}/chat/stream`;
     const serviceApiKey = process.env.AI_SERVICE_API_KEY;
 
-    if (!serviceApiKey) {
-      throw new Error("AI_SERVICE_API_KEY is not configured");
-    }
+    if (!serviceApiKey) return policyError({ error: "AI service is not configured", status: 503 });
 
     // Make request to AI backend
     const response = await fetch(endpoint, {
@@ -26,13 +20,9 @@ export async function POST(req) {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
         "X-API-Key": serviceApiKey,
+        Authorization: `Bearer ${request.token}`,
       },
-      body: JSON.stringify({
-        prompt: message,
-        chat_id: chat_id || null,
-        user_id: user_id || null,
-        context: context || "Islamic knowledge and guidance",
-      }),
+      body: JSON.stringify(request.payload),
     });
 
     if (!response.ok) {

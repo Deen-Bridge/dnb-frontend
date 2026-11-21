@@ -16,6 +16,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
+import { normalizeProfileCollection } from "@/lib/profile/profile-content";
 
 const ProfileContent = ({ selectedTab, profileId }) => {
   switch (selectedTab) {
@@ -43,10 +44,11 @@ const ProfileContent = ({ selectedTab, profileId }) => {
 
 export default ProfileContent;
 
-// Temporary placeholder components
-const Placeholder = ({ title }) => (
-  <div className="p-6 text-center text-ink-muted text-lg">
-    No {title} yet. Stay tuned!
+const Placeholder = ({ title, profileId }) => (
+  <div className="col-span-full rounded-xl border border-dashed border-accent/15 bg-surface-raised p-8 text-center text-ink-muted" role="status" aria-live="polite">
+    <p className="text-sm">
+      {profileId ? `No ${title} are available for this profile.` : "This profile is unavailable."}
+    </p>
   </div>
 );
 
@@ -58,26 +60,27 @@ const CoursesTab = ({ profileId }) => {
 
   useEffect(() => {
     if (loading) return;
+    let cancelled = false;
+    setError(null);
+    setUserCourses([]);
+    if (!profileId) {
+      setIsLoading(false);
+      return () => { cancelled = true; };
+    }
     const getCourses = async () => {
       setIsLoading(true);
-      setError(null);
       try {
-        if (profileId) {
-          const data = await fetchUserCourses(profileId);
-          setUserCourses(data);
-        } else {
-          userCourses([]);
-          setError("User not found or not logged in");
-        }
+        const data = await fetchUserCourses(profileId);
+        if (!cancelled) setUserCourses(normalizeProfileCollection(data, ["courses", "items"]));
       } catch (err) {
-        setUserCourses([]);
-        setError("Failed to fetch courses. Please check your connection.");
+        if (!cancelled) setError("Failed to load courses. Try again.");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     getCourses();
-  }, [loading]);
+    return () => { cancelled = true; };
+  }, [loading, profileId]);
 
   if (error) {
     return (
@@ -88,7 +91,9 @@ const CoursesTab = ({ profileId }) => {
           setIsLoading(true);
           if (profileId) {
             fetchUserCourses(profileId)
-              .then((data) => setUserCourses(data))
+              .then((data) =>
+                setUserCourses(normalizeProfileCollection(data, ["courses", "items"]))
+              )
               .catch(() =>
                 setError(
                   "Failed to fetch courses. Please check your connection."
@@ -110,26 +115,31 @@ const CoursesTab = ({ profileId }) => {
           <CourseCard key={course.id || course._id || index} course={course} />
         ))
       ) : (
-        <Placeholder title="courses" />
+        <Placeholder title="courses" profileId={profileId} />
       )}
     </div>
   );
 };
 
 const BooksTab = ({ profileId }) => {
-  const { loading } = useAuth(); // you don't need user here
+  const { loading } = useAuth();
   const [userBooks, setUserBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (loading || !profileId) return; // Wait for loading to finish
+    if (loading) return;
+    if (!profileId) {
+      setUserBooks([]);
+      setIsLoading(false);
+      return;
+    }
     const getBooks = async () => {
       setIsLoading(true);
       setError(null);
       try {
         const data = await fetchUserBooks(profileId);
-        setUserBooks(data);
+        setUserBooks(normalizeProfileCollection(data, ["books", "items"]));
       } catch (err) {
         setUserBooks([]);
         setError("Failed to fetch books. Please check your connection.");
@@ -149,7 +159,9 @@ const BooksTab = ({ profileId }) => {
           setIsLoading(true);
           if (profileId) {
             fetchUserBooks(profileId)
-              .then((data) => setUserBooks(data))
+              .then((data) =>
+                setUserBooks(normalizeProfileCollection(data, ["books", "items"]))
+              )
               .catch(() =>
                 setError("Failed to fetch books. Please check your connection.")
               )
@@ -165,11 +177,11 @@ const BooksTab = ({ profileId }) => {
       {isLoading ? (
         [...Array(6)].map((_, idx) => <CourseCardSkeleton key={idx} />)
       ) : userBooks && userBooks.length > 0 ? (
-        userBooks.map((book) => (
-          <LibraryBookCard key={book.id || book._id} book={book} />
+          userBooks.map((book, index) => (
+          <LibraryBookCard key={book.id || book._id || index} book={book} />
         ))
       ) : (
-        <Placeholder title="books" />
+        <Placeholder title="books" profileId={profileId} />
       )}
     </div>
   );
@@ -182,26 +194,27 @@ const SpaceTab = ({ profileId }) => {
 
   useEffect(() => {
     if (loading) return;
+    let cancelled = false;
+    setError(null);
+    setUserSpaces([]);
+    if (!profileId) {
+      setIsLoading(false);
+      return () => { cancelled = true; };
+    }
     const getSpaces = async () => {
       setIsLoading(true);
-      setError(null);
       try {
-        if (profileId) {
-          const data = await fetchUserSpaces(profileId);
-          setUserSpaces(data.spaces || []);
-        } else {
-          setUserSpaces([]);
-          setError("User not found or not logged in");
-        }
+        const data = await fetchUserSpaces(profileId);
+        if (!cancelled) setUserSpaces(normalizeProfileCollection(data, ["spaces", "items"]));
       } catch (err) {
-        setUserSpaces([]);
-        setError("Failed to fetch spaces. Please check your connection.");
+        if (!cancelled) setError("Failed to load spaces. Try again.");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     getSpaces();
-  }, [loading]);
+    return () => { cancelled = true; };
+  }, [loading, profileId]);
 
   if (error) {
     return (
@@ -212,7 +225,9 @@ const SpaceTab = ({ profileId }) => {
           setIsLoading(true);
           if (profileId) {
             fetchUserSpaces(profileId)
-              .then((data) => setUserSpaces(data.spaces || []))
+              .then((data) =>
+                setUserSpaces(normalizeProfileCollection(data, ["spaces", "items"]))
+              )
               .catch(() =>
                 setError(
                   "Failed to fetch spaces. Please check your connection."
@@ -234,7 +249,7 @@ const SpaceTab = ({ profileId }) => {
           <SpaceCard key={space.id || space._id || index} space={space} />
         ))
       ) : (
-        <Placeholder title="spaces" />
+        <Placeholder title="spaces" profileId={profileId} />
       )}
     </div>
   );
@@ -248,7 +263,13 @@ const FollowersTab = ({ profileId }) => {
 
   useEffect(() => {
 
-    if (authLoading || !profileId) {
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
+    if (!profileId) {
+      setFollowers([]);
+      setFollowersCount(0);
       setIsLoading(false);
       return;
     }
@@ -264,7 +285,7 @@ const FollowersTab = ({ profileId }) => {
 
 
         if (followersData.success) {
-          setFollowers(followersData.followers || []);
+          setFollowers(normalizeProfileCollection(followersData, ["followers", "items"]));
         }
 
         if (countData.success) {
@@ -294,7 +315,9 @@ const FollowersTab = ({ profileId }) => {
             Promise.all([getFollowers(profileId), getFollowersCount(profileId)])
               .then(([followersData, countData]) => {
                 if (followersData.success) {
-                  setFollowers(followersData.followers || []);
+                  setFollowers(
+                    normalizeProfileCollection(followersData, ["followers", "items"])
+                  );
                 }
                 if (countData.success) {
                   setFollowersCount(
@@ -339,7 +362,7 @@ const FollowersTab = ({ profileId }) => {
           ))}
         </div>
       ) : (
-        <Placeholder title="followers" />
+        <Placeholder title="followers" profileId={profileId} />
       )}
     </div>
   );
@@ -354,7 +377,13 @@ const FollowingTab = ({ profileId }) => {
 
   useEffect(() => {
 
-    if (authLoading || !profileId) {
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
+    if (!profileId) {
+      setFollowing([]);
+      setFollowingCount(0);
       setIsLoading(false);
       return;
     }
@@ -370,7 +399,7 @@ const FollowingTab = ({ profileId }) => {
 
 
         if (followingData.success) {
-          setFollowing(followingData.following || []);
+          setFollowing(normalizeProfileCollection(followingData, ["following", "items"]));
         }
 
         if (countData.success) {
@@ -400,7 +429,9 @@ const FollowingTab = ({ profileId }) => {
             Promise.all([getFollowing(profileId), getFollowingCount(profileId)])
               .then(([followingData, countData]) => {
                 if (followingData.success) {
-                  setFollowing(followingData.following || []);
+                  setFollowing(
+                    normalizeProfileCollection(followingData, ["following", "items"])
+                  );
                 }
                 if (countData.success) {
                   setFollowingCount(
@@ -445,7 +476,7 @@ const FollowingTab = ({ profileId }) => {
           ))}
         </div>
       ) : (
-        <Placeholder title="following" />
+        <Placeholder title="following" profileId={profileId} />
       )}
     </div>
   );

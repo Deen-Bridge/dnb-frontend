@@ -1,107 +1,61 @@
-export interface AnalyticsMetric {
-  label: string;
-  value: number;
-  tracked: boolean;
-}
+import axiosInstance from "@/lib/config/axios.config";
 
-export interface FunnelStage {
-  stage: string;
-  label: string;
-  value: number;
-  tracked: boolean;
-}
+export const DEFAULT_ANALYTICS_RANGE_DAYS = 90;
+export const MAX_ANALYTICS_RANGE_DAYS = 365;
 
-export interface BucketValue {
-  range: string;
-  value: number;
-}
-
-export interface CountryEngagement {
-  code: string;
-  name: string;
-  learners: number;
-  revenue: number;
-  tracked: boolean;
-}
-
-export interface EngagementAnalyticsOptions {
-  /** ISO date string for the start of the range. */
-  from?: string;
-  /** ISO date string for the end of the range. */
-  to?: string;
-}
-
+export interface AnalyticsMetric { label: string; value: number | null; tracked: boolean }
+export interface FunnelStage { stage: string; label: string; value: number; tracked: boolean }
+export interface BucketValue { range: string; value: number }
+export interface CountryEngagement { code: string; name: string; learners: number; revenue: number; tracked: boolean }
+export interface EngagementAnalyticsOptions { from?: string; to?: string }
 export interface EngagementAnalyticsResult {
   generatedAt: string;
-  totals: {
-    students: AnalyticsMetric;
-    coursesEnrolled: AnalyticsMetric;
-    lessonsCompleted: AnalyticsMetric;
-    avgSessionLength: AnalyticsMetric;
-  };
+  freshness?: string;
+  dateRange: { from: string; to: string };
+  totals: { students: AnalyticsMetric; coursesEnrolled: AnalyticsMetric; lessonsCompleted: AnalyticsMetric; avgSessionLength: AnalyticsMetric };
   funnel: FunnelStage[];
   sessionLength: { tracked: boolean; avgMinutes: number | null };
   lessonsCompleted: { tracked: boolean; buckets: BucketValue[] };
   readingDepth: { tracked: boolean; buckets: BucketValue[] };
-  geographic: {
-    tracked: boolean;
-    coverage: AnalyticsMetric;
-    countries: CountryEngagement[];
+  geographic: { tracked: boolean; coverage: AnalyticsMetric; countries: CountryEngagement[] };
+}
+
+export function normalizeAnalyticsRange({ from, to }: EngagementAnalyticsOptions = {}) {
+  const end = to ? new Date(to) : new Date();
+  const start = from ? new Date(from) : new Date(end.getTime() - DEFAULT_ANALYTICS_RANGE_DAYS * 86400000);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) throw new Error("from must be a valid ISO-8601 date");
+  if (start > end) throw new Error("from must be earlier than or equal to to");
+  if ((end.getTime() - start.getTime()) / 86400000 > MAX_ANALYTICS_RANGE_DAYS) throw new Error(`Learning analytics date range cannot exceed ${MAX_ANALYTICS_RANGE_DAYS} days`);
+  return { from: start.toISOString(), to: end.toISOString(), timezone: "UTC" };
+}
+
+const metric = (label: string, value?: number | null, tracked = false): AnalyticsMetric => ({
+  label,
+  value: value ?? null,
+  tracked: Boolean(tracked && value != null),
+});
+
+export function normalizeAnalyticsResult(payload: Partial<EngagementAnalyticsResult>, range: ReturnType<typeof normalizeAnalyticsRange>): EngagementAnalyticsResult {
+  return {
+    generatedAt: payload.generatedAt ?? new Date().toISOString(),
+    freshness: payload.freshness,
+    dateRange: payload.dateRange ?? { from: range.from, to: range.to },
+    totals: {
+      students: payload.totals?.students ?? metric("Total Students"),
+      coursesEnrolled: payload.totals?.coursesEnrolled ?? metric("Courses Enrolled"),
+      lessonsCompleted: payload.totals?.lessonsCompleted ?? metric("Lessons Completed"),
+      avgSessionLength: payload.totals?.avgSessionLength ?? metric("Avg. Session Length"),
+    },
+    funnel: payload.funnel ?? [],
+    sessionLength: payload.sessionLength ?? { tracked: false, avgMinutes: null },
+    lessonsCompleted: payload.lessonsCompleted ?? { tracked: false, buckets: [] },
+    readingDepth: payload.readingDepth ?? { tracked: false, buckets: [] },
+    geographic: payload.geographic ?? { tracked: false, coverage: metric("Country Data Coverage"), countries: [] },
   };
 }
 
-// Keep in sync with admin-learning-analytics.js (the app resolves the .js twin;
-// vitest prefers this .ts one).
-export async function fetchEngagementAnalytics(
-  _options: EngagementAnalyticsOptions = {},
-): Promise<EngagementAnalyticsResult> {
-  return Promise.resolve({
-    generatedAt: new Date().toISOString(),
-    totals: {
-      students: { label: "Total Students", value: 842, tracked: true },
-      coursesEnrolled: { label: "Courses Enrolled", value: 1284, tracked: true },
-      lessonsCompleted: { label: "Lessons Completed", value: 0, tracked: false },
-      avgSessionLength: { label: "Avg. Session Length", value: 0, tracked: false },
-    },
-    funnel: [
-      { stage: "enrolled", label: "Enrolled", value: 1284, tracked: true },
-      { stage: "started", label: "Started", value: 0, tracked: false },
-      { stage: "quarter", label: "25% Complete", value: 0, tracked: false },
-      { stage: "completed", label: "Completed", value: 0, tracked: false },
-    ],
-    sessionLength: { tracked: false, avgMinutes: null },
-    lessonsCompleted: {
-      tracked: false,
-      buckets: [
-        { range: "1–5", value: 0 },
-        { range: "6–10", value: 0 },
-        { range: "11–20", value: 0 },
-        { range: "21–40", value: 0 },
-        { range: "41+", value: 0 },
-      ],
-    },
-    readingDepth: {
-      tracked: false,
-      buckets: [
-        { range: "0–25%", value: 0 },
-        { range: "26–50%", value: 0 },
-        { range: "51–75%", value: 0 },
-        { range: "76–100%", value: 0 },
-      ],
-    },
-    geographic: {
-      tracked: true,
-      coverage: { label: "Country Data Coverage", value: 68, tracked: true },
-      countries: [
-        { code: "US", name: "United States", learners: 214, revenue: 12840, tracked: true },
-        { code: "GB", name: "United Kingdom", learners: 156, revenue: 9360, tracked: true },
-        { code: "SA", name: "Saudi Arabia", learners: 132, revenue: 7920, tracked: true },
-        { code: "AE", name: "United Arab Emirates", learners: 98, revenue: 5880, tracked: true },
-        { code: "MY", name: "Malaysia", learners: 84, revenue: 5040, tracked: true },
-        { code: "ID", name: "Indonesia", learners: 71, revenue: 4260, tracked: true },
-        { code: "EG", name: "Egypt", learners: 52, revenue: 3120, tracked: true },
-        { code: "PK", name: "Pakistan", learners: 35, revenue: 2100, tracked: true },
-      ],
-    },
-  });
+export async function fetchEngagementAnalytics(options: EngagementAnalyticsOptions = {}): Promise<EngagementAnalyticsResult> {
+  const range = normalizeAnalyticsRange(options);
+  const response = await axiosInstance.get("/api/admin/analytics/engagement", { params: range });
+  return normalizeAnalyticsResult(response.data?.data ?? response.data, range);
 }

@@ -17,6 +17,7 @@ import { AlbedoModule } from "@creit.tech/stellar-wallets-kit/modules/albedo";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import axiosInstance from "@/lib/config/axios.config";
+import { config } from "@/lib/config/env";
 import {
   isNoWalletError,
   isUserRejection,
@@ -27,7 +28,7 @@ import {
 import { StellarWalletInfo } from "@/types/stellar";
 import { captureClientError } from "@/lib/sentry/captureClientError";
 
-const NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
+const NETWORK = config.stellarNetwork;
 const EXPECTED_PASSPHRASE =
   NETWORK === "mainnet"
     ? Networks.PUBLIC

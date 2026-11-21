@@ -1,0 +1,8 @@
+{
+  "public": ["/", "/en/about", "/en/contact", "/en/features"],
+  "auth": ["/en/login", "/en/signup"],
+  "dashboard": ["/en/dashboard", "/en/dashboard/courses", "/en/dashboard/library"],
+  "admin": ["/en/admin", "/en/admin/users", "/en/admin/reports"],
+  "states": ["/en/not-found", "/en/error", "/ar/dashboard/courses"],
+  "manualJourneys": ["keyboard-navigation", "modal-focus", "form-errors", "media-controls"]
+}

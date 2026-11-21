@@ -145,12 +145,6 @@ export default function CategoryTaxonomyManagementPage() {
       return;
     }
 
-    const newSlug = formData.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
     setSaving(true);
     try {
       await axiosInstance.post("/api/categories", {
@@ -206,11 +200,7 @@ export default function CategoryTaxonomyManagementPage() {
       await axiosInstance.patch(`/api/categories/${selectedCategory.id}`, {
         isActive: !isArchiving,
       });
-      // The public list endpoint filters inactive categories, so preserve the
-      // successful archive locally until the next explicit reload.
-      setCategories((current) => current.map((category) => category.id === selectedCategory.id
-        ? { ...category, status: isArchiving ? "archived" : "active" }
-        : category));
+      await loadCategories();
       setArchiveDialogOpen(false);
       setSelectedCategory(null);
       showNotification(isArchiving
