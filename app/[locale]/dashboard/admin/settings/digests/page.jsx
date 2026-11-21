@@ -435,7 +435,7 @@ function DigestsContent() {
                   type="email"
                   inputMode="email"
                   autoComplete="off"
-                  placeholder="admin@deenbridge.org"
+                  placeholder="name@example.com"
                   value={emailDraft}
                   onChange={(event) => setEmailDraft(event.target.value)}
                   onKeyDown={(event) => {

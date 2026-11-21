@@ -2,6 +2,7 @@ import withSerwistInit from "@serwist/next";
 import createNextIntlPlugin from "next-intl/plugin";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 import { withSentryConfig } from "@sentry/nextjs";
+import { buildSecurityHeaders } from "./lib/config/securityHeaders.mjs";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 
@@ -13,7 +14,8 @@ const withSerwist = withSerwistInit({
   swSrc: "app/sw.js",
   swDest: "public/sw.js",
   disable: process.env.NODE_ENV === "development",
-  cacheOnNavigation: true,
+  // Navigation caching is opt-in in app/sw.js; private pages are network-only.
+  cacheOnNavigation: false,
   reloadOnOnline: true,
 });
 
@@ -21,20 +23,24 @@ const withSerwist = withSerwistInit({
 const nextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "i.ibb.co" },
-      { protocol: "https", hostname: "media.istockphoto.com" },
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "res.cloudinary.com" },
-      { protocol: "https", hostname: "cloudinary-marketing-res.cloudinary.com" },
-      { protocol: "https", hostname: "cdn.pixabay.com" },
-      { protocol: "https", hostname: "logo.clearbit.com" },
-      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: buildSecurityHeaders({ environment: process.env.NODE_ENV }),
+      },
+    ];
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "react-icons"],
   },
+  // Keep the existing canvas fallback while making the Turbopack choice
+  // explicit for Next 16 builds. The webpack hook remains for tools that
+  // still invoke the webpack bundler (for example the Serwist integration).
+  turbopack: {},
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;

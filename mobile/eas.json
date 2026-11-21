@@ -5,10 +5,22 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "environment": "development",
+      "env": {
+        "APP_ENV": "development",
+        "IOS_BUNDLE_IDENTIFIER": "com.deenbridge.app.dev",
+        "ANDROID_PACKAGE": "com.deenbridge.app.dev"
+      }
     },
     "preview": {
       "distribution": "internal",
+      "environment": "preview",
+      "env": {
+        "APP_ENV": "preview",
+        "IOS_BUNDLE_IDENTIFIER": "com.deenbridge.app.preview",
+        "ANDROID_PACKAGE": "com.deenbridge.app.preview"
+      },
       "ios": {
         "simulator": false
       },
@@ -17,8 +29,17 @@
       }
     },
     "production": {
+      "environment": "production",
+      "env": {
+        "APP_ENV": "production",
+        "IOS_BUNDLE_IDENTIFIER": "com.deenbridge.app",
+        "ANDROID_PACKAGE": "com.deenbridge.app"
+      },
       "ios": {
-        "autoIncrement": true
+        "autoIncrement": true,
+        "appleId": "$EXPO_APPLE_ID",
+        "ascAppId": "$EXPO_ASC_APP_ID",
+        "appleTeamId": "$EXPO_APPLE_TEAM_ID"
       },
       "android": {
         "autoIncrement": true
@@ -28,12 +49,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
-      },
-      "android": {
-        "serviceAccountKeyPath": "./google-services.json"
+        "appleId": "$EXPO_APPLE_ID",
+        "ascAppId": "$EXPO_ASC_APP_ID",
+        "appleTeamId": "$EXPO_APPLE_TEAM_ID"
       }
     }
   }

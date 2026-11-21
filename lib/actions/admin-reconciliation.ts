@@ -1,11 +1,8 @@
 import { config } from "@/lib/config/env";
+import axiosInstance from "@/lib/config/axios.config";
 
-const MOCK_DELAY_MS = 400;
+const RECONCILIATION_PATH = "/api/stellar/payment/reconciliation/status";
 const AMOUNT_EPSILON = 0.0000001;
-
-function withMockDelay<T>(value: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), MOCK_DELAY_MS));
-}
 
 export interface InternalTransaction {
   id: string;
@@ -16,6 +13,8 @@ export interface InternalTransaction {
   currency: string;
   completedAt: string;
   txHash: string | null;
+  providerStatus?: string | null;
+  ledgerStatus?: string | null;
 }
 
 export interface SettlementClaim {
@@ -23,9 +22,15 @@ export interface SettlementClaim {
   amount: number;
   currency: string;
   settledAt: string;
+  providerStatus?: string | null;
+  ledgerStatus?: string | null;
 }
 
-export type ReconciliationStatus = "matched" | "missing-on-chain" | "amount-mismatch";
+export type ReconciliationStatus =
+  | "matched"
+  | "missing-on-chain"
+  | "amount-mismatch"
+  | "pending";
 
 export interface ReconciledTransaction extends InternalTransaction {
   status: ReconciliationStatus;
@@ -35,92 +40,84 @@ export interface ReconciledTransaction extends InternalTransaction {
 export interface DateRangeParams {
   from?: string;
   to?: string;
+  page?: number;
+  pageSize?: number;
 }
 
-export async function fetchInternalTransactions({ from, to }: DateRangeParams = {}): Promise<{ transactions: InternalTransaction[] }> {
-  void from;
-  void to;
-  return withMockDelay({
-    transactions: [
-      {
-        id: "txn-1001",
-        reference: "PUR-2026-1001",
-        buyer: "Amina Yusuf",
-        creator: "Ustadh Bilal",
-        amount: 25,
-        currency: "USDC",
-        completedAt: "2026-08-03T09:14:00.000Z",
-        txHash: "a1b2c3d4e5f600112233445566778899aabbccddeeff00112233445566778899",
-      },
-      {
-        id: "txn-1002",
-        reference: "PUR-2026-1002",
-        buyer: "Khalid Rahman",
-        creator: "Sr. Maryam",
-        amount: 40,
-        currency: "USDC",
-        completedAt: "2026-08-07T13:40:00.000Z",
-        txHash: "bb00cc11dd22ee33ff445566778899aabbccddeeff00112233445566778899aa",
-      },
-      {
-        id: "txn-1003",
-        reference: "PUR-2026-1003",
-        buyer: "Fatima Noor",
-        creator: "Ustadh Bilal",
-        amount: 15,
-        currency: "USDC",
-        completedAt: "2026-08-11T18:05:00.000Z",
-        txHash: null,
-      },
-      {
-        id: "txn-1004",
-        reference: "PUR-2026-1004",
-        buyer: "Yusuf Ali",
-        creator: "Sr. Maryam",
-        amount: 120,
-        currency: "USDC",
-        completedAt: "2026-08-15T08:22:00.000Z",
-        txHash: "cafe00beef11dead22feed33c0de44ba5e55f00d66ba77c088dd99ee00ff1122",
-      },
-      {
-        id: "txn-1005",
-        reference: "PUR-2026-1005",
-        buyer: "Zaynab Idris",
-        creator: "Ustadh Bilal",
-        amount: 60,
-        currency: "USDC",
-        completedAt: "2026-08-19T21:47:00.000Z",
-        txHash: "9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a0",
-      },
-    ],
-  });
+export interface ReconciliationPage {
+  page: number;
+  pageSize: number;
+  total: number | null;
+  hasNext: boolean;
 }
 
-export async function fetchSettlementClaims({ from, to }: DateRangeParams = {}): Promise<{ claims: SettlementClaim[] }> {
-  void from;
-  void to;
-  return withMockDelay({
-    claims: [
-      {
-        txHash: "a1b2c3d4e5f600112233445566778899aabbccddeeff00112233445566778899",
-        amount: 25,
-        currency: "USDC",
-        settledAt: "2026-08-03T09:15:12.000Z",
-      },
-      {
-        txHash: "bb00cc11dd22ee33ff445566778899aabbccddeeff00112233445566778899aa",
-        amount: 38.5,
-        currency: "USDC",
-        settledAt: "2026-08-07T13:41:03.000Z",
-      },
-      {
-        txHash: "9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a0",
-        amount: 60,
-        currency: "USDC",
-        settledAt: "2026-08-19T21:48:30.000Z",
-      },
-    ],
+function normalizeStatusResponse(data: unknown): {
+  transactions: InternalTransaction[];
+  claims: SettlementClaim[];
+  page: ReconciliationPage;
+} {
+  const body = (data && typeof data === "object" && "data" in data)
+    ? (data as { data?: unknown }).data
+    : data;
+  const payload = body && typeof body === "object" ? body as Record<string, unknown> : {};
+  const transactions = payload.transactions ?? payload.internalTransactions ?? payload.records;
+  const claims = payload.claims ?? payload.settlementClaims ?? payload.providerSettlements;
+  const page = payload.pagination && typeof payload.pagination === "object"
+    ? payload.pagination as Record<string, unknown>
+    : payload;
+  const pageNumber = Number(page.page) || 1;
+  const pageSize = Number(page.pageSize) || 100;
+  const total = Number.isFinite(Number(page.total)) ? Number(page.total) : null;
+  const hasNext = page.hasNext === true || (total != null && pageNumber * pageSize < total);
+
+  const normalizedTransactions = Array.isArray(transactions)
+    ? transactions.map((transaction) => {
+        const item = transaction as Record<string, unknown>;
+        return {
+          ...item,
+          providerStatus: item.providerStatus ?? (item.provider as Record<string, unknown> | undefined)?.status,
+          ledgerStatus: item.ledgerStatus ?? (item.ledger as Record<string, unknown> | undefined)?.status,
+        } as InternalTransaction;
+      })
+    : [];
+  const normalizedClaims = Array.isArray(claims)
+    ? claims.map((claim) => {
+        const item = claim as Record<string, unknown>;
+        return {
+          ...item,
+          providerStatus: item.providerStatus ?? item.status ?? (item.provider as Record<string, unknown> | undefined)?.status,
+          ledgerStatus: item.ledgerStatus ?? (item.ledger as Record<string, unknown> | undefined)?.status,
+        } as SettlementClaim;
+      })
+    : [];
+
+  return {
+    transactions: normalizedTransactions,
+    claims: normalizedClaims,
+    page: { page: pageNumber, pageSize, total, hasNext },
+  };
+}
+
+export async function fetchReconciliationStatus(params: DateRangeParams = {}) {
+  const { data } = await axiosInstance.get(RECONCILIATION_PATH, {
+    params: {
+      ...(params.from ? { from: params.from } : {}),
+      ...(params.to ? { to: params.to } : {}),
+      page: params.page || 1,
+      pageSize: params.pageSize || 100,
+    },
   });
+  return normalizeStatusResponse(data);
+}
+
+export async function fetchInternalTransactions(params: DateRangeParams = {}) {
+  const result = await fetchReconciliationStatus(params);
+  return { transactions: result.transactions, page: result.page };
+}
+
+export async function fetchSettlementClaims(params: DateRangeParams = {}) {
+  const result = await fetchReconciliationStatus(params);
+  return { claims: result.claims, page: result.page };
 }
 
 export function reconcile(
@@ -140,7 +137,21 @@ export function reconcile(
 
     let status: ReconciliationStatus;
     if (!tx?.txHash || !claim) {
-      status = "missing-on-chain";
+      const transactionStatus = String(tx?.providerStatus || tx?.ledgerStatus || "").toLowerCase();
+      status = transactionStatus && !["confirmed", "settled", "complete", "completed", "success", "succeeded"].includes(transactionStatus)
+        ? "pending"
+        : "missing-on-chain";
+    } else if (
+      (claim.providerStatus != null &&
+        !["confirmed", "settled", "complete", "completed", "success", "succeeded"].includes(
+          String(claim.providerStatus).toLowerCase()
+        )) ||
+      (claim.ledgerStatus != null &&
+        !["settled", "confirmed", "complete", "completed", "success", "succeeded"].includes(
+          String(claim.ledgerStatus).toLowerCase()
+        ))
+    ) {
+      status = "pending";
     } else if (
       Math.abs(Number(tx.amount) - Number(claim.amount)) > AMOUNT_EPSILON ||
       tx.currency !== claim.currency
