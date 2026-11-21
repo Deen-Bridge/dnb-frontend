@@ -144,7 +144,7 @@ export default function AuthProvider({ children }) {
     }
 
     toast.success("Logged out successfully");
-    router.push("/");
+    router.replace("/");
   }, [router]);
 
   const refreshUser = useCallback(async (userId) => {

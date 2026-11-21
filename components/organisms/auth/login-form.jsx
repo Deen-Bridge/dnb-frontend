@@ -7,6 +7,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
 import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
+import { getLocaleFromPathname } from "@/lib/auth/safeRedirect";
 import Button from "@/components/atoms/form/Button";
 import { Input } from "@/components/ui/input";
 import {
@@ -77,7 +78,7 @@ export function LoginForm({ className, ...props }) {
       setTimeout(() => {
         // The hard reload intentionally refreshes the auth cookie/session after login.
         const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
-        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback, getLocaleFromPathname(window.location?.pathname));
       }, 500);
     } catch {
       // login() already shows toast on failure
@@ -91,7 +92,7 @@ export function LoginForm({ className, ...props }) {
         setTimeout(() => {
           // The hard reload intentionally refreshes the auth cookie/session after login.
           const roleFallback = normalizeRole(result?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
-          window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+          window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback, getLocaleFromPathname(window.location?.pathname));
         }, 500);
       }
     } catch {
@@ -108,7 +109,7 @@ export function LoginForm({ className, ...props }) {
         // authenticated state immediately instead of racing a full reload
         // against cookie persistence.
         const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
-        const target = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+        const target = resolveSafeCallbackRedirect(window.location?.search, roleFallback, getLocaleFromPathname(window.location?.pathname));
         router.replace(target);
       }
     } catch {
