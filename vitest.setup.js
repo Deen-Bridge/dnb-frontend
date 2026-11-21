@@ -32,6 +32,10 @@ vi.mock("next/font/local", () => ({
 if (typeof window !== "undefined") {
   const store = new Map();
   const localStorageMock = {
+    get length() {
+      return store.size;
+    },
+    key: (index) => Array.from(store.keys())[index] ?? null,
     getItem: (k) => (store.has(k) ? store.get(k) : null),
     setItem: (k, v) => store.set(k, String(v)),
     removeItem: (k) => store.delete(k),

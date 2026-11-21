@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { updateUser } from "@/lib/actions/users/updateUser";
 import {
   changeAccountPassword,
-  deleteAccount,
   getAccountPreferences,
   updateAccountPreferences,
 } from "@/lib/actions/users/accountSettings";
@@ -22,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { VerifiedBadge } from "@/components/atoms/VerifiedBadge";
 import PushNotificationCard from "@/components/pwa/PushNotificationCard";
+import AccountDeletionPanel from "@/components/account/AccountDeletionPanel";
 import {
   User,
   Mail,
@@ -346,24 +346,6 @@ const SettingsPage = () => {
   const handleThemeSave = (e) => {
     e.preventDefault();
     showMessage("success", "Theme preferences saved!");
-  };
-
-  const handleDeleteAccount = async () => {
-    if (
-      confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      setIsLoading(true);
-      try {
-        const result = await deleteAccount(user?._id);
-        showMessage("success", result?.message || "Account deleted successfully.");
-      } catch (error) {
-        showMessage("error", error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
   };
 
   const SubmitButton = ({ savingLabel, label }) => (
@@ -722,22 +704,7 @@ const SettingsPage = () => {
                 danger
               />
               <div className="p-5 sm:p-6">
-                <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                  <h4 className={cn(poppins_600, "mb-2 text-red-700")}>
-                    Delete Account
-                  </h4>
-                  <p className={cn(poppins_400, "mb-4 text-sm text-red-600")}>
-                    Once you delete your account, there is no going back. Please
-                    be certain.
-                  </p>
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeleteAccount}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete Account
-                  </Button>
-                </div>
+                <AccountDeletionPanel user={user} />
               </div>
             </Panel>
           </TabsContent>
@@ -977,22 +944,7 @@ const SettingsPage = () => {
                 description="Irreversible and destructive actions"
                 danger
               />
-              <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                <h4 className={cn(poppins_600, "mb-2 text-red-700")}>
-                  Delete Account
-                </h4>
-                <p className={cn(poppins_400, "mb-4 text-sm text-red-600")}>
-                  Once you delete your account, there is no going back. Please
-                  be certain.
-                </p>
-                <Button
-                  variant="destructive"
-                  onClick={handleDeleteAccount}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete Account
-                </Button>
-              </div>
+              <AccountDeletionPanel user={user} />
             </Panel>
           </TabsContent>
         </Tabs>
