@@ -62,6 +62,9 @@ jobs:
       - name: Guard explicit-any count
         run: npm run lint:any
 
+      - name: Verify type-boundary ownership
+        run: npm run lint:type-boundaries
+
       - name: Validate unit release profile
         run: npm run release:check
         env:

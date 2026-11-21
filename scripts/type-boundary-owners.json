@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "description": "Ownership and expiry metadata for explicit type escape hatches.",
+  "entries": [
+    { "pattern": "app/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" },
+    { "pattern": "components/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" },
+    { "pattern": "contexts/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" },
+    { "pattern": "hooks/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" },
+    { "pattern": "lib/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" },
+    { "pattern": "types/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" },
+    { "pattern": "__tests__/**", "owner": "frontend-platform", "issue": 785, "expires": "2027-03-31" }
+  ]
+}

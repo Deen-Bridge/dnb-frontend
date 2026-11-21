@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "eslint app components lib hooks contexts types __tests__ e2e",
     "lint:any": "node scripts/check-explicit-any.mjs",
+    "lint:type-boundaries": "node scripts/check-type-boundary-ownership.mjs",
     "release:check": "node scripts/validate-release-config.mjs",
     "check:image-hosts": "node scripts/check-image-host-allowlist.mjs",
     "i18n:check": "node scripts/check-locales.mjs",
