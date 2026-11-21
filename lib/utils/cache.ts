@@ -290,6 +290,20 @@ export interface CachedFetchOptions extends SmartCacheOptions {
   fetchOptions?: RequestInit;
 }
 
+export class ApiRequestError extends Error {
+  status: number | null;
+  code: string;
+  url: string;
+
+  constructor(message: string, options: { status?: number | null; code: string; url: string }) {
+    super(message);
+    this.name = "ApiRequestError";
+    this.status = options.status ?? null;
+    this.code = options.code;
+    this.url = options.url;
+  }
+}
+
 export const cachedFetch = async <T = any>(url: string, options: CachedFetchOptions = {}): Promise<T> => { // TODO(types): Generic response from cachedFetch
   const {
     cacheKey = url,
@@ -310,15 +324,33 @@ export const cachedFetch = async <T = any>(url: string, options: CachedFetchOpti
     const response = await fetch(url, options.fetchOptions || {});
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const status = response.status;
+      const code = status === 401 || status === 403
+        ? "UNAUTHORIZED"
+        : status === 404
+          ? "NOT_FOUND"
+          : status === 429
+            ? "RATE_LIMITED"
+            : status >= 500
+              ? "UPSTREAM_UNAVAILABLE"
+              : "API_REQUEST_FAILED";
+      throw new ApiRequestError("The requested data is unavailable.", { status, code, url });
     }
 
-    const data: T = await response.json();
+    let data: T;
+    try {
+      data = await response.json();
+    } catch {
+      throw new ApiRequestError("The server returned an invalid response.", {
+        code: "MALFORMED_RESPONSE",
+        url,
+      });
+    }
     smartCache.set(scopedCacheKey, data, { ttl, storage });
 
     return data;
   } catch (error) {
-    console.error(`Error fetching ${url}:`, error);
+    console.error(`Error fetching ${url}:`, error instanceof ApiRequestError ? error.code : "NETWORK_ERROR");
     throw error;
   }
 };
