@@ -150,12 +150,9 @@ export function resolveSafeDeepLink(
   locale: string = "en",
   fallback: string = "/dashboard",
 ): string {
-  const target = resolveSafeRedirectTarget(rawTarget, fallback);
-  if (target === fallback) return fallback;
+  const target = resolveSafeRedirectTarget(rawTarget, fallback, locale);
   const parsed = new URL(target, SENTINEL_ORIGIN);
-  const pathname = parsed.pathname.startsWith(`/${locale}/`)
-    ? parsed.pathname
-    : `/${locale}${parsed.pathname === "/" ? "" : parsed.pathname}`;
+  const pathname = localizePath(parsed.pathname, locale);
   const safeQuery = new URLSearchParams();
   for (const [key, value] of parsed.searchParams) {
     if (SAFE_DEEP_LINK_QUERY_KEYS.has(key) && value.length <= 80) safeQuery.set(key, value);

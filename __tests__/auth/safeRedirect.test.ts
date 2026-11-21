@@ -62,4 +62,12 @@ describe("resolveSafeRedirectTarget (#568)", () => {
       .toBe("/ar/dashboard/courses/42?tab=reviews");
     expect(resolveSafeDeepLink("https://evil.example/phish", "en")).toBe("/dashboard");
   });
+
+  it("keeps the requested locale on rejected deep links and normalizes existing prefixes", () => {
+    expect(resolveSafeDeepLink("https://evil.example/phish", "ar")).toBe("/ar/dashboard");
+    expect(resolveSafeDeepLink(null, "ar", "/account/wallet")).toBe("/ar/account/wallet");
+    expect(resolveSafeDeepLink("/ar/dashboard/courses/42?tab=reviews", "en"))
+      .toBe("/dashboard/courses/42?tab=reviews");
+    expect(resolveSafeDeepLink("/ar", "ar")).toBe("/ar");
+  });
 });
