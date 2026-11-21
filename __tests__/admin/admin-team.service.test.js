@@ -1,13 +1,21 @@
 /**
- * Admin-team service — audit/step-up evidence contract tests (#340).
+ * Admin-team service — audit/step-up evidence contract tests (#340, #711).
  * ------------------------------------------------------------------
  * The service in `lib/actions/admin-team.js` is the seam the admin surfaces
  * call for listing/inviting and for the demote/revoke mutations that carry the
- * step-up confirmation forward as audit evidence. These tests pin the resolved
- * shapes the UI depends on and, crucially, that the `confirmation` phrase is
- * forwarded verbatim on the sensitive mutations.
+ * step-up confirmation forward as audit evidence. Invitation minting is owned
+ * by the authenticated backend; the frontend only forwards the requested
+ * scope and validates the returned opaque link.
  */
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
+
+const axiosInstance = vi.hoisted(() => ({ post: vi.fn() }));
+vi.mock("@/lib/config/axios.config", () => ({ default: axiosInstance }));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 import {
   listAdmins,
   createInvite,
@@ -36,17 +44,46 @@ describe("listAdmins", () => {
 });
 
 describe("createInvite", () => {
-  it("mints an invite with a token, link and expiry", async () => {
-    const { invite } = await createInvite({ tier: "staff" });
-    expect(invite.token).toMatch(/^inv_mock_/);
-    expect(invite.url).toContain(invite.token);
-    expect(invite.url).toContain("tier=staff");
-    expect(Number.isNaN(new Date(invite.expiresAt).getTime())).toBe(false);
+  it("delegates minting to the authenticated server", async () => {
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    axiosInstance.post.mockResolvedValueOnce({
+      data: { invite: { token: "a".repeat(48), url: "https://app.test/register/invite?token=opaque", expiresAt } },
+    });
+
+    const result = await createInvite({ email: " teammate@example.com ", tier: "staff" });
+
+    expect(axiosInstance.post).toHaveBeenCalledWith("/api/admin/invitations", {
+      email: "teammate@example.com",
+      tier: "staff",
+    });
+    expect(result.invite.url).toContain("opaque");
   });
 
-  it("defaults the tier in the link when none is provided", async () => {
-    const { invite } = await createInvite();
-    expect(invite.url).toContain("tier=staff");
+  it("defaults the requested tier without constructing a client-side link", async () => {
+    axiosInstance.post.mockResolvedValueOnce({
+      data: { invite: { token: "b".repeat(48), url: "https://app.test/invite", expiresAt: new Date(Date.now() + 1000).toISOString() } },
+    });
+
+    await createInvite();
+
+    expect(axiosInstance.post).toHaveBeenCalledWith("/api/admin/invitations", {
+      email: undefined,
+      tier: "staff",
+    });
+    expect(axiosInstance.post.mock.calls.at(-1)[1].tier).toBe("staff");
+  });
+
+  it("rejects an invalid tier before making a request", async () => {
+    await expect(createInvite({ tier: "owner" })).rejects.toThrow("Invalid admin invitation tier");
+    expect(axiosInstance.post).not.toHaveBeenCalled();
+  });
+
+  it("rejects malformed or expired server responses", async () => {
+    axiosInstance.post.mockResolvedValueOnce({
+      data: { invite: { token: "short", url: "https://app.test/invite", expiresAt: new Date(Date.now() - 1000).toISOString() } },
+    });
+
+    await expect(createInvite()).rejects.toThrow("invalid admin invitation");
   });
 });
 

@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { validateFile } from '@/lib/utils/cloudinaryUpload';
+import FormErrorSummary from '@/components/ui/form-error-summary';
 
 const bookSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
@@ -81,6 +82,7 @@ const BookCreateForm = ({ onBookCreated }) => {
     return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-sm sm:w-lg mx-auto rounded-xl p-1 space-y-3">
+          <FormErrorSummary errors={form.formState.errors} />
           <FormField control={form.control} name="title" render={({ field }) => (
             <FormItem>
               <FormLabel>Book title</FormLabel>
