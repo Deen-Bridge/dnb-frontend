@@ -14,17 +14,33 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
       
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
+      - name: Verify lockfile enforcement
+        run: node --test .github/workflows/ci-install.test.mjs
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
-      
+        run: npm ci --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Check mobile store configuration
+        run: npm run mobile:preflight
+
       - name: Run ESLint
         run: npm run lint
 
@@ -33,6 +49,9 @@ jobs:
       
       - name: Run accessibility gate
         run: npm run a11y
+
+      - name: Run launch-content gate
+        run: npm run check:launch-content
       
       - name: Run type check
         run: npm run typecheck
@@ -42,6 +61,14 @@ jobs:
       # loses its `-- <reason>` justification.
       - name: Guard explicit-any count
         run: npm run lint:any
+
+      - name: Validate unit release profile
+        run: npm run release:check
+        env:
+          RELEASE_PROFILE: unit
+
+      - name: Guard production image host allowlist
+        run: npm run check:image-hosts
       
       - name: Run component tests
         run: npm test
@@ -49,8 +76,14 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.com
+          RELEASE_PROFILE: integration
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          # CI builds against a deployed-like backend; strict staging and
+          # production profiles are covered by the release checks below and
+          # by the environment tests.
+          NEXT_PUBLIC_APP_ENV: development
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_USDC_ISSUER: GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
           NODE_OPTIONS: --max-old-space-size=6144
@@ -67,16 +100,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
 
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       # #489 -- Browser binaries are cached per installed Playwright version
       # (read from the resolved node_modules/@playwright/test entry, i.e. the
@@ -89,7 +129,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
@@ -105,11 +145,21 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
+      - name: Validate integration release profile
+        run: npm run release:check
+        env:
+          RELEASE_PROFILE: integration
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_USDC_ISSUER: GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
+
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.com
+          RELEASE_PROFILE: integration
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_USDC_ISSUER: GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
           NODE_OPTIONS: --max-old-space-size=6144
@@ -136,28 +186,56 @@ jobs:
         env:
           E2E_PORT: 3123
 
+      - name: Run production smoke contract
+        run: npm run test:e2e:smoke
+        env:
+          SMOKE_BASE_URL: http://localhost:3123
+          SMOKE_RUN_ID: ci-${{ github.run_id }}
+
+      - name: Verify security headers
+        run: npm run check:security-headers
+        env:
+          SECURITY_HEADERS_URL: http://localhost:3123
+
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
       
+      - name: Verify Node.js and npm versions
+        run: |
+          test "$(node --version)" = "v22.14.0"
+          test "$(npm --version)" = "10.9.2"
+
       - name: Install dependencies
-        run: npm ci || npm install --no-audit --no-fund
-      
+        run: npm ci --no-audit --no-fund
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+
+      - name: Validate production preflight profile
+        run: npm run release:check
+        env:
+          RELEASE_PROFILE: production
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          NEXT_PUBLIC_STELLAR_NETWORK: mainnet
+          NEXT_PUBLIC_USDC_ISSUER: GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
+
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.com
-          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          RELEASE_PROFILE: production
+          NEXT_PUBLIC_API_URL: https://dnb-backend-api.onrender.com
+          NEXT_PUBLIC_STELLAR_NETWORK: mainnet
+          NEXT_PUBLIC_USDC_ISSUER: GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
           # The app's type-check + page-data pass outgrew Node's default heap
           # (the build aborts with "JavaScript heap out of memory").
           NODE_OPTIONS: --max-old-space-size=6144
@@ -173,6 +251,15 @@ jobs:
           done
 
       - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: ./lighthouserc.json
+          uploadArtifacts: true
+
+      - name: Run Lighthouse CI (mobile)
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        env:
+          LHCI_COLLECT_SETTINGS__PRESET: mobile
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true

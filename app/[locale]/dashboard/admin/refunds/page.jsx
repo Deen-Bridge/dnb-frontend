@@ -9,7 +9,7 @@
  * behind a confirmation dialog, and expand any row to read its full audit note
  * trail.
  *
- * Layering mirrors the admin-team / reconciliation pages: a stubbed service
+ * Layering mirrors the admin-team / reconciliation pages: an authoritative service
  * (`lib/actions/admin-refunds`) → a data hook (`useRefunds`) → this page,
  * wrapped in `AdminTierGuard` (super-admin only).
  */
@@ -85,6 +85,11 @@ const STATUS_META = {
   processing: {
     label: "Processing",
     icon: Loader2,
+    badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  },
+  pending: {
+    label: "Pending provider",
+    icon: Clock,
     badge: "bg-amber-500/10 text-amber-600 border-amber-500/20",
   },
   completed: {
@@ -419,6 +424,11 @@ function RefundsContent() {
           <SummaryStat
             label="processing"
             value={summary.processing}
+            className="bg-amber-500/10 text-amber-600 border-amber-500/20"
+          />
+          <SummaryStat
+            label="pending provider"
+            value={summary.pending}
             className="bg-amber-500/10 text-amber-600 border-amber-500/20"
           />
           <SummaryStat

@@ -51,6 +51,7 @@ import { cn } from "@/lib/utils";
 import { poppins_400, poppins_500, poppins_600 } from "@/lib/config/font.config";
 import { AnnouncementAnalytics } from "@/components/admin/announcement-analytics";
 import { toast } from "sonner";
+import { sanitizeAnnouncementHtml, sanitizeAnnouncementUrl } from "@/lib/security/sanitize-announcement-html";
 
 const DRAFT_KEY = "dnb-announcement-draft";
 
@@ -162,7 +163,7 @@ function PreviewPane({ title, content, audience, selectedRoles }) {
         </h3>
         <div
           className={cn(poppins_400.className, "prose prose-sm dark:prose-invert max-w-none text-muted-foreground")}
-          dangerouslySetInnerHTML={{ __html: content || "<p>No content yet...</p>" }}
+          dangerouslySetInnerHTML={{ __html: sanitizeAnnouncementHtml(content) || "<p>No content yet...</p>" }}
         />
       </div>
     </div>
@@ -219,16 +220,19 @@ export default function AnnouncementsPage() {
 
   const insertLink = useCallback(() => {
     const url = prompt("Enter URL:");
-    if (url) {
-      document.execCommand("createLink", false, url);
+    const safeUrl = sanitizeAnnouncementUrl(url);
+    if (safeUrl) {
+      document.execCommand("createLink", false, safeUrl);
       editorRef.current?.focus();
       syncContent();
+    } else if (url) {
+      toast.error("Only secure HTTPS or same-site links are allowed.");
     }
   }, []);
 
   const syncContent = useCallback(() => {
     if (editorRef.current) {
-      updateForm("content", editorRef.current.innerHTML);
+      updateForm("content", sanitizeAnnouncementHtml(editorRef.current.innerHTML));
     }
   }, [updateForm]);
 

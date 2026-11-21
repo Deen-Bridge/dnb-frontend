@@ -2,18 +2,11 @@
  * Notifications service.
  *
  * This module is the client-side seam for notification delivery. The live-space
- * emergency-stop notification remains stubbed until the notifications backend
- * exposes a supported endpoint. Keeping the stub here prevents moderation UI
- * code from depending on a particular notification provider.
+ * Emergency-stop notifications are sent through the authenticated backend so
+ * the UI never reports a notification that was only fabricated locally.
  */
 
-const STUB_DELAY_MS = 100;
-
-function delay<T>(value: T): Promise<T> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(value), STUB_DELAY_MS);
-  });
-}
+import axiosInstance from "@/lib/config/axios.config";
 
 export interface EmergencyStopNotificationPayload {
   spaceId: string;
@@ -41,10 +34,12 @@ export async function notifyHostOfEmergencyStop(
     throw new Error("The live-space host could not be identified.");
   }
 
-  return delay({
-    queued: true,
-    notificationId: `notification_${Date.now()}`,
+  const response = await axiosInstance.post("/api/notifications/emergency-stop", {
     hostId,
-    payload: { ...payload },
+    ...payload,
   });
+  if (!response.data?.queued || !response.data?.notificationId) {
+    throw new Error("The notification service did not confirm delivery.");
+  }
+  return response.data;
 }

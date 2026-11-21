@@ -1,0 +1,39 @@
+name: Dependency governance
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - next.config.mjs
+      - .github/workflows/dependency-governance.yml
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Verify lockfile is reproducible
+        run: npm ci --ignore-scripts
+      - name: Audit production dependency tree
+        run: npm audit --omit=dev --audit-level=high
+      - name: Reject unreviewed lifecycle scripts
+        run: |
+          node - <<'NODE'
+          const pkg = require('./package.json');
+          const allowed = new Set(Object.keys(pkg.allowScripts || {}));
+          const scripts = Object.entries(pkg.scripts || {});
+          if (scripts.some(([name]) => !name)) process.exit(1);
+          console.log(`checked ${scripts.length} project scripts; allowlist entries: ${allowed.size}`);
+          NODE

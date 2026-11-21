@@ -1,29 +1,26 @@
-/**
- * Renders a JSON-LD structured-data script with serialization-safe content.
- * Fields that are undefined, functions, or would otherwise break JSON
- * serialization are dropped so malformed API payloads can never emit an
- * invalid <script type="application/ld+json">.
- */
-export function JsonLd({ data }) {
+/** Serialize public structured data for safe HTML script embedding. */
+export function serializeJsonLd(data) {
   if (!data) return null;
-
-  let html = null;
   try {
-    html = JSON.stringify(data, (key, value) =>
+    const html = JSON.stringify(data, (key, value) =>
       value === undefined || typeof value === "function" ? undefined : value
     );
+    return html?.replace(/[<>&\u2028\u2029]/g, (character) => ({
+      "<": "\\u003c",
+      ">": "\\u003e",
+      "&": "\\u0026",
+      "\u2028": "\\u2028",
+      "\u2029": "\\u2029",
+    })[character]);
   } catch {
     return null;
   }
+}
 
+export function JsonLd({ data }) {
+  const html = serializeJsonLd(data);
   if (!html) return null;
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export default JsonLd;

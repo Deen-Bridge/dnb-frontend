@@ -14,7 +14,7 @@ const LABELS = {
 /**
  * EN / العربية switcher. Uses next-intl navigation so the *current route* is
  * preserved when the locale changes (not a jump back to home), and the choice
- * persists across reloads via the locale cookie the middleware sets on
+ * persists across reloads via the locale cookie the proxy sets on
  * navigation. Rendered in both the landing navbar and the dashboard header.
  *
  * `tone="inverse"` styles it for the dark hero navbar; the default suits the
