@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
+import { AUTH_EVENTS, broadcastAuthEvent, listenForAuthEvents } from "@/lib/auth/authSync";
 import { clearAllCaches } from "@/lib/actions/cached-api";
 import { setCacheScope } from "@/lib/utils/cache";
 import { clearClientLearningData } from "@/lib/privacy/learningStorage";
@@ -84,6 +85,26 @@ export default function AuthProvider({ children }) {
     };
   }, [setAuthState]);
 
+  useEffect(() => listenForAuthEvents((event) => {
+    if (event.type === AUTH_EVENTS.LOGIN) {
+      try {
+        const raw = Cookies.get("userInfo");
+        if (raw) setAuthState(JSON.parse(raw));
+      } catch {
+        setAuthState(null);
+      }
+      return;
+    }
+    if (event.type === AUTH_EVENTS.LOGOUT || event.type === AUTH_EVENTS.SESSION_REVOKED) {
+      Cookies.remove("authToken", { path: "/" });
+      Cookies.remove("userInfo", { path: "/" });
+      clearClientLearningData();
+      clearAllCaches();
+      requestPrivateCacheClear("cross-tab-logout");
+      setAuthState(null);
+      router.push("/");
+    }
+  }), [router, setAuthState]);
   // A browser can move directly between accounts without a full reload.
   // Remove any worker-owned runtime entries before the new account renders.
   useEffect(() => {
@@ -118,6 +139,7 @@ export default function AuthProvider({ children }) {
     clearClientLearningData();
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
+    broadcastAuthEvent(AUTH_EVENTS.LOGOUT, user?._id ?? null);
     clearAllCaches();
     axiosInstance.post("/api/auth/logout").catch(() => {});
     setUser(null);
@@ -148,7 +170,7 @@ export default function AuthProvider({ children }) {
 
     toast.success("Logged out successfully");
     router.replace("/");
-  }, [router]);
+  }, [router, user?._id]);
 
   const refreshUser = useCallback(async (userId) => {
     try {
