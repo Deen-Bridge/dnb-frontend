@@ -25,7 +25,8 @@
     "test:e2e:smoke": "playwright test --project=production-smoke e2e/production-smoke.spec.js",
     "check:security-headers": "node scripts/check-security-headers.mjs",
     "mobile:preflight": "node mobile/scripts/store-preflight.mjs",
-    "mobile:preflight:production": "node mobile/scripts/store-preflight.mjs --production"
+    "mobile:preflight:production": "node mobile/scripts/store-preflight.mjs --production",
+    "budget": "node scripts/check-build-budgets.mjs"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.4.0",
