@@ -2,7 +2,7 @@
 /**
  * useReports — data hook for the admin moderation-reports surface (#289).
  * ---------------------------------------------------------------------------
- * Loads the moderation queue and single reports from the stubbed service in
+ * Loads the moderation queue from the contract-bound service in
  * `lib/actions/admin-reports`, and exposes the three moderator actions
  * (escalate / dismiss / apply-action-to-target) with `sonner` toasts and an
  * optimistic local update so the list and the open drawer reflect a decision
@@ -22,13 +22,15 @@ export default function useReports() {
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [freshness, setFreshness] = useState(null);
   const [pendingId, setPendingId] = useState(null);
 
   const refresh = useCallback(async () => {
     setError(null);
     try {
-      const { reports: list } = await listReports();
+      const { reports: list, freshness: contract } = await listReports();
       setReports(list);
+      setFreshness(contract);
       return list;
     } catch (err) {
       setError(err?.message || "Failed to load reports");
@@ -43,8 +45,8 @@ export default function useReports() {
     (async () => {
       setIsLoading(true);
       try {
-        const { reports: list } = await listReports();
-        if (!cancelled) setReports(list);
+        const { reports: list, freshness: contract } = await listReports();
+        if (!cancelled) { setReports(list); setFreshness(contract); }
       } catch (err) {
         if (!cancelled) setError(err?.message || "Failed to load reports");
       } finally {
@@ -120,6 +122,7 @@ export default function useReports() {
     reports,
     isLoading,
     error,
+    freshness,
     pendingId,
     refresh,
     escalate,
