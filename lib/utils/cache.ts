@@ -5,6 +5,20 @@ interface CacheItem<T = any> { // TODO(types): Generic payload stored in cache
 }
 
 const memoryCache = new Map<string, CacheItem>();
+let cacheScope: string | null = null;
+
+const scopedKey = (key: string): string =>
+  cacheScope ? `account:${encodeURIComponent(cacheScope)}:${key}` : `public:${key}`;
+
+export function setCacheScope(scope: string | null): void {
+  if (scope === cacheScope) return;
+  smartCache.clear();
+  cacheScope = scope?.trim() || null;
+}
+
+export function getCacheScope(): string | null {
+  return cacheScope;
+}
 
 export const CACHE_CONFIG = {
   DEFAULT_TTL: 5 * 60 * 1000,
@@ -297,9 +311,10 @@ export const cachedFetch = async <T = any>(url: string, options: CachedFetchOpti
     forceRefresh = false,
     storage = "auto",
   } = options;
+  const scopedCacheKey = scopedKey(cacheKey);
 
   if (!forceRefresh) {
-    const cached = smartCache.get<T>(cacheKey);
+    const cached = smartCache.get<T>(scopedCacheKey);
     if (cached) {
       return cached;
     }
@@ -331,7 +346,7 @@ export const cachedFetch = async <T = any>(url: string, options: CachedFetchOpti
         url,
       });
     }
-    smartCache.set(cacheKey, data, { ttl, storage });
+    smartCache.set(scopedCacheKey, data, { ttl, storage });
 
     return data;
   } catch (error) {

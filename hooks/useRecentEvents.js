@@ -15,16 +15,28 @@ export default function useRecentEvents() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const timer = useRef(null);
+  const inFlight = useRef(false);
+  const abortController = useRef(null);
 
   const load = useCallback(async () => {
+    if (inFlight.current || document.visibilityState === "hidden") return;
+    inFlight.current = true;
+    abortController.current?.abort();
+    abortController.current = new AbortController();
     try {
-      const list = await fetchRecentEvents(RECENT_EVENTS_LIMIT);
+      const result = await fetchRecentEvents(RECENT_EVENTS_LIMIT, {
+        signal: abortController.current.signal,
+      });
+      const list = Array.isArray(result) ? result : result?.events;
       setEvents((Array.isArray(list) ? list : []).slice(0, RECENT_EVENTS_LIMIT));
       setError(null);
     } catch (err) {
-      setError(err?.message || "Failed to load recent activity");
+      if (err?.code !== "ERR_CANCELED" && err?.name !== "CanceledError") {
+        setError(err?.message || "Recent activity is unavailable right now.");
+      }
     } finally {
       setLoading(false);
+      inFlight.current = false;
     }
   }, []);
 
@@ -43,6 +55,8 @@ export default function useRecentEvents() {
         start();
       } else {
         stop();
+        abortController.current?.abort();
+        inFlight.current = false;
       }
     };
 
@@ -51,6 +65,7 @@ export default function useRecentEvents() {
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       stop();
+      abortController.current?.abort();
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [load]);
