@@ -3,9 +3,15 @@
     "collect": {
       "url": [
         "http://localhost:3000/",
-        "http://localhost:3000/login"
+        "http://localhost:3000/login",
+        "http://localhost:3000/dashboard",
+        "http://localhost:3000/dashboard/courses",
+        "http://localhost:3000/dashboard/library",
+        "http://localhost:3000/dashboard/scholarships",
+        "http://localhost:3000/dashboard/spaces"
       ],
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
+      "puppeteerScript": "./scripts/lighthouse-auth.cjs",
       "settings": {
         "preset": "desktop"
       }
@@ -13,9 +19,16 @@
     "assert": {
       "assertions": {
         "categories:performance": ["error", { "minScore": 0.85 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "experimental-interaction-to-next-paint": ["error", { "maxNumericValue": 500 }],
         "resource-summary:total-byte-weight": ["error", { "maxNumericValue": 5242880 }],
+        "resource-summary:script:size": ["error", { "maxNumericValue": 1572864 }],
         "unused-javascript": ["warn", { "maxNumericValue": 1572864 }]
       }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
     }
   }
 }

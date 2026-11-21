@@ -488,29 +488,6 @@
         }
       }
     },
-    "stats": {
-      "badge": "Our Community",
-      "title": "Growing Together in Faith",
-      "subtitle": "Numbers that reflect our commitment to connecting Muslims worldwide through authentic knowledge, meaningful conversations, and spiritual growth",
-      "items": {
-        "learners": {
-          "label": "Muslims Learning",
-          "description": "Brothers and sisters studying together, at their own pace, every day"
-        },
-        "resources": {
-          "label": "Courses & Books",
-          "description": "Authentic resources curated by scholars and verified teachers"
-        },
-        "spaces": {
-          "label": "Live Spaces Monthly",
-          "description": "Halaqahs, tafsir circles, and open Q&As hosted across time zones"
-        },
-        "countries": {
-          "label": "Countries Connected",
-          "description": "One Ummah, learning side by side from wherever they call home"
-        }
-      }
-    },
     "stellar": {
       "badge": {
         "builtOn": "Built on",
@@ -585,9 +562,6 @@
           "label": "non-custodial"
         }
       }
-    },
-    "testimonials": {
-      "title": "What Our Community Says"
     },
     "why": {
       "heading": "Why Deen Bridge?",
