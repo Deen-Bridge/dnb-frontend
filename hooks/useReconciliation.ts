@@ -4,8 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { canManageTeam } from "@/lib/auth/admin-tiers";
 import {
-  fetchInternalTransactions,
-  fetchSettlementClaims,
+  fetchReconciliationStatus,
   reconcile,
   ReconciledTransaction,
 } from "@/lib/actions/admin-reconciliation";
@@ -15,6 +14,7 @@ export interface ReconciliationSummary {
   matched: number;
   missing: number;
   mismatch: number;
+  pending: number;
   total: number;
 }
 
@@ -68,10 +68,12 @@ export default function useReconciliation(initialRange: UseReconciliationRange =
       setIsLoading(true);
       setError(null);
       try {
-        const [{ transactions }, { claims }] = await Promise.all([
-          fetchInternalTransactions({ from: activeFrom, to: activeTo }),
-          fetchSettlementClaims({ from: activeFrom, to: activeTo }),
-        ]);
+        const { transactions, claims } = await fetchReconciliationStatus({
+          from: activeFrom,
+          to: activeTo,
+          page: 1,
+          pageSize: 100,
+        });
         setRows(reconcile(transactions, claims));
         setHasRun(true);
       } catch (err: any) { // TODO(types): Reconciliation error
@@ -98,9 +100,10 @@ export default function useReconciliation(initialRange: UseReconciliationRange =
         if (row.status === "matched") acc.matched += 1;
         else if (row.status === "missing-on-chain") acc.missing += 1;
         else if (row.status === "amount-mismatch") acc.mismatch += 1;
+        else if (row.status === "pending") acc.pending += 1;
         return acc;
       },
-      { matched: 0, missing: 0, mismatch: 0, total: 0 }
+      { matched: 0, missing: 0, mismatch: 0, pending: 0, total: 0 }
     );
   }, [rows]);
 

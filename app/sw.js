@@ -7,17 +7,55 @@ import {
   NetworkFirst,
 } from "serwist";
 import { normalizeNotificationTarget } from "../lib/push/notificationNavigation";
+import {
+  isPrivateNavigationPath,
+  isPublicNavigationPath,
+  PRIVATE_RUNTIME_CACHE_NAMES,
+} from "../lib/pwa/cache-policy";
+
+const PRECACHE_ENTRIES = self.__SW_MANIFEST || [];
+const RELEASE_ID = PRECACHE_ENTRIES
+  .map((entry) => entry.revision || entry.url)
+  .join("-")
+  .replace(/[^a-z0-9-]/gi, "")
+  .slice(-24) || "development";
+const RUNTIME_CACHE_PREFIX = "dnb-runtime-";
+const cacheName = (name) => `${RUNTIME_CACHE_PREFIX}${name}-${RELEASE_ID}`;
+
+function hasCredentials(request) {
+  return Boolean(
+    request.headers.get("Authorization") || request.headers.get("Cookie")
+  );
+}
+
+function isNavigationRequest(request) {
+  return request.mode === "navigate" || request.destination === "document";
+}
+
+function isPrivatePath(pathname) {
+  return isPrivateNavigationPath(pathname);
+}
+
+function isPublicDocumentRequest({ request, url, sameOrigin }) {
+  return (
+    sameOrigin &&
+    request.method === "GET" &&
+    isNavigationRequest(request) &&
+    !hasCredentials(request) &&
+    isPublicNavigationPath(url.pathname)
+  );
+}
 
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
-  clientsClaim: true,
+  precacheEntries: PRECACHE_ENTRIES,
+  skipWaiting: false,
+  clientsClaim: false,
   navigationPreload: true,
   runtimeCaching: [
     {
       matcher: /^https:\/\/fonts\.(?:gstatic|googleapis)\.com\/.*/i,
       handler: new CacheFirst({
-        cacheName: "google-fonts",
+        cacheName: cacheName("google-fonts"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 8,
@@ -30,7 +68,7 @@ const serwist = new Serwist({
     {
       matcher: /\.(?:eot|otf|ttc|ttf|woff|woff2|font\.css)$/i,
       handler: new CacheFirst({
-        cacheName: "static-font-assets",
+        cacheName: cacheName("static-font-assets"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 8,
@@ -43,7 +81,7 @@ const serwist = new Serwist({
     {
       matcher: /\/_next\/static\/.+\.(?:js|css|json)$/i,
       handler: new CacheFirst({
-        cacheName: "next-static-assets",
+        cacheName: cacheName("next-static-assets"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 64,
@@ -56,7 +94,7 @@ const serwist = new Serwist({
     {
       matcher: /\/_next\/static\/media\/.+\.(?:png|jpg|jpeg|gif|svg|ico|webp|avif)$/i,
       handler: new CacheFirst({
-        cacheName: "next-static-images",
+        cacheName: cacheName("next-static-images"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 64,
@@ -69,37 +107,11 @@ const serwist = new Serwist({
     {
       matcher: /\/_next\/image\?url=.+$/i,
       handler: new StaleWhileRevalidate({
-        cacheName: "next-optimized-images",
+        cacheName: cacheName("next-optimized-images"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 64,
             maxAgeSeconds: 30 * 24 * 60 * 60,
-            maxAgeFrom: "last-used",
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: /\/api\/books\/[^/]+\/preview/i,
-      handler: new StaleWhileRevalidate({
-        cacheName: "book-previews",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 10,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
-            maxAgeFrom: "last-used",
-          }),
-        ],
-      }),
-    },
-    {
-      matcher: /^https:\/\/res\.cloudinary\.com\/.*/i,
-      handler: new StaleWhileRevalidate({
-        cacheName: "cloudinary-images",
-        plugins: [
-          new ExpirationPlugin({
-            maxEntries: 48,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
             maxAgeFrom: "last-used",
           }),
         ],
@@ -115,14 +127,21 @@ const serwist = new Serwist({
       handler: new NetworkOnly(),
     },
     {
+      // Private navigations are never persisted or served from a shared cache.
       matcher: ({ request, url, sameOrigin }) =>
-        request.headers.get("Content-Type")?.includes("text/html") &&
-        sameOrigin,
+        sameOrigin &&
+        isNavigationRequest(request) &&
+        isPrivatePath(url.pathname),
+      handler: new NetworkOnly(),
+    },
+    {
+      // Only routes on the explicit public allowlist may use an offline page cache.
+      matcher: isPublicDocumentRequest,
       handler: new NetworkFirst({
-        cacheName: "pages",
+        cacheName: cacheName("public-pages"),
         plugins: [
           new ExpirationPlugin({
-            maxEntries: 32,
+            maxEntries: 24,
             maxAgeSeconds: 24 * 60 * 60,
             maxAgeFrom: "last-used",
           }),
@@ -130,9 +149,16 @@ const serwist = new Serwist({
       }),
     },
     {
-      matcher: ({ sameOrigin, url }) => sameOrigin,
+      // Generic same-origin reads stay cached only when they carry no account
+      // context and are not document navigations.
+      matcher: ({ request, url, sameOrigin }) =>
+        sameOrigin &&
+        request.method === "GET" &&
+        !isNavigationRequest(request) &&
+        !hasCredentials(request) &&
+        !isPrivatePath(url.pathname),
       handler: new NetworkFirst({
-        cacheName: "same-origin-others",
+        cacheName: cacheName("same-origin-others"),
         plugins: [
           new ExpirationPlugin({
             maxEntries: 32,
@@ -142,6 +168,8 @@ const serwist = new Serwist({
         ],
       }),
     },
+    // API and unclassified same-origin requests are network-only by default.
+    { matcher: ({ sameOrigin }) => sameOrigin, handler: new NetworkOnly() },
     {
       matcher: /.*/i,
       handler: new NetworkOnly(),
@@ -155,6 +183,57 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+const deleteCaches = (filter) =>
+  caches
+    .keys()
+    .then((names) =>
+      Promise.all(names.filter(filter).map((name) => caches.delete(name)))
+    );
+
+const clearLegacyPrivateCaches = () =>
+  deleteCaches((name) => PRIVATE_RUNTIME_CACHE_NAMES.includes(name));
+
+const clearPrivateCaches = () =>
+  deleteCaches(
+    (name) =>
+      PRIVATE_RUNTIME_CACHE_NAMES.includes(name) ||
+      name.startsWith(RUNTIME_CACHE_PREFIX)
+  );
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+  if (event.data?.type === "CLEAR_PRIVATE_CACHES") {
+    event.waitUntil(
+      clearPrivateCaches().catch((error) =>
+        console.error("[service-worker] clear private caches", error)
+      )
+    );
+  }
+});
+
+self.addEventListener("activate", (event) => {
+  const cleanup = Promise.all([
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(
+          names
+            .filter(
+              (name) =>
+                name.startsWith(RUNTIME_CACHE_PREFIX) &&
+                !name.includes(`-${RELEASE_ID}`)
+            )
+            .map((name) => caches.delete(name))
+        )
+      )
+      .catch((error) => console.error("[service-worker] activate", error)),
+    clearLegacyPrivateCaches().catch((error) =>
+      console.error("[service-worker] activate", error)
+    ),
+  ]);
+  event.waitUntil(cleanup);
+});
 
 // ─── Web Push notifications (issue #197) ────────────────────────────────────
 // The backend delivers pushes via the web-push library. Payloads are JSON of

@@ -2,10 +2,12 @@ import { View, Text, ScrollView, TouchableOpacity, Switch } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/lib/auth";
+import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
 
   return (
@@ -47,6 +49,9 @@ export default function ProfileScreen() {
           ].map((item) => (
             <TouchableOpacity
               key={item.key}
+              onPress={() => item.key === "notifications" && router.push("/notifications")}
+              accessibilityRole="button"
+              accessibilityLabel={item.label}
               style={{
                 padding: 16,
                 borderBottomWidth: 1,

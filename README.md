@@ -89,8 +89,8 @@ The app runs at `http://localhost:3000`.
 | `NEXT_PUBLIC_AI_API_URL` | No (default `http://localhost:8000`) | Base URL of the [dnb-ai](https://github.com/Deen-Bridge/dnb-ai) AI assistant service |
 | `NEXT_PUBLIC_STELLAR_NETWORK` | No (default `testnet`) | Stellar network — `testnet` or `mainnet` |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | **Yes** | Cloudinary cloud name for unsigned image/video uploads |
-| `NEXT_PUBLIC_JITSI_DOMAIN` | No (default `meet.jit.si`) | Jitsi Meet domain for live video spaces |
-| `NEXT_PUBLIC_JITSI_REQUIRE_JWT` | No (default `false`) | Whether the Jitsi deployment requires a signed JWT token |
+| `NEXT_PUBLIC_JITSI_DOMAIN` | Local only (production required) | Approved Jitsi domain for live video spaces; production rejects `meet.jit.si` and localhost |
+| `NEXT_PUBLIC_JITSI_REQUIRE_JWT` | Local optional; production `true` | Require a server-issued, room-scoped Jitsi JWT before mounting or opening a room |
 | `NEXT_PUBLIC_FIREBASE_*` | No | Firebase Web SDK config values (apiKey, authDomain, projectId, etc.) — defaults to the project's current values |
 | `NEXT_PUBLIC_ADMIN_INVITE_BASE_URL` | No (default current origin) | Base URL used when building admin invite links generated on the team management page |
 | `NEXT_PUBLIC_ADMIN_INVITE_TTL_HOURS` | No (default `72`) | Validity window (in hours) surfaced for admin invite tokens — enforced by the backend |
