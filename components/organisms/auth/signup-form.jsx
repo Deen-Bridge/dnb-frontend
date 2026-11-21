@@ -9,6 +9,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { normalizeRole, ROLES } from "@/lib/auth/roles";
 import { resolveSafeCallbackRedirect } from "@/lib/auth/safeRedirect";
+import { getLocaleFromPathname } from "@/lib/auth/safeRedirect";
 import {
   Select,
   SelectContent,
@@ -100,7 +101,7 @@ export function SignupForm({ className, ...props }) {
     if (user) {
       setTimeout(() => {
         const roleFallback = normalizeRole(user?.role) === ROLES.ADMIN ? "/admin" : "/dashboard";
-        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback);
+        window.location.href = resolveSafeCallbackRedirect(window.location?.search, roleFallback, getLocaleFromPathname(window.location?.pathname));
       }, 500);
     }
   };
