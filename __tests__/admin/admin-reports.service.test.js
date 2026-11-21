@@ -1,12 +1,8 @@
 /**
- * Admin report-builder service — contract tests (#329).
- * ------------------------------------------------------------------
- * Pins the report-builder seam in `lib/actions/admin-reports.js`: the three
- * datasets (users / transactions / reports), default filters, filtered preview
- * rows, and the per-admin saved-query CRUD that backs the sidebar. No
- * cross-dataset joins or SQL are expected anywhere in the resolved shapes.
+ * Admin report-builder service — contract tests (#329, #714).
  */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import axiosInstance from "@/lib/config/axios.config";
 import {
   REPORT_DATASETS,
   defaultFiltersFor,
@@ -16,10 +12,66 @@ import {
   deleteSavedQuery,
 } from "@/lib/actions/admin-reports";
 
+vi.mock("@/lib/config/axios.config", () => ({
+  default: { get: vi.fn(), post: vi.fn(), delete: vi.fn() },
+}));
+
 const DATASET_IDS = ["users", "transactions", "reports"];
+const FRESHNESS = {
+  interval: { from: "2025-01-01", to: "2025-05-31" },
+  lastUpdatedAt: "2025-06-01T00:00:00.000Z",
+  completeness: "complete",
+  timezone: "UTC",
+  stale: false,
+};
+
+let savedQueries;
+let queryCounter;
 
 beforeEach(() => {
-  window.localStorage.clear();
+  vi.clearAllMocks();
+  savedQueries = new Map();
+  queryCounter = 0;
+
+  axiosInstance.get.mockImplementation(async (url, config) => {
+    if (url === "/api/admin/saved-queries") {
+      return { data: { queries: savedQueries.get(config?.params?.userId) || [] } };
+    }
+    return {
+      data: {
+        rows: [
+          { status: "active", joinedAt: "2025-05-01" },
+          { status: "active", joinedAt: "2025-05-09" },
+        ],
+        freshness: FRESHNESS,
+      },
+    };
+  });
+
+  axiosInstance.post.mockImplementation(async (url, payload) => {
+    if (url === "/api/admin/saved-queries") {
+      const query = {
+        id: `q_${++queryCounter}`,
+        name: payload.name,
+        datasetId: payload.datasetId,
+        filters: { ...payload.filters },
+        columns: [...payload.columns],
+        createdAt: "2025-06-01T00:00:00.000Z",
+      };
+      const queries = savedQueries.get(payload.userId) || [];
+      queries.unshift(query);
+      savedQueries.set(payload.userId, queries);
+      return { data: { query } };
+    }
+    return { data: { report: { id: "rep_1" }, freshness: FRESHNESS } };
+  });
+
+  axiosInstance.delete.mockImplementation(async (url, config) => {
+    const queryId = decodeURIComponent(url.split("/").pop());
+    const userId = config?.params?.userId;
+    savedQueries.set(userId, (savedQueries.get(userId) || []).filter((query) => query.id !== queryId));
+    return { data: { deleted: true, queryId } };
+  });
 });
 
 describe("REPORT_DATASETS", () => {
@@ -44,7 +96,6 @@ describe("REPORT_DATASETS", () => {
   it("defines only existing module filter sets (no custom SQL / joins)", () => {
     for (const dataset of REPORT_DATASETS) {
       const keys = dataset.filters.map((f) => f.key);
-      // date-range pairs plus per-dataset selects only
       expect(keys.filter((k) => k === "from").length).toBeLessThanOrEqual(1);
       expect(keys.filter((k) => k === "to").length).toBeLessThanOrEqual(1);
     }
@@ -69,33 +120,43 @@ describe("fetchReportRows", () => {
     await expect(fetchReportRows("nope", {})).rejects.toThrow(/unknown report dataset/i);
   });
 
-  it("returns all rows for a dataset by default", async () => {
-    const { rows } = await fetchReportRows("users", {});
-    expect(rows.length).toBeGreaterThan(0);
+  it("requests bounded backend rows with freshness metadata", async () => {
+    const { rows, freshness } = await fetchReportRows("users", {});
+    expect(rows).toHaveLength(2);
+    expect(freshness.completeness).toBe("complete");
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=25"
+    );
   });
 
   it("applies a select filter", async () => {
-    const { rows } = await fetchReportRows("users", { status: "banned" });
-    expect(rows.length).toBeGreaterThan(0);
-    for (const row of rows) expect(row.status).toBe("banned");
+    await fetchReportRows("users", { status: "banned" });
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=25&status=banned"
+    );
   });
 
   it("applies the date-range filters", async () => {
-    const { rows } = await fetchReportRows("users", { from: "2025-04-01", to: "2025-05-31" });
-    expect(rows.length).toBeGreaterThan(0);
-    for (const row of rows) {
-      expect(row.joinedAt >= "2025-04-01").toBe(true);
-      expect(row.joinedAt <= "2025-05-31").toBe(true);
-    }
+    await fetchReportRows("users", { from: "2025-04-01", to: "2025-05-31" });
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=25&from=2025-04-01&to=2025-05-31"
+    );
   });
 
   it("honors the preview limit option", async () => {
-    const { rows } = await fetchReportRows("users", {}, { limit: 2 });
-    expect(rows.length).toBe(2);
+    await fetchReportRows("users", {}, { limit: 200 });
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/admin/report-rows?dataset=users&limit=100"
+    );
+  });
+
+  it("rejects a response without freshness metadata instead of treating it as empty", async () => {
+    axiosInstance.get.mockResolvedValueOnce({ data: { rows: [] } });
+    await expect(fetchReportRows("users")).rejects.toThrow(/data interval is missing/i);
   });
 });
 
-describe("saved queries (per admin)", () => {
+describe("saved queries (per admin, backend-backed)", () => {
   const QUERY = {
     name: "Active users",
     datasetId: "users",
@@ -111,8 +172,18 @@ describe("saved queries (per admin)", () => {
     expect(query.columns).toEqual(["name", "email"]);
     expect(query.filters.status).toBe("active");
     expect(typeof query.createdAt).toBe("string");
+    expect(axiosInstance.post).toHaveBeenCalledWith("/api/admin/saved-queries", {
+      userId: "admin-1",
+      name: "Active users",
+      datasetId: "users",
+      filters: { status: "active" },
+      columns: ["name", "email"],
+    });
 
     const { queries } = await listSavedQueries("admin-1");
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/admin/saved-queries", {
+      params: { userId: "admin-1" },
+    });
     expect(queries).toHaveLength(1);
     expect(queries[0].id).toBe(query.id);
   });
@@ -125,19 +196,25 @@ describe("saved queries (per admin)", () => {
 
   it("rejects a save without a name", async () => {
     await expect(saveQuery("admin-1", { ...QUERY, name: "  " })).rejects.toThrow(/name is required/i);
+    expect(axiosInstance.post).not.toHaveBeenCalled();
   });
 
   it("rejects a save for an unknown dataset", async () => {
     await expect(saveQuery("admin-1", { ...QUERY, datasetId: "nope" })).rejects.toThrow(/unknown report dataset/i);
+    expect(axiosInstance.post).not.toHaveBeenCalled();
   });
 
   it("rejects a save without any columns", async () => {
     await expect(saveQuery("admin-1", { ...QUERY, columns: [] })).rejects.toThrow(/at least one column/i);
+    expect(axiosInstance.post).not.toHaveBeenCalled();
   });
 
   it("deletes a saved query", async () => {
     const { query } = await saveQuery("admin-1", QUERY);
     const { deleted, queryId } = await deleteSavedQuery("admin-1", query.id);
+    expect(axiosInstance.delete).toHaveBeenCalledWith(`/api/admin/saved-queries/${query.id}`, {
+      params: { userId: "admin-1" },
+    });
     expect(deleted).toBe(true);
     expect(queryId).toBe(query.id);
 

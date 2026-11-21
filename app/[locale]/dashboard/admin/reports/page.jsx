@@ -9,7 +9,7 @@
  * moderator can act without leaving the page.
  *
  * Super-admin only (wrapped in `AdminTierGuard`). All data/actions flow through
- * the `useReports` hook over the stubbed `lib/actions/admin-reports` service.
+ * the contract-bound `useReports` hook; uncontracted data is never rendered.
  */
 import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
@@ -66,7 +66,21 @@ function ReportsContent() {
         subtitle="Review flagged content with full context, then escalate, dismiss, or act on the target."
       />
 
-      {reports.isLoading ? (
+      {reports.freshness ? (
+        <div className="mb-4 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-ink-muted" role="status">
+          Data interval: {reports.freshness.interval.from} to {reports.freshness.interval.to} ({reports.freshness.timezone}) · Last updated: {new Date(reports.freshness.lastUpdatedAt).toLocaleString()}
+          {reports.freshness.stale ? " · Stale provider data — refresh before acting." : ""}
+          {reports.freshness.completeness === "partial" ? " · Partial provider data — review before acting." : ""}
+        </div>
+      ) : null}
+
+      {reports.error ? (
+        <div className="rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive" role="alert">
+          Reports are unavailable: {reports.error}. No placeholder or zero-valued data is shown.
+        </div>
+      ) : null}
+
+      {reports.error ? null : reports.isLoading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-14 w-full" />
