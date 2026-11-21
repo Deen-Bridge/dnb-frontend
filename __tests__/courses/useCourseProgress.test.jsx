@@ -5,8 +5,8 @@
  * sync, and the empty / failure paths. All network access goes through a mocked
  * axiosInstance; nothing hits the real backend.
  *
- * The hook keeps a module-level `backendAvailable` flag, so each test re-imports
- * the module to start from a clean state.
+ * Availability is scoped to the API environment and authenticated user, so
+ * one learner's route failure cannot disable another learner's sync.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
@@ -28,7 +28,13 @@ vi.mock("@/lib/config/axios.config", () => ({
 }));
 
 const COURSE_ID = "c1";
-const STORAGE_KEY = "dnb:progress:u1:c1";
+const STORAGE_KEY = "dnb:learning:v1:courseProgress:u1:c1";
+const readStored = (key = STORAGE_KEY) => {
+  const raw = localStorage.getItem(key);
+  if (!raw) return null;
+  const parsed = JSON.parse(raw);
+  return parsed && typeof parsed === "object" && "value" in parsed ? parsed.value : parsed;
+};
 
 async function mountHook(courseId = COURSE_ID) {
   const { useCourseProgress } = await import("@/hooks/useCourseProgress");
@@ -75,7 +81,7 @@ describe("useCourseProgress", () => {
     });
     expect(result.current.resumeTime).toBe(300);
     expect(result.current.resumeLabel).toBe("Resume from 5:00");
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual({
+    expect(readStored()).toMatchObject({
       positionSeconds: 300,
       durationSeconds: 600,
       completed: false,
@@ -187,7 +193,7 @@ describe("useCourseProgress", () => {
 
     expect(mocks.put).not.toHaveBeenCalled();
     expect(result.current.progress.percent).toBe(50);
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual({
+    expect(readStored()).toMatchObject({
       positionSeconds: 200,
       durationSeconds: 400,
       completed: false,
@@ -212,6 +218,6 @@ describe("useCourseProgress", () => {
       )
     );
     expect(result.current.progress.positionSeconds).toBe(90);
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)).positionSeconds).toBe(90);
+    expect(readStored()?.positionSeconds).toBe(90);
   });
 });

@@ -1,10 +1,21 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/config/axios.config";
 import { AUTH_EVENTS, broadcastAuthEvent, listenForAuthEvents } from "@/lib/auth/authSync";
+import { clearAllCaches } from "@/lib/actions/cached-api";
+import { setCacheScope } from "@/lib/utils/cache";
+import { clearClientLearningData } from "@/lib/privacy/learningStorage";
+import { requestPrivateCacheClear } from "@/lib/pwa/cache-isolation";
 
 const AuthContext = createContext(null);
 
@@ -29,15 +40,18 @@ export default function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const previousUserId = useRef(null);
 
   const setAuthState = useCallback((userData) => {
     if (userData) {
       if (userData.id && !userData._id) userData._id = userData.id;
       setUser(userData);
       setIsAuthenticated(true);
+      setCacheScope(userData._id || userData.id || null);
     } else {
       setUser(null);
       setIsAuthenticated(false);
+      setCacheScope(null);
     }
     setLoading(false);
   }, []);
@@ -45,24 +59,28 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     __setAuthUpdater(setAuthState);
 
+    let active = true;
     let userInfo = null;
     try {
       const raw = Cookies.get("userInfo");
       if (raw) userInfo = JSON.parse(raw);
     } catch {
-      Cookies.remove("authToken", { path: "/" });
       Cookies.remove("userInfo", { path: "/" });
+      clearAllCaches();
     }
 
-    const token = Cookies.get("authToken");
-    if (token && userInfo) {
-      if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
-      setUser(userInfo);
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    queueMicrotask(() => {
+      if (!active) return;
+      if (userInfo) {
+        if (userInfo.id && !userInfo._id) userInfo._id = userInfo.id;
+        setAuthState(userInfo);
+      } else {
+        setLoading(false);
+      }
+    });
 
     return () => {
+      active = false;
       __setAuthUpdater(null);
     };
   }, [setAuthState]);
@@ -80,10 +98,26 @@ export default function AuthProvider({ children }) {
     if (event.type === AUTH_EVENTS.LOGOUT || event.type === AUTH_EVENTS.SESSION_REVOKED) {
       Cookies.remove("authToken", { path: "/" });
       Cookies.remove("userInfo", { path: "/" });
+      clearClientLearningData();
+      clearAllCaches();
+      requestPrivateCacheClear("cross-tab-logout");
       setAuthState(null);
       router.push("/");
     }
   }), [router, setAuthState]);
+  // A browser can move directly between accounts without a full reload.
+  // Remove any worker-owned runtime entries before the new account renders.
+  useEffect(() => {
+    const nextUserId = user?._id ?? user?.id ?? null;
+    if (
+      previousUserId.current &&
+      nextUserId &&
+      previousUserId.current !== nextUserId
+    ) {
+      requestPrivateCacheClear("account-switch");
+    }
+    previousUserId.current = nextUserId;
+  }, [user?._id, user?.id]);
 
   // Anonymous error-tracking context: id only, never email or name.
   useEffect(() => {
@@ -92,7 +126,8 @@ export default function AuthProvider({ children }) {
       .then((mod) => {
         const Sentry = mod.default ?? mod;
         if (!active || !Sentry || typeof Sentry.setUser !== "function") return;
-        Sentry.setUser(user?._id ? { id: user._id } : null);
+        // Bind only the current account identity for the active session.
+        Sentry.setUser(user?._id ? { id: String(user._id) } : null);
       })
       .catch(() => {});
     return () => {
@@ -101,27 +136,41 @@ export default function AuthProvider({ children }) {
   }, [user?._id]);
 
   const logout = useCallback(() => {
+    clearClientLearningData();
     Cookies.remove("authToken", { path: "/" });
     Cookies.remove("userInfo", { path: "/" });
     broadcastAuthEvent(AUTH_EVENTS.LOGOUT, user?._id ?? null);
+    clearAllCaches();
+    axiosInstance.post("/api/auth/logout").catch(() => {});
     setUser(null);
     setIsAuthenticated(false);
+    setCacheScope(null);
+    requestPrivateCacheClear("logout");
+
+    import("@sentry/nextjs")
+      .then((mod) => {
+        const Sentry = mod.default ?? mod;
+        if (typeof Sentry?.setUser === "function") Sentry.setUser(null);
+      })
+      .catch(() => {});
 
     if (typeof window !== "undefined" && "caches" in window) {
-      caches.keys().then((names) => {
-        const runtimeCaches = names.filter(
-          (name) =>
-            name.startsWith("serwist-") || name === "book-previews"
-        );
-        return Promise.all(
-          runtimeCaches.map((name) => caches.delete(name))
-        );
-      }).catch(() => {});
+      caches
+        .keys()
+        .then((names) => {
+          const runtimeCaches = names.filter((name) =>
+            name.startsWith("dnb-runtime-")
+          );
+          return Promise.all(
+            runtimeCaches.map((name) => caches.delete(name))
+          );
+        })
+        .catch(() => {});
     }
 
     toast.success("Logged out successfully");
-    router.push("/");
-  }, [router]);
+    router.replace("/");
+  }, [router, user?._id]);
 
   const refreshUser = useCallback(async (userId) => {
     try {
@@ -130,7 +179,10 @@ export default function AuthProvider({ children }) {
         let freshUser = res.data.user || res.data;
         if (freshUser.id && !freshUser._id) freshUser._id = freshUser.id;
         setUser(freshUser);
-        Cookies.set("userInfo", JSON.stringify(freshUser), { expires: 1, path: "/" });
+        Cookies.set("userInfo", JSON.stringify(freshUser), {
+          expires: 1,
+          path: "/",
+        });
         setIsAuthenticated(true);
         return freshUser;
       }
@@ -141,7 +193,9 @@ export default function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, loading, logout, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

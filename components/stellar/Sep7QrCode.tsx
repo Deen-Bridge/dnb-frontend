@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { captureClientError } from "@/lib/sentry/captureClientError";
+import { copySafeText } from "@/lib/privacy/safeClipboard";
 
 export interface Sep7QrCodeProps {
   uri?: string;
@@ -19,7 +20,7 @@ export default function Sep7QrCode({ uri, size = 168, caption }: Sep7QrCodeProps
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(uri);
+      if (!(await copySafeText(uri, "authenticated"))) throw new Error("Clipboard unavailable");
       setCopied(true);
       toast.success("Payment URI copied to clipboard");
       setTimeout(() => setCopied(false), 2000);

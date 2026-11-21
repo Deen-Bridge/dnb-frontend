@@ -17,8 +17,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.deenbridge.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "Deen Bridge needs camera access for liveness verification and profile photos.",
-        "NSPhotoLibraryUsageDescription": "Deen Bridge needs photo library access to upload profile photos and course media."
+        "NSCameraUsageDescription": "Deen Bridge uses the camera for liveness verification and profile photos.",
+        "NSPhotoLibraryUsageDescription": "Deen Bridge uses your photo library only when you choose a profile photo."
       }
     },
     "android": {
@@ -28,9 +28,7 @@
       },
       "package": "com.deenbridge.app",
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "CAMERA"
       ]
     },
     "web": {

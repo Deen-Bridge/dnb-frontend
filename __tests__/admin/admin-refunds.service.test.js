@@ -102,7 +102,8 @@ describe("admin-refunds service", () => {
 
       expect(axiosInstance.post).toHaveBeenCalledWith(
         "/api/stellar/payment/refunds/rfd-2051/retry",
-        { reason: "settlement wallet funded" }
+        { reason: "settlement wallet funded" },
+        { headers: { "Idempotency-Key": "refund-retry:rfd-2051" } }
       );
       expect(result.refund.status).toBe("processing");
     });
@@ -116,8 +117,19 @@ describe("admin-refunds service", () => {
 
       expect(axiosInstance.post).toHaveBeenCalledWith(
         "/api/stellar/payment/refunds/rfd-2050/retry",
-        { reason: null }
+        { reason: null },
+        { headers: { "Idempotency-Key": "refund-retry:rfd-2050" } }
       );
+    });
+
+    it("normalizes an unknown provider status to pending", async () => {
+      axiosInstance.get.mockResolvedValueOnce({
+        data: { refunds: [{ ...sampleRefund, status: "provider_review" }] },
+      });
+
+      const result = await listRefunds();
+
+      expect(result.refunds[0].status).toBe("pending");
     });
 
     it("rejects with the server-provided message when the retry is refused", async () => {

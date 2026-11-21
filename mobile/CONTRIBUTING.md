@@ -168,6 +168,28 @@ npx eas build --profile production --platform ios
 npx eas build --profile production --platform android
 ```
 
+Before a production build or submission, run the repository preflight:
+
+```bash
+npm run mobile:preflight
+npm run mobile:preflight:production
+```
+
+The production profile reads `EXPO_OWNER`, `IOS_BUNDLE_IDENTIFIER`,
+`ANDROID_PACKAGE`, `EXPO_APPLE_ID`, `EXPO_ASC_APP_ID`, and
+`EXPO_APPLE_TEAM_ID` from the CI/EAS secret environment. `EXPO_TOKEN` must
+be a short-lived, least-privilege EAS token scoped to the release project.
+The Android and iOS signing credentials are stored in EAS; local
+`google-services.json` and signing files are intentionally unsupported.
+
+Keep development, preview, and production identifiers separate as defined by
+the EAS profiles. A release owner should grant access only to the CI/EAS
+service account and current release maintainers. Rotate the EAS token and
+store credentials immediately after suspected exposure, revoke the old
+credentials in Apple, Google, and EAS, and record the replacement in the
+secret manager. Offboarding removes the contributor from the EAS project and
+store teams, then verifies that no active token or signing credential remains.
+
 ## Testing
 
 ```bash
