@@ -1,0 +1,41 @@
+name: Mobile checks
+
+on:
+  pull_request:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/mobile.yml"
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package.json
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate release metadata
+        run: npm run verify:release
+      - name: Validate locale parity
+        run: npm run test:locales
+      - name: Lint mobile client
+        run: npm run lint
+      - name: Typecheck mobile client
+        run: npm run typecheck
+
+  release-evidence:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Build with EAS production profile only after verify passes."
+          echo "Attach the artifact manifest, test report, accessibility/locale report, and rollback trace."

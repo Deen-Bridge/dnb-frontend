@@ -19,6 +19,7 @@ import { useAllCourseProgress } from "@/hooks/useCourseProgress";
 import NetworkErrorComp from "@/components/molecules/errors/NetworkError";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
 import useBoundedList from "@/hooks/useBoundedList";
+import { readSafeParam } from "@/lib/navigation/urlState";
 import {
   ISLAMIC_CATEGORIES,
   resolveCategorySlug,
@@ -46,11 +47,11 @@ const CoursesPageContent = () => {
   const [error, setError] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [category, setCategory] = useState(
-    () => searchParams.get("category") || ""
+    () => readSafeParam(searchParams, "category", { maxLength: 48, pattern: /^[a-z0-9-]*$/ })
   );
-  const [sort, setSort] = useState(() => searchParams.get("sort") || "newest");
+  const [sort, setSort] = useState(() => readSafeParam(searchParams, "sort", { maxLength: 24, fallback: "newest" }));
   const [searchInput, setSearchInput] = useState(
-    () => searchParams.get("search") || ""
+    () => readSafeParam(searchParams, "search", { maxLength: 120 })
   );
 
   const search = useDebouncedValue(searchInput, 300);

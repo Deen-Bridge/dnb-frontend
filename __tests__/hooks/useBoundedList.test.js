@@ -3,7 +3,11 @@ import useBoundedList from "@/hooks/useBoundedList";
 
 describe("useBoundedList", () => {
   it("renders a bounded window and loads the next window", () => {
-    const { result } = renderHook(() => useBoundedList([1, 2, 3, 4, 5], 2));
+    const items = [1, 2, 3, 4, 5];
+    const { result } = renderHook(
+      ({ list }) => useBoundedList(list, 2),
+      { initialProps: { list: items } }
+    );
 
     expect(result.current.visibleItems).toEqual([1, 2]);
     expect(result.current.hasMore).toBe(true);

@@ -65,12 +65,6 @@ export function usePushNotifications({ enabled = true }: UsePushNotificationsOpt
   useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/firebase-messaging-sw.js")
-        .catch((err) => console.warn("[push] SW registration failed:", err));
-    }
-
     let cleanup: (() => void) | undefined;
     onForegroundMessage((payload) => {
       console.debug("[push] Foreground message:", payload);
