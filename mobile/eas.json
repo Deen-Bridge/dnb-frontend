@@ -10,7 +10,8 @@
       "env": {
         "APP_ENV": "development",
         "IOS_BUNDLE_IDENTIFIER": "com.deenbridge.app.dev",
-        "ANDROID_PACKAGE": "com.deenbridge.app.dev"
+        "ANDROID_PACKAGE": "com.deenbridge.app.dev",
+        "EXPO_PUBLIC_BUILD_PROFILE": "development"
       }
     },
     "preview": {
@@ -19,7 +20,8 @@
       "env": {
         "APP_ENV": "preview",
         "IOS_BUNDLE_IDENTIFIER": "com.deenbridge.app.preview",
-        "ANDROID_PACKAGE": "com.deenbridge.app.preview"
+        "ANDROID_PACKAGE": "com.deenbridge.app.preview",
+        "EXPO_PUBLIC_BUILD_PROFILE": "preview"
       },
       "ios": {
         "simulator": false
@@ -33,7 +35,8 @@
       "env": {
         "APP_ENV": "production",
         "IOS_BUNDLE_IDENTIFIER": "com.deenbridge.app",
-        "ANDROID_PACKAGE": "com.deenbridge.app"
+        "ANDROID_PACKAGE": "com.deenbridge.app",
+        "EXPO_PUBLIC_BUILD_PROFILE": "production"
       },
       "ios": {
         "autoIncrement": true,
