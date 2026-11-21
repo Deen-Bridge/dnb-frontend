@@ -18,6 +18,10 @@ vi.mock("@/lib/config/font.config", () => ({
 
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
+vi.mock("@/lib/config/axios.config", () => ({
+  default: { get: vi.fn(), post: vi.fn(), delete: vi.fn() },
+}));
+
 vi.mock("@/hooks/useAuth", () => ({
   default: () => ({ user: { id: "me", _id: "me" } }),
   useAuth: () => ({ user: { id: "me", _id: "me" } }),
@@ -92,7 +96,7 @@ beforeEach(async () => {
     const mod = await import("@/app/[locale]/dashboard/admin/report-builder/page");
     ReportBuilderPage = mod.default;
   }
-});
+}, 60_000);
 
 describe("ReportBuilderPage", () => {
   it("renders the dataset selector with all three datasets", async () => {

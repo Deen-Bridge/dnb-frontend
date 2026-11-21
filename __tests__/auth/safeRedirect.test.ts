@@ -47,6 +47,16 @@ describe("resolveSafeRedirectTarget (#568)", () => {
     expect(resolveSafeCallbackRedirect(undefined, "/admin")).toBe("/admin");
   });
 
+  it("preserves supported locale prefixes without accepting external targets", () => {
+    expect(resolveSafeRedirectTarget("/ar/dashboard", "/dashboard", "ar")).toBe("/ar/dashboard");
+    expect(resolveSafeCallbackRedirect("?returnTo=%2Fdashboard%2Fcourses", "/dashboard", "ar")).toBe(
+      "/ar/dashboard/courses"
+    );
+    expect(resolveSafeCallbackRedirect("?returnTo=https%3A%2F%2Fevil.example", "/dashboard", "ar")).toBe(
+      "/ar/dashboard"
+    );
+  });
+
   it("adds locale and drops token-like deep-link query state", () => {
     expect(resolveSafeDeepLink("/dashboard/courses/42?tab=reviews&token=secret", "ar"))
       .toBe("/ar/dashboard/courses/42?tab=reviews");
