@@ -3,6 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import { API_BASE_URL } from "@/lib/config/env";
 import { secureClearSensitiveData } from "@/lib/utils/storage";
 import { API_ENDPOINTS } from "./endpoints";
+import { publishUpgradeRequirement, readUpgradeRequirement } from "@/lib/update/policy";
 
 const TOKEN_KEY = "auth_access_token";
 const REFRESH_TOKEN_KEY = "auth_refresh_token";
@@ -50,6 +51,8 @@ const processQueue = (error: unknown, token: string | null) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    const upgrade = readUpgradeRequirement(error);
+    if (upgrade) publishUpgradeRequirement(upgrade);
     const originalRequest = error.config;
 
     if (error.response?.status !== 401 || originalRequest._retry) {

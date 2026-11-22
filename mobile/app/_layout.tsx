@@ -1,15 +1,18 @@
 import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "@/lib/auth";
+import { UpgradeRequired } from "@/components/UpgradeRequired";
+import { initializeMobileDiagnostics, setDiagnosticRoute } from "@/lib/diagnostics";
 import "@/i18n";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const pathname = usePathname();
   const [fontsLoaded] = useFonts({
     Geist: require("../assets/fonts/Geist-Regular.ttf"),
     "Geist-Bold": require("../assets/fonts/Geist-Bold.ttf"),
@@ -19,23 +22,28 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    void initializeMobileDiagnostics();
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  useEffect(() => setDiagnosticRoute(pathname), [pathname]);
 
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <AuthProvider>
-      <StatusBar style="auto" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </AuthProvider>
+    <UpgradeRequired>
+      <AuthProvider>
+        <StatusBar style="auto" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </AuthProvider>
+    </UpgradeRequired>
   );
 }

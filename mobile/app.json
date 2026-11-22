@@ -3,6 +3,8 @@
     "name": "Deen Bridge",
     "slug": "deenbridge",
     "version": "0.1.0",
+    "runtimeVersion": { "policy": "appVersion" },
+    "updates": { "checkAutomatically": "ON_LOAD", "fallbackToCacheTimeout": 0 },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "deenbridge",
@@ -37,6 +39,8 @@
     },
     "plugins": [
       "expo-router",
+      "expo-updates",
+      "@sentry/react-native/expo",
       [
         "expo-font",
         {
